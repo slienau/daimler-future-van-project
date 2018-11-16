@@ -26,6 +26,12 @@
         "useTabs": false
       }
     ],
+    "react/prop-types": [
+      "error",
+      {
+        "ignore": ["navigation"]
+      }
+    ],
     "lodash/prefer-lodash-method": "off",
     "lodash/prefer-constant": "off",
     "lodash/prefer-lodash-chain": "off",
