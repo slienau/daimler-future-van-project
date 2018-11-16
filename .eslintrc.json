@@ -1,0 +1,60 @@
+{
+  "plugins": ["ava", "lodash", "prettier", "filenames", "react-native"],
+  "extends": ["standard", "plugin:ava/recommended", "prettier", "standard-react"],
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "jest": true,
+    "mocha": true
+  },
+  "globals": {
+    "__DEV__": true,
+    "fetch": true
+  },
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "bracketSpacing": false,
+        "jsxBracketSameLine": true,
+        "printWidth": 80,
+        "semi": false,
+        "singleQuote": true,
+        "tabWidth": 2,
+        "trailingComma": "es5",
+        "useTabs": false
+      }
+    ],
+    "lodash/prefer-lodash-method": "off",
+    "lodash/prefer-constant": "off",
+    "lodash/prefer-lodash-chain": "off",
+    "lodash/path-style": ["error", "as-needed"],
+    "promise/prefer-await-to-then": "error",
+    "comma-dangle": ["error", "always-multiline"],
+    "no-process-env": "error",
+    "prefer-const": "error",
+    "filenames/match-exported": "error",
+    "react/prefer-stateless-function": "error",
+    "react/sort-comp": "error",
+    "react/sort-prop-types": "error",
+    "react-native/no-unused-styles": "error",
+    "react-native/no-inline-styles": "error",
+    "react-native/no-color-literals": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "styled-components",
+            "message": "Please use styled-components/native instead."
+          },
+          "loadsh/*"
+        ],
+        "patterns": ["lodash/*"]
+      }
+    ],
+    "jsx-quotes": ["error", "prefer-double"]
+  },
+  "parser": "babel-eslint"
+}
