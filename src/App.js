@@ -3,9 +3,9 @@ import Home from './views/Home'
 import Login from './views/Login'
 import Map from './views/Map'
 
-import {createStackNavigator} from 'react-navigation'
+import {createBottomTabNavigator} from 'react-navigation'
 
-const RootStack = createStackNavigator(
+const RootStack = createBottomTabNavigator(
   {
     Home,
     Login,
