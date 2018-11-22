@@ -1,7 +1,7 @@
 import React from 'react'
-import Home from './src/views/Home'
-import Login from './src/views/Login'
-import Map from './src/views/Map'
+import Home from './views/Home'
+import Login from './views/Login'
+import Map from './views/Map'
 
 import {createStackNavigator} from 'react-navigation'
 
