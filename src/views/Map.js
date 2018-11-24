@@ -28,7 +28,7 @@ const coordinates = [
   },
 ]
 
-const GOOGLE_MAPS_APIKEY = 'xxx'
+const GOOGLE_MAPS_APIKEY = 'AIzaSyBkUCcXzPMgV7oWzMWTxDDjjYEP4jUSSoU'
 
 const Map = () => {
   return (

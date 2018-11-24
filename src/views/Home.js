@@ -32,6 +32,12 @@ const Home = props => {
           onPress={() => props.navigation.navigate('Map')}
         />
       </ButtonView>
+      <ButtonView>
+        <Button
+          title="Go to Welcome Screen"
+          onPress={() => props.navigation.navigate('Welcome')}
+        />
+      </ButtonView>
     </StyledView>
   )
 }
