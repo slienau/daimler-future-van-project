@@ -31,13 +31,13 @@ const RootStack = createStackNavigator(
 
 export default class App extends Component {
   state = {
-    user: true,
+    user: null,
   }
   setUser(user) {
     this.setState({user})
   }
   render() {
-    if (!this.state.user) return <Login setUser={this.setUser} />
+    if (!this.state.user) return <Login onLogin={user => this.setUser(user)} />
     return <RootStack />
   }
 }
