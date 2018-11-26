@@ -14,7 +14,12 @@ const RootStack = createStackNavigator(
     Home,
     Login,
     Map,
-    Welcome,
+    Welcome: {
+      screen: Welcome,
+      navigationOptions: ({navigation}) => ({
+        header: () => null,
+      }),
+    },
     Account,
     Games,
     Information,

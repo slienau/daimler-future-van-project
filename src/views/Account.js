@@ -35,16 +35,13 @@ const Account = props => {
               <Icon name="map" />
               <Text>Navigate</Text>
             </Button>
-            <Button vertical>
-              <Icon
-                name="apps"
-                onPress={() => props.navigation.navigate('Games')}
-              />
+            <Button vertical onPress={() => props.navigation.navigate('Games')}>
+              <Icon name="apps" />
               <Text>Games</Text>
             </Button>
             <Button
               vertical
-              onPress={() => props.navigation.navigate('information')}>
+              onPress={() => props.navigation.navigate('Information')}>
               <Icon name="information" />
               <Text>Van Info</Text>
             </Button>
