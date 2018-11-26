@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react'
 import Home from './views/Home'
 import Login from './views/Login'
 import Map from './views/Map'
@@ -25,12 +25,19 @@ const RootStack = createStackNavigator(
     Information,
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'Welcome',
   }
 )
 
-const App = () => {
-  return <RootStack />
+export default class App extends Component {
+  state = {
+    user: true,
+  }
+  setUser(user) {
+    this.setState({user})
+  }
+  render() {
+    if (!this.state.user) return <Login setUser={this.setUser} />
+    return <RootStack />
+  }
 }
-
-export default App
