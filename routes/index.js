@@ -1,6 +1,5 @@
 let express = require('express');
 let router = express.Router();
-let fs = require('fs');
 
 let inventar;
 
@@ -9,10 +8,10 @@ const PastRide = require('./PastRides.js');
 router.get('/', function(req, res, next) {
     res.setHeader('Content-Type', 'application/json');
     PastRide.find()
-        .then(items => res.json(JSON.stringify(items),null,3))
-        .catch(err => res.status(404).json({ msg: 'No items found' }));
+        .then(items => res.json(items))
+        .catch(err => res.status(404).json({ msg: 'No items found '+err.message }));
 });
-router.post("/",function(req,res){
+router.post("/", async function(req,res){
 
     console.log(req.body['id'] + req.body['from']);
     const newRide = new PastRide({
@@ -22,12 +21,12 @@ router.post("/",function(req,res){
         date: req.body.date,
         time: req.body.time,
         userID: req.body.userID
-    })
-    newRide.save();
+    });
+    await newRide.save();
 
     res.setHeader('Content-Type', 'application/json');
     PastRide.find()
-        .then(items => res.json(JSON.stringify(items),null,3))
+        .then(items => res.json(items))
         .catch(err => res.status(404).json({ msg: 'No items found' }));
 });
 
