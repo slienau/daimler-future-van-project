@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {StyleSheet, Text} from 'react-native'
+import {Text} from 'react-native'
 import styled from 'styled-components/native'
 import {SearchBar} from 'react-native-elements'
 import {Container, Button, Footer, FooterTab, Icon} from 'native-base'
@@ -10,18 +10,12 @@ const StyledView = styled.View`
   flex: 1;
   align-items: stretch;
 `
-
-const orange = 'orange'
-const bgColor = 'rgb(46, 47, 49)'
-
-const styles = StyleSheet.create({
-  text: {
-    color: orange,
-  },
-  button: {
-    backgroundColor: bgColor,
-  },
-})
+const FooterText = styled.Text`
+  color: orange;
+`
+const FooterButton = styled(Button)`
+  background-color: 'rgb(46, 47, 49)';
+`
 
 export default class Welcome extends Component {
   constructor(props) {
@@ -73,31 +67,28 @@ export default class Welcome extends Component {
 
           <Footer>
             <FooterTab>
-              <Button
+              <FooterButton
                 vertical
-                style={styles.button}
                 onPress={() => this.props.navigation.navigate('Account')}>
                 <Icon name="person" />
-                <Text style={styles.text}>Account</Text>
-              </Button>
-              <Button vertical style={styles.button} active>
+                <FooterText>Account</FooterText>
+              </FooterButton>
+              <FooterButton vertical active>
                 <Icon active name="map" />
-                <Text style={styles.text}>Navigate</Text>
-              </Button>
-              <Button
+                <FooterText>Navigate</FooterText>
+              </FooterButton>
+              <FooterButton
                 vertical
-                style={styles.button}
                 onPress={() => this.props.navigation.navigate('Games')}>
                 <Icon name="apps" />
-                <Text style={styles.text}>Games</Text>
-              </Button>
-              <Button
+                <FooterText>Games</FooterText>
+              </FooterButton>
+              <FooterButton
                 vertical
-                style={styles.button}
                 onPress={() => this.props.navigation.navigate('information')}>
                 <Icon name="information" />
-                <Text style={styles.text}>Van Info</Text>
-              </Button>
+                <FooterText>Van Info</FooterText>
+              </FooterButton>
             </FooterTab>
           </Footer>
         </Container>

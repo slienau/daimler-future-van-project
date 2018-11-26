@@ -8,7 +8,7 @@ const StyledView = styled.View`
   flex: 1;
   align-items: center;
   justify-content: center;
-  backgroundcolor: 'rgb(46, 47, 49)';
+  background-color: rgb(46, 47, 49);
 `
 
 const StyledMapView = styled(MapView)`
