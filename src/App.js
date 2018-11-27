@@ -7,9 +7,9 @@ import Account from './views/Account'
 import Games from './views/Games'
 import Information from './views/Information'
 
-import {createStackNavigator} from 'react-navigation'
+import {createSwitchNavigator} from 'react-navigation'
 
-const RootStack = createStackNavigator(
+const RootStack = createSwitchNavigator(
   {
     Home,
     Login,
