@@ -1,19 +1,22 @@
 import React from 'react'
-import {Button, AsyncStorage} from 'react-native'
+import {
+  Body,
+  Container,
+  Header,
+  Content,
+  Form,
+  Item,
+  Input,
+  Label,
+  Title,
+  Button,
+  Text,
+} from 'native-base'
+import {AsyncStorage} from 'react-native'
 import styled from 'styled-components/native'
 
-import Logo from '../components/Logo'
-
-const StyledView = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-`
-
-const ButtonView = styled.View`
-  flex: 1;
-  justify-content: flex-start;
-  margin: 10px;
+const StyledButton = styled(Button)`
+  margin-top: 50px;
 `
 
 export default class Login extends React.Component {
@@ -24,12 +27,28 @@ export default class Login extends React.Component {
 
   render() {
     return (
-      <StyledView>
-        <Logo />
-        <ButtonView>
-          <Button title="Login" onPress={() => this._signInAsync()} />
-        </ButtonView>
-      </StyledView>
+      <Container>
+        <Header>
+          <Body>
+            <Title>Login</Title>
+          </Body>
+        </Header>
+        <Content>
+          <Form>
+            <Item floatingLabel>
+              <Label>Username</Label>
+              <Input />
+            </Item>
+            <Item floatingLabel last>
+              <Label>Password</Label>
+              <Input secureTextEntry />
+            </Item>
+            <StyledButton full primary onPress={this._signInAsync}>
+              <Text>Login</Text>
+            </StyledButton>
+          </Form>
+        </Content>
+      </Container>
     )
   }
 }
