@@ -28,6 +28,7 @@ export default class Welcome extends Component {
     }
   }
 
+  // sets location for start and destination
   onSearchRoutes() {
     this.setState({
       marker: {
@@ -43,6 +44,7 @@ export default class Welcome extends Component {
     return (
       <StyledView>
         <Container>
+          // start location input
           <SearchBar
             darkTheme
             // onChangeText={someMethod}
@@ -50,7 +52,7 @@ export default class Welcome extends Component {
             icon={{type: 'font-awesome', name: 'search'}}
             placeholder="From"
           />
-
+          // destination input
           <SearchBar
             darkTheme
             // onChangeText={someMethod}
@@ -58,13 +60,13 @@ export default class Welcome extends Component {
             icon={{type: 'font-awesome', name: 'search'}}
             placeholder="To"
           />
+          // Map
           <Map {...this.state.marker} />
-
+          // button for searching route
           <Button full iconRight warning onPress={() => this.onSearchRoutes()}>
             <Text>search route </Text>
             <Icon name="arrow-forward" />
           </Button>
-
           <Footer>
             <FooterTab>
               <FooterButton

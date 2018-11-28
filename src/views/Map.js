@@ -19,6 +19,7 @@ const StyledMapView = styled(MapView)`
   bottom: 10;
 `
 
+// Some static cords
 const coordinates = [
   {
     latitude: 52.509663,
@@ -37,6 +38,8 @@ const Map = props => {
   let destinationMarker = null
   let routing = null
 
+  // When state != null --> set static marker for start location
+  // to-do: pass dynamic input
   if (props.userLocationMarker) {
     userLocationMarker = (
       <Marker
@@ -46,7 +49,8 @@ const Map = props => {
       />
     )
   }
-
+  // When state != null --> set static marker for destination
+  // to-do: pass dynamic input
   if (props.destinationMarker) {
     destinationMarker = (
       <Marker
@@ -57,6 +61,8 @@ const Map = props => {
     )
   }
 
+  // When state != null --> set static route
+  // to-do: pass dynamic input
   if (props.routing) {
     routing = (
       <MapViewDirections
