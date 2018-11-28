@@ -1,7 +1,6 @@
-import React, {Component} from 'react'
-import Home from './views/Home'
+import React from 'react'
+import LoadingScreen from './views/LoadingScreen'
 import Login from './views/Login'
-import Map from './views/Map'
 import Welcome from './views/Welcome'
 import Account from './views/Account'
 import Games from './views/Games'
@@ -9,18 +8,10 @@ import Information from './views/Information'
 
 import {createSwitchNavigator} from 'react-navigation'
 
-const RootStack = createSwitchNavigator(
+const MainView = createSwitchNavigator(
   {
-    Home,
-    Login,
-    Map,
-    Welcome: {
-      screen: Welcome,
-      navigationOptions: ({navigation}) => ({
-        header: () => null,
-      }),
-    },
     Account,
+    Welcome,
     Games,
     Information,
   },
@@ -29,15 +20,19 @@ const RootStack = createSwitchNavigator(
   }
 )
 
-export default class App extends Component {
-  state = {
-    user: null,
+const RootNavigator = createSwitchNavigator(
+  {
+    LoadingScreen,
+    Login,
+    MainView,
+  },
+  {
+    initialRouteName: 'LoadingScreen',
   }
-  setUser(user) {
-    this.setState({user})
-  }
-  render() {
-    if (!this.state.user) return <Login onLogin={user => this.setUser(user)} />
-    return <RootStack />
-  }
+)
+
+const App = () => {
+  return <RootNavigator />
 }
+
+export default App

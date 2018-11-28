@@ -1,5 +1,5 @@
 import React from 'react'
-
+import {AsyncStorage} from 'react-native'
 import styled from 'styled-components/native'
 import {
   Container,
@@ -16,40 +16,50 @@ const StyledView = styled.View`
   align-items: stretch;
 `
 
-const Account = props => {
-  return (
-    <StyledView>
-      <Text>Account View</Text>
-      <Container>
-        <Content />
+export default class Account extends React.Component {
+  _signOutAsync = async () => {
+    await AsyncStorage.clear()
+    this.props.navigation.navigate('Login')
+  }
 
-        <Footer>
-          <FooterTab>
-            <Button vertical active>
-              <Icon active name="person" />
-              <Text>Account</Text>
+  render() {
+    return (
+      <StyledView>
+        <Text>Account View</Text>
+        <Container>
+          <Content>
+            <Button onPress={() => this._signOutAsync()}>
+              <Text>Logout</Text>
             </Button>
-            <Button
-              vertical
-              onPress={() => props.navigation.navigate('Welcome')}>
-              <Icon name="map" />
-              <Text>Navigate</Text>
-            </Button>
-            <Button vertical onPress={() => props.navigation.navigate('Games')}>
-              <Icon name="apps" />
-              <Text>Games</Text>
-            </Button>
-            <Button
-              vertical
-              onPress={() => props.navigation.navigate('Information')}>
-              <Icon name="information" />
-              <Text>Van Info</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
-      </Container>
-    </StyledView>
-  )
+          </Content>
+          <Footer>
+            <FooterTab>
+              <Button vertical active>
+                <Icon active name="person" />
+                <Text>Account</Text>
+              </Button>
+              <Button
+                vertical
+                onPress={() => this.props.navigation.navigate('Welcome')}>
+                <Icon name="map" />
+                <Text>Navigate</Text>
+              </Button>
+              <Button
+                vertical
+                onPress={() => this.props.navigation.navigate('Games')}>
+                <Icon name="apps" />
+                <Text>Games</Text>
+              </Button>
+              <Button
+                vertical
+                onPress={() => this.props.navigation.navigate('Information')}>
+                <Icon name="information" />
+                <Text>Van Info</Text>
+              </Button>
+            </FooterTab>
+          </Footer>
+        </Container>
+      </StyledView>
+    )
+  }
 }
-
-export default Account
