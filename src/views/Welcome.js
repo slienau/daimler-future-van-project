@@ -1,16 +1,11 @@
 import React, {Component} from 'react'
-import {Text} from 'react-native'
 import styled from 'styled-components/native'
 import {SearchBar} from 'react-native-elements'
-import {Container, Button, Footer, FooterTab, Icon} from 'native-base'
+import {Container, Button, Footer, FooterTab, Icon, Text} from 'native-base'
 
 import Map from './Map'
 
-const StyledView = styled.View`
-  flex: 1;
-  align-items: stretch;
-`
-const FooterText = styled.Text`
+const FooterText = styled(Text)`
   color: orange;
 `
 const FooterButton = styled(Button)`
@@ -42,59 +37,53 @@ export default class Welcome extends Component {
   render() {
     console.log(this.state.marker)
     return (
-      <StyledView>
-        <Container>
-          // start location input
-          <SearchBar
-            darkTheme
-            // onChangeText={someMethod}
-            // onClearText={someMethod}
-            icon={{type: 'font-awesome', name: 'search'}}
-            placeholder="From"
-          />
-          // destination input
-          <SearchBar
-            darkTheme
-            // onChangeText={someMethod}
-            // onClearText={someMethod}
-            icon={{type: 'font-awesome', name: 'search'}}
-            placeholder="To"
-          />
-          // Map
-          <Map {...this.state.marker} />
-          // button for searching route
-          <Button full iconRight warning onPress={() => this.onSearchRoutes()}>
-            <Text>search route </Text>
-            <Icon name="arrow-forward" />
-          </Button>
-          <Footer>
-            <FooterTab>
-              <FooterButton
-                vertical
-                onPress={() => this.props.navigation.navigate('Account')}>
-                <Icon name="person" />
-                <FooterText>Account</FooterText>
-              </FooterButton>
-              <FooterButton vertical active>
-                <Icon active name="map" />
-                <FooterText>Navigate</FooterText>
-              </FooterButton>
-              <FooterButton
-                vertical
-                onPress={() => this.props.navigation.navigate('Games')}>
-                <Icon name="apps" />
-                <FooterText>Games</FooterText>
-              </FooterButton>
-              <FooterButton
-                vertical
-                onPress={() => this.props.navigation.navigate('information')}>
-                <Icon name="information" />
-                <FooterText>Van Info</FooterText>
-              </FooterButton>
-            </FooterTab>
-          </Footer>
-        </Container>
-      </StyledView>
+      <Container>
+        {/* start location input */}
+        <SearchBar
+          darkTheme
+          icon={{type: 'font-awesome', name: 'search'}}
+          placeholder="From"
+        />
+        {/* destination input */}
+        <SearchBar
+          darkTheme
+          icon={{type: 'font-awesome', name: 'search'}}
+          placeholder="To"
+        />
+        {/* Map */}
+        <Map {...this.state.marker} />
+        {/* button for searching route */}
+        <Button full iconRight warning onPress={() => this.onSearchRoutes()}>
+          <Text>search route </Text>
+          <Icon name="arrow-forward" />
+        </Button>
+        <Footer>
+          <FooterTab>
+            <FooterButton
+              vertical
+              onPress={() => this.props.navigation.navigate('Account')}>
+              <Icon name="person" />
+              <FooterText>Account</FooterText>
+            </FooterButton>
+            <FooterButton vertical active>
+              <Icon active name="map" />
+              <FooterText>Navigate</FooterText>
+            </FooterButton>
+            <FooterButton
+              vertical
+              onPress={() => this.props.navigation.navigate('Games')}>
+              <Icon name="apps" />
+              <FooterText>Games</FooterText>
+            </FooterButton>
+            <FooterButton
+              vertical
+              onPress={() => this.props.navigation.navigate('information')}>
+              <Icon name="information" />
+              <FooterText>Van Info</FooterText>
+            </FooterButton>
+          </FooterTab>
+        </Footer>
+      </Container>
     )
   }
 }
