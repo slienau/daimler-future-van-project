@@ -8,7 +8,6 @@ const StyledView = styled.View`
   flex: 1;
   align-items: center;
   justify-content: center;
-  background-color: rgb(46, 47, 49);
 `
 
 const StyledMapView = styled(MapView)`
@@ -18,7 +17,6 @@ const StyledMapView = styled(MapView)`
   right: 10;
   bottom: 10;
 `
-
 // Some static cords
 const coordinates = [
   {
@@ -31,7 +29,7 @@ const coordinates = [
   },
 ]
 
-const GOOGLE_MAPS_APIKEY = 'AIzaSyBkUCcXzPMgV7oWzMWTxDDjjYEP4jUSSoU'
+const GOOGLE_MAPS_APIKEY = 'xxx'
 
 const Map = props => {
   let userLocationMarker = null
@@ -49,6 +47,7 @@ const Map = props => {
       />
     )
   }
+
   // When state != null --> set static marker for destination
   // to-do: pass dynamic input
   if (props.destinationMarker) {
