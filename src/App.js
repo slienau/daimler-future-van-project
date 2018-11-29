@@ -1,25 +1,35 @@
-import React from 'react'
-import Home from './views/Home'
+import {createSwitchNavigator, createAppContainer} from 'react-navigation'
+
+import LoadingScreen from './views/LoadingScreen'
 import Login from './views/Login'
-import Map from './views/Map'
-import AccountDetails from './views/AccountDetails'
+import Welcome from './views/Welcome'
+import Account from './views/Account'
+import Games from './views/Games'
+import Information from './views/Information'
 
-import {createStackNavigator} from 'react-navigation'
-
-const RootStack = createStackNavigator(
+const MainView = createSwitchNavigator(
   {
-    Home,
-    Login,
-    Map,
-    AccountDetails,
+    Account,
+    Welcome,
+    Games,
+    Information,
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'Welcome',
   }
 )
 
-const App = () => {
-  return <RootStack />
-}
+const App = createAppContainer(
+  createSwitchNavigator(
+    {
+      LoadingScreen,
+      Login,
+      MainView,
+    },
+    {
+      initialRouteName: 'LoadingScreen',
+    }
+  )
+)
 
 export default App
