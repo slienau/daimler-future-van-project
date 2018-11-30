@@ -1,5 +1,11 @@
 # API
 
+## Endpoint
+
+The base URL for this APIs endpoint is  
+
+`http://40.89.170.229:8080`
+
 ## Authorization
 
 TODO
