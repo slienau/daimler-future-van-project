@@ -6,7 +6,7 @@ let inventar;
 
 const PastRide = require('./PastRides.js');
 /* GET home page. */
-router.get('/account/:accountId', function(req, res, next) {
+router.get('/accounts/:accountId', function(req, res, next) {
     res.setHeader('Content-Type', 'application/json');
 	console.log(req.params);
 	var staticUserData = {
