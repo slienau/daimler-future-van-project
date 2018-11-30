@@ -35,7 +35,7 @@ const Home = props => {
       <ButtonView>
         <Button
           title="Go to Account Details"
-          onPress={() => props.navigation.navigate('AccountDetails')}
+          onPress={() => props.navigation.navigate('Account')}
         />
       </ButtonView>
     </StyledView>
