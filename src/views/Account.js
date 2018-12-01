@@ -25,17 +25,16 @@ import {
 import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
 import PropTypes from 'prop-types'
 
-import {
-  enableAccountVisibility,
-  disableAccountVisibility,
-} from '../store/actions/index'
-
 const StyledView = styled.View`
   flex: 1;
   align-items: stretch;
 `
 
 class Account extends React.Component {
+  state = {
+    avatarVisible: false,
+  }
+
   _signOutAsync = async () => {
     await AsyncStorage.clear()
     this.props.navigation.navigate('Login')
@@ -50,9 +49,11 @@ class Account extends React.Component {
           <Content>
             <Dialog
               height={0.5}
-              visible={this.props.account.visible}
+              visible={this.state.avatarVisible}
               onTouchOutside={() => {
-                this.props.disableVisibility()
+                this.setState({
+                  avatarVisible: false,
+                })
               }}
               dialogAnimation={new ScaleAnimation({})}>
               <DialogContent>
@@ -65,7 +66,9 @@ class Account extends React.Component {
                 <Left>
                   <TouchableWithoutFeedback
                     onPress={() => {
-                      this.props.enableVisibility()
+                      this.setState({
+                        avatarVisible: true,
+                      })
                     }}>
                     <Thumbnail large source={{uri: uri}} />
                   </TouchableWithoutFeedback>
@@ -248,20 +251,11 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    disableVisibility: () => dispatch(disableAccountVisibility()),
-    enableVisibility: () => dispatch(enableAccountVisibility()),
-  }
-}
-
 Account.propTypes = {
   account: PropTypes.object,
-  disableVisibility: PropTypes.func,
-  enableVisibility: PropTypes.func,
 }
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  null
 )(Account)
