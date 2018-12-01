@@ -5,6 +5,7 @@ import {
   Image,
   StyleSheet,
 } from 'react-native'
+import {connect} from 'react-redux'
 import styled from 'styled-components/native'
 import {
   Container,
@@ -28,20 +29,7 @@ const StyledView = styled.View`
   align-items: stretch;
 `
 
-export default class Account extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {}
-    this.state.name = 'Vorname Nachname'
-    this.state.email = 'somemail@example.com'
-    this.state.username = 'username'
-    this.state.street = 'Long Street'
-    this.state.zip = 99999
-    this.state.city = 'NotBerlin'
-    this.state.points = 768
-    this.state.miles = 46
-    this.state.visible = false
-  }
+class Account extends React.Component {
 
   _signOutAsync = async () => {
     await AsyncStorage.clear()
@@ -57,9 +45,10 @@ export default class Account extends React.Component {
           <Content>
             <Dialog
               height={0.5}
-              visible={this.state.visible}
+              visible={this.props.account.visible}
               onTouchOutside={() => {
-                this.setState({visible: false})
+                // this.setState({visible: false})
+                // TODO
               }}
               dialogAnimation={new ScaleAnimation({})}>
               <DialogContent>
@@ -72,13 +61,14 @@ export default class Account extends React.Component {
                 <Left>
                   <TouchableWithoutFeedback
                     onPress={() => {
-                      this.setState({visible: true})
+                      // this.setState({visible: true})
+                      // TODO
                     }}>
                     <Thumbnail large source={{uri: uri}} />
                   </TouchableWithoutFeedback>
                 </Left>
                 <Right style={styles.rightColumn}>
-                  <Text>{this.state.username}</Text>
+                  <Text>{this.props.account.username}</Text>
                   <Button onPress={this._signOutAsync}>
                     <Text>Log out</Text>
                   </Button>
@@ -96,7 +86,7 @@ export default class Account extends React.Component {
                   <Text>Name</Text>
                 </Body>
                 <Right>
-                  <Text>{this.state.name}</Text>
+                  <Text>{this.props.account.name}</Text>
                 </Right>
               </ListItem>
               <ListItem icon>
@@ -107,7 +97,7 @@ export default class Account extends React.Component {
                   <Text>E-Mail</Text>
                 </Body>
                 <Right>
-                  <Text>{this.state.email}</Text>
+                  <Text>{this.props.account.email}</Text>
                 </Right>
               </ListItem>
               <ListItem icon button onPress={() => {}}>
@@ -131,7 +121,7 @@ export default class Account extends React.Component {
                 </Left>
                 <Body />
                 <Right>
-                  <Text>{this.state.street}</Text>
+                  <Text>{this.props.account.street}</Text>
                 </Right>
               </ListItem>
               <ListItem icon>
@@ -140,7 +130,7 @@ export default class Account extends React.Component {
                 </Left>
                 <Body />
                 <Right>
-                  <Text>{this.state.zip}</Text>
+                  <Text>{this.props.account.zip}</Text>
                 </Right>
               </ListItem>
               <ListItem icon>
@@ -149,7 +139,7 @@ export default class Account extends React.Component {
                 </Left>
                 <Body />
                 <Right>
-                  <Text>{this.state.city}</Text>
+                  <Text>{this.props.account.city}</Text>
                 </Right>
               </ListItem>
 
@@ -164,7 +154,7 @@ export default class Account extends React.Component {
                   <Text>Loyalty Points</Text>
                 </Body>
                 <Right>
-                  <Text>{this.state.points}</Text>
+                  <Text>{this.props.account.points}</Text>
                 </Right>
               </ListItem>
               <ListItem icon>
@@ -175,7 +165,7 @@ export default class Account extends React.Component {
                   <Text>Driven Kilometers</Text>
                 </Body>
                 <Right>
-                  <Text>{this.state.miles}</Text>
+                  <Text>{this.props.account.miles}</Text>
                 </Right>
               </ListItem>
               <ListItem icon button onPress={() => {}}>
@@ -248,3 +238,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
 })
+
+const mapStateToProps = state => {
+  return {
+    account: state.account,
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(Account)
