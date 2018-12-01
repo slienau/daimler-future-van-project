@@ -11,7 +11,7 @@ const initialState = {
   miles: 46,
 }
 
-const reducer = (state = initialState, action) => {
+export default function account(state = initialState, action) {
   switch (action.type) {
     case GET_ACCOUNT_DATA:
       return {
@@ -25,5 +25,3 @@ const reducer = (state = initialState, action) => {
       return state
   }
 }
-
-export default reducer
