@@ -1,9 +1,9 @@
 import {createStore, combineReducers} from 'redux'
 
-import accountReducer from './reducers/account'
+import account from './reducers/account'
 
 const rootReducer = combineReducers({
-  account: accountReducer,
+  account,
 })
 
 const configureStore = () => {
