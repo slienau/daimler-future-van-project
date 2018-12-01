@@ -1,1 +1,6 @@
-export {getAccountData, updateAccountData} from './account'
+export {
+  getAccountData,
+  updateAccountData,
+  disableAccountVisibility,
+  enableAccountVisibility,
+} from './account'

@@ -1,4 +1,9 @@
-import {GET_ACCOUNT_DATA, UPDATE_ACCOUNT_DATA} from './../actions/actionTypes'
+import {
+  GET_ACCOUNT_DATA,
+  UPDATE_ACCOUNT_DATA,
+  ENABLE_ACCOUNT_VISIBILITY,
+  DISABLE_ACCOUNT_VISIBILITY,
+} from './../actions/actionTypes'
 
 const initialState = {
   name: 'Vorname Nachname',
@@ -21,6 +26,16 @@ const reducer = (state = initialState, action) => {
     case UPDATE_ACCOUNT_DATA:
       return {
         ...state,
+      }
+    case ENABLE_ACCOUNT_VISIBILITY:
+      return {
+        ...state,
+        visible: true,
+      }
+    case DISABLE_ACCOUNT_VISIBILITY:
+      return {
+        ...state,
+        visible: false,
       }
     default:
       return state
