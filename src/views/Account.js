@@ -23,6 +23,7 @@ import {
   Thumbnail,
 } from 'native-base'
 import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
+import PropTypes from 'prop-types'
 
 import {
   enableAccountVisibility,
@@ -252,6 +253,12 @@ const mapDispatchToProps = dispatch => {
     disableVisibility: () => dispatch(disableAccountVisibility()),
     enableVisibility: () => dispatch(enableAccountVisibility()),
   }
+}
+
+Account.propTypes = {
+  account: PropTypes.object,
+  disableVisibility: PropTypes.func,
+  enableVisibility: PropTypes.func,
 }
 
 export default connect(
