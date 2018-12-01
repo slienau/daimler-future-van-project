@@ -40,7 +40,7 @@
     "comma-dangle": ["error", "always-multiline"],
     "no-process-env": "error",
     "prefer-const": "error",
-    "filenames/match-exported": "error",
+//    "filenames/match-exported": "error",
     "react/prefer-stateless-function": "error",
     "react/sort-comp": "error",
     "react/sort-prop-types": "error",
