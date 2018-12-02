@@ -31,6 +31,10 @@ const StyledView = styled.View`
 `
 
 class Account extends React.Component {
+  static propTypes = {
+    account: PropTypes.object,
+  }
+
   state = {
     avatarVisible: false,
   }
@@ -249,10 +253,6 @@ const mapStateToProps = state => {
   return {
     account: state.account,
   }
-}
-
-Account.propTypes = {
-  account: PropTypes.object,
 }
 
 export default connect(
