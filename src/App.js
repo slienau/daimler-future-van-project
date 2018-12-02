@@ -1,4 +1,6 @@
-import {createSwitchNavigator, createAppContainer} from 'react-navigation'
+import React from 'react'
+import {createAppContainer, createSwitchNavigator} from 'react-navigation'
+import {Provider} from 'react-redux'
 
 import LoadingScreen from './views/LoadingScreen'
 import Login from './views/Login'
@@ -6,6 +8,7 @@ import Welcome from './views/Welcome'
 import Account from './views/Account'
 import Games from './views/Games'
 import Information from './views/Information'
+import configureStore from './init/store'
 
 const MainView = createSwitchNavigator(
   {
@@ -19,7 +22,7 @@ const MainView = createSwitchNavigator(
   }
 )
 
-const App = createAppContainer(
+const AppNavigator = createAppContainer(
   createSwitchNavigator(
     {
       LoadingScreen,
@@ -32,4 +35,23 @@ const App = createAppContainer(
   )
 )
 
-export default App
+export default class App extends React.Component {
+  state = {
+    store: null,
+  }
+
+  async componentDidMount() {
+    const store = await configureStore()
+    this.setState({store})
+  }
+
+  render() {
+    const {store} = this.state
+    if (store === null) return null
+    return (
+      <Provider store={store}>
+        <AppNavigator />
+      </Provider>
+    )
+  }
+}
