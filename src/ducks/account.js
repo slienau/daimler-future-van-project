@@ -1,4 +1,5 @@
-import {GET_ACCOUNT_DATA, UPDATE_ACCOUNT_DATA} from './../actions/actionTypes'
+export const GET_ACCOUNT_DATA = 'GET_ACCOUNT_DATA'
+export const UPDATE_ACCOUNT_DATA = 'UPDATE_ACCOUNT_DATA'
 
 const initialState = {
   name: 'Vorname Nachname',
@@ -23,5 +24,18 @@ export default function account(state = initialState, action) {
       }
     default:
       return state
+  }
+}
+
+export function getAccountData() {
+  return {
+    type: GET_ACCOUNT_DATA,
+  }
+}
+
+export function updateAccountData(newAccountData) {
+  return {
+    type: UPDATE_ACCOUNT_DATA,
+    newAccountData,
   }
 }
