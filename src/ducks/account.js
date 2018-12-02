@@ -1,5 +1,5 @@
-export const GET_ACCOUNT_DATA = 'GET_ACCOUNT_DATA'
-export const UPDATE_ACCOUNT_DATA = 'UPDATE_ACCOUNT_DATA'
+export const GET_ACCOUNT_DATA = 'account/GET_ACCOUNT_DATA'
+export const UPDATE_ACCOUNT_DATA = 'account/UPDATE_ACCOUNT_DATA'
 
 const initialState = {
   name: 'Vorname Nachname',

@@ -8,7 +8,7 @@ import Welcome from './views/Welcome'
 import Account from './views/Account'
 import Games from './views/Games'
 import Information from './views/Information'
-import configureStore from './init/store'
+import {configureStore} from './init/store'
 
 const MainView = createSwitchNavigator(
   {
