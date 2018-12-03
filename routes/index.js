@@ -5,11 +5,23 @@ let inventar;
 
 const PastRide = require('./PastRides.js');
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/accounts/:accountId', function(req, res, next) {
     res.setHeader('Content-Type', 'application/json');
-    PastRide.find()
-        .then(items => res.json(items))
-        .catch(err => res.status(404).json({ msg: 'No items found '+err.message }));
+    console.log(req.params);
+    var staticUserData = {
+        "id": req.params.accountId,
+        "firstName": "Max",
+        "lastName": "Müller",
+        "address":{
+            "street": "Salzufer 1",
+            "zipcode": "10587",
+            "city": "Berlin"
+        }
+    };
+    res.json(staticUserData);
+    /*PastRide.find()
+        .then(items => res.json(JSON.stringify(items),null,3))
+        .catch(err => res.status(404).json({ msg: 'No items found' }));*/
 });
 router.post("/", async function(req,res){
 
