@@ -52,15 +52,15 @@ This object represents a geographical location.
 
 | Field | Type | Required | Description | Examples |
 |--- |--- |--- |--- |--- |
-| `n` | `String` (?) | yes | The north coordinate. | `52.478442` |
-| `e` | `String` (?) | yes | The east coordinate. | `13.405938` |
+| `latitude` | `Number` | yes | The north coordinate. | `52.478442` |
+| `longitude` | `Number` | yes | The east coordinate. | `13.405938` |
 
 #### Example
 
 ```json
 {
-  "n": "52.478442",
-  "e": "13.405938"
+  "latitude": 52.478442,
+  "longitude": 13.405938
 }
 ```
 
@@ -81,8 +81,8 @@ This object represents a virtual bus stop.
   "id": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0b",
   "accessible": true,
   "location": {
-    "n": "52.478442",
-    "e": "13.405938"
+    "latitude": 52.478442,
+    "longitude": 13.405938
   }
 }
 ```
@@ -142,16 +142,16 @@ This object represents a van order which can be made by a user.
     "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
     "accessible": true,
     "location": {
-      "n": "52.515598",
-      "e": "13.326860"
+      "latitude": 52.515598,
+      "longitude": 13.326860
     }
   },
   "virtualBusStopEnd": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
     "accessible": true,
     "location": {
-      "n": "52.512974",
-      "e": "13.329145"
+      "latitude": 52.512974,
+      "longitude": 13.329145
     }
   },
   "startTime": "2018-11-23T18:30:25.000Z",
@@ -178,28 +178,28 @@ This object represents a travel route from journey start to the final destinatio
 ```json
 {
   "startLocation": {
-    "n": "52.516639",
-    "e": "13.331985"
+    "latitude": 52.516639,
+    "longitude": 13.331985
   },
   "startStation": {
     "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
     "accessible": true,
     "location": {
-      "n": "52.515598",
-      "e": "13.326860"
+      "latitude": 52.515598,
+      "longitude": 13.326860
     }
   },
   "endStation": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
     "accessible": true,
     "location": {
-      "n": "52.512974",
-      "e": "13.329145"
+      "latitude": 52.512974,
+      "longitude": 13.329145
     }
   },
   "destination": {
-    "n": "52.513245",
-    "e": "13.332684"
+    "latitude": 52.513245,
+    "longitude": 13.332684
   },
   "travelTime": 28,
   "vanTime": 15,
@@ -368,16 +368,16 @@ To get orders of a user.
       "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
       "accessible": true,
       "location": {
-        "n": "52.515598",
-        "e": "13.326860"
+        "latitude": 52.515598,
+        "longitude": 13.326860
       }
     },
     "virtualBusStopEnd": {
       "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
       "accessible": true,
       "location": {
-        "n": "52.512974",
-        "e": "13.329145"
+        "latitude": 52.512974,
+        "longitude": 13.329145
       }
     },
     "startTime": "2018-02-23T18:30:25.000Z",
@@ -393,16 +393,16 @@ To get orders of a user.
       "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
       "accessible": true,
       "location": {
-        "n": "52.515598",
-        "e": "13.326860"
+        "latitude": 52.515598,
+        "longitude": 13.326860
       }
     },
     "virtualBusStopEnd": {
       "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
       "accessible": true,
       "location": {
-        "n": "52.512974",
-        "e": "13.329145"
+        "latitude": 52.512974,
+        "longitude": 13.329145
       }
     },
     "startTime": "2018-03-23T18:30:25.000Z",
@@ -440,16 +440,16 @@ To create (place) a new van order.
     "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
     "accessible": true,
     "location": {
-      "n": "52.515729",
-      "e": "13.323373"
+      "latitude": 52.515729,
+      "longitude": 13.323373
     }
   },
   "destination": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
     "accessible": true,
     "location": {
-      "n": "52.512974",
-      "e": "13.329145"
+      "latitude": 52.512974,
+      "longitude": 13.329145
     }
   }
 }
@@ -475,16 +475,16 @@ To create (place) a new van order.
     "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
     "accessible": true,
     "location": {
-      "n": "52.515729",
-      "e": "13.323373"
+      "latitude": 52.515729,
+      "longitude": 13.323373
     }
   },
   "virtualBusStopEnd": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
     "accessible": true,
     "location": {
-      "n": "52.512974",
-      "e": "13.329145"
+      "latitude": 52.512974,
+      "longitude": 13.329145
     }
   },
   "startTime": null,
@@ -528,16 +528,16 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
       "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
       "accessible": true,
       "location": {
-        "n": "52.515729",
-        "e": "13.323373"
+        "latitude": 52.515729,
+        "longitude": 13.323373
       }
     },
     "virtualBusStopEnd": {
       "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
       "accessible": true,
       "location": {
-        "n": "52.512974",
-        "e": "13.329145"
+        "latitude": 52.512974,
+        "longitude": 13.329145
       }
     },
     "startTime": null,
@@ -560,22 +560,22 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
   "id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
   "accountId": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
   "orderTime": "2018-11-23T18:25:43.511Z",
-  "active": true,
+  "active": false,
   "canceled": true,
   "virtualBusStopStart": {
     "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
     "accessible": true,
     "location": {
-      "n": "52.515729",
-      "e": "13.323373"
+      "latitude": 52.515729,
+      "longitude": 13.323373
     }
   },
   "virtualBusStopEnd": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
     "accessible": true,
     "location": {
-      "n": "52.512974",
-      "e": "13.329145"
+      "latitude": 52.512974,
+      "longitude": 13.329145
     }
   },
   "startTime": null,
@@ -607,12 +607,12 @@ Get suggested route from starting point to destination.
 ```json
 {
   "start": {
-    "n": "52.512974",
-    "e": "13.329145"
+    "latitude": 52.512974,
+    "longitude": 13.329145
   },
   "destination": {
-    "n": "52.285946",
-    "e": "13.317390"
+    "latitude": 52.285946,
+    "longitude": 13.317390
   }
 }
 ```
@@ -630,28 +630,28 @@ Get suggested route from starting point to destination.
 [
   {
     "startLocation": {
-      "n": "52.516639",
-      "e": "13.331985"
+      "latitude": 52.516639,
+      "longitude": 13.331985
     },
     "startStation": {
       "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
       "accessible": true,
       "location": {
-        "n": "52.515598",
-        "e": "13.326860"
+        "latitude": 52.515598,
+        "longitude": 13.326860
       }
     },
     "endStation": {
       "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
       "accessible": true,
       "location": {
-        "n": "52.512974",
-        "e": "13.329145"
+        "latitude": 52.512974,
+        "longitude": 13.329145
       }
     },
     "destination": {
-      "n": "52.513245",
-      "e": "13.332684"
+      "latitude": 52.513245,
+      "longitude": 13.332684
     },
     "travelTime": 28,
     "vanTime": 15,
@@ -659,28 +659,28 @@ Get suggested route from starting point to destination.
   },
   {
     "startLocation": {
-      "n": "52.516639",
-      "e": "13.331985"
+      "latitude": 52.516639,
+      "longitude": 13.331985
     },
     "startStation": {
       "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
       "accessible": true,
       "location": {
-        "n": "52.515598",
-        "e": "13.326860"
+        "latitude": 52.515598,
+        "longitude": 13.326860
       }
     },
     "endStation": {
       "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
       "accessible": true,
       "location": {
-        "n": "52.512974",
-        "e": "13.329145"
+        "latitude": 52.512974,
+        "longitude": 13.329145
       }
     },
     "destination": {
-      "n": "52.513245",
-      "e": "13.332684"
+      "latitude": 52.513245,
+      "longitude": 13.332684
     },
     "travelTime": 28,
     "vanTime": 15,
@@ -717,8 +717,8 @@ Get nearby virtual bus stops.
 ```json
 {
   "location": {
-    "n": "52.512974",
-    "e": "13.329145"
+    "latitude": 52.512974,
+    "longitude": 13.329145
   },
   "radius": 2000
 }
@@ -726,8 +726,8 @@ Get nearby virtual bus stops.
 ```json
 {
   "location": {
-    "n": "52.512974",
-    "e": "13.329145"
+    "latitude": 52.512974,
+    "longitude": 13.329145
   }
 }
 ```
@@ -751,32 +751,32 @@ Get nearby virtual bus stops.
     "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
     "accessible": true,
     "location": {
-      "n": "52.515729",
-      "e": "13.323373"
+      "latitude": 52.515729,
+      "longitude": 13.323373
     }
   },
   {
     "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
     "accessible": true,
     "location": {
-      "n": "52.515598",
-      "e": "13.326860"
+      "latitude": 52.515598,
+      "longitude": 13.326860
     }
   },
   {
     "id": "15869209-5f70-48a7-ad35-52133b959b79",
     "accessible": true,
     "location": {
-      "n": "52.513287",
-      "e": "13.333973"
+      "latitude": 52.513287,
+      "longitude": 13.333973
     }
   },
   {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
     "accessible": true,
     "location": {
-      "n": "52.512974",
-      "e": "13.329145"
+      "latitude": 52.512974,
+      "longitude": 13.329145
     }
   }
 ]
