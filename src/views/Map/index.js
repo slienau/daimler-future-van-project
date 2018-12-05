@@ -3,6 +3,8 @@ import styled from 'styled-components/native'
 import MapView, {Marker} from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import PropTypes from 'prop-types'
+import VirtualBusStopMarker from './VirtualBusStopMarker/VirtualBusStopMarker'
+import {virtualBusStops} from './virtualBusStops'
 
 const StyledView = styled.View`
   flex: 1;
@@ -75,6 +77,16 @@ const Map = props => {
     )
   }
 
+  // hard coded virtual bus stops
+  const virtualBusStopMarkers = virtualBusStops.map(virtualBusStop => {
+    return (
+      <VirtualBusStopMarker
+        key={virtualBusStop.id}
+        location={virtualBusStop.location}
+      />
+    )
+  })
+
   return (
     <StyledView>
       <StyledMapView
@@ -87,6 +99,7 @@ const Map = props => {
         {userLocationMarker}
         {destinationMarker}
         {routing}
+        {virtualBusStopMarkers}
       </StyledMapView>
     </StyledView>
   )
