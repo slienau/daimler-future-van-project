@@ -24,3 +24,13 @@ export const virtualBusStops = [
     },
   },
 ]
+
+export const vanPositions = [
+  {
+    id: 'xyz',
+    location: {
+      latitude: 52.515332,
+      longitude: 13.362157,
+    },
+  },
+]

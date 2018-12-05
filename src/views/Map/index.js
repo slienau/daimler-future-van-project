@@ -1,10 +1,13 @@
 import React from 'react'
 import styled from 'styled-components/native'
-import MapView, {Marker} from 'react-native-maps'
+import MapView from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import PropTypes from 'prop-types'
 import VirtualBusStopMarker from './VirtualBusStopMarker/VirtualBusStopMarker'
-import {virtualBusStops} from './virtualBusStops'
+import VanMarker from './VanMarker/VanMarker'
+import PersonMarker from './PersonMarker/PersonMarker'
+import DestinationMarker from './DestinationMarker/DestinationMarker'
+import {virtualBusStops, vanPositions} from './markerPositions'
 
 const StyledView = styled.View`
   flex: 1;
@@ -42,8 +45,8 @@ const Map = props => {
   // to-do: pass dynamic input
   if (props.userLocationMarker) {
     userLocationMarker = (
-      <Marker
-        coordinate={{latitude: 52.509663, longitude: 13.376481}}
+      <PersonMarker
+        coordinate={coordinates[0]}
         title={'Potsdammer Platz'}
         description={'Hier kann man die Umgebung Beschreiben.'}
       />
@@ -54,8 +57,8 @@ const Map = props => {
   // to-do: pass dynamic input
   if (props.destinationMarker) {
     destinationMarker = (
-      <Marker
-        coordinate={{latitude: 52.507334, longitude: 13.332367}}
+      <DestinationMarker
+        coordinate={coordinates[1]}
         title={'Potsdammer Platz'}
         description={'Hier kann man die Umgebung Beschreiben.'}
       />
@@ -77,7 +80,7 @@ const Map = props => {
     )
   }
 
-  // hard coded virtual bus stops
+  // hard coded virtual bus stops and vans
   const virtualBusStopMarkers = virtualBusStops.map(virtualBusStop => {
     return (
       <VirtualBusStopMarker
@@ -87,19 +90,24 @@ const Map = props => {
     )
   })
 
+  const vanMarkers = vanPositions.map(van => {
+    return <VanMarker key={van.id} location={van.location} />
+  })
+
   return (
     <StyledView>
       <StyledMapView
         initialRegion={{
           latitude: 52.509663,
           longitude: 13.376481,
-          latitudeDelta: 0.1,
+          latitudeDelta: 0.01,
           longitudeDelta: 0.1,
         }}>
         {userLocationMarker}
         {destinationMarker}
         {routing}
         {virtualBusStopMarkers}
+        {vanMarkers}
       </StyledMapView>
     </StyledView>
   )
