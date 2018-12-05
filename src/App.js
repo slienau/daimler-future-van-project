@@ -2,13 +2,13 @@ import React from 'react'
 import {createAppContainer, createSwitchNavigator} from 'react-navigation'
 import {Provider} from 'react-redux'
 
-import LoadingScreen from './views/LoadingScreen'
-import Login from './views/Login'
-import Welcome from './views/Welcome'
-import Account from './views/Account'
-import Games from './views/Games'
-import Information from './views/Information'
-import {configureStore} from './init/store'
+import LoadingScreen from './views/LoadingScreen/LoadingScreen'
+import Login from './views/Login/Login'
+import Welcome from './views/Welcome/Welcome'
+import Account from './views/Account/Account'
+import Games from './views/Games/Games'
+import Information from './views/Information/Information'
+import {configureStore} from './store/init/store'
 
 const MainView = createSwitchNavigator(
   {

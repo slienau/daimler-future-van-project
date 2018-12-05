@@ -2,7 +2,7 @@ import React from 'react'
 import {Button} from 'react-native'
 import styled from 'styled-components/native'
 
-import Logo from '../components/Logo'
+import Logo from '../../components/Logo/Logo'
 
 const StyledView = styled.View`
   flex: 1;
