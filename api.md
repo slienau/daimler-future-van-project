@@ -329,7 +329,7 @@ To get orders of a user.
 |--- |--- |--- |--- |
 | `{accountId}` | `String` | Yes | The user account id |
 
-###### Body
+###### Query Parameters
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
@@ -595,7 +595,7 @@ Get suggested route from starting point to destination.
 
 ##### Request
 
-###### Body
+###### Query Parameters
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
@@ -705,7 +705,7 @@ Get nearby virtual bus stops.
 
 ##### Request
 
-###### Body
+###### Query Parameters
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
