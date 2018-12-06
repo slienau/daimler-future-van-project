@@ -11,7 +11,7 @@ import {
   Text,
 } from 'native-base'
 
-import Map from '../Map/Map'
+import Map from '../Map'
 
 export default class Welcome extends Component {
   constructor(props) {
