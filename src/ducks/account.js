@@ -4,12 +4,12 @@ export const FETCH_ACCOUNT_DATA = 'account/FETCH_ACCOUNT_DATA'
 export const SET_ACCOUNT_DATA = 'account/SET_ACCOUNT_DATA'
 
 const initialState = {
-  name: 'Vorname Nachname',
+  name: null,
   email: 'somemail@example.com',
   username: 'username',
-  street: 'Long Street',
-  zip: 99999,
-  city: 'NotBerlin',
+  street: null,
+  zip: null,
+  city: null,
   points: 768,
   miles: 46,
 }
@@ -35,17 +35,23 @@ export default function account(state = initialState, action) {
   }
 }
 
+// axios instance, configured to send HTTP requests to /accounts/
+const axiosInstance = axios.create({
+  baseURL: 'http://40.89.170.229:8080',
+})
+axiosInstance.defaults.headers.common['Authorization'] =
+  'TODO: AUTH TOKEN FROM INSTANCE'
+
 // actions (can cause side-effects)
 export function fetchAccountData() {
   return dispatch => {
-    axios
-      .get('http://40.89.170.229:8080/accounts/1234')
+    axiosInstance
+      .get('/accounts/1234')
       .catch(error => {
-        alert('Something went wrong')
+        alert('Something went wrong while fetching account data')
         console.log(error)
       })
       .then(response => {
-        console.log(response.data)
         dispatch(setAccountData(response.data))
       })
   }
