@@ -96,6 +96,8 @@ This object represents a user account.
 | `id` | `String` | yes | The ID. | `0e8cedd0-ad98-11e6-bf2e-47644ada7c0f` |
 | `firstName` | `String` | Yes | The users first name. | `Max` |
 | `lastName` | `String` | Yes | The users last name. | `Müller` |
+| `email` | `String` | Yes | The users email. | `maxmueller@tu-berlin.de` |
+| `username` | `String` | Yes | The username. | `maxiboy123` |
 | `address` | `Object` | No | The users address. Contains `street`, `zipcode` and `city` | *See account example.* |
 
 #### Example
@@ -105,6 +107,8 @@ This object represents a user account.
   "id": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
   "firstName": "Max",
   "lastName": "Müller",
+  "email": "maxmueller@tu-berlin.de",
+  "username": "maxiboy123",
   "address": {
     "street": "Salzufer 1",
     "zipcode": "10587",
@@ -245,6 +249,8 @@ To get user account information.
   "id": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
   "firstName": "Max",
   "lastName": "Müller",
+  "email": "maxmueller@tu-berlin.de",
+  "username": "maxiboy123",
   "address": {
     "street": "Salzufer 1",
     "zipcode": "10587",
@@ -281,6 +287,8 @@ To update user account information.
     "id": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
     "firstName": "Max",
     "lastName": "Müller",
+    "email": "maxmueller@tu-berlin.de",
+    "username": "maxiboy123",
     "address": {
       "street": "Ernst-Reuter-Platz 123",
       "zipcode": "10587",
@@ -304,6 +312,8 @@ To update user account information.
   "id": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
   "firstName": "Max",
   "lastName": "Müller",
+  "email": "maxmueller@tu-berlin.de",
+  "username": "maxiboy123",
   "address": {
     "street": "Ernst-Reuter-Platz 123",
     "zipcode": "10587",
