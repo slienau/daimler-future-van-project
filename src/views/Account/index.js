@@ -24,6 +24,7 @@ import {
 } from 'native-base'
 import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
 import PropTypes from 'prop-types'
+import {fetchAccountData} from '../../ducks/account'
 
 const StyledView = styled.View`
   flex: 1;
@@ -33,6 +34,7 @@ const StyledView = styled.View`
 class Account extends React.Component {
   static propTypes = {
     account: PropTypes.object,
+    onFetchAccountData: PropTypes.func,
   }
 
   state = {
@@ -42,6 +44,10 @@ class Account extends React.Component {
   _signOutAsync = async () => {
     await AsyncStorage.clear()
     this.props.navigation.navigate('Login')
+  }
+
+  componentDidMount() {
+    this.props.onFetchAccountData()
   }
 
   render() {
@@ -255,7 +261,13 @@ const mapStateToProps = state => {
   }
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+    onFetchAccountData: () => dispatch(fetchAccountData()),
+  }
+}
+
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(Account)
