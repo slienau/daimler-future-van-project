@@ -44,16 +44,14 @@ axiosInstance.defaults.headers.common['Authorization'] =
 
 // actions (can cause side-effects)
 export function fetchAccountData() {
-  return dispatch => {
-    axiosInstance
-      .get('/accounts/1234')
-      .catch(error => {
-        alert('Something went wrong while fetching account data')
-        console.log(error)
-      })
-      .then(response => {
-        dispatch(setAccountData(response.data))
-      })
+  return async dispatch => {
+    try {
+      const response = await axiosInstance.get('/accounts/1234')
+      dispatch(setAccountData(response.data))
+    } catch (error) {
+      alert('Something went wrong while fetching account data')
+      console.log(error)
+    }
   }
 }
 
