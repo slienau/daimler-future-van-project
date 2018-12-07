@@ -41,13 +41,13 @@ class Account extends React.Component {
     avatarVisible: false,
   }
 
+  componentDidMount() {
+    this.props.onFetchAccountData()
+  }
+
   _signOutAsync = async () => {
     await AsyncStorage.clear()
     this.props.navigation.navigate('Login')
-  }
-
-  componentDidMount() {
-    this.props.onFetchAccountData()
   }
 
   render() {
