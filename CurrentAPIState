@@ -1,0 +1,15 @@
+Aktueller Stand der API:
+
+Ihr posted auf /login mit den beiden body variablen username und password.
+Es gibt zur Zeit zwei feste user im System.
+
+Diese sind im Backend Teil in /services/AccountHelper spezifiziert.
+
+Dort entnehmt ihr username und password und hängt sie als x-www-form-urlencoded an den body.
+
+Darauf bekommt ihr eure userid und einen JWT zurück.
+
+Diesen fügt ihr in die HEADER als Bearer Token und könnt dann alle bereits verfügbaren Routen damit erreichen.
+
+Diese sind '/' --> gibt einfach nur einen String zum Testen zurück, '/account' --> gibt eure account details zurück
+oder '/account/orders' --> gibt einfach einen beispiel json für order zurück wie in API spezifiziert
