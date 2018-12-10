@@ -1,9 +1,9 @@
 Aktueller Stand der API:
 
 Ihr posted auf /login mit den beiden body variablen username und password.
-Es gibt zur Zeit zwei feste user im System.
 
-Diese sind im Backend Teil in /services/AccountHelper spezifiziert.
+Es gibt zur Zeit zwei feste user im System.
+Diese sind im Backend Teil in /services/AccountHelper spezifiziert. (werden hier nicht genannt, weil öffentlich)
 
 Dort entnehmt ihr username und password und hängt sie als x-www-form-urlencoded an den body.
 
