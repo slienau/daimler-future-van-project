@@ -599,18 +599,19 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
 
 ---
 
-#### GET /routes
+#### POST /routes
 
-Get suggested route from starting point to destination.
+Get suggested routes from starting point to destination.
 
 ##### Request
 
-###### Query Parameters
+###### Body
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
 | `start` | `Location` | Yes | Journey start location. |
 | `destination` | `Location` | Yes | Journey destination. |
+| `startTime` | `Datetime` | No | Route start time. Current time if not specified. |
 
 ###### Example
 
@@ -623,7 +624,8 @@ Get suggested route from starting point to destination.
   "destination": {
     "latitude": 52.285946,
     "longitude": 13.317390
-  }
+  },
+  "startTime": "2018-12-15T18:30:00.000Z"
 }
 ```
 
