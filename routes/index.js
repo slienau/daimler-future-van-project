@@ -1,28 +1,15 @@
 let express = require('express');
 let router = express.Router();
 
-let inventar;
 
-const PastRide = require('./PastRides.js');
+const PastRide = require('../models/PastRides.js');
 /* GET home page. */
-router.get('/accounts/:accountId', function(req, res, next) {
-    res.setHeader('Content-Type', 'application/json');
-    console.log(req.params);
-    var staticUserData = {
-        "id": req.params.accountId,
-        "firstName": "Max",
-        "lastName": "Müller",
-        "address":{
-            "street": "Salzufer 1",
-            "zipcode": "10587",
-            "city": "Berlin"
-        }
-    };
-    res.json(staticUserData);
-    /*PastRide.find()
-        .then(items => res.json(JSON.stringify(items),null,3))
-        .catch(err => res.status(404).json({ msg: 'No items found' }));*/
+router.get("/", async function(req,res) {
+   res.json({message:"It worked, but there is nothing here yet"});
 });
+
+// This is outdated, please don't post to the index router
+// We want to use this some place else though
 router.post("/", async function(req,res){
 
     console.log(req.body['id'] + req.body['from']);

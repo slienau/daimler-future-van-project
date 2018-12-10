@@ -1,30 +1,26 @@
 var createError = require('http-errors');
 var express = require('express');
-const mongoose = require('mongoose');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var indexRouter = require('./routes/index');
+var accountsRouter = require('./routes/accounts');
+var accountRouter = require('./routes/account');
+const auth = require('./services/auth');
+const passport = require('passport');
+require('./passport');
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // view engine setup
-
-
-mongoose
-    .connect(
-        'mongodb://mongo:27017/PAS-Backend',
-        { useNewUrlParser: true }
-    )
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log(err));
-
+const jwtlogin = passport.authenticate('jwt', {session: false});
 
 app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
-
+app.use('/login', auth);
+app.use('/',jwtlogin, indexRouter);
+app.use('/accounts', jwtlogin, accountsRouter);
+app.use('/account', jwtlogin, accountRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
