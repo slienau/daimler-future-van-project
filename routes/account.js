@@ -1,5 +1,6 @@
-let express = require('express');
-let router = express.Router();
+const _ = require('lodash')
+const express = require('express');
+const router = express.Router();
 const Account = require('../models/Account.js');
 
 router.get('/', function(req, res) {
@@ -10,8 +11,7 @@ router.get('/', function(req, res) {
     Account.findById(req.user._id, function(error, item){
         console.log('sind hier');
         console.log(item);
-        delete item.password;
-        res.json(item);
+        res.json(_.omit(item, ['password']));
     })
         .catch(err => res.status(404).json({err:err, msg: 'No items found' }));
 
