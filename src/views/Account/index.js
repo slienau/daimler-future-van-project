@@ -45,7 +45,7 @@ class Account extends React.Component {
     this.props.onFetchAccountData()
   }
 
-  _signOutAsync = async () => {
+  logout = async () => {
     await AsyncStorage.clear()
     this.props.navigation.navigate('Login')
   }
@@ -85,7 +85,7 @@ class Account extends React.Component {
                 </Left>
                 <Right style={styles.rightColumn}>
                   <Text>{this.props.account.username}</Text>
-                  <Button onPress={this._signOutAsync}>
+                  <Button onPress={this.logout}>
                     <Text>Log out</Text>
                   </Button>
                 </Right>

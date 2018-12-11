@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "lodash": "^4.17.11",
     "native-base": "^2.8.1",
     "prop-types": "^15.6.2",
     "react": "16.6.1",

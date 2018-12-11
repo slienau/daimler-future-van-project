@@ -1,22 +1,11 @@
-import api from '../lib/api'
+import {AsyncStorage} from 'react-native'
+import api, {setToken} from '../lib/api'
 
 export const SET_ACCOUNT_DATA = 'account/SET_ACCOUNT_DATA'
 export const SET_ERROR = 'account/SET_ERROR'
 
-const initialState = {
-  name: null,
-  email: 'somemail@example.com',
-  username: 'username',
-  street: null,
-  zip: null,
-  city: null,
-  points: 768,
-  miles: 46,
-  error: false,
-}
-
 // reducers (pure functions, no side-effects!)
-export default function account(state = initialState, action) {
+export default function account(state = {}, action) {
   switch (action.type) {
     case SET_ACCOUNT_DATA:
       const fullName = action.payload.firstName + ' ' + action.payload.lastName
@@ -49,6 +38,14 @@ export function fetchAccountData() {
       console.log(error)
       dispatch(setError())
     }
+  }
+}
+
+export function login({username, password}) {
+  return async dispatch => {
+    const {data} = await api.post('/login', {username, password})
+    await AsyncStorage.setItem('token', data.token)
+    setToken(data.token)
   }
 }
 
