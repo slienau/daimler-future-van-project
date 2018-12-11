@@ -12,17 +12,42 @@ import {
   Button,
   Text,
 } from 'native-base'
-import {AsyncStorage} from 'react-native'
+import {connect} from 'react-redux'
 import styled from 'styled-components/native'
+import _ from 'lodash'
+import PropTypes from 'prop-types'
+import {login} from '../../ducks/account'
 
 const StyledButton = styled(Button)`
   margin-top: 50px;
 `
 
-export default class Login extends React.Component {
-  _signInAsync = async () => {
-    await AsyncStorage.setItem('userToken', 'abc')
-    this.props.navigation.navigate('MainView')
+class Login extends React.Component {
+  static propTypes = {
+    login: PropTypes.func,
+  }
+
+  state = {
+    username: '',
+    password: '',
+  }
+
+  login = async () => {
+    try {
+      await this.props.login(this.state)
+      this.props.navigation.navigate('MainView')
+    } catch (err) {
+      if (_.get(err, 'response.status') !== 400) throw err
+      alert('Invalid username or password')
+    }
+  }
+
+  onChangePassword = password => {
+    this.setState({password})
+  }
+
+  onChangeUsername = username => {
+    this.setState({username})
   }
 
   render() {
@@ -37,13 +62,20 @@ export default class Login extends React.Component {
           <Form>
             <Item floatingLabel>
               <Label>Username</Label>
-              <Input />
+              <Input
+                value={this.state.username}
+                onChangeText={this.onChangeUsername}
+              />
             </Item>
             <Item floatingLabel last>
               <Label>Password</Label>
-              <Input secureTextEntry />
+              <Input
+                secureTextEntry
+                value={this.state.password}
+                onChangeText={this.onChangePassword}
+              />
             </Item>
-            <StyledButton full primary onPress={this._signInAsync}>
+            <StyledButton full primary onPress={this.login}>
               <Text>Login</Text>
             </StyledButton>
           </Form>
@@ -52,3 +84,10 @@ export default class Login extends React.Component {
     )
   }
 }
+
+export default connect(
+  state => ({}),
+  dispatch => ({
+    login: data => dispatch(login(data)),
+  })
+)(Login)
