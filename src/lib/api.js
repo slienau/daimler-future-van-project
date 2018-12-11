@@ -8,4 +8,16 @@ const api = axios.create({
   },
 })
 
+api.interceptors.request.use(
+  config => {
+    console.log('🌍', config.url)
+    return config
+  },
+  error => Promise.reject(error)
+)
+
 export default api
+
+export function setToken(token) {
+  api.defaults.headers.common['Authorization'] = 'Bearer ' + token
+}
