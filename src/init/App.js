@@ -40,8 +40,8 @@ export default class App extends React.Component {
     store: null,
   }
 
-  async componentDidMount() {
-    const store = await configureStore()
+  componentDidMount() {
+    const store = configureStore()
     this.setState({store})
   }
 
