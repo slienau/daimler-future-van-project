@@ -1,17 +1,30 @@
 import React, {Component} from 'react'
 import {
+  Body,
   Container,
-  Button,
-  Footer,
-  FooterTab,
   Header,
-  Icon,
+  Left,
   Item,
   Input,
+  Title,
+  Button,
   Text,
+  Icon,
+  Footer,
+  FooterTab,
 } from 'native-base'
 
 import Map from '../Map'
+import styled from 'styled-components/native'
+
+// For bottom button
+const StyledButton = styled(Button)`
+  alignself: center;
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  bottom: 10%;
+`
 
 export default class Welcome extends Component {
   constructor(props) {
@@ -39,6 +52,20 @@ export default class Welcome extends Component {
     console.log(this.state.marker)
     return (
       <Container>
+        {/* Header with menu-slider (without header or transparent header?) 
+            Connect with nativeBase Drawer
+        */}
+        <Header>
+          <Left>
+            <Button transparent>
+              <Icon name="menu" />
+            </Button>
+          </Left>
+          <Body>
+            <Title>Navigation</Title>
+          </Body>
+        </Header>
+
         {/* start location input */}
         <Header searchBar rounded>
           <Item>
@@ -52,13 +79,21 @@ export default class Welcome extends Component {
             <Input placeholder="To" />
           </Item>
         </Header>
+
         {/* Map */}
         <Map {...this.state.marker} />
+
         {/* button for searching route */}
-        <Button full iconRight light onPress={() => this.onSearchRoutes()}>
+        <StyledButton
+          rounded
+          iconRight
+          light
+          onPress={() => this.onSearchRoutes()}>
           <Text>search route </Text>
           <Icon name="arrow-forward" />
-        </Button>
+        </StyledButton>
+
+        {/* Navigation Bar */}
         <Footer>
           <FooterTab>
             <Button
