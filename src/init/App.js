@@ -1,5 +1,9 @@
 import React from 'react'
-import {createAppContainer, createSwitchNavigator} from 'react-navigation'
+import {
+  createAppContainer,
+  createSwitchNavigator,
+  createDrawerNavigator,
+} from 'react-navigation'
 import {Provider} from 'react-redux'
 
 import LoadingScreen from '../views/LoadingScreen'
@@ -10,7 +14,7 @@ import Games from '../views/Games'
 import Information from '../views/Information'
 import {configureStore} from './store'
 
-const MainView = createSwitchNavigator(
+const MainView = createDrawerNavigator(
   {
     Account,
     Welcome,

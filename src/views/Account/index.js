@@ -11,8 +11,6 @@ import {
   Container,
   Content,
   Button,
-  Footer,
-  FooterTab,
   Right,
   Icon,
   Left,
@@ -21,6 +19,8 @@ import {
   ListItem,
   Text,
   Thumbnail,
+  Header,
+  Title,
 } from 'native-base'
 import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
 import PropTypes from 'prop-types'
@@ -35,6 +35,11 @@ class Account extends React.Component {
   static propTypes = {
     account: PropTypes.object,
     onFetchAccountData: PropTypes.func,
+  }
+
+  // DrawNavigator settings
+  static navigationOptions = {
+    drawerIcon: () => <Icon name="person" />,
   }
 
   state = {
@@ -56,6 +61,21 @@ class Account extends React.Component {
     return (
       <StyledView>
         <Container>
+          {/* Header with menu-slider (without header or transparent header?) */}
+          <Header>
+            <Left>
+              <Button transparent>
+                <Icon
+                  name="menu"
+                  onPress={() => this.props.navigation.openDrawer()}
+                />
+              </Button>
+            </Left>
+            <Body>
+              <Title>Account</Title>
+            </Body>
+          </Header>
+
           <Content>
             <Dialog
               height={0.5}
@@ -197,33 +217,6 @@ class Account extends React.Component {
               </ListItem>
             </List>
           </Content>
-
-          <Footer>
-            <FooterTab>
-              <Button vertical active>
-                <Icon active name="person" />
-                <Text>Account</Text>
-              </Button>
-              <Button
-                vertical
-                onPress={() => this.props.navigation.navigate('Welcome')}>
-                <Icon name="map" />
-                <Text>Navigate</Text>
-              </Button>
-              <Button
-                vertical
-                onPress={() => this.props.navigation.navigate('Games')}>
-                <Icon name="apps" />
-                <Text>Games</Text>
-              </Button>
-              <Button
-                vertical
-                onPress={() => this.props.navigation.navigate('Information')}>
-                <Icon name="information" />
-                <Text>Van Info</Text>
-              </Button>
-            </FooterTab>
-          </Footer>
         </Container>
       </StyledView>
     )
