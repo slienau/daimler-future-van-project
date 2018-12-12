@@ -1,5 +1,5 @@
-let express = require('express');
-let router = express.Router();
+const express = require('express');
+const router = express.Router();
 const Account = require('../models/Account.js');
 
 router.get('/:accountId', function(req, res) {
@@ -8,8 +8,7 @@ router.get('/:accountId', function(req, res) {
 
     // Set to admin if "me" --> later connect with session
 
-    Account.find({'_id':req.params.accountId}, function(error, item){
-        delete item.password;
+    Account.find({'_id':req.params.accountId}, '-password', function(error, item){
         res.json(item);
     })
         .catch(err => res.status(404).json({err:err, msg: 'No items found' }));
