@@ -10,6 +10,7 @@ import {
   Button,
   Text,
   Icon,
+  Fab,
 } from 'native-base'
 
 import Map from '../Map'
@@ -21,6 +22,11 @@ const StyledButton = styled(Button)`
   left: 30%;
   right: 30%;
   bottom: 4%;
+`
+
+// For bottom button
+const StyledFab = styled(Fab)`
+  margin-bottom: 55px;
 `
 
 export default class Welcome extends Component {
@@ -48,6 +54,24 @@ export default class Welcome extends Component {
         routing: 'schokokeks',
       },
     })
+  }
+
+  // shows current position on the map
+  showCurrentLocation() {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        // alert(position.coords.latitude+"\n"+position.coords.longitude);
+        this.setState({
+          marker: {
+            current_latitude: position.coords.latitude,
+            current_longitude: position.coords.longitude,
+            error: null,
+          },
+        })
+      },
+      error => this.setState({error: error.message}),
+      {enableHighAccuracy: false, timeout: 200000, maximumAge: 1000}
+    )
   }
 
   render() {
@@ -85,6 +109,16 @@ export default class Welcome extends Component {
 
         {/* Map */}
         <Map {...this.state.marker} />
+
+        {/* Floating Button to show current location */}
+        <StyledFab
+          active={this.state.active}
+          direction="up"
+          containerStyle={{}}
+          position="bottomRight"
+          onPress={() => this.showCurrentLocation()}>
+          <Icon name="locate" />
+        </StyledFab>
 
         {/* button for searching route */}
         <StyledButton

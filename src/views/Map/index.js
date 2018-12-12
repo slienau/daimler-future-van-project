@@ -17,10 +17,10 @@ const StyledView = styled.View`
 
 const StyledMapView = styled(MapView)`
   position: absolute;
-  top: 10;
-  left: 10;
-  right: 10;
-  bottom: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `
 // Some static cords
 const coordinates = [
@@ -34,12 +34,13 @@ const coordinates = [
   },
 ]
 
-const GOOGLE_MAPS_APIKEY = 'xxx'
+const GOOGLE_MAPS_APIKEY = 'AIzaSyBf-YuW1Wgm-ZxzKq9tkqlQH7fO39ADutA'
 
 const Map = props => {
   let userLocationMarker = null
   let destinationMarker = null
   let routing = null
+  let currentLocationMarker = null
 
   // When state != null --> set static marker for start location
   // to-do: pass dynamic input
@@ -49,6 +50,19 @@ const Map = props => {
         coordinate={coordinates[0]}
         title={'Potsdammer Platz'}
         description={'Hier kann man die Umgebung Beschreiben.'}
+      />
+    )
+  }
+
+  if (props.current_latitude && props.current_longitude) {
+    currentLocationMarker = (
+      <PersonMarker
+        coordinate={{
+          latitude: props.current_latitude,
+          longitude: props.current_longitude,
+        }}
+        title={'Current Position'}
+        description={''}
       />
     )
   }
@@ -108,12 +122,15 @@ const Map = props => {
         {routing}
         {virtualBusStopMarkers}
         {vanMarkers}
+        {currentLocationMarker}
       </StyledMapView>
     </StyledView>
   )
 }
 
 Map.propTypes = {
+  current_latitude: PropTypes.float,
+  current_longitude: PropTypes.float,
   destinationMarker: PropTypes.string,
   routing: PropTypes.string,
   userLocationMarker: PropTypes.string,
