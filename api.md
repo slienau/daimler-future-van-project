@@ -215,25 +215,51 @@ This object represents a travel route from journey start to the final destinatio
 
 All request and response bodys are of type `application/json`.
 
----
+### Authorization
 
-### /accounts/{accountId}
+**Authorization** is required for all requests except to `/login`. If not authorized, the server will respond with `HTTP 401`.
 
-**Authorization** is required for all requests to `/accounts/*`. If not authorized, the server will respond with `HTTP 401`.
+#### Authorization Header
 
----
-
-#### GET /accounts/{accountId}
-
-To get user account information.
-
-##### Request
-
-###### Path Variables
-
-| Parameter | Type | Required | Description |
+| Parameter | Value | Required | Description |
 |--- |--- |--- |--- |
-| `{accountId}` | `String` | Yes | The user account id |
+| `Authorization` | `Bearer <TOKEN>` | Yes | The JWT token from the `POST /login` response |
+
+---
+
+### /login
+
+---
+
+#### POST /login
+
+##### Request Body
+
+```json
+{
+  "username": "admin",
+  "password": "xyz"
+}
+```
+
+##### Response Body
+
+```json
+{
+  "userId": "64e0d993-2867-44cf-872d-9a78a5c212a0",
+  "token": "xxxxx.yyyyy.zzzzz"
+}
+```
+
+---
+
+### /account
+
+---
+
+#### GET /account
+
+To get the user account information.
 
 ##### Responses
 
@@ -261,19 +287,11 @@ To get user account information.
 
 ---
 
-#### PUT /accounts/{accountId}
+#### PUT /account
 
 To update user account information.
 
-##### Request
-
-###### Path Variables
-
-| Parameter | Type | Required | Description |
-|--- |--- |--- |--- |
-| `{accountId}` | `String` | Yes | The user account id |
-
-###### Body
+##### Body
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
@@ -321,25 +339,18 @@ To update user account information.
   }
 }
 ```
----
-
-### /accounts/{accountId}/orders
 
 ---
 
-#### GET /accounts/{accountId}/orders
+### /orders
 
-To get orders of a user.
+---
 
-##### Request
+#### GET /orders
 
-###### Path Variables
+Get the orders of a user.
 
-| Parameter | Type | Required | Description |
-|--- |--- |--- |--- |
-| `{accountId}` | `String` | Yes | The user account id |
-
-###### Query Parameters
+##### Request Query Parameters
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
@@ -347,7 +358,7 @@ To get orders of a user.
 | `fromDate` | `Datetime` | No | If set, the response will only contain orders which were placed *after* this date. |
 | `toDate` | `Datetime` | No | If set, the response will only contain orders which were placed *before* this date. |
 
-###### Example
+###### Example (TODO: Change from JSON format to query format)
 
 ```json
 {
@@ -423,45 +434,25 @@ To get orders of a user.
 
 ---
 
-#### POST /accounts/{accountId}/orders
+#### POST /orders
 
 To create (place) a new van order.
 
 ##### Request
 
-###### Path Variables
-
-| Parameter | Type | Required | Description |
-|--- |--- |--- |--- |
-| `{accountId}` | `String` | Yes | The user account id |
-
 ###### Body
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
-| `start` | `VirtualBusStop` | Yes | Starting virtual bus stop of the order |
-| `destination` | `VirtualBusStop` | Yes | Ending virtual bus stop of the order |
+| `start` | `String` | Yes | ID of the starting virtual bus stop |
+| `destination` | `String` | Yes | ID of the ending virtual bus stop |
 
 ###### Example
 
 ```json
 {
-  "start": {
-    "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
-    "accessible": true,
-    "location": {
-      "latitude": 52.515729,
-      "longitude": 13.323373
-    }
-  },
-  "destination": {
-    "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
-    "accessible": true,
-    "location": {
-      "latitude": 52.512974,
-      "longitude": 13.329145
-    }
-  }
+  "start": "d79ab15d-39e8-4817-83d0-ed21d395dded",
+  "destination": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532"
 }
 ```
 
@@ -504,7 +495,7 @@ To create (place) a new van order.
 
 ---
 
-#### PUT /accounts/{accountId}/orders/{orderId}
+#### PUT /orders/{orderId}
 
 Update an active order.  
 The order can either be *changed* or *canceled*. To *cancel* an order, set the `canceled` property to `true` in the request body.
@@ -515,7 +506,6 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
 
 | Parameter | Type | Required | Description |
 |--- |--- |--- |--- |
-| `{accountId}` | `String` | Yes | The user account id |
 | `{orderId}` | `String` | Yes | The order id |
 
 ###### Body
@@ -735,6 +725,7 @@ Get nearby virtual bus stops.
   "radius": 2000
 }
 ```
+
 ```json
 {
   "location": {
