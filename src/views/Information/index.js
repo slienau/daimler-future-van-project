@@ -22,7 +22,6 @@ const Information = props => {
       <Text>Information View</Text>
       <Container>
         <Content />
-
         <Footer>
           <FooterTab>
             <Button

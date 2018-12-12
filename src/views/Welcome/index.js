@@ -10,8 +10,7 @@ import {
   Button,
   Text,
   Icon,
-  Footer,
-  FooterTab,
+  Fab,
 } from 'native-base'
 
 import Map from '../Map'
@@ -22,10 +21,20 @@ const StyledButton = styled(Button)`
   position: absolute;
   left: 30%;
   right: 30%;
-  bottom: 10%;
+  bottom: 4%;
+`
+
+// For bottom button
+const StyledFab = styled(Fab)`
+  margin-bottom: 55px;
 `
 
 export default class Welcome extends Component {
+  // DrawNavigator settings
+  static navigationOptions = {
+    drawerIcon: () => <Icon name="map" />,
+  }
+
   constructor(props) {
     super(props)
 
@@ -47,17 +56,36 @@ export default class Welcome extends Component {
     })
   }
 
+  // shows current position on the map
+  showCurrentLocation() {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        // alert(position.coords.latitude+"\n"+position.coords.longitude);
+        this.setState({
+          marker: {
+            current_latitude: position.coords.latitude,
+            current_longitude: position.coords.longitude,
+            error: null,
+          },
+        })
+      },
+      error => this.setState({error: error.message}),
+      {enableHighAccuracy: false, timeout: 200000, maximumAge: 1000}
+    )
+  }
+
   render() {
     console.log(this.state.marker)
     return (
       <Container>
-        {/* Header with menu-slider (without header or transparent header?) 
-            Connect with nativeBase Drawer
-        */}
+        {/* Header with menu-slider (without header or transparent header?) */}
         <Header>
           <Left>
             <Button transparent>
-              <Icon name="menu" />
+              <Icon
+                name="menu"
+                onPress={() => this.props.navigation.openDrawer()}
+              />
             </Button>
           </Left>
           <Body>
@@ -82,43 +110,25 @@ export default class Welcome extends Component {
         {/* Map */}
         <Map {...this.state.marker} />
 
+        {/* Floating Button to show current location */}
+        <StyledFab
+          active={this.state.active}
+          direction="up"
+          containerStyle={{}}
+          position="bottomRight"
+          onPress={() => this.showCurrentLocation()}>
+          <Icon name="locate" />
+        </StyledFab>
+
         {/* button for searching route */}
         <StyledButton
           rounded
           iconRight
           light
           onPress={() => this.onSearchRoutes()}>
-          <Text>search route </Text>
+          <Text>destination </Text>
           <Icon name="arrow-forward" />
         </StyledButton>
-
-        {/* Navigation Bar */}
-        <Footer>
-          <FooterTab>
-            <Button
-              vertical
-              onPress={() => this.props.navigation.navigate('Account')}>
-              <Icon name="person" />
-              <Text>Account</Text>
-            </Button>
-            <Button vertical active>
-              <Icon active name="map" />
-              <Text>Navigate</Text>
-            </Button>
-            <Button
-              vertical
-              onPress={() => this.props.navigation.navigate('Games')}>
-              <Icon name="apps" />
-              <Text>Games</Text>
-            </Button>
-            <Button
-              vertical
-              onPress={() => this.props.navigation.navigate('Information')}>
-              <Icon name="information" />
-              <Text>Van Info</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
       </Container>
     )
   }
