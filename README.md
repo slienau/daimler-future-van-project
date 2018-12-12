@@ -38,8 +38,9 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 |`/src` | JavaScript source files |
 |`/src/components` | React Native components which are neither Views nor sub-components of views |
 |`/src/ducks` | Redux action creators and reducers |
-|`/src/init` | Application initialization  |
-|`/src/views` | Different App Views ("Screens"), e.g. Login|
+|`/src/init` | Application initialization |
+|`/src/lib` | Library functions which are needed in different parts of the application |
+|`/src/views` | Different App Views ("Screens"), e.g. Login |
 
 ### Views and Components
 
@@ -63,7 +64,33 @@ Since React provides just the view layer (the `V` of the `MVC` pattern) for our 
 
 ### Actions and Reducers
 
+Actions and Reducers are created for different functionalities of the application, e.g. one for managing the account data, another one for managing the orders. I will explain how actions and reducers are used in our application by looking at the account actions and reducers, but it is used in the other reducers just the same way.  
+
+The `account` reducer and actions are placed in `/src/ducks/account.js`. First of all, some ACTIONS have to be defined. In our case, these actions are `SET_ACCOUNT_DATA` and `SET_ERROR`.
+
+```javascript
+export const SET_ACCOUNT_DATA = 'account/SET_ACCOUNT_DATA'
+export const SET_ERROR = 'account/SET_ERROR'
+```
+
+Next, we define an __initial state__, which is used when no reducers modified the state. In this case, the initial state looks as follows:
+
+```javascript
+const initialState = {
+  accountData: {}
+  error: false,
+}
+```
+
+`error` will be set to `true` if an error occured while fetching data from the backend. `accountData` holds account data information like username, email, address, ...
+
+#### Actions
+
 TODO
+
+#### Reducers
+
+Reducers are pure functions (they produce no side-effects), which modify the state accorting to the incoming action.
 
 ### Use redux state in components
 
