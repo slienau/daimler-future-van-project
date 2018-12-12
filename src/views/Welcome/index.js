@@ -19,7 +19,6 @@ import styled from 'styled-components/native'
 
 // For bottom button
 const StyledButton = styled(Button)`
-  alignself: center;
   position: absolute;
   left: 30%;
   right: 30%;
