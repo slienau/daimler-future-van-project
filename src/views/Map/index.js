@@ -8,6 +8,10 @@ import VanMarker from './VanMarker'
 import PersonMarker from './PersonMarker'
 import DestinationMarker from './DestinationMarker'
 import {virtualBusStops, vanPositions} from './markerPositions'
+import {createStackNavigator, createAppContainer} from 'react-navigation'
+import SearchView from './SearchField'
+import {connect} from 'react-redux'
+import * as act from '../../ducks/map'
 
 const StyledView = styled.View`
   flex: 1;
@@ -17,10 +21,10 @@ const StyledView = styled.View`
 
 const StyledMapView = styled(MapView)`
   position: absolute;
-  top: 10;
-  left: 10;
-  right: 10;
-  bottom: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `
 // Some static cords
 const coordinates = [
@@ -34,7 +38,7 @@ const coordinates = [
   },
 ]
 
-const GOOGLE_MAPS_APIKEY = 'xxx'
+const GOOGLE_MAPS_APIKEY = 'AIzaSyDVR2sWwYcOY0gmCxXy2EjXOnaMW6VvELM'
 
 const Map = props => {
   let userLocationMarker = null
@@ -94,10 +98,20 @@ const Map = props => {
     return <VanMarker key={van.id} location={van.location} />
   })
 
+  // called whenever we return to the map view from the SearchField view (from the StackNavigator)
+  props.navigation.addListener('didFocus', payload => {
+    console.log('FOCUSSED', payload)
+    console.log(
+      props.map.searchResults,
+      props.map.searchResults.map(item => item.isNew)
+    )
+    props.setLastSearchResultToOld()
+  })
+
   return (
     <StyledView>
       <StyledMapView
-        initialRegion={{
+        region={{
           latitude: 52.509663,
           longitude: 13.376481,
           latitudeDelta: 0.01,
@@ -115,7 +129,43 @@ const Map = props => {
 
 Map.propTypes = {
   destinationMarker: PropTypes.string,
+  map: PropTypes.object,
   routing: PropTypes.string,
+  setLastSearchResultToOld: PropTypes.function,
   userLocationMarker: PropTypes.string,
 }
-export default Map
+
+const mapStateToProps = state => {
+  return {
+    map: state.map,
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setLastSearchResultToOld: () =>
+      dispatch({type: act.SET_LAST_SEARCH_RESULT_TO_OLD}),
+  }
+}
+
+// we create a stack navigator with the map as default and the search view, so that it can be placed on top
+// of the map to get the start and destination
+const MapNavigator = createStackNavigator(
+  {
+    Map: {
+      screen: connect(
+        mapStateToProps,
+        mapDispatchToProps
+      )(Map),
+      navigationOptions: () => ({header: null}),
+    },
+    Search: {
+      screen: SearchView,
+    },
+  },
+  {
+    initialRouteName: 'Map',
+  }
+)
+
+export default createAppContainer(MapNavigator)
