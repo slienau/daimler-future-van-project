@@ -10,6 +10,7 @@ import LoadingScreen from '../views/LoadingScreen'
 import Login from '../views/Login'
 import Welcome from '../views/Welcome'
 import Account from '../views/Account'
+import Orders from '../views/Orders'
 import Games from '../views/Games'
 import Information from '../views/Information'
 import {configureStore} from './store'
@@ -18,6 +19,7 @@ const MainView = createDrawerNavigator(
   {
     Account,
     Welcome,
+    Orders,
     Games,
     Information,
   },
