@@ -1,8 +1,8 @@
 import React from 'react'
-import {ActivityIndicator, AsyncStorage} from 'react-native'
+import {ActivityIndicator} from 'react-native'
 import styled from 'styled-components/native'
 
-import {setToken} from '../../lib/api'
+import {loadToken} from '../../lib/api'
 
 const CenterView = styled.View`
   flex: 1;
@@ -12,15 +12,8 @@ const CenterView = styled.View`
 `
 
 export default class LoadingScreen extends React.Component {
-  constructor(props) {
-    super(props)
-    this.loadToken()
-  }
-
-  loadToken = async () => {
-    const token = await AsyncStorage.getItem('token')
-    setToken(token)
-    this.props.navigation.navigate(token ? 'MainView' : 'Login')
+  async componentDidMount() {
+    this.props.navigation.navigate((await loadToken()) ? 'MainView' : 'Login')
   }
 
   render() {
