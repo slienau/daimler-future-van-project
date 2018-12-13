@@ -1,4 +1,6 @@
 language: node_js
+addons:
+  ssh_known_hosts: 40.89.170.229
 cache:
   directories:
   - node_modules
