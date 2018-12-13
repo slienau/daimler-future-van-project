@@ -10,3 +10,8 @@ before_install:
 - npm install -g npm@6
 install:
 - npm install
+deploy:
+  provider: script
+  script: ./scripts/publish.sh
+  on:
+    branch: development
