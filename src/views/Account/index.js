@@ -44,10 +44,33 @@ class Account extends React.Component {
 
   state = {
     avatarVisible: false,
+    loading: false,
+    error: false,
   }
 
   componentDidMount() {
-    this.props.onFetchAccountData()
+    this.fetchAccountData()
+  }
+
+  fetchAccountData = async () => {
+    this.setState({
+      loading: true,
+      error: false,
+    })
+
+    try {
+      await this.props.onFetchAccountData()
+    } catch (error) {
+      alert('Something went wrong while fetching account data')
+      console.log(error)
+      this.setState({
+        error: true,
+      })
+    }
+
+    this.setState({
+      loading: false,
+    })
   }
 
   logout = async () => {
