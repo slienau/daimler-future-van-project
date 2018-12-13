@@ -1,24 +1,28 @@
 import React from 'react'
-import {createAppContainer, createSwitchNavigator} from 'react-navigation'
+import {
+  createAppContainer,
+  createSwitchNavigator,
+  createDrawerNavigator,
+} from 'react-navigation'
 import {Provider} from 'react-redux'
 
 import LoadingScreen from '../views/LoadingScreen'
 import Login from '../views/Login'
-import Welcome from '../views/Welcome'
+import Map from '../views/Map'
 import Account from '../views/Account'
 import Games from '../views/Games'
 import Information from '../views/Information'
 import {configureStore} from './store'
 
-const MainView = createSwitchNavigator(
+const MainView = createDrawerNavigator(
   {
     Account,
-    Welcome,
+    Map,
     Games,
     Information,
   },
   {
-    initialRouteName: 'Welcome',
+    initialRouteName: 'Map',
   }
 )
 
@@ -40,8 +44,8 @@ export default class App extends React.Component {
     store: null,
   }
 
-  async componentDidMount() {
-    const store = await configureStore()
+  componentDidMount() {
+    const store = configureStore()
     this.setState({store})
   }
 

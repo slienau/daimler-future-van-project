@@ -11,7 +11,7 @@ if (__DEV__) {
   composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 }
 
-async function configureStore() {
+function configureStore() {
   store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)))
   return store
 }
