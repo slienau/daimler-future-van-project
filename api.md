@@ -67,6 +67,7 @@ This object represents a virtual bus stop.
 | Field | Type | Required | Description | Examples |
 |--- |--- |--- |--- |--- |
 | `id` | `String` | yes | The ID. | `0e8cedd0-ad98-11e6-bf2e-47644ada7c0b` |
+| `name` | `String` | Yes | Name of the station, e.g. street name or point of interest name | `Straße des 17. Juni 135` |
 | `accessible` | `Boolean` | Yes | True if the virtual bus stop is currently accessible, false if not. | `true`, `false` |
 | `location` | `Object` `(Location)` | Yes | The location of the VirtualBusStop. | *See location object.* |
 
@@ -75,6 +76,7 @@ This object represents a virtual bus stop.
 ```json
 {
   "id": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0b",
+  "name": "Straße des 17. Juni 135",
   "accessible": true,
   "location": {
     "latitude": 52.478442,
@@ -140,6 +142,7 @@ This object represents a van order which can be made by a user.
   "canceled": false,
   "virtualBusStopStart": {
     "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
+    "name": "Straße des 17. Juni 135",
     "accessible": true,
     "location": {
       "latitude": 52.515598,
@@ -148,6 +151,7 @@ This object represents a van order which can be made by a user.
   },
   "virtualBusStopEnd": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+    "name": "Straße des 17. Juni 120",
     "accessible": true,
     "location": {
       "latitude": 52.512974,
@@ -183,6 +187,7 @@ This object represents a travel route from journey start to the final destinatio
   },
   "startStation": {
     "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
+    "name": "Straße des 17. Juni 135",
     "accessible": true,
     "location": {
       "latitude": 52.515598,
@@ -191,6 +196,7 @@ This object represents a travel route from journey start to the final destinatio
   },
   "endStation": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+    "name": "Straße des 17. Juni 120",
     "accessible": true,
     "location": {
       "latitude": 52.512974,
@@ -383,6 +389,7 @@ Get the orders of a user.
     "canceled": false,
     "virtualBusStopStart": {
       "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
+      "name": "Straße des 17. Juni 135",
       "accessible": true,
       "location": {
         "latitude": 52.515598,
@@ -391,6 +398,7 @@ Get the orders of a user.
     },
     "virtualBusStopEnd": {
       "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+      "name": "Straße des 17. Juni 120",
       "accessible": true,
       "location": {
         "latitude": 52.512974,
@@ -408,6 +416,7 @@ Get the orders of a user.
     "canceled": false,
     "virtualBusStopStart": {
       "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
+      "name": "Straße des 17. Juni 135",
       "accessible": true,
       "location": {
         "latitude": 52.515598,
@@ -416,6 +425,7 @@ Get the orders of a user.
     },
     "virtualBusStopEnd": {
       "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+      "name": "Straße des 17. Juni 120",
       "accessible": true,
       "location": {
         "latitude": 52.512974,
@@ -470,6 +480,7 @@ To create (place) a new van order.
   "canceled": false,
   "virtualBusStopStart": {
     "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
+    "name": "Straße des 17. Juni 135",
     "accessible": true,
     "location": {
       "latitude": 52.515729,
@@ -478,6 +489,7 @@ To create (place) a new van order.
   },
   "virtualBusStopEnd": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+    "name": "Straße des 17. Juni 120",
     "accessible": true,
     "location": {
       "latitude": 52.512974,
@@ -522,6 +534,7 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
     "canceled": true,
     "virtualBusStopStart": {
       "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
+      "name": "Straße des 17. Juni 135",
       "accessible": true,
       "location": {
         "latitude": 52.515729,
@@ -530,6 +543,7 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
     },
     "virtualBusStopEnd": {
       "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+      "name": "Straße des 17. Juni 120",
       "accessible": true,
       "location": {
         "latitude": 52.512974,
@@ -560,6 +574,7 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
   "canceled": true,
   "virtualBusStopStart": {
     "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
+    "name": "Straße des 17. Juni 135",
     "accessible": true,
     "location": {
       "latitude": 52.515729,
@@ -568,6 +583,7 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
   },
   "virtualBusStopEnd": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+    "name": "Straße des 17. Juni 120",
     "accessible": true,
     "location": {
       "latitude": 52.512974,
@@ -633,6 +649,7 @@ Get suggested routes from starting point to destination.
     },
     "startStation": {
       "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
+      "name": "Straße des 17. Juni 135",
       "accessible": true,
       "location": {
         "latitude": 52.515598,
@@ -641,6 +658,7 @@ Get suggested routes from starting point to destination.
     },
     "endStation": {
       "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+      "name": "Straße des 17. Juni 120",
       "accessible": true,
       "location": {
         "latitude": 52.512974,
@@ -662,6 +680,7 @@ Get suggested routes from starting point to destination.
     },
     "startStation": {
       "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
+      "name": "Straße des 17. Juni 135",
       "accessible": true,
       "location": {
         "latitude": 52.515598,
@@ -670,6 +689,7 @@ Get suggested routes from starting point to destination.
     },
     "endStation": {
       "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+      "name": "Straße des 17. Juni 120",
       "accessible": true,
       "location": {
         "latitude": 52.512974,
@@ -735,6 +755,7 @@ Get nearby virtual bus stops.
 [
   {
     "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
+    "name": "Straße des 17. Juni",
     "accessible": true,
     "location": {
       "latitude": 52.515729,
@@ -743,6 +764,7 @@ Get nearby virtual bus stops.
   },
   {
     "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
+    "name": "Straße des 17. Juni",
     "accessible": true,
     "location": {
       "latitude": 52.515598,
@@ -751,6 +773,7 @@ Get nearby virtual bus stops.
   },
   {
     "id": "15869209-5f70-48a7-ad35-52133b959b79",
+    "name": "Straße des 17. Juni",
     "accessible": true,
     "location": {
       "latitude": 52.513287,
@@ -759,6 +782,7 @@ Get nearby virtual bus stops.
   },
   {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+    "name": "Straße des 17. Juni",
     "accessible": true,
     "location": {
       "latitude": 52.512974,
