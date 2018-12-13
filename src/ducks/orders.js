@@ -1,4 +1,5 @@
 import api from '../lib/api'
+import moment from 'moment'
 import {deepCopy} from '../lib/utils'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
@@ -16,9 +17,9 @@ export default function orders(state = initialState, action) {
     case SET_ORDER_DATA:
       const newState = deepCopy(state)
       action.payload.forEach(order => {
-        order.orderTime = new Date(order.orderTime)
-        order.startTime = new Date(order.startTime)
-        order.endTime = new Date(order.endTime)
+        order.orderTime = moment(order.orderTime)
+        order.startTime = moment(order.startTime)
+        order.endTime = moment(order.endTime)
         // we can only have one active order at the time
         if (order.active) newState.activeOrder = order
         else {

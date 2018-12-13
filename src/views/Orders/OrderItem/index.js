@@ -3,14 +3,13 @@ import PropTypes from 'prop-types'
 import {Text, ListItem, Left, Right, Icon, Body} from 'native-base'
 
 const OrderItem = props => {
-  const dateTimeString = props.orderTime.toLocaleString().split(', ')
   return (
     <ListItem button style={itemStyle} onPress={() => alert('TODO')}>
       <Left>
         <Text>
-          {dateTimeString[0]}
+          {props.orderTime.format('L')}
           {'\n'}
-          {dateTimeString[1].substr(0, 5)}
+          {props.orderTime.format('LT')}
         </Text>
       </Left>
       <Body>
