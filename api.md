@@ -119,8 +119,8 @@ This object represents a van order which can be made by a user.
 
 | Field | Type | Required | Description | Examples |
 |--- |--- |--- |--- |--- |
-| `id` | `String` | yes | The order ID. | `13cf81ee-8898-4b7a-a96e-8b5f675deb3c` |
-| `accountId` | `String` | yes | User account ID which placed this order. | `0e8cedd0-ad98-11e6-bf2e-47644ada7c0f` |
+| `_id` | `String` | yes | The order ID. | `13cf81ee-8898-4b7a-a96e-8b5f675deb3c` |
+| `accountID` | `String` | yes | User account ID which placed this order. | `0e8cedd0-ad98-11e6-bf2e-47644ada7c0f` |
 | `orderTime` | `Datetime` | yes | Time at which the order was placed. | `2018-11-23T18:25:43.511Z` |
 | `active` | `Boolean` | yes | True if this order is active (user is still travelling to the ending virtual bus stop).<br>False if the user reached the ending virtual bus stop (finished the journey), or if the order was canceled. | `true` |
 | `canceled` | `Boolean` | yes | True if the user canceled the order. | `false` |
@@ -133,8 +133,8 @@ This object represents a van order which can be made by a user.
 
 ```json
 {
-  "id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-  "accountId": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
+  "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
+  "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
   "orderTime": "2018-11-23T18:25:43.511Z",
   "active": true,
   "canceled": false,
@@ -376,8 +376,8 @@ Get the orders of a user.
 ```json
 [
   {
-    "id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-    "accountId": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
+    "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
+    "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
     "orderTime": "2018-02-23T18:25:43.511Z",
     "active": false,
     "canceled": false,
@@ -401,8 +401,8 @@ Get the orders of a user.
     "endTime": "2018-02-23T18:45:48.000Z"
   },
   {
-    "id": "32c6281a-b05c-4cb7-8926-739842c0be86",
-    "accountId": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
+    "_id": "32c6281a-b05c-4cb7-8926-739842c0be86",
+    "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
     "orderTime": "2018-03-23T18:25:43.511Z",
     "active": false,
     "canceled": false,
@@ -463,8 +463,8 @@ To create (place) a new van order.
 
 ```json
 {
-  "id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-  "accountId": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
+  "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
+  "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
   "orderTime": "2018-11-23T18:25:43.511Z",
   "active": true,
   "canceled": false,
@@ -515,8 +515,8 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
 ```json
 {
   "updatedOrder": {
-    "id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-    "accountId": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
+    "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
+    "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
     "orderTime": "2018-11-23T18:25:43.511Z",
     "active": true,
     "canceled": true,
@@ -553,8 +553,8 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
 
 ```json
 {
-  "id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-  "accountId": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
+  "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
+  "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
   "orderTime": "2018-11-23T18:25:43.511Z",
   "active": false,
   "canceled": true,
