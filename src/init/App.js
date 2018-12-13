@@ -8,7 +8,7 @@ import {Provider} from 'react-redux'
 
 import LoadingScreen from '../views/LoadingScreen'
 import Login from '../views/Login'
-import Welcome from '../views/Welcome'
+import Map from '../views/Map'
 import Account from '../views/Account'
 import Orders from '../views/Orders'
 import Games from '../views/Games'
@@ -18,13 +18,13 @@ import {configureStore} from './store'
 const MainView = createDrawerNavigator(
   {
     Account,
-    Welcome,
+    Map,
     Orders,
     Games,
     Information,
   },
   {
-    initialRouteName: 'Welcome',
+    initialRouteName: 'Map',
   }
 )
 
