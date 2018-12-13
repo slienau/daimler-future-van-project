@@ -58,7 +58,7 @@ const coordinates = [
   },
 ]
 
-const GOOGLE_MAPS_APIKEY = 'AIzaSyDVR2sWwYcOY0gmCxXy2EjXOnaMW6VvELM'
+const GOOGLE_MAPS_APIKEY = 'AIzaSyBLjSLCSdnDP2K1muAvuiREJmMdY5ahPgk'
 
 class Map extends React.Component {
   constructor(props) {
