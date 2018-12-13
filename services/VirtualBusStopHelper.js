@@ -13,17 +13,17 @@ class VirtualBusStopHelper {
     if (setupNeeded) {
       const zoo = new VirtualBusStop({
         location: {
-          longitude: 52.507304,
-          latitude: 13.330626
+            latitude: 52.507304,
+            longitude: 13.330626
         },
-        assesible: true
+        accessible: true
       })
       const potsdamerPl = new VirtualBusStop({
         location: {
-          longitude: 52.509726,
-          latitude: 13.376962
+            latitude: 52.509726,
+            longitude: 13.376962
         },
-        assesible: true
+          accessible: true
       })
 
       await zoo.save()

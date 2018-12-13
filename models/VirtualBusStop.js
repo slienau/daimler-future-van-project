@@ -18,7 +18,7 @@ const VirtualBusStopSchema = new Schema({
     type: LocationSchema,
     required: true
   },
-  assesible: {
+  accessible: {
     type: Boolean,
     required: true
   }

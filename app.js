@@ -6,11 +6,14 @@ const bodyParser = require('body-parser')
 const indexRouter = require('./routes/index')
 const accountsRouter = require('./routes/accounts')
 const accountRouter = require('./routes/account')
+const vbRouter = require('./routes/virtualBusStops')
+const orderRouter = require('./routes/orders')
 const auth = require('./routes/auth')
 const passport = require('passport')
 require('./passport')
 
 const app = express()
+
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 // view engine setup
@@ -22,6 +25,8 @@ app.use('/login', auth)
 app.use('/', jwtlogin, indexRouter)
 app.use('/accounts', jwtlogin, accountsRouter)
 app.use('/account', jwtlogin, accountRouter)
+app.use('/virtualbusstops', jwtlogin, vbRouter)
+app.use('/orders', jwtlogin, orderRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

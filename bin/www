@@ -9,6 +9,7 @@ var debug = require('debug')('testproject:server');
 var http = require('http');
 var AccountHelper = require('../services/AccountHelper');
 var VirtualBusStopHelper = require('../services/VirtualBusStopHelper');
+var OrderHelper = require('../services/OrderHelper');
 var mongoose = require('mongoose');
 
 mongoose
@@ -32,8 +33,11 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
-AccountHelper.setUpAccounts();
-VirtualBusStopHelper.setupVBs();
+(async function(){
+    await AccountHelper.setUpAccounts();
+    await VirtualBusStopHelper.setupVBs();
+    await OrderHelper.setupOrders()
+})()
 /**
  * Listen on provided port, on all network interfaces.
  */
