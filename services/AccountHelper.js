@@ -7,7 +7,7 @@ class AccountHelper {
         let setupNeeded = false;
         await Account.find({'username' : "admin"},
             function (error, items) {
-                if (error || items == null || items.length==0){
+                if (error || items === null || items.length === 0){
                     setupNeeded = true;
                 }
             });
@@ -17,8 +17,12 @@ class AccountHelper {
                 firstName: "admin",
                 lastName: "admin",
                 password: "adminiscooler",
-                email: "ad@min.admin",
-                address: "adminstreet 1 10000 Berlin"
+                address: {
+                    street: "adminstreet 1",
+                    zipcode: 10000,
+                    city: "Berlin"
+                },
+                email: "ad@min.admin"
             });
             const maxUser = new Account({
                 username: "maexle",
@@ -26,7 +30,11 @@ class AccountHelper {
                 lastName: "Müller",
                 password: "maxiscool",
                 email: "max@max.max",
-                address: "Salzufer 1 10587 Berlin"
+                address: {
+                    street: "Salzufer 1",
+                    zipcode: 10587,
+                    city: "Berlin"
+                }
             });
 
             await admin.save();

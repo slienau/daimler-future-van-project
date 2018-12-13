@@ -4,12 +4,11 @@ const Account = require('../models/Account.js');
 
 router.get('/', function(req, res) {
 
-    // Set to admin if "me" --> later connect with session
     res.setHeader('Content-Type', 'application/json');
-    console.log(req.user._id);
+
+    // To-do: Errorhandling!
     Account.findById(req.user._id, '-password', function(error, item){
-        console.log('sind hier');
-        console.log(item);
+        console.log("Requested Account with id "+item._id);
         res.json(item);
     })
         .catch(err => res.status(404).json({err:err, msg: 'No items found' }));

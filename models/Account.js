@@ -1,6 +1,23 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const AddressSchema = new Schema({
+
+        street:{
+            type: String,
+            required: true
+        },
+        zipcode:{
+            type: Number,
+            required: true
+        },
+        city:{
+            type: String,
+            required: true
+        }
+    }
+);
+
 const AccountSchema = new Schema({
 
         username:{
@@ -8,10 +25,6 @@ const AccountSchema = new Schema({
             required: true
         },
         password:{
-            type: String,
-            required: true
-        },
-        address:{
             type: String,
             required: true
         },
@@ -26,7 +39,10 @@ const AccountSchema = new Schema({
         email:{
             type: String,
             required: true
-        }
+        },
+        address:AddressSchema
     }
 );
-module.exports = Account = mongoose.model('accounts', AccountSchema);
+
+
+module.exports = mongoose.model('accounts', AccountSchema);

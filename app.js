@@ -2,14 +2,17 @@ var createError = require('http-errors');
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var secure = require('express-force-https');
+
 var indexRouter = require('./routes/index');
 var accountsRouter = require('./routes/accounts');
 var accountRouter = require('./routes/account');
-const auth = require('./services/auth');
+const auth = require('./routes/auth');
 const passport = require('passport');
 require('./passport');
 
 var app = express();
+app.use(secure);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // view engine setup

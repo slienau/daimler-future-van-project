@@ -8,6 +8,7 @@ router.get('/:accountId', function(req, res) {
 
     // Set to admin if "me" --> later connect with session
 
+    // To-do: Errorhandling!
     Account.find({'_id':req.params.accountId}, '-password', function(error, item){
         res.json(item);
     })

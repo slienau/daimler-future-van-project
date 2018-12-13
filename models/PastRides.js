@@ -28,4 +28,4 @@ const PastRidesSchema = new Schema({
     }
     }
 );
-module.exports = Jacke = mongoose.model('pastrides', PastRidesSchema);
+module.exports = mongoose.model('pastrides', PastRidesSchema);
