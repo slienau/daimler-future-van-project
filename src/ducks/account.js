@@ -1,5 +1,4 @@
-import {AsyncStorage} from 'react-native'
-import api, {setToken} from '../lib/api'
+import api from '../lib/api'
 
 export const SET_ACCOUNT_DATA = 'account/SET_ACCOUNT_DATA'
 
@@ -27,14 +26,6 @@ export function fetchAccountData() {
   return async dispatch => {
     const {data} = await api.get('/account')
     dispatch(setAccountData(data))
-  }
-}
-
-export function login({username, password}) {
-  return async dispatch => {
-    const {data} = await api.post('/login', {username, password})
-    await AsyncStorage.setItem('token', data.token)
-    setToken(data.token)
   }
 }
 

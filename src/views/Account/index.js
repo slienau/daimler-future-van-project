@@ -1,10 +1,5 @@
 import React from 'react'
-import {
-  AsyncStorage,
-  TouchableWithoutFeedback,
-  Image,
-  StyleSheet,
-} from 'react-native'
+import {TouchableWithoutFeedback, Image, StyleSheet} from 'react-native'
 import {connect} from 'react-redux'
 import styled from 'styled-components/native'
 import {
@@ -25,6 +20,7 @@ import {
 import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
 import PropTypes from 'prop-types'
 import {fetchAccountData} from '../../ducks/account'
+import {clearToken} from '../../lib/api'
 
 const StyledView = styled.View`
   flex: 1;
@@ -74,7 +70,7 @@ class Account extends React.Component {
   }
 
   logout = async () => {
-    await AsyncStorage.clear()
+    await clearToken()
     this.props.navigation.navigate('Login')
   }
 
