@@ -1,5 +1,5 @@
 import React from 'react'
-import {TouchableWithoutFeedback, Image, StyleSheet} from 'react-native'
+import {TouchableWithoutFeedback, Image} from 'react-native'
 import {connect} from 'react-redux'
 import styled from 'styled-components/native'
 import {
@@ -24,6 +24,24 @@ import ViewHeader from '../../components/ViewHeader'
 const StyledView = styled.View`
   flex: 1;
   align-items: stretch;
+`
+
+const RightColumn = styled(Right)`
+  flexdirection: 'column';
+`
+const DialogImage = styled(Image)`
+  width: 500;
+  flex: 1;
+  resizemode: 'contain';
+`
+const StarIcon = styled(Icon)`
+  color: gold;
+`
+const UnlockIcon = styled(Icon)`
+  color: palegoldenrod;
+`
+const BusIcon = styled(Icon)`
+  color: dodgerblue;
 `
 
 class Account extends React.Component {
@@ -94,7 +112,7 @@ class Account extends React.Component {
               }}
               dialogAnimation={new ScaleAnimation({})}>
               <DialogContent>
-                <Image style={styles.dialogImage} source={{uri: uri}} />
+                <DialogImage source={{uri: uri}} />
               </DialogContent>
             </Dialog>
 
@@ -110,12 +128,12 @@ class Account extends React.Component {
                     <Thumbnail large source={{uri: uri}} />
                   </TouchableWithoutFeedback>
                 </Left>
-                <Right style={styles.rightColumn}>
+                <RightColumn>
                   <Text>{this.props.account.username}</Text>
                   <Button onPress={this.logout}>
                     <Text>Log out</Text>
                   </Button>
-                </Right>
+                </RightColumn>
               </ListItem>
 
               <ListItem itemDivider>
@@ -191,7 +209,7 @@ class Account extends React.Component {
               </ListItem>
               <ListItem icon>
                 <Left>
-                  <Icon active name="star" style={styles.starIcon} />
+                  <StarIcon active name="star" />
                 </Left>
                 <Body>
                   <Text>Loyalty Points</Text>
@@ -202,7 +220,7 @@ class Account extends React.Component {
               </ListItem>
               <ListItem icon>
                 <Left>
-                  <Icon name="bus" style={styles.busIcon} />
+                  <BusIcon name="bus" />
                 </Left>
                 <Body>
                   <Text>Driven Kilometers</Text>
@@ -213,7 +231,7 @@ class Account extends React.Component {
               </ListItem>
               <ListItem icon button onPress={() => {}}>
                 <Left>
-                  <Icon name="unlock" style={styles.unlockIcon} />
+                  <UnlockIcon name="unlock" />
                 </Left>
                 <Body>
                   <Text>Rewards</Text>
@@ -230,44 +248,11 @@ class Account extends React.Component {
   }
 }
 
-const palegoldenrod = 'palegoldenrod'
-const dodgerblue = 'dodgerblue'
-const gold = 'gold'
-
-const styles = StyleSheet.create({
-  unlockIcon: {
-    color: palegoldenrod,
-  },
-  busIcon: {
-    color: dodgerblue,
-  },
-  starIcon: {
-    color: gold,
-  },
-  dialogImage: {
-    // height: 100,
-    width: 500,
-    flex: 1,
-    resizeMode: 'contain',
-  },
-  rightColumn: {
-    flexDirection: 'column',
-  },
-})
-
-const mapStateToProps = state => {
-  return {
-    account: state.account,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    onFetchAccountData: () => dispatch(fetchAccountData()),
-  }
-}
-
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  state => ({
+    account: state.account,
+  }),
+  dispatch => ({
+    onFetchAccountData: () => dispatch(fetchAccountData()),
+  })
 )(Account)
