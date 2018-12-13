@@ -13,10 +13,9 @@ export default function account(state = {}, action) {
         name: fullName,
         username: action.payload.username,
         email: action.payload.email,
-        street: action.payload.street,
-        city: action.payload.city,
-        zip: action.payload.zipcode,
-        error: false,
+        street: action.payload.address.street,
+        city: action.payload.address.city,
+        zip: action.payload.address.zipcode,
       }
     default:
       return state
