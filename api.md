@@ -711,29 +711,16 @@ Get nearby virtual bus stops.
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
-| `location` | `Location` | Yes | The location where we are looking for nearby virtual bus stops. E.g. the current location, or the final destination. |
+| `latitude` | `Location` | Yes | The latitude of the center position |
+| `longitude` | `Location` | Yes | The longitude of the center position |
 | `radius` | `Number` | No | Maximum distance of the virtual bus stops to the location parameter. **Unit: meter** <br> Min: `100`; Max: `10000`; Default: `1000` |
 
 ###### Examples
 
-```json
-{
-  "location": {
-    "latitude": 52.512974,
-    "longitude": 13.329145
-  },
-  "radius": 2000
-}
-```
+```/virtualbusstops?radius=2000&latitude=52.512974&longitude=13.329145```
 
-```json
-{
-  "location": {
-    "latitude": 52.512974,
-    "longitude": 13.329145
-  }
-}
-```
+```/virtualbusstops?latitude=52.512974&longitude=13.329145```
+
 
 ##### Responses
 
