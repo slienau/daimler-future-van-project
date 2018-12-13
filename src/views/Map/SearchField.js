@@ -65,9 +65,13 @@ const SearchField = props => {
         }
       }
       // filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-      predefinedPlaces={props.map.searchResults.map(res => {
-        return {description: res.name, geometry: res.geometry}
-      })}
+      predefinedPlaces={props.map.searchResults.reduce((curAcc, curVal) => {
+        const exists = curAcc.filter(el => el.id === curVal.id).length > 0
+        if (!exists) {
+          curAcc.push({...curVal, description: curVal.name})
+        }
+        return curAcc
+      }, [])}
       debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
       renderLeftButton={() => (
         <Image

@@ -84,10 +84,37 @@ class Map extends React.Component {
     props.navigation.addListener('didFocus', payload => {
       console.log('FOCUSSED', payload)
       console.log(
-        props.map.searchResults,
-        props.map.searchResults.map(item => item.isNew)
+        this.props.map.searchResults,
+        this.props.map.searchResults.map(item => item.isNew)
       )
-      props.setLastSearchResultToOld()
+      const len = this.props.map.searchResults.length
+      console.log('props:', this.props)
+      if (len > 0) {
+        const lastSearchResult = this.props.map.searchResults[len - 1]
+        if (lastSearchResult.isNew) {
+          this.destinationMarker = (
+            <DestinationMarker
+              coordinate={{
+                latitude: lastSearchResult.geometry.location.lat,
+                longitude: lastSearchResult.geometry.location.lng,
+              }}
+              title={lastSearchResult.name}
+              description={lastSearchResult.vicinity}
+            />
+          )
+          this.setState({
+            marker: {
+              region: {
+                latitude: lastSearchResult.geometry.location.lat,
+                longitude: lastSearchResult.geometry.location.lng,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.1,
+              },
+            },
+          })
+          this.props.setLastSearchResultToOld()
+        }
+      }
     })
 
     /* let userLocationMarker = null
@@ -116,18 +143,6 @@ class Map extends React.Component {
           }}
           title={'Current Position'}
           description={''}
-        />
-      )
-    }
-
-    // When state != null --> set static marker for destination
-    // to-do: pass dynamic input
-    if (props.destinationMarker) {
-      this.destinationMarker = (
-        <DestinationMarker
-          coordinate={coordinates[1]}
-          title={'Potsdammer Platz'}
-          description={'Hier kann man die Umgebung Beschreiben.'}
         />
       )
     }
@@ -251,7 +266,6 @@ class Map extends React.Component {
 Map.propTypes = {
   currentLatitude: PropTypes.number,
   currentLongitude: PropTypes.number,
-  destinationMarker: PropTypes.string,
   map: PropTypes.object,
   routing: PropTypes.string,
   setLastSearchResultToOld: PropTypes.func,
