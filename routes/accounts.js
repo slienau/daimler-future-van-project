@@ -8,9 +8,9 @@ router.get('/:accountId', function(req, res) {
 
     // Set to admin if "me" --> later connect with session
 
-    // To-do: Errorhandling!
-    Account.find({'_id':req.params.accountId}, '-password', function(error, item){
-        res.json(item);
+    Account.find({'_id':req.params.accountId}, '-password')
+    .then(item => {
+      res.json(item);
     })
         .catch(err => res.status(404).json({err:err, msg: 'No items found' }));
 });

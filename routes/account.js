@@ -6,10 +6,10 @@ router.get('/', function(req, res) {
 
     res.setHeader('Content-Type', 'application/json');
 
-    // To-do: Errorhandling!
-    Account.findById(req.user._id, '-password', function(error, item){
-        console.log("Requested Account with id "+item._id);
-        res.json(item);
+    Account.findById(req.user._id, '-password')
+    .then(item => {
+      console.log("Requested Account with id "+item._id);
+      res.json(item);
     })
         .catch(err => res.status(404).json({err:err, msg: 'No items found' }));
 

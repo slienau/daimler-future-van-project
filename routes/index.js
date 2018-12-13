@@ -26,7 +26,7 @@ router.post("/", async function(req,res){
     res.setHeader('Content-Type', 'application/json');
     PastRide.find()
         .then(items => res.json(items))
-        .catch(err => res.status(404).json({ msg: 'No items found' }));
+        .catch(err => res.status(404).json({ err: err, msg: 'No items found' }));
 });
 
 
