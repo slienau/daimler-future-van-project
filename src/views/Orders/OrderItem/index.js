@@ -3,19 +3,20 @@ import PropTypes from 'prop-types'
 import {Text, ListItem, Left, Right, Icon, Body} from 'native-base'
 
 const OrderItem = props => {
-  console.log('order item: ' + props.id, props.orderTime)
+  const dateTimeString = props.orderTime.toLocaleString().split(', ')
   return (
-    <ListItem icon button onPress={() => alert('TODO')}>
+    <ListItem button style={itemStyle} onPress={() => alert('TODO')}>
       <Left>
         <Text>
-          Date{'\n'}
-          Time
+          {dateTimeString[0]}
+          {'\n'}
+          {dateTimeString[1].substr(0, 5)}
         </Text>
       </Left>
       <Body>
         <Text>
-          Start{'\n'}
-          Destination
+          TODO: Start{'\n'}
+          TODO: Destination
         </Text>
       </Body>
       <Right>
@@ -25,8 +26,12 @@ const OrderItem = props => {
   )
 }
 
+const itemStyle = {
+  // marginTop: 5,
+  // marginBottom: 5,
+}
+
 OrderItem.propTypes = {
-  id: PropTypes.string,
   orderTime: PropTypes.string,
 }
 

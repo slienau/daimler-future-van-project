@@ -16,11 +16,16 @@ export default function orders(state = initialState, action) {
     case SET_ORDER_DATA:
       const newState = deepCopy(state)
       action.payload.forEach(order => {
+        order.orderTime = new Date(order.orderTime)
+        order.startTime = new Date(order.startTime)
+        order.endTime = new Date(order.endTime)
         // we can only have one active order at the time
         if (order.active) newState.activeOrder = order
         else {
           // don't push duplicate orders to the pastOrders array
-          if (!newState.pastOrders.some(someOrder => someOrder.id === order.id))
+          if (
+            !newState.pastOrders.some(someOrder => someOrder._id === order._id)
+          )
             newState.pastOrders.push(order)
         }
       })

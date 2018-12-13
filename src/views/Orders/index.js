@@ -19,13 +19,37 @@ class Orders extends Component {
   }
 
   componentDidMount() {
-    this.props.onFetchOrders()
+    this.fetchOrderData()
+  }
+
+  async fetchOrderData() {
+    this.setState({
+      loading: true,
+      error: false,
+    })
+
+    try {
+      await this.props.onFetchOrders()
+    } catch (error) {
+      alert('Something went wrong while fetching order data')
+      console.log(error)
+      this.setState({
+        error: true,
+      })
+    }
+
+    this.setState({
+      loading: false,
+    })
   }
 
   render() {
-    console.log(this.props.activeOrder)
-    console.log(this.props.pastOrders)
-    const activeOrderItem = <Text>There is no active order at the moment.</Text> // TODO
+    let activeOrderItem = null
+    if (!this.props.activeOrder) {
+      activeOrderItem = <Text>There is no active order at the moment.</Text>
+    } else {
+      activeOrderItem = <Text>TODO: show active order</Text>
+    }
     return (
       <StyledView>
         <Container>
@@ -41,7 +65,7 @@ class Orders extends Component {
             <Separator bordered>
               <Text>PAST ORDERS</Text>
             </Separator>
-            <List dataArray={pastOrdersForTesting} renderRow={OrderItem} />
+            <List dataArray={this.props.pastOrders} renderRow={OrderItem} />
           </Content>
         </Container>
       </StyledView>
@@ -63,7 +87,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 Orders.propTypes = {
-  activeOrder: PropTypes.obj,
+  activeOrder: PropTypes.object,
   onFetchOrders: PropTypes.func,
   pastOrders: PropTypes.array,
 }
@@ -72,56 +96,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Orders)
-
-const pastOrdersForTesting = [
-  {
-    id: '13cf81ee-8898-4b7a-a96e-8b5f675deb3c',
-    accountId: '0e8cedd0-ad98-11e6-bf2e-47644ada7c0f',
-    orderTime: '2018-02-23T18:25:43.511Z',
-    active: false,
-    canceled: false,
-    virtualBusStopStart: {
-      id: '7416550b-d47d-4947-b7ec-423c9fade07f',
-      accessible: true,
-      location: {
-        latitude: 52.515598,
-        longitude: 13.32686,
-      },
-    },
-    virtualBusStopEnd: {
-      id: '76d7fb2f-c264-45a0-ad65-b21c5cf4b532',
-      accessible: true,
-      location: {
-        latitude: 52.512974,
-        longitude: 13.329145,
-      },
-    },
-    startTime: '2018-02-23T18:30:25.000Z',
-    endTime: '2018-02-23T18:45:48.000Z',
-  },
-  {
-    id: '32c6281a-b05c-4cb7-8926-739842c0be86',
-    accountId: '0e8cedd0-ad98-11e6-bf2e-47644ada7c0f',
-    orderTime: '2018-03-23T18:25:43.511Z',
-    active: false,
-    canceled: false,
-    virtualBusStopStart: {
-      id: '7416550b-d47d-4947-b7ec-423c9fade07f',
-      accessible: true,
-      location: {
-        latitude: 52.515598,
-        longitude: 13.32686,
-      },
-    },
-    virtualBusStopEnd: {
-      id: '76d7fb2f-c264-45a0-ad65-b21c5cf4b532',
-      accessible: true,
-      location: {
-        latitude: 52.512974,
-        longitude: 13.329145,
-      },
-    },
-    startTime: '2018-03-23T18:30:25.000Z',
-    endTime: '2018-03-23T18:45:48.000Z',
-  },
-]
