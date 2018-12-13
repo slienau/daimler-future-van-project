@@ -8,7 +8,6 @@ router.get('/', function (req, res) {
 })
 router.post('/', function (req, res) {
   passport.authenticate('local', { session: false }, (err, user, info) => {
-
     if (err || !user) {
       return res.status(400).json({
         message: 'Something is not right',
@@ -21,7 +20,7 @@ router.post('/', function (req, res) {
       }
       // generate a signed son web token with the contents of user object and return it in the response
       const token = jwt.sign({ id: user._id, username: user.username }, 'pas-secret', { expiresIn: '24h' })
-        console.log("User "+user.username+" just logged in.")
+      console.log('User ' + user.username + ' just logged in.')
       return res.json({ userId: user._id, token: token })
     })
   })(req, res)

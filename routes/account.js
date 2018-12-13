@@ -39,6 +39,6 @@ router.get('/orders', function (req, res) {
     'startTime': '2018-02-23T18:30:25.000Z',
     'endTime': '2018-02-23T18:45:48.000Z'
   }])
-});
+})
 
 module.exports = router
