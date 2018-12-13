@@ -2,7 +2,6 @@ const createError = require('http-errors')
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
-const secure = require('express-force-https')
 
 const indexRouter = require('./routes/index')
 const accountsRouter = require('./routes/accounts')
@@ -12,7 +11,6 @@ const passport = require('passport')
 require('./passport')
 
 const app = express()
-app.use(secure)
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 // view engine setup
