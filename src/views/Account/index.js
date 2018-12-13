@@ -19,7 +19,7 @@ import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
 import PropTypes from 'prop-types'
 import {fetchAccountData} from '../../ducks/account'
 import {clearToken} from '../../lib/api'
-import {ViewHeader} from '../../components/ViewHeader'
+import ViewHeader from '../../components/ViewHeader'
 
 const StyledView = styled.View`
   flex: 1;
