@@ -1,17 +1,5 @@
 import React, {Component} from 'react'
-import {
-  Body,
-  Container,
-  Header,
-  Left,
-  Item,
-  Input,
-  Title,
-  Button,
-  Text,
-  Icon,
-  Fab,
-} from 'native-base'
+import {Container, Button, Text, Icon, Fab} from 'native-base'
 
 import Map from '../Map'
 import styled from 'styled-components/native'
@@ -28,6 +16,11 @@ const StyledButton = styled(Button)`
 const StyledFab = styled(Fab)`
   margin-bottom: 55px;
 `
+// For bottom button
+const StyledMenu = styled(Fab)`
+  margin-top: 5px;
+  background-color: gray;
+`
 
 export default class Welcome extends Component {
   // DrawNavigator settings
@@ -42,6 +35,15 @@ export default class Welcome extends Component {
       userLocationMarker: null,
       destinationMarker: null,
       routing: null,
+      error: null,
+      marker: {
+        region: {
+          latitude: 52.509663,
+          longitude: 13.376481,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.1,
+        },
+      },
     }
   }
 
@@ -60,11 +62,16 @@ export default class Welcome extends Component {
   showCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
       position => {
-        // alert(position.coords.latitude+"\n"+position.coords.longitude);
         this.setState({
           marker: {
-            current_latitude: position.coords.latitude,
-            current_longitude: position.coords.longitude,
+            region: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.1,
+            },
+            currentLatitude: position.coords.latitude,
+            currentLongitude: position.coords.longitude,
             error: null,
           },
         })
@@ -79,36 +86,17 @@ export default class Welcome extends Component {
     return (
       <Container>
         {/* Header with menu-slider (without header or transparent header?) */}
-        <Header>
-          <Left>
-            <Button transparent>
-              <Icon
-                name="menu"
-                onPress={() => this.props.navigation.openDrawer()}
-              />
-            </Button>
-          </Left>
-          <Body>
-            <Title>Navigation</Title>
-          </Body>
-        </Header>
-
-        {/* start location input */}
-        <Header searchBar rounded>
-          <Item>
-            <Icon name="ios-search" />
-            <Input placeholder="From" />
-          </Item>
-        </Header>
-        <Header searchBar rounded>
-          <Item>
-            <Icon name="ios-search" />
-            <Input placeholder="To" />
-          </Item>
-        </Header>
 
         {/* Map */}
         <Map {...this.state.marker} />
+        <StyledMenu
+          active={this.state.active}
+          direction="up"
+          containerStyle={{}}
+          position="topLeft"
+          onPress={() => this.props.navigation.openDrawer()}>
+          <Icon name="menu" />
+        </StyledMenu>
 
         {/* Floating Button to show current location */}
         <StyledFab

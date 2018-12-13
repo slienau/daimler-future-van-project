@@ -54,12 +54,12 @@ const Map = props => {
     )
   }
 
-  if (props.current_latitude && props.current_longitude) {
+  if (props.currentLatitude && props.currentLongitude) {
     currentLocationMarker = (
       <PersonMarker
         coordinate={{
-          latitude: props.current_latitude,
-          longitude: props.current_longitude,
+          latitude: props.currentLatitude,
+          longitude: props.currentLongitude,
         }}
         title={'Current Position'}
         description={''}
@@ -110,13 +110,7 @@ const Map = props => {
 
   return (
     <StyledView>
-      <StyledMapView
-        initialRegion={{
-          latitude: 52.509663,
-          longitude: 13.376481,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.1,
-        }}>
+      <StyledMapView region={props.region}>
         {userLocationMarker}
         {destinationMarker}
         {routing}
@@ -129,9 +123,10 @@ const Map = props => {
 }
 
 Map.propTypes = {
-  current_latitude: PropTypes.float,
-  current_longitude: PropTypes.float,
+  currentLatitude: PropTypes.number,
+  currentLongitude: PropTypes.number,
   destinationMarker: PropTypes.string,
+  region: PropTypes.object,
   routing: PropTypes.string,
   userLocationMarker: PropTypes.string,
 }
