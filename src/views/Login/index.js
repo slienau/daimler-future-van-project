@@ -12,21 +12,16 @@ import {
   Button,
   Text,
 } from 'native-base'
-import {connect} from 'react-redux'
-import styled from 'styled-components/native'
 import _ from 'lodash'
-import PropTypes from 'prop-types'
-import {login} from '../../ducks/account'
+import styled from 'styled-components/native'
+
+import api, {setToken} from '../../lib/api'
 
 const StyledButton = styled(Button)`
   margin-top: 50px;
 `
 
-class Login extends React.Component {
-  static propTypes = {
-    login: PropTypes.func,
-  }
-
+export default class Login extends React.Component {
   state = {
     username: '',
     password: '',
@@ -34,11 +29,15 @@ class Login extends React.Component {
 
   login = async () => {
     try {
-      await this.props.login(this.state)
+      const {data} = await api.post(
+        '/login',
+        _.pick(this.state, ['username', 'password'])
+      )
+      setToken(data.token)
       this.props.navigation.navigate('MainView')
     } catch (err) {
       if (_.get(err, 'response.status') !== 400) throw err
-      alert('Invalid username or password')
+      alert('Invalid username or password!')
     }
   }
 
@@ -84,10 +83,3 @@ class Login extends React.Component {
     )
   }
 }
-
-export default connect(
-  state => ({}),
-  dispatch => ({
-    login: data => dispatch(login(data)),
-  })
-)(Login)

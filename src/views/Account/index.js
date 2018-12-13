@@ -1,34 +1,47 @@
 import React from 'react'
-import {
-  AsyncStorage,
-  TouchableWithoutFeedback,
-  Image,
-  StyleSheet,
-} from 'react-native'
+import {TouchableWithoutFeedback, Image} from 'react-native'
 import {connect} from 'react-redux'
 import styled from 'styled-components/native'
 import {
+  Body,
+  Button,
   Container,
   Content,
-  Button,
-  Right,
   Icon,
   Left,
-  Body,
   List,
   ListItem,
+  Right,
   Text,
   Thumbnail,
-  Header,
-  Title,
 } from 'native-base'
 import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
 import PropTypes from 'prop-types'
 import {fetchAccountData} from '../../ducks/account'
+import {clearToken} from '../../lib/api'
+import ViewHeader from '../../components/ViewHeader'
 
 const StyledView = styled.View`
   flex: 1;
   align-items: stretch;
+`
+
+const RightColumn = styled(Right)`
+  flex-direction: column;
+`
+const DialogImage = styled(Image)`
+  width: 500;
+  flex: 1;
+  resizemode: contain;
+`
+const StarIcon = styled(Icon)`
+  color: gold;
+`
+const UnlockIcon = styled(Icon)`
+  color: palegoldenrod;
+`
+const BusIcon = styled(Icon)`
+  color: dodgerblue;
 `
 
 class Account extends React.Component {
@@ -44,14 +57,37 @@ class Account extends React.Component {
 
   state = {
     avatarVisible: false,
+    loading: false,
+    error: false,
   }
 
   componentDidMount() {
-    this.props.onFetchAccountData()
+    this.fetchAccountData()
+  }
+
+  fetchAccountData = async () => {
+    this.setState({
+      loading: true,
+      error: false,
+    })
+
+    try {
+      await this.props.onFetchAccountData()
+    } catch (error) {
+      alert('Something went wrong while fetching account data')
+      console.log(error)
+      this.setState({
+        error: true,
+      })
+    }
+
+    this.setState({
+      loading: false,
+    })
   }
 
   logout = async () => {
-    await AsyncStorage.clear()
+    await clearToken()
     this.props.navigation.navigate('Login')
   }
 
@@ -61,21 +97,10 @@ class Account extends React.Component {
     return (
       <StyledView>
         <Container>
-          {/* Header with menu-slider (without header or transparent header?) */}
-          <Header>
-            <Left>
-              <Button transparent>
-                <Icon
-                  name="menu"
-                  onPress={() => this.props.navigation.openDrawer()}
-                />
-              </Button>
-            </Left>
-            <Body>
-              <Title>Account</Title>
-            </Body>
-          </Header>
-
+          <ViewHeader
+            title="Account"
+            onMenuPress={() => this.props.navigation.openDrawer()}
+          />
           <Content>
             <Dialog
               height={0.5}
@@ -87,7 +112,7 @@ class Account extends React.Component {
               }}
               dialogAnimation={new ScaleAnimation({})}>
               <DialogContent>
-                <Image style={styles.dialogImage} source={{uri: uri}} />
+                <DialogImage source={{uri: uri}} />
               </DialogContent>
             </Dialog>
 
@@ -103,12 +128,12 @@ class Account extends React.Component {
                     <Thumbnail large source={{uri: uri}} />
                   </TouchableWithoutFeedback>
                 </Left>
-                <Right style={styles.rightColumn}>
+                <RightColumn>
                   <Text>{this.props.account.username}</Text>
                   <Button onPress={this.logout}>
                     <Text>Log out</Text>
                   </Button>
-                </Right>
+                </RightColumn>
               </ListItem>
 
               <ListItem itemDivider>
@@ -184,7 +209,7 @@ class Account extends React.Component {
               </ListItem>
               <ListItem icon>
                 <Left>
-                  <Icon active name="star" style={styles.starIcon} />
+                  <StarIcon active name="star" />
                 </Left>
                 <Body>
                   <Text>Loyalty Points</Text>
@@ -195,7 +220,7 @@ class Account extends React.Component {
               </ListItem>
               <ListItem icon>
                 <Left>
-                  <Icon name="bus" style={styles.busIcon} />
+                  <BusIcon name="bus" />
                 </Left>
                 <Body>
                   <Text>Driven Kilometers</Text>
@@ -206,7 +231,7 @@ class Account extends React.Component {
               </ListItem>
               <ListItem icon button onPress={() => {}}>
                 <Left>
-                  <Icon name="unlock" style={styles.unlockIcon} />
+                  <UnlockIcon name="unlock" />
                 </Left>
                 <Body>
                   <Text>Rewards</Text>
@@ -223,44 +248,11 @@ class Account extends React.Component {
   }
 }
 
-const palegoldenrod = 'palegoldenrod'
-const dodgerblue = 'dodgerblue'
-const gold = 'gold'
-
-const styles = StyleSheet.create({
-  unlockIcon: {
-    color: palegoldenrod,
-  },
-  busIcon: {
-    color: dodgerblue,
-  },
-  starIcon: {
-    color: gold,
-  },
-  dialogImage: {
-    // height: 100,
-    width: 500,
-    flex: 1,
-    resizeMode: 'contain',
-  },
-  rightColumn: {
-    flexDirection: 'column',
-  },
-})
-
-const mapStateToProps = state => {
-  return {
-    account: state.account,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    onFetchAccountData: () => dispatch(fetchAccountData()),
-  }
-}
-
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  state => ({
+    account: state.account,
+  }),
+  dispatch => ({
+    onFetchAccountData: () => dispatch(fetchAccountData()),
+  })
 )(Account)
