@@ -12,7 +12,6 @@ import Map from '../views/Map'
 import Account from '../views/Account'
 import Orders from '../views/Orders'
 import Games from '../views/Games'
-import Information from '../views/Information'
 import {configureStore} from './store'
 
 const MainView = createDrawerNavigator(
@@ -21,7 +20,6 @@ const MainView = createDrawerNavigator(
     Map,
     Orders,
     Games,
-    Information,
   },
   {
     initialRouteName: 'Map',
