@@ -1,6 +1,6 @@
 import api from '../lib/api'
 import moment from 'moment'
-import {deepCopy} from '../lib/utils'
+import _ from 'lodash'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
 export const CREATE_ORDER = 'orders/CREATE_ORDER'
@@ -15,7 +15,7 @@ const initialState = {
 export default function orders(state = initialState, action) {
   switch (action.type) {
     case SET_ORDER_DATA:
-      const newState = deepCopy(state)
+      const newState = _.cloneDeep(state)
       action.payload.forEach(order => {
         order.orderTime = moment(order.orderTime)
         order.startTime = moment(order.startTime)
