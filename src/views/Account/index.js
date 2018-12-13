@@ -27,12 +27,12 @@ const StyledView = styled.View`
 `
 
 const RightColumn = styled(Right)`
-  flexdirection: 'column';
+  flex-direction: column;
 `
 const DialogImage = styled(Image)`
   width: 500;
   flex: 1;
-  resizemode: 'contain';
+  resizemode: contain;
 `
 const StarIcon = styled(Icon)`
   color: gold;
