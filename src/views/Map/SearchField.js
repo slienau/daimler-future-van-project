@@ -90,7 +90,7 @@ const SearchField = props => {
 }
 
 SearchField.propTypes = {
-  addSearchResult: PropTypes.function,
+  addSearchResult: PropTypes.func,
   map: PropTypes.object,
 }
 

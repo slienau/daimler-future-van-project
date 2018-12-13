@@ -131,7 +131,7 @@ Map.propTypes = {
   destinationMarker: PropTypes.string,
   map: PropTypes.object,
   routing: PropTypes.string,
-  setLastSearchResultToOld: PropTypes.function,
+  setLastSearchResultToOld: PropTypes.func,
   userLocationMarker: PropTypes.string,
 }
 
@@ -143,8 +143,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    setLastSearchResultToOld: () =>
-      dispatch({type: act.SET_LAST_SEARCH_RESULT_TO_OLD}),
+    setLastSearchResultToOld: () => {
+      dispatch({type: act.SET_LAST_SEARCH_RESULT_TO_OLD})
+    },
   }
 }
 
