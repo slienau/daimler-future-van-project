@@ -3,24 +3,23 @@ import {TouchableWithoutFeedback, Image, StyleSheet} from 'react-native'
 import {connect} from 'react-redux'
 import styled from 'styled-components/native'
 import {
+  Body,
+  Button,
   Container,
   Content,
-  Button,
-  Right,
   Icon,
   Left,
-  Body,
   List,
   ListItem,
+  Right,
   Text,
   Thumbnail,
-  Header,
-  Title,
 } from 'native-base'
 import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
 import PropTypes from 'prop-types'
 import {fetchAccountData} from '../../ducks/account'
 import {clearToken} from '../../lib/api'
+import {ViewHeader} from '../../components/ViewHeader'
 
 const StyledView = styled.View`
   flex: 1;
@@ -80,21 +79,10 @@ class Account extends React.Component {
     return (
       <StyledView>
         <Container>
-          {/* Header with menu-slider (without header or transparent header?) */}
-          <Header>
-            <Left>
-              <Button transparent>
-                <Icon
-                  name="menu"
-                  onPress={() => this.props.navigation.openDrawer()}
-                />
-              </Button>
-            </Left>
-            <Body>
-              <Title>Account</Title>
-            </Body>
-          </Header>
-
+          <ViewHeader
+            title="Account"
+            onMenuPress={() => this.props.navigation.openDrawer()}
+          />
           <Content>
             <Dialog
               height={0.5}
