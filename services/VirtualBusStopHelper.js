@@ -24,6 +24,30 @@ class VirtualBusStopHelper {
     await zoo.save()
     await potsdamerPl.save()
   }
+
+  static async getRouteSuggestions (start, destination, startTime) {
+    let suggestions = []
+    let vbs
+
+    try {
+      vbs = await VirtualBusStop.find({})
+    } catch (error) {
+      return error
+    }
+
+    suggestions.push({
+      startLocation: start,
+      destination: destination,
+      startStation: vbs[0],
+      endStation: vbs[1],
+      travelTime: 28,
+      vanTime: 15,
+      vanArrivalTime: 6
+
+    })
+
+    return suggestions
+  }
 }
 
 module.exports = VirtualBusStopHelper

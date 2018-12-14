@@ -59,6 +59,46 @@ class OrderHelper {
     await order1.save()
     await order2.save()
   }
+
+  static async createOrder (accountID, virtualBusStopStart, virtualBusStopEnd, startTime, arrivalTime) {
+    const vbs = []
+    try {
+      vbs[0] = await VirtualBusStop.findById(virtualBusStopStart)
+      vbs[1] = await VirtualBusStop.findById(virtualBusStopEnd)
+    } catch (error) {
+      return error
+    }
+
+    const pickupTime = startTime ? new Date(startTime) : null
+    const destTime = startTime ? new Date(startTime) : null
+
+    const newOrder = new Order({
+
+      accountID: accountID,
+      orderTime: new Date(),
+      active: true,
+      canceled: false,
+      virtualBusStopStart: vbs[0]._id,
+      virtualBusStopEnd: vbs[1]._id,
+      startTime: pickupTime,
+      endTime: destTime
+    })
+    try {
+      await newOrder.save()
+    } catch (error) {
+      return error
+    }
+    return {
+      accountID: accountID,
+      orderTime: new Date(),
+      active: true,
+      canceled: false,
+      virtualBusStopStart: vbs[0],
+      virtualBusStopEnd: vbs[1],
+      startTime: pickupTime,
+      endTime: destTime
+    }
+  }
 }
 
 module.exports = OrderHelper

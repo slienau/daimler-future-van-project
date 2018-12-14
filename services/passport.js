@@ -6,7 +6,7 @@ const ExtractJWT = passportJWT.ExtractJwt
 const LocalStrategy = require('passport-local').Strategy
 const JWTStrategy = passportJWT.Strategy
 
-const Account = require('./models/Account.js')
+const Account = require('../models/Account.js')
 
 passport.use(new LocalStrategy({
   usernameField: 'username',

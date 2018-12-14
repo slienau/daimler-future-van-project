@@ -29,11 +29,11 @@ const OrderSchema = new Schema({
   },
   startTime: {
     type: Date,
-    required: true
+    required: false
   },
   endTime: {
     type: Date,
-    required: true
+    required: false
   }
 }
 )
