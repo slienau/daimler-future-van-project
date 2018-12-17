@@ -4,7 +4,7 @@
 ## Backend hosted on Azure
 
 40.89.153.255:8080 <br />
-See API Documentation under https://pas-daimlervan.restlet.io/
+See API Documentation under https://github.com/pasws18/documentation
 
 ## Run the app
 You need to have docker and docker compose installed.
