@@ -1,21 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Text, ListItem, Left, Right, Icon, Body} from 'native-base'
+import {Text, ListItem, Right, Icon, Body} from 'native-base'
+import {StyleSheet} from 'react-native'
 
 const OrderItem = props => {
   return (
-    <ListItem button style={itemStyle} onPress={() => alert('TODO')}>
-      <Left>
-        <Text>
-          {props.orderTime.format('L')}
-          {'\n'}
-          {props.orderTime.format('LT')}
-        </Text>
-      </Left>
+    <ListItem button style={styles.itemStyle} onPress={() => alert('TODO')}>
       <Body>
         <Text>
-          TODO: Start{'\n'}
-          TODO: Destination
+          <Text style={styles.time}>
+            {props.orderTime.format('L, LT')}
+            {'\n'}
+          </Text>
+          <Text>
+            From: Start{'\n'}
+            To: Destination
+          </Text>
         </Text>
       </Body>
       <Right>
@@ -25,13 +25,15 @@ const OrderItem = props => {
   )
 }
 
-const itemStyle = {
-  // marginTop: 5,
-  // marginBottom: 5,
-}
-
 OrderItem.propTypes = {
   orderTime: PropTypes.string,
 }
+
+const styles = StyleSheet.create({
+  time: {
+    fontWeight: 'bold',
+  },
+  itemStyle: {},
+})
 
 export default OrderItem
