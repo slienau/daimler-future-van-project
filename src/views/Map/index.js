@@ -227,6 +227,45 @@ class Map extends React.Component {
     )
   }
 
+  // from: https://github.com/react-native-community/react-native-maps/issues/505#issuecomment-243423775
+  // expects a list of two coordinate objects and returns a region as specified by the react-native-maps components
+  getRegionForCoordinates(points) {
+    // points should be an array of { latitude: X, longitude: Y }
+    let minX,
+      maxX,
+      minY,
+      maxY
+
+      // init first point
+    ;(point => {
+      minX = point.latitude
+      maxX = point.latitude
+      minY = point.longitude
+      maxY = point.longitude
+    })(points[0])
+
+    // calculate rect
+    points.map(point => {
+      minX = Math.min(minX, point.latitude)
+      maxX = Math.max(maxX, point.latitude)
+      minY = Math.min(minY, point.longitude)
+      maxY = Math.max(maxY, point.longitude)
+    })
+
+    const midX = (minX + maxX) / 2
+    const midY = (minY + maxY) / 2
+    // added to factors to the delta values to act as a margin (higher factor -> lower zoom/more margin)
+    const deltaX = (maxX - minX) * 1.5
+    const deltaY = (maxY - minY) * 1.5
+
+    return {
+      latitude: midX,
+      longitude: midY,
+      latitudeDelta: deltaX,
+      longitudeDelta: deltaY,
+    }
+  }
+
   showCurrentLocation() {
     this.setState({
       marker: {
