@@ -4,6 +4,7 @@ import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
 // import MapViewDirections from 'react-native-maps-directions'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
 import Marker from './Marker'
 import {virtualBusStops, vanPositions} from './markerPositions'
 import {createStackNavigator} from 'react-navigation'
@@ -230,39 +231,16 @@ class Map extends React.Component {
   // from: https://github.com/react-native-community/react-native-maps/issues/505#issuecomment-243423775
   // expects a list of two coordinate objects and returns a region as specified by the react-native-maps components
   getRegionForCoordinates(points) {
-    // points should be an array of { latitude: X, longitude: Y }
-    let minX,
-      maxX,
-      minY,
-      maxY
-
-      // init first point
-    ;(point => {
-      minX = point.latitude
-      maxX = point.latitude
-      minY = point.longitude
-      maxY = point.longitude
-    })(points[0])
-
-    // calculate rect
-    points.map(point => {
-      minX = Math.min(minX, point.latitude)
-      maxX = Math.max(maxX, point.latitude)
-      minY = Math.min(minY, point.longitude)
-      maxY = Math.max(maxY, point.longitude)
-    })
-
-    const midX = (minX + maxX) / 2
-    const midY = (minY + maxY) / 2
-    // added to factors to the delta values to act as a margin (higher factor -> lower zoom/more margin)
-    const deltaX = (maxX - minX) * 1.5
-    const deltaY = (maxY - minY) * 1.5
+    const minX = _.min(_.map(points, 'latitude'))
+    const maxX = _.max(_.map(points, 'latitude'))
+    const minY = _.min(_.map(points, 'longitude'))
+    const maxY = _.max(_.map(points, 'longitude'))
 
     return {
-      latitude: midX,
-      longitude: midY,
-      latitudeDelta: deltaX,
-      longitudeDelta: deltaY,
+      latitude: (minX + maxX) / 2,
+      longitude: (minY + maxY) / 2,
+      latitudeDelta: (maxX - minX) * 1.5,
+      longitudeDelta: (maxY - minY) * 1.5,
     }
   }
 
