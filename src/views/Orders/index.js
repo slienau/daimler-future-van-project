@@ -6,13 +6,15 @@ import styled from 'styled-components/native/dist/styled-components.native.esm'
 import MainViewHeader from '../../components/ViewHeaders/MainViewHeader'
 import {fetchOrders} from '../../ducks/orders'
 import OrderItem from './OrderItem'
+import OrderDetail from './OrderDetail'
+import {createStackNavigator} from 'react-navigation'
 
 const StyledView = styled.View`
   flex: 1;
   align-items: stretch;
 `
 
-class Orders extends Component {
+class OrderList extends Component {
   state = {
     loading: false,
     error: false,
@@ -65,7 +67,20 @@ class Orders extends Component {
             <Separator bordered>
               <Text>PAST ORDERS</Text>
             </Separator>
-            <List dataArray={this.props.pastOrders} renderRow={OrderItem} />
+            <List
+              dataArray={this.props.pastOrders}
+              renderRow={item => (
+                <OrderItem
+                  key={item._id}
+                  order={item}
+                  onItemPress={() =>
+                    this.props.navigation.navigate('OrderDetail', {
+                      order: item,
+                    })
+                  }
+                />
+              )}
+            />
           </Content>
         </Container>
       </StyledView>
@@ -86,13 +101,38 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-Orders.propTypes = {
+OrderList.propTypes = {
   activeOrder: PropTypes.object,
   onFetchOrders: PropTypes.func,
   pastOrders: PropTypes.array,
 }
 
-export default connect(
+const OrderListScreen = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Orders)
+)(OrderList)
+
+const Orders = createStackNavigator(
+  {
+    OrderList: {
+      screen: OrderListScreen,
+      navigationOptions: {
+        header: null,
+      },
+    },
+    OrderDetail: {
+      screen: OrderDetail,
+      navigationOptions: {
+        header: null,
+      },
+    },
+  },
+  {
+    initialRouteName: 'OrderList',
+    defaultNavigationOptions: {
+      header: null,
+    },
+  }
+)
+
+export default Orders

@@ -5,16 +5,19 @@ import {StyleSheet} from 'react-native'
 
 const OrderItem = props => {
   return (
-    <ListItem button style={styles.itemStyle} onPress={() => alert('TODO')}>
+    <ListItem
+      button
+      style={styles.itemStyle}
+      onPress={() => props.onItemPress()}>
       <Body>
         <Text>
           <Text style={styles.time}>
-            {props.orderTime.format('L, LT')}
+            {props.order.orderTime.format('L, LT')}
             {'\n'}
           </Text>
           <Text>
-            From: Start{'\n'}
-            To: Destination
+            From: {props.order.virtualBusStopStart.name} {'\n'}
+            To: {props.order.virtualBusStopEnd.name}
           </Text>
         </Text>
       </Body>
@@ -26,7 +29,8 @@ const OrderItem = props => {
 }
 
 OrderItem.propTypes = {
-  orderTime: PropTypes.string,
+  onItemPress: PropTypes.func,
+  order: PropTypes.object,
 }
 
 const styles = StyleSheet.create({
