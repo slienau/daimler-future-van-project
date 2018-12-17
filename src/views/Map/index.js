@@ -4,12 +4,9 @@ import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
 // import MapViewDirections from 'react-native-maps-directions'
 import PropTypes from 'prop-types'
-import VirtualBusStopMarker from './VirtualBusStopMarker'
-import VanMarker from './VanMarker'
-import PersonMarker from './PersonMarker'
-import DestinationMarker from './DestinationMarker'
+import Marker from './Marker'
 import {virtualBusStops, vanPositions} from './markerPositions'
-import {createStackNavigator, createAppContainer} from 'react-navigation'
+import {createStackNavigator} from 'react-navigation'
 import SearchView from './SearchField'
 import {connect} from 'react-redux'
 import * as act from '../../ducks/map'
@@ -113,13 +110,14 @@ class Map extends React.Component {
         const lastSearchResult = this.props.map.searchResults[len - 1]
         if (lastSearchResult.isNew) {
           this.destinationMarker = (
-            <DestinationMarker
-              coordinate={{
+            <Marker
+              location={{
                 latitude: lastSearchResult.geometry.location.lat,
                 longitude: lastSearchResult.geometry.location.lng,
               }}
               title={lastSearchResult.name}
               description={lastSearchResult.vicinity}
+              image="destination"
             />
           )
           // this.routing = (
@@ -193,15 +191,16 @@ class Map extends React.Component {
     // hard coded virtual bus stops and vans
     this.virtualBusStopMarkers = virtualBusStops.map(virtualBusStop => {
       return (
-        <VirtualBusStopMarker
+        <Marker
           key={virtualBusStop.id}
           location={virtualBusStop.location}
+          image="vbs"
         />
       )
     })
 
     this.vanMarkers = vanPositions.map(van => {
-      return <VanMarker key={van.id} location={van.location} />
+      return <Marker key={van.id} location={van.location} image="van" />
     })
   }
 
@@ -235,12 +234,13 @@ class Map extends React.Component {
       },
     })
     this.userLocationMarker = (
-      <PersonMarker
-        coordinate={{
+      <Marker
+        location={{
           latitude: this.state.currentLatitude,
           longitude: this.state.currentLongitude,
         }}
         title={'My Current Location'}
+        image="person"
       />
     )
   }
@@ -309,29 +309,23 @@ Map.propTypes = {
   setLastSearchResultToOld: PropTypes.func,
 }
 
-const mapStateToProps = state => {
-  return {
+const MapScreen = connect(
+  state => ({
     map: state.map,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
+  }),
+  dispatch => ({
     setLastSearchResultToOld: () => {
       dispatch({type: act.SET_LAST_SEARCH_RESULT_TO_OLD})
     },
-  }
-}
+  })
+)(Map)
 
 // we create a stack navigator with the map as default and the search view, so that it can be placed on top
 // of the map to get the start and destination
-const MapNavigator = createStackNavigator(
+export default createStackNavigator(
   {
     Map: {
-      screen: connect(
-        mapStateToProps,
-        mapDispatchToProps
-      )(Map),
+      screen: MapScreen,
       navigationOptions: () => ({
         header: null,
         drawerIcon: () => <Icon name="map" />,
@@ -345,5 +339,3 @@ const MapNavigator = createStackNavigator(
     initialRouteName: 'Map',
   }
 )
-
-export default createAppContainer(MapNavigator)
