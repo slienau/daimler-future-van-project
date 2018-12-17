@@ -2,15 +2,17 @@ import React from 'react'
 import {Alert} from 'react-native'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
-// import MapViewDirections from 'react-native-maps-directions'
+import MapViewDirections from 'react-native-maps-directions'
 import PropTypes from 'prop-types'
 import Marker from './Marker'
+import SearchForm from '../Map/SearchForm'
+import BottomButtons from '../Map/BottomButtons'
 import {virtualBusStops, vanPositions} from './markerPositions'
 import {createStackNavigator} from 'react-navigation'
 import SearchView from './SearchField'
 import {connect} from 'react-redux'
 import * as act from '../../ducks/map'
-import {Container, Button, Text, Icon, Fab} from 'native-base'
+import {Container, Icon, Fab} from 'native-base'
 
 /* const StyledContainer = styled(Container)`
   flex: 1;
@@ -28,24 +30,26 @@ const StyledMapView = styled(MapView)`
 `
 
 // For bottom button
-const StyledButton = styled(Button)`
-  position: absolute;
-  left: 30%;
-  right: 30%;
-  bottom: 4%;
-`
-const StyledPlaceOrderButton = styled(Button)`
-  position: absolute;
-  right: 10%;
-  left: 50%;
-  bottom: 3%;
-`
-const StyledCancelOrderButton = styled(Button)`
-  position: absolute;
-  left: 15%;
-  right: 70%;
-  bottom: 3%;
-`
+// const StyledButton = styled(Button)`
+//   position: absolute;
+//   left: 30%;
+//   right: 30%;
+//   bottom: 4%;
+// `
+//
+// const StyledCancelOrderButton = styled(Button)`
+//   position: absolute;
+//   left: 15%;
+//   right: 70%;
+//   bottom: 3%;
+// `
+
+// const StyledTestButton = styled(Button)`
+//   position: absolute;
+//   left: 30%;
+//   right: ${props => props.percent}%;
+//   bottom: 4%;
+// `
 
 // For bottom button
 /* const StyledFab = styled(Fab)`
@@ -72,7 +76,7 @@ const StyledFab = styled(Fab)`
 //   },
 // ]
 
-// const GOOGLE_MAPS_APIKEY = 'AIzaSyBf-YuW1Wgm-ZxzKq9tkqlQH7fO39ADutA'
+const GOOGLE_MAPS_APIKEY = 'AIzaSyBf-YuW1Wgm-ZxzKq9tkqlQH7fO39ADutA'
 
 class Map extends React.Component {
   constructor(props) {
@@ -85,6 +89,7 @@ class Map extends React.Component {
       destinationMarker: null,
       placeOrderButton: null,
       destinationButton: 'destination',
+      searchFormVisible: false,
       routing: null,
       error: null,
       marker: {
@@ -137,11 +142,8 @@ class Map extends React.Component {
           //   />
           // )
           this.cancelOrderButton = (
-            <StyledCancelOrderButton
-              rounded
-              iconCenter
-              light
-              onPress={() =>
+            <BottomButtons
+              addFunc={() =>
                 Alert.alert(
                   'Cancel Order',
                   'Are you sure to cancel your order?',
@@ -155,30 +157,35 @@ class Map extends React.Component {
                   ],
                   {cancelable: false}
                 )
-              }>
-              <Icon name="md-arrow-dropleft-circle" />
-            </StyledCancelOrderButton>
+              }
+              iconName="arrow-back"
+              left="15%"
+              right="70%"
+              bottom="3%"
+            />
           )
           this.placeOrderButton = (
-            <StyledPlaceOrderButton
-              rounded
+            <BottomButtons
               iconRight
-              light
-              onPress={() => alert('TODO - Place Order')}>
-              <Text>Place Order </Text>
-              <Icon name="arrow-forward" />
-            </StyledPlaceOrderButton>
+              addFunc={() => this.searchRoute()}
+              text="Search Route"
+              iconName="arrow-forward"
+              left="40%"
+              right="10%"
+              bottom="3%"
+            />
           )
           this.destinationButton = null
           this.setState({
             placeOrderButton: 'placeOrder',
             destinationButton: null,
+            searchFormVisible: true,
             marker: {
               region: {
                 latitude: lastSearchResult.geometry.location.lat,
                 longitude: lastSearchResult.geometry.location.lng,
-                latitudeDelta: 0.1,
-                longitudeDelta: 0.01,
+                latitudeDelta: 0.02,
+                longitudeDelta: 0.02,
               },
               // routing: 'schokokeks',
             },
@@ -204,29 +211,6 @@ class Map extends React.Component {
     })
   }
 
-  // shows current position on the map
-  componentDidMount() {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        this.setState({
-          currentLatitude: position.coords.latitude,
-          currentLongitude: position.coords.longitude,
-          marker: {
-            region: {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.001,
-            },
-            error: null,
-          },
-        })
-      },
-      error => this.setState({error: error.message}),
-      {enableHighAccuracy: false, timeout: 200000, maximumAge: 1000}
-    )
-  }
-
   showCurrentLocation() {
     this.setState({
       marker: {
@@ -245,17 +229,56 @@ class Map extends React.Component {
     )
   }
 
+  searchRoute() {
+    const n = this.props.map.searchResults.length - 1
+    const lastSearchResult = this.props.map.searchResults[n]
+    this.routing = (
+      <MapViewDirections
+        origin={{
+          latitude: this.state.currentLatitude,
+          longitude: this.state.currentLongitude,
+        }}
+        destination={{
+          latitude: lastSearchResult.geometry.location.lat,
+          longitude: lastSearchResult.geometry.location.lng,
+        }}
+        apikey={GOOGLE_MAPS_APIKEY}
+        strokeWidth={3}
+        strokeColor="blue"
+        mode="driving"
+      />
+    )
+    this.forceUpdate()
+  }
+
   _onMapReady = () => {
     this.setState({marginBottom: 0})
     this.destinationButton = (
-      <StyledButton
-        rounded
-        iconRight
-        light
-        onPress={() => this.props.navigation.navigate('Search')}>
-        <Text>destination </Text>
-        <Icon name="arrow-forward" />
-      </StyledButton>
+      <BottomButtons
+        addFunc={() => this.props.navigation.navigate('Search')}
+        text="destination"
+        iconName="arrow-forward"
+        bottom="3%"
+      />
+    )
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.setState({
+          currentLatitude: position.coords.latitude,
+          currentLongitude: position.coords.longitude,
+          marker: {
+            region: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.001,
+            },
+            error: null,
+          },
+        })
+      },
+      error => this.setState({error: error.message}),
+      {enableHighAccuracy: true, timeout: 200000, maximumAge: 1000}
     )
   }
 
@@ -276,6 +299,18 @@ class Map extends React.Component {
           {this.vanMarkers} */}
           {this.currentLocationMarker}
         </StyledMapView>
+        <SearchForm
+          onStartPress={() => {
+            this.props.navigation.navigate('Search')
+          }}
+          onDestinationPress={() => {
+            this.props.navigation.navigate('Search')
+          }}
+          visible={this.state.searchFormVisible}
+          text={
+            this.destinationMarker ? this.destinationMarker.props.title : null
+          }
+        />
         <StyledMenu
           active={this.state.active}
           direction="up"
