@@ -18,6 +18,10 @@ const VirtualBusStopSchema = new Schema({
     type: LocationSchema,
     required: true
   },
+  name: {
+    type: String,
+    required: true
+  },
   accessible: {
     type: Boolean,
     required: true

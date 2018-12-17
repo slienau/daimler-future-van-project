@@ -8,12 +8,12 @@ router.post('/', async function (req, res) {
   console.log('Request to Routes with body: ')
   console.log(req.body)
   res.setHeader('Content-Type', 'application/json')
-  if (!req.body.startLatitude || !req.body.startLongitude || !req.body.destinationLatitude || !req.body.destinationLongitude) res.json({ error: 'Bad body params' })
+  if (!req.body.start.latitude || !req.body.destination.longitude || !req.body.start.longitude || !req.body.destination.latitude) res.json({ error: 'Bad body params' })
 
   const time = req.body.startTime ? Date.parse(req.body.startTime) : new Date()
   let suggestions = []
   try {
-    suggestions = await VirtualBusStopHelper.getRouteSuggestions({ latitude: req.body.startLatitude, longitude: req.body.startLongitude }, { latitude: req.body.destinationLatitude, longitude: req.body.destinationLongitude }, time)
+    suggestions = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, req.body.destination, time)
   } catch (error) {
     res.json(error)
   }

@@ -11,6 +11,7 @@ class VirtualBusStopHelper {
         latitude: 52.507304,
         longitude: 13.330626
       },
+      name: 'Zoo - Hardenbergstraße 31',
       accessible: true
     })
     const potsdamerPl = new VirtualBusStop({
@@ -18,6 +19,7 @@ class VirtualBusStopHelper {
         latitude: 52.509726,
         longitude: 13.376962
       },
+      name: 'Potsdamer Platz 25',
       accessible: true
     })
 
@@ -43,7 +45,6 @@ class VirtualBusStopHelper {
       travelTime: 28,
       vanTime: 15,
       vanArrivalTime: 6
-
     })
 
     return suggestions
