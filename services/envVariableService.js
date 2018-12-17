@@ -1,10 +1,10 @@
-'use strict'
 const yaml = require('js-yaml')
 const fs = require('fs')
+const path = require('path')
 
 class EnvVariableService {
   constructor () {
-    this.values = yaml.safeLoad(fs.readFileSync(__dirname + '/../environmentVariables.yaml', 'utf8'))
+    this.values = yaml.safeLoad(fs.readFileSync(path.join(__dirname, '/../environmentVariables.yaml'), 'utf8'))
   }
 
   static apiKey () {
