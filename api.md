@@ -4,7 +4,7 @@
 
 The base URL for this APIs endpoint is  
 
-`http://40.89.170.229:8080`
+`http://40.89.153.255:8080`
 
 ## Error handling
 
