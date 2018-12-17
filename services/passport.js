@@ -1,5 +1,6 @@
 const passport = require('passport')
 const passportJWT = require('passport-jwt')
+const EnvVariableService = require('./envVariableService.js')
 
 const ExtractJWT = passportJWT.ExtractJwt
 
@@ -29,10 +30,10 @@ function (username, password, cb) {
     })
 }
 ))
-
+const secret = EnvVariableService.jwtSecret()
 passport.use(new JWTStrategy({
   jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-  secretOrKey: 'pas-secret'
+  secretOrKey: secret
 },
 function (jwtPayload, cb) {
   // find the user in db if needed

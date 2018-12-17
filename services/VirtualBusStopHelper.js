@@ -1,4 +1,5 @@
 const VirtualBusStop = require('../models/VirtualBusStop.js')
+const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
 
 class VirtualBusStopHelper {
   // Check if any users are there and if not create two static users
@@ -29,22 +30,36 @@ class VirtualBusStopHelper {
 
   static async getRouteSuggestions (start, destination, startTime) {
     let suggestions = []
-    let vbs
 
+    // Get Virtual Bus Stops -- Insert Algorithm for finding optimal VB here
+    let vbs
     try {
       vbs = await VirtualBusStop.find({})
     } catch (error) {
       return error
     }
+    // Get Google Responses
+    const googleResponse = await GoogleMapsHelper.googleAPICall(start, destination, vbs[0], vbs[1], startTime)
 
+    // Calculate Durations from Google Responses
+    const vanStartTime = new Date(new Date(startTime).getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[0]) * 1000)
+    const vanEndTime = new Date(vanStartTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[1]) * 1000)
+    const destinationTime = new Date(vanEndTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[2]) * 1000)
+
+    // Right now give only one suggestions
     suggestions.push({
       startLocation: start,
       destination: destination,
       startStation: vbs[0],
       endStation: vbs[1],
-      travelTime: 28,
-      vanTime: 15,
-      vanArrivalTime: 6
+      journeyStartTime: startTime,
+      vanStartTime: vanStartTime.toISOString(),
+      vanEndTime: vanEndTime.toISOString(),
+      destinationTime: destinationTime.toISOString(),
+      toStartRoute: googleResponse[0],
+      vanRoute: googleResponse[1],
+      toDestinationRoute: googleResponse[2]
+
     })
 
     return suggestions
