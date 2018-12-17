@@ -19,7 +19,7 @@ import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
 import PropTypes from 'prop-types'
 import {fetchAccountData} from '../../ducks/account'
 import {clearToken} from '../../lib/api'
-import ViewHeader from '../../components/ViewHeader'
+import MainViewHeader from '../../components/ViewHeaders/MainViewHeader'
 
 const StyledView = styled.View`
   flex: 1;
@@ -97,7 +97,7 @@ class Account extends React.Component {
     return (
       <StyledView>
         <Container>
-          <ViewHeader
+          <MainViewHeader
             title="Account"
             onMenuPress={() => this.props.navigation.openDrawer()}
           />

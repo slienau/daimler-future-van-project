@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import {Container, Content, Text, List, Separator} from 'native-base'
 import styled from 'styled-components/native/dist/styled-components.native.esm'
-import ViewHeader from '../../components/ViewHeader'
+import MainViewHeader from '../../components/ViewHeaders/MainViewHeader'
 import {fetchOrders} from '../../ducks/orders'
 import OrderItem from './OrderItem'
 
@@ -53,7 +53,7 @@ class Orders extends Component {
     return (
       <StyledView>
         <Container>
-          <ViewHeader
+          <MainViewHeader
             title="Orders"
             onMenuPress={() => this.props.navigation.openDrawer()}
           />

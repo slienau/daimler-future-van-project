@@ -2,7 +2,7 @@ import React from 'react'
 
 import styled from 'styled-components/native'
 import {Container} from 'native-base'
-import ViewHeader from '../../components/ViewHeader'
+import MainViewHeader from '../../components/ViewHeaders/MainViewHeader'
 
 const StyledView = styled.View`
   flex: 1;
@@ -13,7 +13,7 @@ const Games = props => {
   return (
     <StyledView>
       <Container>
-        <ViewHeader
+        <MainViewHeader
           title="Games"
           onMenuPress={() => props.navigation.openDrawer()}
         />

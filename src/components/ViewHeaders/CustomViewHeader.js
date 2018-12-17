@@ -2,12 +2,12 @@ import {Body, Button, Header, Icon, Left, Title} from 'native-base'
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const ViewHeader = props => {
+const CustomViewHeader = props => {
   return (
     <Header>
       <Left>
         <Button transparent>
-          <Icon name="menu" onPress={props.onMenuPress} />
+          <Icon name={props.icon} onPress={props.onPress} />
         </Button>
       </Left>
       <Body>
@@ -17,9 +17,10 @@ const ViewHeader = props => {
   )
 }
 
-ViewHeader.propTypes = {
-  onMenuPress: PropTypes.func,
+CustomViewHeader.propTypes = {
+  icon: PropTypes.string,
+  onPress: PropTypes.func,
   title: PropTypes.string,
 }
 
-export default ViewHeader
+export default CustomViewHeader
