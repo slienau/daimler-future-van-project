@@ -1,7 +1,8 @@
 import React from 'react'
+import {Alert} from 'react-native'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
-import MapViewDirections from 'react-native-maps-directions'
+// import MapViewDirections from 'react-native-maps-directions'
 import PropTypes from 'prop-types'
 import VirtualBusStopMarker from './VirtualBusStopMarker'
 import VanMarker from './VanMarker'
@@ -36,6 +37,18 @@ const StyledButton = styled(Button)`
   right: 30%;
   bottom: 4%;
 `
+const StyledPlaceOrderButton = styled(Button)`
+  position: absolute;
+  right: 10%;
+  left: 50%;
+  bottom: 3%;
+`
+const StyledCancelOrderButton = styled(Button)`
+  position: absolute;
+  left: 15%;
+  right: 70%;
+  bottom: 3%;
+`
 
 // For bottom button
 /* const StyledFab = styled(Fab)`
@@ -46,19 +59,23 @@ const StyledMenu = styled(Fab)`
   margin-top: 5px;
   background-color: gray;
 `
-// Some static cords
-const coordinates = [
-  {
-    latitude: 52.509663,
-    longitude: 13.376481,
-  },
-  {
-    latitude: 52.507334,
-    longitude: 13.332367,
-  },
-]
 
-const GOOGLE_MAPS_APIKEY = 'AIzaSyBLjSLCSdnDP2K1muAvuiREJmMdY5ahPgk'
+const StyledFab = styled(Fab)`
+  margin-bottom: 55;
+`
+// Some static cords
+// const coordinates = [
+//   {
+//     latitude: 52.509663,
+//     longitude: 13.376481,
+//   },
+//   {
+//     latitude: 52.507334,
+//     longitude: 13.332367,
+//   },
+// ]
+
+// const GOOGLE_MAPS_APIKEY = 'AIzaSyBf-YuW1Wgm-ZxzKq9tkqlQH7fO39ADutA'
 
 class Map extends React.Component {
   constructor(props) {
@@ -67,14 +84,17 @@ class Map extends React.Component {
     this.state = {
       marginBottom: 1,
       userLocationMarker: null,
+      cancelOrderButton: null,
       destinationMarker: null,
+      placeOrderButton: null,
+      destinationButton: 'destination',
       routing: null,
       error: null,
       marker: {
         region: {
           latitude: 52.509663,
           longitude: 13.376481,
-          latitudeDelta: 0.01,
+          latitudeDelta: 0.1,
           longitudeDelta: 0.1,
         },
       },
@@ -102,65 +122,73 @@ class Map extends React.Component {
               description={lastSearchResult.vicinity}
             />
           )
+          // this.routing = (
+          //   <MapViewDirections
+          //     origin={{
+          //       latitude: this.state.currentLatitude,
+          //       longitude: this.state.currentLongitude,
+          //     }}
+          //     destination={{
+          //       latitude: lastSearchResult.geometry.location.lat,
+          //       longitude: lastSearchResult.geometry.location.lng,
+          //     }}
+          //     apikey={GOOGLE_MAPS_APIKEY}
+          //     strokeWidth={3}
+          //     strokeColor="blue"
+          //     mode="driving"
+          //   />
+          // )
+          this.cancelOrderButton = (
+            <StyledCancelOrderButton
+              rounded
+              iconCenter
+              light
+              onPress={() =>
+                Alert.alert(
+                  'Cancel Order',
+                  'Are you sure to cancel your order?',
+                  [
+                    {
+                      text: 'Yes',
+                      onPress: () => console.log('Yes Pressed'),
+                      style: 'cancel',
+                    },
+                    {text: 'No', onPress: () => console.log('No Pressed')},
+                  ],
+                  {cancelable: false}
+                )
+              }>
+              <Icon name="md-arrow-dropleft-circle" />
+            </StyledCancelOrderButton>
+          )
+          this.placeOrderButton = (
+            <StyledPlaceOrderButton
+              rounded
+              iconRight
+              light
+              onPress={() => alert('TODO - Place Order')}>
+              <Text>Place Order </Text>
+              <Icon name="arrow-forward" />
+            </StyledPlaceOrderButton>
+          )
+          this.destinationButton = null
           this.setState({
+            placeOrderButton: 'placeOrder',
+            destinationButton: null,
             marker: {
               region: {
                 latitude: lastSearchResult.geometry.location.lat,
                 longitude: lastSearchResult.geometry.location.lng,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.1,
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.01,
               },
+              // routing: 'schokokeks',
             },
           })
           this.props.setLastSearchResultToOld()
         }
       }
     })
-
-    /* let userLocationMarker = null
-  let destinationMarker = null
-  let routing = null
-  let currentLocationMarker = null */
-
-    // When state != null --> set static marker for start location
-    // to-do: pass dynamic input
-    if (props.userLocationMarker) {
-      this.userLocationMarker = (
-        <PersonMarker
-          coordinate={coordinates[0]}
-          title={'Potsdammer Platz'}
-          description={'Hier kann man die Umgebung Beschreiben.'}
-        />
-      )
-    }
-
-    if (props.currentLatitude && props.currentLongitude) {
-      this.currentLocationMarker = (
-        <PersonMarker
-          coordinate={{
-            latitude: props.currentLatitude,
-            longitude: props.currentLongitude,
-          }}
-          title={'Current Position'}
-          description={''}
-        />
-      )
-    }
-
-    // When state != null --> set static route
-    // to-do: pass dynamic input
-    if (props.routing) {
-      this.routing = (
-        <MapViewDirections
-          origin={coordinates[0]}
-          destination={coordinates[1]}
-          apikey={GOOGLE_MAPS_APIKEY}
-          strokeWidth={3}
-          strokeColor="hotpink"
-          mode="driving"
-        />
-      )
-    }
 
     // hard coded virtual bus stops and vans
     this.virtualBusStopMarkers = virtualBusStops.map(virtualBusStop => {
@@ -177,31 +205,20 @@ class Map extends React.Component {
     })
   }
 
-  // sets location for start and destination
-  onSearchRoutes() {
-    this.setState({
-      marker: {
-        userLocationMarker: 'nul',
-        destinationMarker: 'keks',
-        routing: 'schokokeks',
-      },
-    })
-  }
-
   // shows current position on the map
-  showCurrentLocation() {
+  componentDidMount() {
     navigator.geolocation.getCurrentPosition(
       position => {
         this.setState({
+          currentLatitude: position.coords.latitude,
+          currentLongitude: position.coords.longitude,
           marker: {
             region: {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
               latitudeDelta: 0.01,
-              longitudeDelta: 0.1,
+              longitudeDelta: 0.001,
             },
-            currentLatitude: position.coords.latitude,
-            currentLongitude: position.coords.longitude,
             error: null,
           },
         })
@@ -211,7 +228,36 @@ class Map extends React.Component {
     )
   }
 
-  _onMapReady = () => this.setState({marginBottom: 0})
+  showCurrentLocation() {
+    this.setState({
+      marker: {
+        userLocationMarker: 'null',
+      },
+    })
+    this.userLocationMarker = (
+      <PersonMarker
+        coordinate={{
+          latitude: this.state.currentLatitude,
+          longitude: this.state.currentLongitude,
+        }}
+        title={'My Current Location'}
+      />
+    )
+  }
+
+  _onMapReady = () => {
+    this.setState({marginBottom: 0})
+    this.destinationButton = (
+      <StyledButton
+        rounded
+        iconRight
+        light
+        onPress={() => this.props.navigation.navigate('Search')}>
+        <Text>destination </Text>
+        <Icon name="arrow-forward" />
+      </StyledButton>
+    )
+  }
 
   render() {
     return (
@@ -219,15 +265,15 @@ class Map extends React.Component {
         <StyledMapView
           marginBottom={this.state.marginBottom}
           region={this.state.marker.region}
-          showsMyLocationButton
+          showsMyLocationButton={false}
           showsUserLocation
           followsUserLocation
           onMapReady={this._onMapReady}>
           {this.userLocationMarker}
           {this.destinationMarker}
           {this.routing}
-          {this.virtualBusStopMarkers}
-          {this.vanMarkers}
+          {/* {this.virtualBusStopMarkers}
+          {this.vanMarkers} */}
           {this.currentLocationMarker}
         </StyledMapView>
         <StyledMenu
@@ -240,36 +286,27 @@ class Map extends React.Component {
         </StyledMenu>
 
         {/* Floating Button to show current location */}
-        {/* <StyledFab
+        <StyledFab
           active={this.state.active}
           direction="up"
-          containerStyle={{}}
           position="bottomRight"
           onPress={() => this.showCurrentLocation()}>
           <Icon name="locate" />
-        </StyledFab> */}
+        </StyledFab>
 
         {/* button for searching route */}
-        <StyledButton
-          rounded
-          iconRight
-          light
-          onPress={() => this.props.navigation.navigate('Search')}>
-          <Text>destination </Text>
-          <Icon name="arrow-forward" />
-        </StyledButton>
+        {/* this.renderBottomButtons() */}
+        {this.destinationButton}
+        {this.cancelOrderButton}
+        {this.placeOrderButton}
       </Container>
     )
   }
 }
 
 Map.propTypes = {
-  currentLatitude: PropTypes.number,
-  currentLongitude: PropTypes.number,
   map: PropTypes.object,
-  routing: PropTypes.string,
   setLastSearchResultToOld: PropTypes.func,
-  userLocationMarker: PropTypes.string,
 }
 
 const mapStateToProps = state => {
