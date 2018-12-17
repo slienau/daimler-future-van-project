@@ -173,9 +173,13 @@ This object represents a travel route from journey start to the final destinatio
 | `startStation` | `Object` `(VirtualBusStop)` | yes | Location (VirtualBusStop) where the user should enter the van. |  |
 | `endStation` | `Object` `(VirtualBusStop)` | yes | Location (VirtualBusStop) where the user should exit the van. |  |
 | `destination` | `Object` `(Location)` | yes | Final destination of the journey. |  |
-| `travelTime` | `Number` | yes | Expected travel time from start to destination in minutes. | `28` |
-| `vanTime` | `Number` | yes | Expected time in the van in minutes. | `15` |
-| `vanArrivalTime` | `Number` | yes | Expected time (in minutes) when the van would arrive at the `startStation`. | `6` |
+| `journeyStartTime` | `Datetime` | No | The start time of the journey. Current time if not given. | `2018-12-17T17:15:00.000Z` |
+| `vanStartTime` | `Datetime` | Yes | The time when the van will pick up the user at the `startStation` | `2018-12-17T17:20:00.000Z` |
+| `vanEndTime` | `Datetime` | Yes | The time when the van will arrive at the  `endStation` | `2018-12-17T17:35:00.000Z` |
+| `destinationTime` | `Datetime` | Yes | The time when the user will arrive at the `destination` | `2018-12-17T17:40:00.000Z` |
+| `toStartRoute` | `Object` | Yes | Route from `startLocation` to `startStation` |  |
+| `vanRoute` | `Object` | Yes | Van route from `startStation` to `endStation` |  |
+| `toDestinationRoute` | `Object` | Yes | Route from `endStation` to `destination` |  |
 
 #### Examples
 
@@ -207,9 +211,13 @@ This object represents a travel route from journey start to the final destinatio
     "latitude": 52.513245,
     "longitude": 13.332684
   },
-  "travelTime": 28,
-  "vanTime": 15,
-  "vanArrivalTime": 6
+  "journeyStartTime": "2018-12-17T17:15:00.000Z",
+  "vanStartTime": "2018-12-17T17:20:00.000Z",
+  "vanEndTime": "2018-12-17T17:35:00.000Z",
+  "destinationTime": "2018-12-17T17:40:00.000Z",
+  "toStartRoute": {},
+  "vanRoute": {},
+  "toDestinationRoute": {}
 }
 ```
 
@@ -669,9 +677,13 @@ Get suggested routes from starting point to destination.
       "latitude": 52.513245,
       "longitude": 13.332684
     },
-    "travelTime": 28,
-    "vanTime": 15,
-    "vanArrivalTime": 6
+    "journeyStartTime": "2018-12-17T17:15:00.000Z",
+    "vanStartTime": "2018-12-17T17:20:00.000Z",
+    "vanEndTime": "2018-12-17T17:35:00.000Z",
+    "destinationTime": "2018-12-17T17:40:00.000Z",
+    "toStartRoute": {},
+    "vanRoute": {},
+    "toDestinationRoute": {}
   },
   {
     "startLocation": {
@@ -700,9 +712,13 @@ Get suggested routes from starting point to destination.
       "latitude": 52.513245,
       "longitude": 13.332684
     },
-    "travelTime": 28,
-    "vanTime": 15,
-    "vanArrivalTime": 6
+    "journeyStartTime": "2018-12-17T17:15:00.000Z",
+    "vanStartTime": "2018-12-17T17:20:00.000Z",
+    "vanEndTime": "2018-12-17T17:35:00.000Z",
+    "destinationTime": "2018-12-17T17:40:00.000Z",
+    "toStartRoute": {},
+    "vanRoute": {},
+    "toDestinationRoute": {}
   }
 ]
 ```
