@@ -2,7 +2,7 @@ import React from 'react'
 import {Alert} from 'react-native'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
-// import MapViewDirections from 'react-native-maps-directions'
+import MapEncodedPolyline from '../../components/MapEncodedPolyline'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import Marker from './Marker'
@@ -73,8 +73,6 @@ const StyledFab = styled(Fab)`
 //   },
 // ]
 
-// const GOOGLE_MAPS_APIKEY = 'AIzaSyBf-YuW1Wgm-ZxzKq9tkqlQH7fO39ADutA'
-
 class Map extends React.Component {
   constructor(props) {
     super(props)
@@ -121,22 +119,6 @@ class Map extends React.Component {
               image="destination"
             />
           )
-          // this.routing = (
-          //   <MapViewDirections
-          //     origin={{
-          //       latitude: this.state.currentLatitude,
-          //       longitude: this.state.currentLongitude,
-          //     }}
-          //     destination={{
-          //       latitude: lastSearchResult.geometry.location.lat,
-          //       longitude: lastSearchResult.geometry.location.lng,
-          //     }}
-          //     apikey={GOOGLE_MAPS_APIKEY}
-          //     strokeWidth={3}
-          //     strokeColor="blue"
-          //     mode="driving"
-          //   />
-          // )
           this.cancelOrderButton = (
             <StyledCancelOrderButton
               rounded
@@ -288,7 +270,11 @@ class Map extends React.Component {
           onMapReady={this._onMapReady}>
           {this.userLocationMarker}
           {this.destinationMarker}
-          {this.routing}
+          <MapEncodedPolyline
+            points="_|l_Is}ppA{F}EkHgG}AsA}AmAOYk@o@eF_Gm@k@YQsAq@oB_AqCqA]MqAk@kB}@UUo@sAy@wBIcAIeCO}FM{CYkHMoE?ICMEi@WDs@Ha@Da@AkKuAs@IcACiA@}AOsAQoBUQBOAeCO_@CSBMBOJOXMd@GNOTKJKBS@MG[WQYOQOKKCWBy@R_A\k@RDZlBw@`@Mh@INFLPVh@RT"
+            strokeWidth={3}
+            strokeColor="red"
+          />
           {/* {this.virtualBusStopMarkers}
           {this.vanMarkers} */}
           {this.currentLocationMarker}
