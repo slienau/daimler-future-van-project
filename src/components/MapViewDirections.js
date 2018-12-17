@@ -173,7 +173,7 @@ class MapViewDirections extends Component {
     }
 
     const response = await fetch(url)
-    const json = response.json()
+    const json = await response.json()
     if (json.status !== 'OK') {
       const errorMessage = json.error_message || 'Unknown error'
       throw new Error(errorMessage)
