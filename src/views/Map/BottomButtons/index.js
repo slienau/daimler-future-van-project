@@ -8,7 +8,7 @@ const StyledButton = styled(Button)`
   left: ${props => props.left || '30%'};
   right: ${props => props.right || '30%'};
   bottom: ${props => props.bottom || '0%'};
-  align-items: center;
+  display: flex;
   justify-content: center;
 `
 
@@ -26,7 +26,6 @@ const BottomButtons = props => {
       right={props.right}
       bottom={props.bottom}
       rounded
-      iconRight
       light
       onPress={props.addFunc}>
       <Text>{props.text} </Text>

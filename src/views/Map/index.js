@@ -143,24 +143,12 @@ class Map extends React.Component {
           // )
           this.cancelOrderButton = (
             <BottomButtons
-              addFunc={() =>
-                Alert.alert(
-                  'Cancel Order',
-                  'Are you sure to cancel your order?',
-                  [
-                    {
-                      text: 'Yes',
-                      onPress: () => console.log('Yes Pressed'),
-                      style: 'cancel',
-                    },
-                    {text: 'No', onPress: () => console.log('No Pressed')},
-                  ],
-                  {cancelable: false}
-                )
-              }
+              iconLeft
+              addFunc={() => alert('TODO Back Function')}
+              text="Back"
               iconName="arrow-back"
-              left="15%"
-              right="70%"
+              left="10%"
+              right="60%"
               bottom="3%"
             />
           )
@@ -170,7 +158,7 @@ class Map extends React.Component {
               addFunc={() => this.searchRoute()}
               text="Search Route"
               iconName="arrow-forward"
-              left="40%"
+              left="45%"
               right="10%"
               bottom="3%"
             />
@@ -248,6 +236,42 @@ class Map extends React.Component {
         mode="driving"
       />
     )
+    this.placeOrderButton = (
+      <BottomButtons
+        iconRight
+        addFunc={() => alert('TODO - Place Order function')}
+        text="Place Order"
+        iconName="arrow-forward"
+        left="42%"
+        right="10%"
+        bottom="3%"
+      />
+    )
+    this.cancelOrderButton = (
+      <BottomButtons
+        iconLeft
+        addFunc={() =>
+          Alert.alert(
+            'Cancel Order',
+            'Are you sure to cancel your order?',
+            [
+              {
+                text: 'Yes',
+                onPress: () => console.log('Yes Pressed'),
+                style: 'cancel',
+              },
+              {text: 'No', onPress: () => console.log('No Pressed')},
+            ],
+            {cancelable: false}
+          )
+        }
+        text="Cancel"
+        iconName="close"
+        left="10%"
+        right="60%"
+        bottom="3%"
+      />
+    )
     this.forceUpdate()
   }
 
@@ -255,6 +279,7 @@ class Map extends React.Component {
     this.setState({marginBottom: 0})
     this.destinationButton = (
       <BottomButtons
+        iconRight
         addFunc={() => this.props.navigation.navigate('Search')}
         text="destination"
         iconName="arrow-forward"
@@ -309,6 +334,9 @@ class Map extends React.Component {
           visible={this.state.searchFormVisible}
           text={
             this.destinationMarker ? this.destinationMarker.props.title : null
+          }
+          startText={
+            this.userLocationMarker ? this.userLocationMarker.props.title : null
           }
         />
         <StyledMenu
