@@ -10,7 +10,7 @@ router.post('/', async function (req, res) {
 
   if (!req.body.start.latitude || !req.body.destination.longitude || !req.body.start.longitude || !req.body.destination.latitude) res.json({ error: 'Bad body params' })
 
-  const time = req.body.startTime ? Date.parse(req.body.startTime) : new Date()
+  const time = req.body.startTime ? new Date(req.body.startTime) : new Date()
 
   let suggestions = []
   try {
