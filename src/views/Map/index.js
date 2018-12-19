@@ -82,14 +82,8 @@ class Map extends React.Component {
     navigator.geolocation.getCurrentPosition(
       position =>
         this.setState({
-          currentLatitude: position.coords.latitude,
-          currentLongitude: position.coords.longitude,
-          region: {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.001,
-          },
+          currentLocation: position.coords,
+          region: this.getRegionForCoordinates([position.coords]),
           error: null,
         }),
       error => this.setState({error: error.message}),
@@ -100,16 +94,25 @@ class Map extends React.Component {
   // from: https://github.com/react-native-community/react-native-maps/issues/505#issuecomment-243423775
   // expects a list of two coordinate objects and returns a region as specified by the react-native-maps components
   getRegionForCoordinates(points) {
-    const minX = _.min(_.map(points, 'latitude'))
-    const maxX = _.max(_.map(points, 'latitude'))
-    const minY = _.min(_.map(points, 'longitude'))
-    const maxY = _.max(_.map(points, 'longitude'))
+    const lats = _.map(
+      points,
+      p => p.latitude || _.get(p, 'geometry.location.lat')
+    )
+    const lngs = _.map(
+      points,
+      p => p.longitude || _.get(p, 'geometry.location.lng')
+    )
+
+    const minX = _.min(lats)
+    const maxX = _.max(lats)
+    const minY = _.min(lngs)
+    const maxY = _.max(lngs)
 
     return {
       latitude: (minX + maxX) / 2,
       longitude: (minY + maxY) / 2,
-      latitudeDelta: (maxX - minX) * 1.5,
-      longitudeDelta: (maxY - minY) * 1.5,
+      latitudeDelta: (maxX - minX) * 1.5 || 0.01,
+      longitudeDelta: (maxY - minY) * 1.5 || 0.001,
     }
   }
 
@@ -134,12 +137,10 @@ class Map extends React.Component {
         title: details.name,
         description: details.vicinity,
       },
-      region: {
-        latitude: details.geometry.location.lat,
-        longitude: details.geometry.location.lng,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.01,
-      },
+      region: this.getRegionForCoordinates([
+        this.state.currentLocation,
+        ...this.props.map.searchResults,
+      ]),
     })
   }
 
@@ -154,10 +155,7 @@ class Map extends React.Component {
           followsUserLocation>
           {this.state.userLocationMarker && (
             <Marker
-              location={{
-                latitude: this.state.currentLatitude,
-                longitude: this.state.currentLongitude,
-              }}
+              location={this.state.currentLocation}
               title={'My Current Location'}
               image="person"
             />
