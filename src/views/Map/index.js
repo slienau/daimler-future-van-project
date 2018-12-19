@@ -1,5 +1,4 @@
 import React from 'react'
-import {Alert} from 'react-native'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
 import MapEncodedPolyline from '../../components/MapEncodedPolyline'
@@ -126,25 +125,28 @@ class Map extends React.Component {
 
   handleSearchResult = (data, details) => {
     if (!details) return
+    details.description = details.name
     this.props.addSearchResult(details)
-    this.setState({
-      placeOrderButton: true,
-      cancelOrderButton: true,
-      destinationButton: false,
-      destinationMarker: {
-        location: {
-          latitude: details.geometry.location.lat,
-          longitude: details.geometry.location.lng,
+    const destinationLocation = {
+      latitude: details.geometry.location.lat,
+      longitude: details.geometry.location.lng,
+    }
+    this.setState(
+      {
+        placeOrderButton: true,
+        destinationButton: false,
+        destinationMarker: {
+          location: destinationLocation,
+          title: details.name,
+          description: details.vicinity,
         },
-        title: details.name,
-        description: details.vicinity,
+        region: this.getRegionForCoordinates([
+          this.state.currentLocation,
+          destinationLocation,
+        ]),
       },
-      region: this.getRegionForCoordinates([
-        this.state.currentLocation,
-        ...this.props.map.searchResults,
-      ]),
-    })
-    this.fetchRoutes()
+      () => this.fetchRoutes()
+    )
   }
 
   fetchRoutes = async () => {
@@ -156,9 +158,22 @@ class Map extends React.Component {
       const {data} = await api.post('/routes', routesPayload)
       this.setState({routes: data})
     } catch (e) {
+      console.warn(e)
       this.setState({routes: null})
     }
   }
+
+  selectNewDestination = () => {
+    this.setState({
+      placeOrderButton: false,
+      cancelOrderButton: false,
+      destinationButton: true,
+      destinationMarker: null,
+      region: this.getRegionForCoordinates([this.state.currentLocation]),
+      routes: null,
+    })
+  }
+
   renderRoutes = () => {
     if (!this.state.routes || !this.state.routes.length) return
     const colors = ['red', 'green', 'blue']
@@ -222,7 +237,7 @@ class Map extends React.Component {
             light
             onPress={() =>
               this.props.navigation.navigate('Search', {
-                predefinedPlaces: _.uniq(this.props.map.searchResults),
+                predefinedPlaces: _.uniqBy(this.props.map.searchResults, 'id'),
                 onSearchResult: (data, details) =>
                   this.handleSearchResult(data, details),
               })
@@ -231,39 +246,26 @@ class Map extends React.Component {
             <Icon name="arrow-forward" />
           </StyledButton>
         )}
-        {this.state.cancelOrderButton && (
+        {this.state.cancelOrderButton && null}
+        {this.state.placeOrderButton && [
           <StyledCancelOrderButton
+            key={0}
             rounded
             iconCenter
             light
-            onPress={() =>
-              Alert.alert(
-                'Cancel Order',
-                'Are you sure to cancel your order?',
-                [
-                  {
-                    text: 'Yes',
-                    onPress: () => console.log('Yes Pressed'),
-                    style: 'cancel',
-                  },
-                  {text: 'No', onPress: () => console.log('No Pressed')},
-                ],
-                {cancelable: false}
-              )
-            }>
+            onPress={() => this.selectNewDestination()}>
             <Icon name="md-arrow-dropleft-circle" />
-          </StyledCancelOrderButton>
-        )}
-        {this.state.placeOrderButton && (
+          </StyledCancelOrderButton>,
           <StyledPlaceOrderButton
+            key={1}
             rounded
             iconRight
             light
             onPress={() => alert('TODO - Place Order')}>
             <Text>Place Order </Text>
             <Icon name="arrow-forward" />
-          </StyledPlaceOrderButton>
-        )}
+          </StyledPlaceOrderButton>,
+        ]}
       </Container>
     )
   }
