@@ -18,7 +18,7 @@ import {
 import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
 import PropTypes from 'prop-types'
 import {fetchAccountData} from '../../ducks/account'
-import {clearToken} from '../../lib/api'
+import {logout} from '../../lib/api'
 import MainViewHeader from '../../components/ViewHeaders/MainViewHeader'
 
 const StyledView = styled.View`
@@ -87,7 +87,7 @@ class Account extends React.Component {
   }
 
   logout = async () => {
-    await clearToken()
+    await logout()
     this.props.navigation.navigate('Login')
   }
 

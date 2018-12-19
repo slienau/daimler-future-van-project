@@ -2,7 +2,7 @@ import React from 'react'
 import {ActivityIndicator} from 'react-native'
 import styled from 'styled-components/native'
 
-import {loadToken} from '../../lib/api'
+import {isTokenValid} from '../../lib/api'
 
 const CenterView = styled.View`
   flex: 1;
@@ -13,7 +13,8 @@ const CenterView = styled.View`
 
 export default class LoadingScreen extends React.Component {
   async componentDidMount() {
-    this.props.navigation.navigate((await loadToken()) ? 'MainView' : 'Login')
+    if (!(await isTokenValid())) return this.props.navigation.navigate('Login')
+    this.props.navigation.navigate('MainView')
   }
 
   render() {
