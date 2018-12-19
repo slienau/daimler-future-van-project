@@ -6,13 +6,11 @@ import MapEncodedPolyline from '../../components/MapEncodedPolyline'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import Marker from './Marker'
-import {virtualBusStops, vanPositions} from './markerPositions'
 import {createStackNavigator} from 'react-navigation'
-import SearchView from './SearchField'
+import SearchView from './SearchView'
 import {connect} from 'react-redux'
 import * as act from '../../ducks/map'
 import {Container, Button, Text, Icon, Fab} from 'native-base'
-
 /* const StyledContainer = styled(Container)`
   flex: 1;
   align-items: center;
@@ -61,150 +59,39 @@ const StyledMenu = styled(Fab)`
 const StyledFab = styled(Fab)`
   margin-bottom: 55;
 `
-// Some static cords
-// const coordinates = [
-//   {
-//     latitude: 52.509663,
-//     longitude: 13.376481,
-//   },
-//   {
-//     latitude: 52.507334,
-//     longitude: 13.332367,
-//   },
-// ]
 
 class Map extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      marginBottom: 1,
-      userLocationMarker: null,
-      cancelOrderButton: null,
-      destinationMarker: null,
-      placeOrderButton: null,
-      destinationButton: 'destination',
-      routing: null,
-      error: null,
-      marker: {
-        region: {
-          latitude: 52.509663,
-          longitude: 13.376481,
-          latitudeDelta: 0.1,
-          longitudeDelta: 0.1,
-        },
-      },
-    }
-
-    // called whenever we return to the map view from the SearchField view (from the StackNavigator)
-    props.navigation.addListener('didFocus', payload => {
-      console.log('FOCUSSED', payload)
-      console.log(
-        this.props.map.searchResults,
-        this.props.map.searchResults.map(item => item.isNew)
-      )
-      const len = this.props.map.searchResults.length
-      console.log('props:', this.props)
-      if (len > 0) {
-        const lastSearchResult = this.props.map.searchResults[len - 1]
-        if (lastSearchResult.isNew) {
-          this.destinationMarker = (
-            <Marker
-              location={{
-                latitude: lastSearchResult.geometry.location.lat,
-                longitude: lastSearchResult.geometry.location.lng,
-              }}
-              title={lastSearchResult.name}
-              description={lastSearchResult.vicinity}
-              image="destination"
-            />
-          )
-          this.cancelOrderButton = (
-            <StyledCancelOrderButton
-              rounded
-              iconCenter
-              light
-              onPress={() =>
-                Alert.alert(
-                  'Cancel Order',
-                  'Are you sure to cancel your order?',
-                  [
-                    {
-                      text: 'Yes',
-                      onPress: () => console.log('Yes Pressed'),
-                      style: 'cancel',
-                    },
-                    {text: 'No', onPress: () => console.log('No Pressed')},
-                  ],
-                  {cancelable: false}
-                )
-              }>
-              <Icon name="md-arrow-dropleft-circle" />
-            </StyledCancelOrderButton>
-          )
-          this.placeOrderButton = (
-            <StyledPlaceOrderButton
-              rounded
-              iconRight
-              light
-              onPress={() => alert('TODO - Place Order')}>
-              <Text>Place Order </Text>
-              <Icon name="arrow-forward" />
-            </StyledPlaceOrderButton>
-          )
-          this.destinationButton = null
-          this.setState({
-            placeOrderButton: 'placeOrder',
-            destinationButton: null,
-            marker: {
-              region: {
-                latitude: lastSearchResult.geometry.location.lat,
-                longitude: lastSearchResult.geometry.location.lng,
-                latitudeDelta: 0.1,
-                longitudeDelta: 0.01,
-              },
-              // routing: 'schokokeks',
-            },
-          })
-          this.props.setLastSearchResultToOld()
-        }
-      }
-    })
-
-    // hard coded virtual bus stops and vans
-    this.virtualBusStopMarkers = virtualBusStops.map(virtualBusStop => {
-      return (
-        <Marker
-          key={virtualBusStop.id}
-          location={virtualBusStop.location}
-          image="vbs"
-        />
-      )
-    })
-
-    this.vanMarkers = vanPositions.map(van => {
-      return <Marker key={van.id} location={van.location} image="van" />
-    })
+  state = {
+    destinationButton: true,
+    userLocationMarker: false,
+    placeOrderButton: false,
+    cancelOrderButton: false,
+    destinationMarker: null,
+    routing: null,
+    error: null,
+    region: {
+      latitude: 52.509663,
+      longitude: 13.376481,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
+    },
   }
 
   // shows current position on the map
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(
-      position => {
+      position =>
         this.setState({
           currentLatitude: position.coords.latitude,
           currentLongitude: position.coords.longitude,
-          marker: {
-            region: {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.001,
-            },
-            error: null,
+          region: {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.001,
           },
-        })
-      },
+          error: null,
+        }),
       error => this.setState({error: error.message}),
       {enableHighAccuracy: false, timeout: 200000, maximumAge: 1000}
     )
@@ -226,58 +113,63 @@ class Map extends React.Component {
     }
   }
 
-  showCurrentLocation() {
+  showCurrentLocation = () => {
     this.setState({
-      marker: {
-        userLocationMarker: 'null',
-      },
+      userLocationMarker: true,
     })
-    this.userLocationMarker = (
-      <Marker
-        location={{
-          latitude: this.state.currentLatitude,
-          longitude: this.state.currentLongitude,
-        }}
-        title={'My Current Location'}
-        image="person"
-      />
-    )
   }
 
-  _onMapReady = () => {
-    this.setState({marginBottom: 0})
-    this.destinationButton = (
-      <StyledButton
-        rounded
-        iconRight
-        light
-        onPress={() => this.props.navigation.navigate('Search')}>
-        <Text>destination </Text>
-        <Icon name="arrow-forward" />
-      </StyledButton>
-    )
+  handleSearchResult = (data, details) => {
+    if (!details) return
+    this.props.addSearchResult(details)
+    this.setState({
+      placeOrderButton: true,
+      cancelOrderButton: true,
+      destinationButton: false,
+      destinationMarker: {
+        location: {
+          latitude: details.geometry.location.lat,
+          longitude: details.geometry.location.lng,
+        },
+        title: details.name,
+        description: details.vicinity,
+      },
+      region: {
+        latitude: details.geometry.location.lat,
+        longitude: details.geometry.location.lng,
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.01,
+      },
+    })
   }
 
   render() {
     return (
       <Container>
         <StyledMapView
-          marginBottom={this.state.marginBottom}
-          region={this.state.marker.region}
+          marginBottom={0}
+          region={this.state.region}
           showsMyLocationButton={false}
           showsUserLocation
-          followsUserLocation
-          onMapReady={this._onMapReady}>
-          {this.userLocationMarker}
-          {this.destinationMarker}
+          followsUserLocation>
+          {this.state.userLocationMarker && (
+            <Marker
+              location={{
+                latitude: this.state.currentLatitude,
+                longitude: this.state.currentLongitude,
+              }}
+              title={'My Current Location'}
+              image="person"
+            />
+          )}
+          {this.state.destinationMarker && (
+            <Marker image="destination" {...this.state.destinationMarker} />
+          )}
           <MapEncodedPolyline
             points="_|l_Is}ppA{F}EkHgG}AsA}AmAOYk@o@eF_Gm@k@YQsAq@oB_AqCqA]MqAk@kB}@UUo@sAy@wBIcAIeCO}FM{CYkHMoE?ICMEi@WDs@Ha@Da@AkKuAs@IcACiA@}AOsAQoBUQBOAeCO_@CSBMBOJOXMd@GNOTKJKBS@MG[WQYOQOKKCWBy@R_A\k@RDZlBw@`@Mh@INFLPVh@RT"
             strokeWidth={3}
             strokeColor="red"
           />
-          {/* {this.virtualBusStopMarkers}
-          {this.vanMarkers} */}
-          {this.currentLocationMarker}
         </StyledMapView>
         <StyledMenu
           active={this.state.active}
@@ -297,19 +189,63 @@ class Map extends React.Component {
           <Icon name="locate" />
         </StyledFab>
 
-        {/* button for searching route */}
-        {/* this.renderBottomButtons() */}
-        {this.destinationButton}
-        {this.cancelOrderButton}
-        {this.placeOrderButton}
+        {this.state.destinationButton && (
+          <StyledButton
+            rounded
+            iconRight
+            light
+            onPress={() =>
+              this.props.navigation.navigate('Search', {
+                predefinedPlaces: _.uniq(this.props.map.searchResults),
+                onSearchResult: (data, details) =>
+                  this.handleSearchResult(data, details),
+              })
+            }>
+            <Text>destination </Text>
+            <Icon name="arrow-forward" />
+          </StyledButton>
+        )}
+        {this.state.cancelOrderButton && (
+          <StyledCancelOrderButton
+            rounded
+            iconCenter
+            light
+            onPress={() =>
+              Alert.alert(
+                'Cancel Order',
+                'Are you sure to cancel your order?',
+                [
+                  {
+                    text: 'Yes',
+                    onPress: () => console.log('Yes Pressed'),
+                    style: 'cancel',
+                  },
+                  {text: 'No', onPress: () => console.log('No Pressed')},
+                ],
+                {cancelable: false}
+              )
+            }>
+            <Icon name="md-arrow-dropleft-circle" />
+          </StyledCancelOrderButton>
+        )}
+        {this.state.placeOrderButton && (
+          <StyledPlaceOrderButton
+            rounded
+            iconRight
+            light
+            onPress={() => alert('TODO - Place Order')}>
+            <Text>Place Order </Text>
+            <Icon name="arrow-forward" />
+          </StyledPlaceOrderButton>
+        )}
       </Container>
     )
   }
 }
 
 Map.propTypes = {
+  addSearchResult: PropTypes.func,
   map: PropTypes.object,
-  setLastSearchResultToOld: PropTypes.func,
 }
 
 const MapScreen = connect(
@@ -317,8 +253,8 @@ const MapScreen = connect(
     map: state.map,
   }),
   dispatch => ({
-    setLastSearchResultToOld: () => {
-      dispatch({type: act.SET_LAST_SEARCH_RESULT_TO_OLD})
+    addSearchResult: result => {
+      dispatch(act.addSearchResultAction(result))
     },
   })
 )(Map)
