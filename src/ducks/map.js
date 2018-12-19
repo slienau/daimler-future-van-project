@@ -40,6 +40,11 @@ const map = (state = initialState, action) => {
       }
     case SET_ORDER:
     case ADD_SEARCH_RESULT:
+      // set latitude and longitude attribute of the location as we use it regularly
+      action.payload.result.geometry.location.latitude =
+        action.payload.result.geometry.location.lat
+      action.payload.result.geometry.location.longitude =
+        action.payload.result.geometry.location.lng
       return {
         ...state,
         searchResults: state.searchResults.concat(action.payload.result),

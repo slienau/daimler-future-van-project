@@ -7,7 +7,7 @@ import styled from 'styled-components/native'
 const StyledSearchForm = styled(View)`
   position: absolute;
   right: 5%;
-  left: 20%;
+  left: 5%;
   top: 1%;
   padding: 1%
   background-color: white;

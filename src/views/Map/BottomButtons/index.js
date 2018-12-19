@@ -20,18 +20,22 @@ const StyledButton = styled(Button)`
 // `
 
 const BottomButtons = props => {
-  return (
-    <StyledButton
-      left={props.left}
-      right={props.right}
-      bottom={props.bottom}
-      rounded
-      light
-      onPress={props.addFunc}>
-      <Text>{props.text} </Text>
-      <Icon name={props.iconName} />
-    </StyledButton>
-  )
+  if (props.visible) {
+    return (
+      <StyledButton
+        left={props.left}
+        right={props.right}
+        bottom={props.bottom}
+        rounded
+        light
+        onPress={props.addFunc}>
+        <Text>{props.text} </Text>
+        <Icon name={props.iconName} />
+      </StyledButton>
+    )
+  } else {
+    return null
+  }
 }
 
 BottomButtons.propTypes = {
@@ -41,6 +45,7 @@ BottomButtons.propTypes = {
   left: PropTypes.string,
   right: PropTypes.string,
   text: PropTypes.string,
+  visible: PropTypes.bool,
 }
 
 export default BottomButtons

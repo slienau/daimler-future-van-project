@@ -5,14 +5,18 @@ import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import * as act from '../../ducks/map'
 
-/* const homePlace = {
-  description: 'Home',
-  geometry: {location: {lat: 48.8152937, lng: 2.4597668}},
+const TU_BERLIN = {
+  description: 'TU Berlin',
+  name: 'Technische Universität Berlin',
+  vicinity: 'Straße des 17. Juni 135, Berlin',
+  geometry: {location: {lat: 52.5125322, lng: 13.3269446}},
 }
-const workPlace = {
-  description: 'Work',
-  geometry: {location: {lat: 48.8496818, lng: 2.2940881}},
-} */
+const BRANDENBURGER_TOR = {
+  description: 'Brandenburger Tor',
+  name: 'Brandenburger Tor',
+  vicinity: 'Germany',
+  geometry: {location: {lat: 52.51653599999999, lng: 13.3817032}},
+}
 
 const SearchField = props => {
   return (
@@ -44,7 +48,7 @@ const SearchField = props => {
           borderBottomWidth: 2,
         },
         description: {
-          fontWeight: 'bold',
+          // fontWeight: 'bold',
         },
         predefinedPlacesDescription: {
           color: '#000000',
@@ -52,7 +56,7 @@ const SearchField = props => {
       }}
       currentLocation // Will add a 'Current location' button at the top of the predefined places list
       currentLocationLabel="Current location"
-      nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+      nearbyPlacesAPI={'None'} // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
       GoogleReverseGeocodingQuery={
         {
           // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
@@ -65,13 +69,16 @@ const SearchField = props => {
         }
       }
       // filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-      predefinedPlaces={props.map.searchResults.reduce((curAcc, curVal) => {
-        const exists = curAcc.filter(el => el.id === curVal.id).length > 0
-        if (!exists) {
-          curAcc.push({...curVal, description: curVal.name})
-        }
-        return curAcc
-      }, [])}
+      predefinedPlaces={props.map.searchResults.reduce(
+        (curAcc, curVal) => {
+          const exists = curAcc.filter(el => el.id === curVal.id).length > 0
+          if (!exists) {
+            curAcc.push({...curVal, description: curVal.name})
+          }
+          return curAcc
+        },
+        [TU_BERLIN, BRANDENBURGER_TOR]
+      )}
       debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
       renderLeftButton={() => (
         <Image
