@@ -6,7 +6,6 @@ import _ from 'lodash'
 export default class MapEncodedPolyline extends Component {
   static propTypes = {
     points: PropTypes.string.isRequired,
-    resetOnChange: PropTypes.bool,
   }
 
   state = {
@@ -16,15 +15,10 @@ export default class MapEncodedPolyline extends Component {
   componentDidMount() {
     this.decode()
   }
+
   componentWillReceiveProps(nextProps) {
     if (_.isEqual(nextProps.points, this.props.points)) return
-    if (nextProps.resetOnChange === false) {
-      this.decode()
-    } else {
-      this.resetState(() => {
-        this.decode()
-      })
-    }
+    this.decode()
   }
 
   decode() {
