@@ -1,8 +1,12 @@
+const geolib = require('geolib')
+
 const VirtualBusStop = require('../models/VirtualBusStop.js')
 const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
 
+
 class VirtualBusStopHelper {
   // Check if any users are there and if not create two static users
+
   static async setupVBs () {
     const vbs = await VirtualBusStop.find({})
     if (vbs !== null && vbs.length !== 0) return
@@ -23,35 +27,62 @@ class VirtualBusStopHelper {
       name: 'Potsdamer Platz 25',
       accessible: true
     })
+    const hbf = new VirtualBusStop({
+      location: {
+        latitude: 52.524158,
+        longitude: 13.369407
+      },
+      name: 'Hauptbahnhof - Washingtonplatz 1 ',
+      accessible: true
+    })
+    const alex = new VirtualBusStop({
+      location: {
+        latitude: 52.523020,
+        longitude: 13.411019
+      },
+      name: 'Alexanderplatz',
+      accessible: true
+    })
+    const kotti = new VirtualBusStop({
+      location: {
+        latitude: 52.499044,
+        longitude: 13.417085
+      },
+      name: 'Kottbusser Tor - Skalitzer Str. 139',
+      accessible: true
+    })
 
     await zoo.save()
     await potsdamerPl.save()
-  }
+    await hbf.save()
+    await alex.save()
+    await kotti.save()
 
+  }
+  // get Suggestions for Jouney
   static async getRouteSuggestions (start, destination, startTime) {
     let suggestions = []
 
-    // Get Virtual Bus Stops -- Insert Algorithm for finding optimal VB here
-    let vbs
-    try {
-      vbs = await VirtualBusStop.find({})
-    } catch (error) {
-      return error
-    }
+    const startVB = await this.getClosestVB(start)
+    const destinationVB = await this.getClosestVB(destination)
+
+    // Abort if the two Virtual Busstops are the same
+    if(startVB._id === destinationVB._id) return {error: "NoCarRouteError", message:"The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service"}
+
     // Get Google Responses
-    const googleResponse = await GoogleMapsHelper.googleAPICall(start, destination, vbs[0], vbs[1], startTime)
+    const googleResponse = await GoogleMapsHelper.googleAPICall(start, destination, startVB, destinationVB, startTime)
 
     // Calculate Durations from Google Responses
     const vanStartTime = new Date(new Date(startTime).getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[0]) * 1000)
     const vanEndTime = new Date(vanStartTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[1]) * 1000)
     const destinationTime = new Date(vanEndTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[2]) * 1000)
 
-    // Right now give only one suggestions
+    // Right now give only one suggestion
     suggestions.push({
       startLocation: start,
       destination: destination,
-      startStation: vbs[0],
-      endStation: vbs[1],
+      startStation: startVB,
+      endStation: destinationVB,
       journeyStartTime: startTime,
       vanStartTime: vanStartTime.toISOString(),
       vanEndTime: vanEndTime.toISOString(),
@@ -64,6 +95,32 @@ class VirtualBusStopHelper {
 
     return suggestions
   }
-}
 
+  // Returns the Virtual Busstop that is closest to the reference
+  static async getClosestVB(reference){
+
+    if(!reference.latitude || !reference.longitude) throw new Error('Cannot calculate distances - bad location parameters')
+
+    let vbs = []
+    try {
+      vbs = await VirtualBusStop.find({})
+    } catch (error) {return error}
+
+    //Calculate distances of all Virtual Busstops from the reference
+    const distances = []
+
+    try {
+      for (const i in vbs) {
+        const distance = geolib.getDistance({latitude:vbs[i].location.latitude, longitude:vbs[i].location.longitude}, reference)
+        distances.push(distance)
+      }
+    }
+    catch(err){console.log(err)}
+
+    //Get the virtual busstop that is closest
+    const min = Math.min(...distances)
+    return vbs[distances.indexOf(min)]
+
+  }
+}
 module.exports = VirtualBusStopHelper
