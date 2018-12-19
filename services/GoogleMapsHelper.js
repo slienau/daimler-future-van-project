@@ -3,7 +3,6 @@ const EnvVariableService = require('../services/envVariableService.js')
 
 class GoogleMapsHelper {
   static async googleAPICall (start, destination, vb1, vb2, time) {
-
     const responses = []
     const key = EnvVariableService.apiKey()
 
@@ -11,7 +10,7 @@ class GoogleMapsHelper {
     const url1 = `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${vb1.location.latitude},${vb1.location.longitude}&key=${key}&mode=walking`
     console.log(url1)
 
-    const response1 = await rpn({uri: url1, json: true})
+    const response1 = await rpn({ uri: url1, json: true })
     const duration1 = this.readDurationFromGoogleResponse(response1)
     responses.push(response1)
 
@@ -20,7 +19,7 @@ class GoogleMapsHelper {
     const url2 = `https://maps.googleapis.com/maps/api/directions/json?origin=${vb1.location.latitude},${vb1.location.longitude}&destination=${vb2.location.latitude},${vb2.location.longitude}&key=${key}&mode=driving&departure_time=${time2}`
     console.log(url2)
 
-    const response2 = await rpn({uri: url2, json: true})
+    const response2 = await rpn({ uri: url2, json: true })
     const duration2 = this.readDurationFromGoogleResponse(response2)
     responses.push(response2)
 
@@ -29,7 +28,7 @@ class GoogleMapsHelper {
     const url3 = `https://maps.googleapis.com/maps/api/directions/json?origin=${vb2.location.latitude},${vb2.location.longitude}&destination=${destination.latitude},${destination.longitude}&key=${key}&mode=walking&departure_time=${time3}`
     console.log(url3)
 
-    const response3 = await rpn({uri: url3, json: true})
+    const response3 = await rpn({ uri: url3, json: true })
     responses.push(response3)
     return responses
   }

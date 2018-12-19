@@ -9,6 +9,7 @@ router.get('/', function (req, res) {
   res.setHeader('Content-Type', 'application/json')
   VirtualBusStop.find({}, function (error, items) {
     res.json(items)
+    if (error) console.log(error)
   })
 })
 
