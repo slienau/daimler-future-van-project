@@ -11,6 +11,8 @@ import SearchView from './SearchView'
 import {connect} from 'react-redux'
 import * as act from '../../ducks/map'
 import {Container, Button, Text, Icon, Fab} from 'native-base'
+import api from '../../lib/api'
+
 /* const StyledContainer = styled(Container)`
   flex: 1;
   align-items: center;
@@ -67,7 +69,7 @@ class Map extends React.Component {
     placeOrderButton: false,
     cancelOrderButton: false,
     destinationMarker: null,
-    routing: null,
+    routes: null,
     error: null,
     region: {
       latitude: 52.509663,
@@ -142,6 +144,36 @@ class Map extends React.Component {
         ...this.props.map.searchResults,
       ]),
     })
+    this.fetchRoutes()
+  }
+
+  fetchRoutes = async () => {
+    const routesPayload = {
+      start: _.pick(this.state.currentLocation, ['latitude', 'longitude']),
+      destination: this.state.destinationMarker.location,
+    }
+    try {
+      const {data} = await api.post('/routes', routesPayload)
+      this.setState({routes: data})
+    } catch (e) {
+      this.setState({routes: null})
+    }
+  }
+  renderRoutes = () => {
+    if (!this.state.routes || !this.state.routes.length) return
+    const colors = ['red', 'green', 'blue']
+    return ['toStartRoute', 'vanRoute', 'toDestinationRoute']
+      .map(r =>
+        _.get(this.state.routes[0][r], 'routes.0.overview_polyline.points')
+      )
+      .map((p, i) => (
+        <MapEncodedPolyline
+          key={i}
+          points={p}
+          strokeWidth={3}
+          strokeColor={colors[i]}
+        />
+      ))
   }
 
   render() {
@@ -163,11 +195,7 @@ class Map extends React.Component {
           {this.state.destinationMarker && (
             <Marker image="destination" {...this.state.destinationMarker} />
           )}
-          <MapEncodedPolyline
-            points="_|l_Is}ppA{F}EkHgG}AsA}AmAOYk@o@eF_Gm@k@YQsAq@oB_AqCqA]MqAk@kB}@UUo@sAy@wBIcAIeCO}FM{CYkHMoE?ICMEi@WDs@Ha@Da@AkKuAs@IcACiA@}AOsAQoBUQBOAeCO_@CSBMBOJOXMd@GNOTKJKBS@MG[WQYOQOKKCWBy@R_A\k@RDZlBw@`@Mh@INFLPVh@RT"
-            strokeWidth={3}
-            strokeColor="red"
-          />
+          {this.renderRoutes()}
         </StyledMapView>
         <StyledMenu
           active={this.state.active}
