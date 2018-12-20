@@ -66,8 +66,8 @@ export async function login(config, noCredStoreUpdate = false) {
   setAuthToken(data.token)
   await AsyncStorage.setItem('token', data.token)
   if (noCredStoreUpdate) return
-  await AsyncStorage.setItem('username', this.state.username)
-  await AsyncStorage.setItem('password', this.state.password)
+  await AsyncStorage.setItem('username', config.username)
+  await AsyncStorage.setItem('password', config.password)
 }
 
 export async function loginWithStoreCredentials() {
