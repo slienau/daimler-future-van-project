@@ -15,25 +15,22 @@ const initialState = {
 export default function orders(state = initialState, action) {
   switch (action.type) {
     case SET_ORDER_DATA:
-      const newState = _.cloneDeep(state)
-      action.payload.forEach(order => {
-        order.orderTime = moment(order.orderTime)
-        order.startTime = moment(order.startTime)
-        order.endTime = moment(order.endTime)
-        // we can only have one active order at the time
-        if (order.active) newState.activeOrder = order
-        else {
-          // don't push duplicate orders to the pastOrders array
-          if (
-            !newState.pastOrders.some(someOrder => someOrder._id === order._id)
-          )
-            newState.pastOrders.push(order)
-        }
-      })
+      const orders = _.uniqBy(
+        [].concat(
+          state.pastOrders,
+          action.payload.map(order => {
+            const moments = ['order', 'start', 'end'].map(t => ({
+              [`${t}Time`]: moment(order[`${t}Time`]),
+            }))
+            return Object.assign({}, order, ...moments)
+          })
+        ),
+        '_id'
+      )
       return {
         ...state,
-        activeOrder: newState.activeOrder,
-        pastOrders: newState.pastOrders,
+        activeOrder: _.find(orders, 'active'),
+        pastOrders: _.filter(orders, ['active', false]),
       }
     default:
       return state

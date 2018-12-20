@@ -4,6 +4,7 @@ import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
 // import MapViewDirections from 'react-native-maps-directions'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
 import Marker from './Marker'
 import {virtualBusStops, vanPositions} from './markerPositions'
 import {createStackNavigator} from 'react-navigation'
@@ -225,6 +226,22 @@ class Map extends React.Component {
       error => this.setState({error: error.message}),
       {enableHighAccuracy: false, timeout: 200000, maximumAge: 1000}
     )
+  }
+
+  // from: https://github.com/react-native-community/react-native-maps/issues/505#issuecomment-243423775
+  // expects a list of two coordinate objects and returns a region as specified by the react-native-maps components
+  getRegionForCoordinates(points) {
+    const minX = _.min(_.map(points, 'latitude'))
+    const maxX = _.max(_.map(points, 'latitude'))
+    const minY = _.min(_.map(points, 'longitude'))
+    const maxY = _.max(_.map(points, 'longitude'))
+
+    return {
+      latitude: (minX + maxX) / 2,
+      longitude: (minY + maxY) / 2,
+      latitudeDelta: (maxX - minX) * 1.5,
+      longitudeDelta: (maxY - minY) * 1.5,
+    }
   }
 
   showCurrentLocation() {
