@@ -28,7 +28,7 @@ const SearchView = props => {
           borderBottomWidth: 2,
         },
         description: {
-          fontWeight: 'bold',
+          // fontWeight: 'bold',
         },
         predefinedPlacesDescription: {
           color: '#000000',
@@ -36,7 +36,7 @@ const SearchView = props => {
       }}
       currentLocation // Will add a 'Current location' button at the top of the predefined places list
       currentLocationLabel="Current location"
-      nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+      nearbyPlacesAPI={'None'} // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
       GoogleReverseGeocodingQuery={
         {
           // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro

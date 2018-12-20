@@ -6,6 +6,22 @@ export const SET_VAN_LOCATION = 'map/SET_VAN_LOCATION'
 export const SET_ORDER = 'map/SET_ORDER'
 export const ADD_SEARCH_RESULT = 'map/ADD_SEARCH_RESULT'
 
+const TU_BERLIN = {
+  id: 1,
+  description: 'TU Berlin',
+  name: 'Technische Universität Berlin',
+  vicinity: 'Straße des 17. Juni 135, Berlin',
+  geometry: {location: {lat: 52.5125322, lng: 13.3269446}},
+}
+
+const BRANDENBURGER_TOR = {
+  id: 2,
+  description: 'Brandenburger Tor',
+  name: 'Brandenburger Tor',
+  vicinity: 'Germany',
+  geometry: {location: {lat: 52.51653599999999, lng: 13.3817032}},
+}
+
 const initialState = {
   start: null, // {lat, lng, name, description}
   destination: null, // {lat, lng, name, description}
@@ -13,7 +29,7 @@ const initialState = {
   route: null,
   vanLocation: null,
   order: null,
-  searchResults: [],
+  searchResults: [TU_BERLIN, BRANDENBURGER_TOR],
 }
 
 const map = (state = initialState, action) => {
@@ -39,6 +55,11 @@ const map = (state = initialState, action) => {
       }
     case SET_ORDER:
     case ADD_SEARCH_RESULT:
+      // set latitude and longitude attribute of the location as we use it regularly
+      action.payload.result.geometry.location.latitude =
+        action.payload.result.geometry.location.lat
+      action.payload.result.geometry.location.longitude =
+        action.payload.result.geometry.location.lng
       return {
         ...state,
         searchResults: state.searchResults.concat(action.payload.result),
