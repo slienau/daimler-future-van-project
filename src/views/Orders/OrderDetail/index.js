@@ -11,30 +11,12 @@ import OrderDetailListItem from './OrderDetailListItem'
 const OrderDetail = props => {
   const order = props.navigation.getParam('order')
   const {width, height} = Dimensions.get('window')
-  const mapHeight = 0.6 * height
+  const mapHeight = 0.6 * height // 60% height
 
   const mapRegion = getRegionForCoordinates([
     order.virtualBusStopStart.location,
     order.virtualBusStopEnd.location,
   ])
-
-  const mapStyle = css`
-    position: absolute;
-    margin-top: 1.5;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-  `
-
-  const StyledMapView = styled(MapView)`
-    position: absolute;
-    margin-top: 1.5;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-  `
 
   return (
     <Container>
@@ -45,18 +27,20 @@ const OrderDetail = props => {
       <Content scrollEnabled={false}>
         <View style={{width, height: mapHeight}}>
           <StyledMapView
-            initialRegion={mapRegion}
+            region={mapRegion}
             // style={mapStyle}
             showsMyLocationButton={false}>
             <Marker
-              title="Van pickup location"
+              title="Pickup point"
               description={order.virtualBusStopStart.name}
               location={order.virtualBusStopStart.location}
+              image="person"
             />
             <Marker
-              title="Van dropoff location"
+              title="Dropoff location"
               description={order.virtualBusStopEnd.name}
               location={order.virtualBusStopEnd.location}
+              image="destination"
             />
           </StyledMapView>
         </View>
@@ -78,5 +62,23 @@ const OrderDetail = props => {
     </Container>
   )
 }
+
+const StyledMapView = styled(MapView)`
+  position: absolute;
+  margin-top: 1.5;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+`
+
+const mapStyle = css`
+  position: absolute;
+  margin-top: 1.5;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+`
 
 export default OrderDetail
