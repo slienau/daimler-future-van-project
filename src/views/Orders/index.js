@@ -2,19 +2,24 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import {Container, Content, Text, List, Separator} from 'native-base'
-import styled from 'styled-components/native/dist/styled-components.native.esm'
 import MainViewHeader from '../../components/ViewHeaders/MainViewHeader'
 import {fetchOrders} from '../../ducks/orders'
 import OrderItem from './OrderItem'
 import OrderDetail from './OrderDetail'
 import {createStackNavigator} from 'react-navigation'
 
-const StyledView = styled.View`
-  flex: 1;
-  align-items: stretch;
-`
-
 class OrderList extends Component {
+  static navigationOptions = ({navigation}) => {
+    return {
+      header: (
+        <MainViewHeader
+          title="Orders"
+          onMenuPress={() => navigation.openDrawer()}
+        />
+      ),
+    }
+  }
+
   state = {
     loading: false,
     error: false,
@@ -53,37 +58,31 @@ class OrderList extends Component {
       activeOrderItem = <Text>TODO: show active order</Text>
     }
     return (
-      <StyledView>
-        <Container>
-          <MainViewHeader
-            title="Orders"
-            onMenuPress={() => this.props.navigation.openDrawer()}
+      <Container>
+        <Content>
+          <Separator bordered>
+            <Text>ACTIVE ORDER</Text>
+          </Separator>
+          {activeOrderItem}
+          <Separator bordered>
+            <Text>PAST ORDERS</Text>
+          </Separator>
+          <List
+            dataArray={this.props.pastOrders}
+            renderRow={item => (
+              <OrderItem
+                key={item._id}
+                order={item}
+                onItemPress={() =>
+                  this.props.navigation.navigate('OrderDetail', {
+                    order: item,
+                  })
+                }
+              />
+            )}
           />
-          <Content>
-            <Separator bordered>
-              <Text>ACTIVE ORDER</Text>
-            </Separator>
-            {activeOrderItem}
-            <Separator bordered>
-              <Text>PAST ORDERS</Text>
-            </Separator>
-            <List
-              dataArray={this.props.pastOrders}
-              renderRow={item => (
-                <OrderItem
-                  key={item._id}
-                  order={item}
-                  onItemPress={() =>
-                    this.props.navigation.navigate('OrderDetail', {
-                      order: item,
-                    })
-                  }
-                />
-              )}
-            />
-          </Content>
-        </Container>
-      </StyledView>
+        </Content>
+      </Container>
     )
   }
 }
@@ -116,22 +115,13 @@ const Orders = createStackNavigator(
   {
     OrderList: {
       screen: OrderListScreen,
-      navigationOptions: {
-        header: null,
-      },
     },
     OrderDetail: {
       screen: OrderDetail,
-      navigationOptions: {
-        header: null,
-      },
     },
   },
   {
     initialRouteName: 'OrderList',
-    defaultNavigationOptions: {
-      header: null,
-    },
   }
 )
 

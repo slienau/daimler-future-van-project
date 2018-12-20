@@ -5,10 +5,7 @@ import {StyleSheet} from 'react-native'
 
 const OrderItem = props => {
   return (
-    <ListItem
-      button
-      style={styles.itemStyle}
-      onPress={() => props.onItemPress()}>
+    <ListItem button onPress={() => props.onItemPress()}>
       <Body>
         <Text>
           <Text style={styles.time}>
@@ -37,7 +34,6 @@ const styles = StyleSheet.create({
   time: {
     fontWeight: 'bold',
   },
-  itemStyle: {},
 })
 
 export default OrderItem
