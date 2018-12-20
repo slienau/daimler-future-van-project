@@ -1,11 +1,9 @@
 import React from 'react'
 import {Container, Content, List} from 'native-base'
-import {View, Dimensions} from 'react-native'
+import {View, Dimensions, StyleSheet} from 'react-native'
 import MapView from 'react-native-maps'
 import {getRegionForCoordinates} from '../../lib/utils'
 import Marker from '../Map/Marker'
-import styled from 'styled-components/native'
-import SubViewHeader from '../../components/ViewHeaders/SubViewHeader'
 import OrderDetailListItem from './OrderDetailListItem'
 
 const OrderDetail = props => {
@@ -20,15 +18,11 @@ const OrderDetail = props => {
 
   return (
     <Container>
-      <SubViewHeader
-        title={order.orderTime.format('L')}
-        onArrowBackPress={() => props.navigation.goBack()}
-      />
       <Content scrollEnabled={false}>
         <View style={{width, height: mapHeight}}>
-          <StyledMapView
+          <MapView
             region={mapRegion}
-            // style={mapStyle}
+            style={styles.map}
             showsMyLocationButton={false}>
             <Marker
               title="Pickup point"
@@ -37,12 +31,12 @@ const OrderDetail = props => {
               image="person"
             />
             <Marker
-              title="Dropoff location"
+              title="Dropoff point"
               description={order.virtualBusStopEnd.name}
               location={order.virtualBusStopEnd.location}
               image="destination"
             />
-          </StyledMapView>
+          </MapView>
         </View>
         <View>
           <List>
@@ -63,13 +57,11 @@ const OrderDetail = props => {
   )
 }
 
-const StyledMapView = styled(MapView)`
-  position: absolute;
-  margin-top: 1.5;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-`
+const styles = StyleSheet.create({
+  map: {
+    marginTop: 1.5,
+    ...StyleSheet.absoluteFillObject,
+  },
+})
 
 export default OrderDetail

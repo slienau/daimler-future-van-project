@@ -2,22 +2,10 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import {Container, Content, Text, List, Separator} from 'native-base'
-import MainViewHeader from '../../components/ViewHeaders/MainViewHeader'
 import {fetchOrders} from '../../ducks/orders'
 import OrderListItem from './OrderListItem'
 
 class OrderList extends Component {
-  static navigationOptions = ({navigation}) => {
-    return {
-      header: (
-        <MainViewHeader
-          title="Orders"
-          onMenuPress={() => navigation.openDrawer()}
-        />
-      ),
-    }
-  }
-
   state = {
     loading: false,
     error: false,
