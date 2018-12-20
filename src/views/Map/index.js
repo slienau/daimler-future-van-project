@@ -2,16 +2,18 @@ import React from 'react'
 import {Alert} from 'react-native'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
-// import MapViewDirections from 'react-native-maps-directions'
+import MapEncodedPolyline from '../../components/MapEncodedPolyline'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import Marker from './Marker'
-import {virtualBusStops, vanPositions} from './markerPositions'
+import SearchForm from '../Map/SearchForm'
+import BottomButtons from '../Map/BottomButtons'
 import {createStackNavigator} from 'react-navigation'
-import SearchView from './SearchField'
+import SearchView from './SearchView'
 import {connect} from 'react-redux'
 import * as act from '../../ducks/map'
-import {Container, Button, Text, Icon, Fab} from 'native-base'
+import {Container, Icon, Fab} from 'native-base'
+import api from '../../lib/api'
 
 /* const StyledContainer = styled(Container)`
   flex: 1;
@@ -25,33 +27,7 @@ const StyledMapView = styled(MapView)`
   left: 0;
   right: 0;
   bottom: 0;
-  margin-bottom: ${props => props.marginBottom};
 `
-
-// For bottom button
-const StyledButton = styled(Button)`
-  position: absolute;
-  left: 30%;
-  right: 30%;
-  bottom: 4%;
-`
-const StyledPlaceOrderButton = styled(Button)`
-  position: absolute;
-  right: 10%;
-  left: 50%;
-  bottom: 3%;
-`
-const StyledCancelOrderButton = styled(Button)`
-  position: absolute;
-  left: 15%;
-  right: 70%;
-  bottom: 3%;
-`
-
-// For bottom button
-/* const StyledFab = styled(Fab)`
-  margin-bottom: 55px;
-` */
 // For bottom button
 const StyledMenu = styled(Fab)`
   margin-top: 5px;
@@ -61,238 +37,269 @@ const StyledMenu = styled(Fab)`
 const StyledFab = styled(Fab)`
   margin-bottom: 55;
 `
-// Some static cords
-// const coordinates = [
-//   {
-//     latitude: 52.509663,
-//     longitude: 13.376481,
-//   },
-//   {
-//     latitude: 52.507334,
-//     longitude: 13.332367,
-//   },
-// ]
 
-// const GOOGLE_MAPS_APIKEY = 'AIzaSyBf-YuW1Wgm-ZxzKq9tkqlQH7fO39ADutA'
+const MapState = {
+  INIT: 'INIT',
+  SEARCH_ROUTES: 'SEARCH_ROUTES',
+  ROUTE_SEARCHED: 'ROUTE_SEARCHED',
+  ROUTE_ORDERED: 'ROUTE_ORDERED',
+  ORDER_CANCELLED: 'ORDER_CANCELLED',
+}
+
+const ANIMATION_DUR = 1500
 
 class Map extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      marginBottom: 1,
-      userLocationMarker: null,
-      cancelOrderButton: null,
-      destinationMarker: null,
-      placeOrderButton: null,
-      destinationButton: 'destination',
-      routing: null,
-      error: null,
-      marker: {
-        region: {
-          latitude: 52.509663,
-          longitude: 13.376481,
-          latitudeDelta: 0.1,
-          longitudeDelta: 0.1,
-        },
-      },
-    }
-
-    // called whenever we return to the map view from the SearchField view (from the StackNavigator)
-    props.navigation.addListener('didFocus', payload => {
-      console.log('FOCUSSED', payload)
-      console.log(
-        this.props.map.searchResults,
-        this.props.map.searchResults.map(item => item.isNew)
-      )
-      const len = this.props.map.searchResults.length
-      console.log('props:', this.props)
-      if (len > 0) {
-        const lastSearchResult = this.props.map.searchResults[len - 1]
-        if (lastSearchResult.isNew) {
-          this.destinationMarker = (
-            <Marker
-              location={{
-                latitude: lastSearchResult.geometry.location.lat,
-                longitude: lastSearchResult.geometry.location.lng,
-              }}
-              title={lastSearchResult.name}
-              description={lastSearchResult.vicinity}
-              image="destination"
-            />
-          )
-          // this.routing = (
-          //   <MapViewDirections
-          //     origin={{
-          //       latitude: this.state.currentLatitude,
-          //       longitude: this.state.currentLongitude,
-          //     }}
-          //     destination={{
-          //       latitude: lastSearchResult.geometry.location.lat,
-          //       longitude: lastSearchResult.geometry.location.lng,
-          //     }}
-          //     apikey={GOOGLE_MAPS_APIKEY}
-          //     strokeWidth={3}
-          //     strokeColor="blue"
-          //     mode="driving"
-          //   />
-          // )
-          this.cancelOrderButton = (
-            <StyledCancelOrderButton
-              rounded
-              iconCenter
-              light
-              onPress={() =>
-                Alert.alert(
-                  'Cancel Order',
-                  'Are you sure to cancel your order?',
-                  [
-                    {
-                      text: 'Yes',
-                      onPress: () => console.log('Yes Pressed'),
-                      style: 'cancel',
-                    },
-                    {text: 'No', onPress: () => console.log('No Pressed')},
-                  ],
-                  {cancelable: false}
-                )
-              }>
-              <Icon name="md-arrow-dropleft-circle" />
-            </StyledCancelOrderButton>
-          )
-          this.placeOrderButton = (
-            <StyledPlaceOrderButton
-              rounded
-              iconRight
-              light
-              onPress={() => alert('TODO - Place Order')}>
-              <Text>Place Order </Text>
-              <Icon name="arrow-forward" />
-            </StyledPlaceOrderButton>
-          )
-          this.destinationButton = null
-          this.setState({
-            placeOrderButton: 'placeOrder',
-            destinationButton: null,
-            marker: {
-              region: {
-                latitude: lastSearchResult.geometry.location.lat,
-                longitude: lastSearchResult.geometry.location.lng,
-                latitudeDelta: 0.1,
-                longitudeDelta: 0.01,
-              },
-              // routing: 'schokokeks',
-            },
-          })
-          this.props.setLastSearchResultToOld()
-        }
-      }
-    })
-
-    // hard coded virtual bus stops and vans
-    this.virtualBusStopMarkers = virtualBusStops.map(virtualBusStop => {
-      return (
-        <Marker
-          key={virtualBusStop.id}
-          location={virtualBusStop.location}
-          image="vbs"
-        />
-      )
-    })
-
-    this.vanMarkers = vanPositions.map(van => {
-      return <Marker key={van.id} location={van.location} image="van" />
-    })
+  state = {
+    mapState: MapState.INIT,
+    userLocationMarker: false,
+    destinationMarker: null,
+    routes: null,
+    initialRegion: {
+      latitude: 52.509663,
+      longitude: 13.376481,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
+    },
   }
 
-  // shows current position on the map
-  componentDidMount() {
+  mapRef = null
+
+  showCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
       position => {
         this.setState({
-          currentLatitude: position.coords.latitude,
-          currentLongitude: position.coords.longitude,
-          marker: {
-            region: {
+          currentLocation: position.coords,
+          userLocationMarker: true,
+        })
+        if (this.state.mapState === MapState.SEARCH_ROUTES) {
+          const coords = [
+            this.state.destinationMarker.location,
+            position.coords,
+          ]
+          this.mapRef.fitToCoordinates(coords, {
+            edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+            animated: true,
+          })
+        } else {
+          this.mapRef.animateToRegion(
+            {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
               latitudeDelta: 0.01,
               longitudeDelta: 0.001,
             },
-            error: null,
-          },
-        })
+            ANIMATION_DUR
+          )
+        }
       },
       error => this.setState({error: error.message}),
-      {enableHighAccuracy: false, timeout: 200000, maximumAge: 1000}
+      {enableHighAccuracy: true, timeout: 200000, maximumAge: 1000}
     )
   }
 
-  // from: https://github.com/react-native-community/react-native-maps/issues/505#issuecomment-243423775
-  // expects a list of two coordinate objects and returns a region as specified by the react-native-maps components
-  getRegionForCoordinates(points) {
-    const minX = _.min(_.map(points, 'latitude'))
-    const maxX = _.max(_.map(points, 'latitude'))
-    const minY = _.min(_.map(points, 'longitude'))
-    const maxY = _.max(_.map(points, 'longitude'))
+  toSearchView = () => {
+    this.props.navigation.navigate('Search', {
+      predefinedPlaces: _.uniqBy(this.props.map.searchResults, 'id'),
+      onSearchResult: (data, details) => this.handleSearchResult(data, details),
+    })
+  }
+  renderBottomButtons() {
+    return [
+      // destination button
+      <BottomButtons
+        key={0}
+        visible={this.state.mapState === MapState.INIT}
+        iconRight
+        addFunc={() => this.toSearchView()}
+        text="destination"
+        iconName="arrow-forward"
+        bottom="3%"
+      />,
+      // back button
+      <BottomButtons
+        key={1}
+        visible={this.state.mapState === MapState.SEARCH_ROUTES}
+        iconLeft
+        addFunc={() => {
+          this.setState({
+            mapState: MapState.INIT,
+            destinationMarker: null,
+            routes: null,
+          })
+        }}
+        text=""
+        iconName="arrow-back"
+        left="10%"
+        right="70%"
+        bottom="3%"
+      />,
+      // search routes button
+      <BottomButtons
+        key={2}
+        visible={this.state.mapState === MapState.SEARCH_ROUTES}
+        iconRight
+        addFunc={() => this.fetchRoutes()}
+        text="Search Route"
+        iconName="arrow-forward"
+        left="45%"
+        right="10%"
+        bottom="3%"
+      />,
+      // place order button
+      <BottomButtons
+        visible={this.state.mapState === MapState.ROUTE_SEARCHED}
+        iconRight
+        key={3}
+        addFunc={() => alert('TODO - Place Order function')}
+        text="Place Order"
+        iconName="arrow-forward"
+        left="42%"
+        right="10%"
+        bottom="3%"
+      />,
+      // cancel order button
+      <BottomButtons
+        visible={this.state.mapState === MapState.ROUTE_SEARCHED}
+        iconLeft
+        key={4}
+        addFunc={() =>
+          Alert.alert(
+            'Cancel Order',
+            'Are you sure to cancel your order?',
+            [
+              {
+                text: 'Yes',
+                onPress: () => {
+                  this.routing = null
+                  this.setState({mapState: MapState.SEARCH_ROUTES})
+                },
+                style: 'cancel',
+              },
+              {text: 'No', onPress: () => console.log('No Pressed')},
+            ],
+            {cancelable: false}
+          )
+        }
+        text="Cancel"
+        iconName="close"
+        left="10%"
+        right="60%"
+        bottom="3%"
+      />,
+    ]
+  }
 
-    return {
-      latitude: (minX + maxX) / 2,
-      longitude: (minY + maxY) / 2,
-      latitudeDelta: (maxX - minX) * 1.5,
-      longitudeDelta: (maxY - minY) * 1.5,
+  handleSearchResult = (data, details) => {
+    if (!details) return
+    details.description = details.name
+    this.props.addSearchResult(details)
+    const destinationLocation = {
+      latitude: details.geometry.location.lat,
+      longitude: details.geometry.location.lng,
+    }
+    switch (this.state.mapState) {
+      case MapState.INIT:
+        this.setState({
+          mapState: MapState.SEARCH_ROUTES,
+          destinationMarker: {
+            location: destinationLocation,
+            title: details.name,
+            description: details.vicinity,
+          },
+        })
+        this.mapRef.animateToRegion(
+          {
+            latitude: details.geometry.location.latitude,
+            longitude: details.geometry.location.longitude,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.02,
+          },
+          ANIMATION_DUR
+        )
+        break
+      case MapState.SEARCH_ROUTES:
+        this.setUserLocationMarker(
+          details.geometry.location,
+          details.name,
+          details.vicinity
+        )
+        this.setState({
+          mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
+        })
+        const coords = [this.state.currentLocation, destinationLocation]
+        this.mapRef.fitToCoordinates(coords, {
+          edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+          animated: true,
+        })
+        break
     }
   }
 
-  showCurrentLocation() {
-    this.setState({
-      marker: {
-        userLocationMarker: 'null',
-      },
-    })
-    this.userLocationMarker = (
-      <Marker
-        location={{
-          latitude: this.state.currentLatitude,
-          longitude: this.state.currentLongitude,
-        }}
-        title={'My Current Location'}
-        image="person"
-      />
-    )
+  fetchRoutes = async () => {
+    const routesPayload = {
+      start: _.pick(this.state.currentLocation, ['latitude', 'longitude']),
+      destination: this.state.destinationMarker.location,
+    }
+    console.log(routesPayload)
+    try {
+      const {data} = await api.post('/routes', routesPayload)
+      this.setState({routes: data})
+    } catch (e) {
+      console.warn(e)
+      this.setState({routes: null})
+    }
   }
 
-  _onMapReady = () => {
-    this.setState({marginBottom: 0})
-    this.destinationButton = (
-      <StyledButton
-        rounded
-        iconRight
-        light
-        onPress={() => this.props.navigation.navigate('Search')}>
-        <Text>destination </Text>
-        <Icon name="arrow-forward" />
-      </StyledButton>
-    )
+  renderRoutes = () => {
+    if (!this.state.routes || !this.state.routes.length) return
+    const colors = ['red', 'green', 'blue']
+    return ['toStartRoute', 'vanRoute', 'toDestinationRoute']
+      .map(r =>
+        _.get(this.state.routes[0][r], 'routes.0.overview_polyline.points')
+      )
+      .map((p, i) => (
+        <MapEncodedPolyline
+          key={i}
+          points={p}
+          strokeWidth={3}
+          strokeColor={colors[i]}
+        />
+      ))
   }
 
   render() {
     return (
       <Container>
         <StyledMapView
-          marginBottom={this.state.marginBottom}
-          region={this.state.marker.region}
-          showsMyLocationButton={false}
+          ref={ref => {
+            this.mapRef = ref
+          }}
+          initialRegion={this.state.initialRegion}
           showsUserLocation
-          followsUserLocation
-          onMapReady={this._onMapReady}>
-          {this.userLocationMarker}
-          {this.destinationMarker}
-          {this.routing}
-          {/* {this.virtualBusStopMarkers}
-          {this.vanMarkers} */}
-          {this.currentLocationMarker}
+          followsUserLocation>
+          {this.state.userLocationMarker && (
+            <Marker
+              location={this.state.currentLocation}
+              title={'My Current Location'}
+              image="person"
+            />
+          )}
+          {this.state.destinationMarker && (
+            <Marker image="destination" {...this.state.destinationMarker} />
+          )}
+          {this.renderRoutes()}
         </StyledMapView>
+        <SearchForm
+          onStartPress={() => {
+            this.toSearchView()
+          }}
+          onDestinationPress={() => {
+            this.toSearchView()
+          }}
+          visible={this.state.mapState === MapState.SEARCH_ROUTES}
+          text={_.get(this.state, 'destinationMarker.title')}
+          startText={_.get(this.state, 'userLocationMarker.title')}
+        />
         <StyledMenu
           active={this.state.active}
           direction="up"
@@ -310,20 +317,15 @@ class Map extends React.Component {
           onPress={() => this.showCurrentLocation()}>
           <Icon name="locate" />
         </StyledFab>
-
-        {/* button for searching route */}
-        {/* this.renderBottomButtons() */}
-        {this.destinationButton}
-        {this.cancelOrderButton}
-        {this.placeOrderButton}
+        {this.renderBottomButtons()}
       </Container>
     )
   }
 }
 
 Map.propTypes = {
+  addSearchResult: PropTypes.func,
   map: PropTypes.object,
-  setLastSearchResultToOld: PropTypes.func,
 }
 
 const MapScreen = connect(
@@ -331,8 +333,8 @@ const MapScreen = connect(
     map: state.map,
   }),
   dispatch => ({
-    setLastSearchResultToOld: () => {
-      dispatch({type: act.SET_LAST_SEARCH_RESULT_TO_OLD})
+    addSearchResult: result => {
+      dispatch(act.addSearchResultAction(result))
     },
   })
 )(Map)
