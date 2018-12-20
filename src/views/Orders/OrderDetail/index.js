@@ -1,35 +1,10 @@
 import React from 'react'
-import {Container, Content, List, Footer} from 'native-base'
-import {View, Dimensions, StyleSheet} from 'react-native'
+import {Container, Content, List} from 'native-base'
+import {View, Dimensions} from 'react-native'
 import MapView from 'react-native-maps'
-import styled from 'styled-components/native/dist/styled-components.native.esm'
+import styled, {css} from 'styled-components/native'
 import SubViewHeader from '../../../components/ViewHeaders/SubViewHeader'
 import OrderDetailListItem from './OrderDetailListItem'
-
-// const StyledMapView = styled(MapView)`
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   bottom: 0;
-//   margin-bottom: 0;
-// `
-
-const StyledMapView = styled(MapView)`
-  flex: 1;
-`
-
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  map: {
-    marginTop: 1.5,
-    ...StyleSheet.absoluteFillObject,
-  },
-})
 
 const OrderDetail = props => {
   const order = props.navigation.getParam('order')
@@ -44,6 +19,24 @@ const OrderDetail = props => {
     longitudeDelta: 0.0922 * ratio,
   }
 
+  const mapStyle = css`
+    position: absolute;
+    margin-top: 1.5;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+  `
+
+  const StyledMapView = styled(MapView)`
+    position: absolute;
+    margin-top: 1.5;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+  `
+
   return (
     <Container>
       <SubViewHeader
@@ -52,9 +45,9 @@ const OrderDetail = props => {
       />
       <Content scrollEnabled={false}>
         <View style={{width, height: mapHeight}}>
-          <MapView
+          <StyledMapView
             region={coordinates}
-            style={styles.map}
+            // style={mapStyle}
             showsMyLocationButton={false}
           />
         </View>
