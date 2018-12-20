@@ -1,8 +1,9 @@
 import React from 'react'
 import {Container, Content, List} from 'native-base'
 import {View, Dimensions} from 'react-native'
-import MapView, {Marker} from 'react-native-maps'
-// import Marker from '../../Map/Marker'
+import MapView from 'react-native-maps'
+import {getRegionForCoordinates} from '../../../lib/utils'
+import Marker from '../../Map/Marker'
 import styled, {css} from 'styled-components/native'
 import SubViewHeader from '../../../components/ViewHeaders/SubViewHeader'
 import OrderDetailListItem from './OrderDetailListItem'
@@ -10,15 +11,12 @@ import OrderDetailListItem from './OrderDetailListItem'
 const OrderDetail = props => {
   const order = props.navigation.getParam('order')
   const {width, height} = Dimensions.get('window')
-  const ratio = width / height
   const mapHeight = 0.6 * height
 
-  const coordinates = {
-    latitude: 52.509663,
-    longitude: 13.376481,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0922 * ratio,
-  }
+  const mapRegion = getRegionForCoordinates([
+    order.virtualBusStopStart.location,
+    order.virtualBusStopEnd.location,
+  ])
 
   const mapStyle = css`
     position: absolute;
@@ -47,30 +45,30 @@ const OrderDetail = props => {
       <Content scrollEnabled={false}>
         <View style={{width, height: mapHeight}}>
           <StyledMapView
-            region={coordinates}
+            initialRegion={mapRegion}
             // style={mapStyle}
             showsMyLocationButton={false}>
             <Marker
-              title="Start"
-              description="Van start location"
-              coordinate={order.virtualBusStopStart.location}
+              title="Van pickup location"
+              description={order.virtualBusStopStart.name}
+              location={order.virtualBusStopStart.location}
             />
             <Marker
-              title="End"
-              description="Van end location"
-              coordinate={order.virtualBusStopEnd.location}
+              title="Van dropoff location"
+              description={order.virtualBusStopEnd.name}
+              location={order.virtualBusStopEnd.location}
             />
           </StyledMapView>
         </View>
         <View>
           <List>
             <OrderDetailListItem
-              icon="locate"
+              icon="pin"
               body={order.virtualBusStopStart.name}
               right={order.startTime.format('LT')}
             />
             <OrderDetailListItem
-              icon="locate"
+              icon="flag"
               body={order.virtualBusStopEnd.name}
               right={order.endTime.format('LT')}
             />
