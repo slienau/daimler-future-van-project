@@ -7,6 +7,7 @@ export const SET_ORDER = 'map/SET_ORDER'
 export const ADD_SEARCH_RESULT = 'map/ADD_SEARCH_RESULT'
 
 const TU_BERLIN = {
+  id: 1,
   description: 'TU Berlin',
   name: 'Technische Universität Berlin',
   vicinity: 'Straße des 17. Juni 135, Berlin',
@@ -14,6 +15,7 @@ const TU_BERLIN = {
 }
 
 const BRANDENBURGER_TOR = {
+  id: 2,
   description: 'Brandenburger Tor',
   name: 'Brandenburger Tor',
   vicinity: 'Germany',

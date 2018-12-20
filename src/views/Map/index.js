@@ -27,7 +27,6 @@ const StyledMapView = styled(MapView)`
   left: 0;
   right: 0;
   bottom: 0;
-  margin-bottom: ${props => props.marginBottom};
 `
 // For bottom button
 const StyledMenu = styled(Fab)`
@@ -52,13 +51,9 @@ const ANIMATION_DUR = 1500
 class Map extends React.Component {
   state = {
     mapState: MapState.INIT,
-    destinationButton: true,
     userLocationMarker: false,
-    placeOrderButton: false,
-    cancelOrderButton: false,
     destinationMarker: null,
     routes: null,
-    error: null,
     initialRegion: {
       latitude: 52.509663,
       longitude: 13.376481,
@@ -67,11 +62,14 @@ class Map extends React.Component {
     },
   }
 
+  mapRef = null
+
   showCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
       position => {
         this.setState({
           currentLocation: position.coords,
+          userLocationMarker: true,
         })
         if (this.state.mapState === MapState.SEARCH_ROUTES) {
           const coords = [
@@ -99,6 +97,12 @@ class Map extends React.Component {
     )
   }
 
+  toSearchView = () => {
+    this.props.navigation.navigate('Search', {
+      predefinedPlaces: _.uniqBy(this.props.map.searchResults, 'id'),
+      onSearchResult: (data, details) => this.handleSearchResult(data, details),
+    })
+  }
   renderBottomButtons() {
     return [
       // destination button
@@ -106,13 +110,7 @@ class Map extends React.Component {
         key={0}
         visible={this.state.mapState === MapState.INIT}
         iconRight
-        addFunc={() =>
-          this.props.navigation.navigate('Search', {
-            predefinedPlaces: _.uniqBy(this.props.map.searchResults, 'id'),
-            onSearchResult: (data, details) =>
-              this.handleSearchResult(data, details),
-          })
-        }
+        addFunc={() => this.toSearchView()}
         text="destination"
         iconName="arrow-forward"
         bottom="3%"
@@ -191,12 +189,6 @@ class Map extends React.Component {
     ]
   }
 
-  showCurrentLocation = () => {
-    this.setState({
-      userLocationMarker: true,
-    })
-  }
-
   handleSearchResult = (data, details) => {
     if (!details) return
     details.description = details.name
@@ -248,6 +240,7 @@ class Map extends React.Component {
       start: _.pick(this.state.currentLocation, ['latitude', 'longitude']),
       destination: this.state.destinationMarker.location,
     }
+    console.log(routesPayload)
     try {
       const {data} = await api.post('/routes', routesPayload)
       this.setState({routes: data})
@@ -282,7 +275,6 @@ class Map extends React.Component {
             this.mapRef = ref
           }}
           initialRegion={this.state.initialRegion}
-          showsMyLocationButton={false}
           showsUserLocation
           followsUserLocation>
           {this.state.userLocationMarker && (
@@ -299,14 +291,14 @@ class Map extends React.Component {
         </StyledMapView>
         <SearchForm
           onStartPress={() => {
-            this.props.navigation.navigate('Search')
+            this.toSearchView()
           }}
           onDestinationPress={() => {
-            this.props.navigation.navigate('Search')
+            this.toSearchView()
           }}
           visible={this.state.mapState === MapState.SEARCH_ROUTES}
           text={_.get(this.state, 'destinationMarker.title')}
-          startText={null}
+          startText={_.get(this.state, 'userLocationMarker.title')}
         />
         <StyledMenu
           active={this.state.active}
@@ -325,7 +317,6 @@ class Map extends React.Component {
           onPress={() => this.showCurrentLocation()}>
           <Icon name="locate" />
         </StyledFab>
-
         {this.renderBottomButtons()}
       </Container>
     )
