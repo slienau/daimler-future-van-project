@@ -2,10 +2,10 @@ import React from 'react'
 import {Container, Content, List} from 'native-base'
 import {View, Dimensions} from 'react-native'
 import MapView from 'react-native-maps'
-import {getRegionForCoordinates} from '../../../lib/utils'
-import Marker from '../../Map/Marker'
+import {getRegionForCoordinates} from '../../lib/utils'
+import Marker from '../Map/Marker'
 import styled from 'styled-components/native'
-import SubViewHeader from '../../../components/ViewHeaders/SubViewHeader'
+import SubViewHeader from '../../components/ViewHeaders/SubViewHeader'
 import OrderDetailListItem from './OrderDetailListItem'
 
 const OrderDetail = props => {

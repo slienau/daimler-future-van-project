@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {Text, ListItem, Right, Icon, Body} from 'native-base'
 import {StyleSheet} from 'react-native'
 
-const OrderItem = props => {
+const OrderListItem = props => {
   return (
     <ListItem button onPress={() => props.onItemPress()}>
       <Body>
@@ -25,7 +25,7 @@ const OrderItem = props => {
   )
 }
 
-OrderItem.propTypes = {
+OrderListItem.propTypes = {
   onItemPress: PropTypes.func,
   order: PropTypes.object,
 }
@@ -36,4 +36,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default OrderItem
+export default OrderListItem
