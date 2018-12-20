@@ -1,7 +1,8 @@
 import React from 'react'
 import {Container, Content, List} from 'native-base'
 import {View, Dimensions} from 'react-native'
-import MapView from 'react-native-maps'
+import MapView, {Marker} from 'react-native-maps'
+// import Marker from '../../Map/Marker'
 import styled, {css} from 'styled-components/native'
 import SubViewHeader from '../../../components/ViewHeaders/SubViewHeader'
 import OrderDetailListItem from './OrderDetailListItem'
@@ -48,8 +49,18 @@ const OrderDetail = props => {
           <StyledMapView
             region={coordinates}
             // style={mapStyle}
-            showsMyLocationButton={false}
-          />
+            showsMyLocationButton={false}>
+            <Marker
+              title="Start"
+              description="Van start location"
+              coordinate={order.virtualBusStopStart.location}
+            />
+            <Marker
+              title="End"
+              description="Van end location"
+              coordinate={order.virtualBusStopEnd.location}
+            />
+          </StyledMapView>
         </View>
         <View>
           <List>
