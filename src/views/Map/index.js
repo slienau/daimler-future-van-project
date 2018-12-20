@@ -2,17 +2,18 @@ import React from 'react'
 import {Alert} from 'react-native'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
-import MapViewDirections from 'react-native-maps-directions'
+import MapEncodedPolyline from '../../components/MapEncodedPolyline'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
 import Marker from './Marker'
 import SearchForm from '../Map/SearchForm'
 import BottomButtons from '../Map/BottomButtons'
-// import {virtualBusStops, vanPositions} from './markerPositions'
 import {createStackNavigator} from 'react-navigation'
-import SearchView from './SearchField'
+import SearchView from './SearchView'
 import {connect} from 'react-redux'
 import * as act from '../../ducks/map'
 import {Container, Icon, Fab} from 'native-base'
+import api from '../../lib/api'
 
 /* const StyledContainer = styled(Container)`
   flex: 1;
@@ -38,8 +39,6 @@ const StyledFab = styled(Fab)`
   margin-bottom: 55;
 `
 
-const GOOGLE_MAPS_APIKEY = 'AIzaSyBf-YuW1Wgm-ZxzKq9tkqlQH7fO39ADutA'
-
 const MapState = {
   INIT: 'INIT',
   SEARCH_ROUTES: 'SEARCH_ROUTES',
@@ -51,95 +50,32 @@ const MapState = {
 const ANIMATION_DUR = 1500
 
 class Map extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.mapRef = null
-    this.state = {
-      mapState: MapState.INIT,
-      marginBottom: 1,
-      userLocationMarker: null,
-      cancelOrderButton: null,
-      destinationMarker: null,
-      placeOrderButton: null,
-      destinationButton: 'destination',
-      routing: null,
-      error: null,
-      initialRegion: {
-        latitude: 52.509663,
-        longitude: 13.376481,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.1,
-      },
-    }
-
-    // called whenever we return to the map view from the SearchField view (from the StackNavigator)
-    props.navigation.addListener('didFocus', payload => {
-      console.log('FOCUSSED', payload)
-      console.log(
-        this.props.map.searchResults,
-        this.props.map.searchResults.map(item => item.isNew)
-      )
-
-      const len = this.props.map.searchResults.length
-      if (len > 0) {
-        const lastSearchResult = this.props.map.searchResults[len - 1]
-        if (lastSearchResult.isNew) {
-          this.props.setLastSearchResultToOld()
-          switch (this.state.mapState) {
-            case MapState.INIT:
-              this.setDestinationMarker(
-                lastSearchResult.geometry.location,
-                lastSearchResult.name,
-                lastSearchResult.vicinity
-              )
-              this.setState({
-                mapState: MapState.SEARCH_ROUTES,
-              })
-              this.mapRef.animateToRegion(
-                {
-                  latitude: lastSearchResult.geometry.location.latitude,
-                  longitude: lastSearchResult.geometry.location.longitude,
-                  latitudeDelta: 0.02,
-                  longitudeDelta: 0.02,
-                },
-                ANIMATION_DUR
-              )
-              break
-            case MapState.SEARCH_ROUTES:
-              this.setUserLocationMarker(
-                lastSearchResult.geometry.location,
-                lastSearchResult.name,
-                lastSearchResult.vicinity
-              )
-              this.setState({
-                mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
-              })
-              const coords = [
-                this.userLocationMarker.props.location,
-                this.destinationMarker.props.location,
-              ]
-              this.mapRef.fitToCoordinates(coords, {
-                edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
-                animated: true,
-              })
-              break
-          }
-        }
-      }
-    })
+  state = {
+    mapState: MapState.INIT,
+    destinationButton: true,
+    userLocationMarker: false,
+    placeOrderButton: false,
+    cancelOrderButton: false,
+    destinationMarker: null,
+    routes: null,
+    error: null,
+    initialRegion: {
+      latitude: 52.509663,
+      longitude: 13.376481,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
+    },
   }
 
   showCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
       position => {
         this.setState({
-          currentLatitude: position.coords.latitude,
-          currentLongitude: position.coords.longitude,
+          currentLocation: position.coords,
         })
         if (this.state.mapState === MapState.SEARCH_ROUTES) {
           const coords = [
-            this.destinationMarker.props.location,
+            this.state.destinationMarker.location,
             position.coords,
           ]
           this.mapRef.fitToCoordinates(coords, {
@@ -163,105 +99,6 @@ class Map extends React.Component {
     )
   }
 
-  setDestinationMarker(location, title, description) {
-    this.destinationMarker = (
-      <Marker
-        location={{
-          latitude: location.latitude,
-          longitude: location.longitude,
-        }}
-        title={title}
-        description={description}
-        image="destination"
-      />
-    )
-  }
-
-  setUserLocationMarker(location, title, description) {
-    this.userLocationMarker = (
-      <Marker
-        location={{
-          latitude: location.latitude,
-          longitude: location.longitude,
-        }}
-        title={title}
-        description={description}
-        image="person"
-      />
-    )
-  }
-
-  clearDestinationMarker() {
-    this.destinationMarker = null
-  }
-
-  clearUserLocationMarker() {
-    this.userLocationMarker = null
-  }
-
-  searchRoute() {
-    if (this.userLocationMarker == null) {
-      Alert.alert('Please enter a start location!')
-      return
-    }
-    this.routing = (
-      <MapViewDirections
-        origin={{
-          latitude: this.userLocationMarker.props.location.latitude,
-          longitude: this.userLocationMarker.props.location.longitude,
-        }}
-        destination={{
-          latitude: this.destinationMarker.props.location.latitude,
-          longitude: this.destinationMarker.props.location.longitude,
-        }}
-        apikey={GOOGLE_MAPS_APIKEY}
-        strokeWidth={3}
-        strokeColor="blue"
-        mode="driving"
-      />
-    )
-    this.setState({mapState: MapState.ROUTE_SEARCHED})
-    this.forceUpdate()
-  }
-
-  _onMapReady = () => {
-    this.setState({marginBottom: 0})
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        this.setState({
-          currentLatitude: position.coords.latitude,
-          currentLongitude: position.coords.longitude,
-        })
-      },
-      error => this.setState({error: error.message}),
-      {enableHighAccuracy: true, timeout: 200000, maximumAge: 1000}
-    )
-  }
-
-  // gotoState(nextState) {
-  //   const curState = this.state.mapState
-  //   switch (nextState) {
-  //     case MapState.INIT:
-  //       this.clearDestinationMarker()
-  //       this.clearUserLocationMarker()
-  //       this.routing = null
-  //       break
-  //     case MapState.SEARCH_ROUTES:
-  //       this.routing = null
-  //       break
-  //     case MapState.ROUTE_SEARCHED:
-  //       // TODO disable onClick of searchform?
-  //       break
-  //     case MapState.ROUTE_ORDERED:
-  //       // TODO
-  //       break
-  //     case MapState.ORDER_CANCELLED:
-  //       // goto SEARCH_ROUTES?
-  //       break
-  //   }
-  //   this.setState({mapState: nextState})
-  // }
-
   renderBottomButtons() {
     return [
       // destination button
@@ -269,7 +106,13 @@ class Map extends React.Component {
         key={0}
         visible={this.state.mapState === MapState.INIT}
         iconRight
-        addFunc={() => this.props.navigation.navigate('Search')}
+        addFunc={() =>
+          this.props.navigation.navigate('Search', {
+            predefinedPlaces: _.uniqBy(this.props.map.searchResults, 'id'),
+            onSearchResult: (data, details) =>
+              this.handleSearchResult(data, details),
+          })
+        }
         text="destination"
         iconName="arrow-forward"
         bottom="3%"
@@ -280,11 +123,11 @@ class Map extends React.Component {
         visible={this.state.mapState === MapState.SEARCH_ROUTES}
         iconLeft
         addFunc={() => {
-          // clear user and destination location and go to INIT state
-          this.clearDestinationMarker()
-          this.clearUserLocationMarker()
-          this.routing = null
-          this.setState({mapState: MapState.INIT})
+          this.setState({
+            mapState: MapState.INIT,
+            destinationMarker: null,
+            routes: null,
+          })
         }}
         text=""
         iconName="arrow-back"
@@ -297,7 +140,7 @@ class Map extends React.Component {
         key={2}
         visible={this.state.mapState === MapState.SEARCH_ROUTES}
         iconRight
-        addFunc={() => this.searchRoute()}
+        addFunc={() => this.fetchRoutes()}
         text="Search Route"
         iconName="arrow-forward"
         left="45%"
@@ -348,6 +191,89 @@ class Map extends React.Component {
     ]
   }
 
+  showCurrentLocation = () => {
+    this.setState({
+      userLocationMarker: true,
+    })
+  }
+
+  handleSearchResult = (data, details) => {
+    if (!details) return
+    details.description = details.name
+    this.props.addSearchResult(details)
+    const destinationLocation = {
+      latitude: details.geometry.location.lat,
+      longitude: details.geometry.location.lng,
+    }
+    switch (this.state.mapState) {
+      case MapState.INIT:
+        this.setState({
+          mapState: MapState.SEARCH_ROUTES,
+          destinationMarker: {
+            location: destinationLocation,
+            title: details.name,
+            description: details.vicinity,
+          },
+        })
+        this.mapRef.animateToRegion(
+          {
+            latitude: details.geometry.location.latitude,
+            longitude: details.geometry.location.longitude,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.02,
+          },
+          ANIMATION_DUR
+        )
+        break
+      case MapState.SEARCH_ROUTES:
+        this.setUserLocationMarker(
+          details.geometry.location,
+          details.name,
+          details.vicinity
+        )
+        this.setState({
+          mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
+        })
+        const coords = [this.state.currentLocation, destinationLocation]
+        this.mapRef.fitToCoordinates(coords, {
+          edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+          animated: true,
+        })
+        break
+    }
+  }
+
+  fetchRoutes = async () => {
+    const routesPayload = {
+      start: _.pick(this.state.currentLocation, ['latitude', 'longitude']),
+      destination: this.state.destinationMarker.location,
+    }
+    try {
+      const {data} = await api.post('/routes', routesPayload)
+      this.setState({routes: data})
+    } catch (e) {
+      console.warn(e)
+      this.setState({routes: null})
+    }
+  }
+
+  renderRoutes = () => {
+    if (!this.state.routes || !this.state.routes.length) return
+    const colors = ['red', 'green', 'blue']
+    return ['toStartRoute', 'vanRoute', 'toDestinationRoute']
+      .map(r =>
+        _.get(this.state.routes[0][r], 'routes.0.overview_polyline.points')
+      )
+      .map((p, i) => (
+        <MapEncodedPolyline
+          key={i}
+          points={p}
+          strokeWidth={3}
+          strokeColor={colors[i]}
+        />
+      ))
+  }
+
   render() {
     return (
       <Container>
@@ -355,18 +281,21 @@ class Map extends React.Component {
           ref={ref => {
             this.mapRef = ref
           }}
-          marginBottom={this.state.marginBottom}
           initialRegion={this.state.initialRegion}
           showsMyLocationButton={false}
           showsUserLocation
-          followsUserLocation
-          onMapReady={this._onMapReady}>
-          {this.userLocationMarker}
-          {this.destinationMarker}
-          {this.routing}
-          {/* {this.virtualBusStopMarkers}
-          {this.vanMarkers} */}
-          {this.currentLocationMarker}
+          followsUserLocation>
+          {this.state.userLocationMarker && (
+            <Marker
+              location={this.state.currentLocation}
+              title={'My Current Location'}
+              image="person"
+            />
+          )}
+          {this.state.destinationMarker && (
+            <Marker image="destination" {...this.state.destinationMarker} />
+          )}
+          {this.renderRoutes()}
         </StyledMapView>
         <SearchForm
           onStartPress={() => {
@@ -376,12 +305,8 @@ class Map extends React.Component {
             this.props.navigation.navigate('Search')
           }}
           visible={this.state.mapState === MapState.SEARCH_ROUTES}
-          text={
-            this.destinationMarker ? this.destinationMarker.props.title : null
-          }
-          startText={
-            this.userLocationMarker ? this.userLocationMarker.props.title : null
-          }
+          text={_.get(this.state, 'destinationMarker.title')}
+          startText={null}
         />
         <StyledMenu
           active={this.state.active}
@@ -408,8 +333,8 @@ class Map extends React.Component {
 }
 
 Map.propTypes = {
+  addSearchResult: PropTypes.func,
   map: PropTypes.object,
-  setLastSearchResultToOld: PropTypes.func,
 }
 
 const MapScreen = connect(
@@ -417,8 +342,8 @@ const MapScreen = connect(
     map: state.map,
   }),
   dispatch => ({
-    setLastSearchResultToOld: () => {
-      dispatch({type: act.SET_LAST_SEARCH_RESULT_TO_OLD})
+    addSearchResult: result => {
+      dispatch(act.addSearchResultAction(result))
     },
   })
 )(Map)

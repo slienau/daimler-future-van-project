@@ -1,24 +1,9 @@
 import React from 'react'
 import {Image} from 'react-native'
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete'
-import {connect} from 'react-redux'
-import PropTypes from 'prop-types'
-import * as act from '../../ducks/map'
+import config from '../../lib/config'
 
-const TU_BERLIN = {
-  description: 'TU Berlin',
-  name: 'Technische Universität Berlin',
-  vicinity: 'Straße des 17. Juni 135, Berlin',
-  geometry: {location: {lat: 52.5125322, lng: 13.3269446}},
-}
-const BRANDENBURGER_TOR = {
-  description: 'Brandenburger Tor',
-  name: 'Brandenburger Tor',
-  vicinity: 'Germany',
-  geometry: {location: {lat: 52.51653599999999, lng: 13.3817032}},
-}
-
-const SearchField = props => {
+const SearchView = props => {
   return (
     <GooglePlacesAutocomplete
       placeholder={'Search'}
@@ -29,18 +14,13 @@ const SearchField = props => {
       fetchDetails
       renderDescription={row => row.description} // custom description render
       onPress={(data, details = null) => {
-        // 'details' is provided when fetchDetails = true
-        console.log(data, details)
-        // add search to the global list of all search result and go back to the map view
-        props.addSearchResult(details)
+        props.navigation.getParam('onSearchResult', () => {})(data, details)
         props.navigation.goBack()
       }}
       getDefaultValue={() => ''}
       query={{
-        // available options: https://developers.google.com/places/web-service/autocomplete
-        key: 'AIzaSyDVR2sWwYcOY0gmCxXy2EjXOnaMW6VvELM',
-        language: 'de', // language of the results
-        // types: 'geocode' // default: 'geocode'
+        key: config.googleApiKey,
+        language: 'en',
       }}
       styles={{
         textInputContainer: {
@@ -69,16 +49,7 @@ const SearchField = props => {
         }
       }
       // filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-      predefinedPlaces={props.map.searchResults.reduce(
-        (curAcc, curVal) => {
-          const exists = curAcc.filter(el => el.id === curVal.id).length > 0
-          if (!exists) {
-            curAcc.push({...curVal, description: curVal.name})
-          }
-          return curAcc
-        },
-        [TU_BERLIN, BRANDENBURGER_TOR]
-      )}
+      predefinedPlaces={props.navigation.getParam('predefinedPlaces', [])}
       debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
       renderLeftButton={() => (
         <Image
@@ -100,26 +71,4 @@ const SearchField = props => {
   )
 }
 
-SearchField.propTypes = {
-  addSearchResult: PropTypes.func,
-  map: PropTypes.object,
-}
-
-const mapStateToProps = state => {
-  return {
-    map: state.map,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    addSearchResult: result => {
-      dispatch(act.addSearchResultAction(result))
-    },
-  }
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SearchField)
+export default SearchView
