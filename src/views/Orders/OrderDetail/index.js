@@ -4,7 +4,7 @@ import {View, Dimensions} from 'react-native'
 import MapView from 'react-native-maps'
 import {getRegionForCoordinates} from '../../../lib/utils'
 import Marker from '../../Map/Marker'
-import styled, {css} from 'styled-components/native'
+import styled from 'styled-components/native'
 import SubViewHeader from '../../../components/ViewHeaders/SubViewHeader'
 import OrderDetailListItem from './OrderDetailListItem'
 
@@ -64,15 +64,6 @@ const OrderDetail = props => {
 }
 
 const StyledMapView = styled(MapView)`
-  position: absolute;
-  margin-top: 1.5;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-`
-
-const mapStyle = css`
   position: absolute;
   margin-top: 1.5;
   top: 0;
