@@ -18,7 +18,7 @@ const SearchForm = props => {
     return (
       <StyledSearchForm>
         <Item onPress={props.onStartPress}>
-          <Input placeholder="From" editable={false}>
+          <Input placeholder="Click to set start" editable={false}>
             <Text>{props.startText}</Text>
           </Input>
         </Item>

@@ -39,11 +39,11 @@ const StyledFab = styled(Fab)`
 `
 
 const MapState = {
-  INIT: 'INIT',
-  SEARCH_ROUTES: 'SEARCH_ROUTES',
-  ROUTE_SEARCHED: 'ROUTE_SEARCHED',
-  ROUTE_ORDERED: 'ROUTE_ORDERED',
-  ORDER_CANCELLED: 'ORDER_CANCELLED',
+  INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
+  SEARCH_ROUTES: 'SEARCH_ROUTES', // the state, when a destination is set, shows the SearchForm and the butto search for a route
+  ROUTE_SEARCHED: 'ROUTE_SEARCHED', // when a route has been searched and we get a route from the backend, which we then can order
+  ROUTE_ORDERED: 'ROUTE_ORDERED', // the state after ordering the route, where we can cancel the order and track the vans live position (own view?)
+  ORDER_CANCELLED: 'ORDER_CANCELLED', // after the order is cancelled (necessary? own view? pop up?)
 }
 
 const ANIMATION_DUR = 1500
@@ -51,7 +51,7 @@ const ANIMATION_DUR = 1500
 class Map extends React.Component {
   state = {
     mapState: MapState.INIT,
-    userLocationMarker: false,
+    userLocationMarker: null,
     destinationMarker: null,
     routes: null,
     initialRegion: {
@@ -69,7 +69,6 @@ class Map extends React.Component {
       position => {
         this.setState({
           currentLocation: position.coords,
-          userLocationMarker: true,
         })
         if (this.state.mapState === MapState.SEARCH_ROUTES) {
           const coords = [
@@ -92,8 +91,11 @@ class Map extends React.Component {
           )
         }
       },
-      error => this.setState({error: error.message}),
-      {enableHighAccuracy: true, timeout: 200000, maximumAge: 1000}
+      error => {
+        this.setState({error: error.message})
+        Alert.alert('TIMEOUT')
+      },
+      {enableHighAccuracy: true, timeout: 5000, maximumAge: 1000}
     )
   }
 
@@ -124,6 +126,7 @@ class Map extends React.Component {
           this.setState({
             mapState: MapState.INIT,
             destinationMarker: null,
+            userLocationMarker: null,
             routes: null,
           })
         }}
@@ -170,8 +173,10 @@ class Map extends React.Component {
               {
                 text: 'Yes',
                 onPress: () => {
-                  this.routing = null
-                  this.setState({mapState: MapState.SEARCH_ROUTES})
+                  this.setState({
+                    mapState: MapState.SEARCH_ROUTES,
+                    routes: null,
+                  })
                 },
                 style: 'cancel',
               },
@@ -218,15 +223,18 @@ class Map extends React.Component {
         )
         break
       case MapState.SEARCH_ROUTES:
-        this.setUserLocationMarker(
-          details.geometry.location,
-          details.name,
-          details.vicinity
-        )
         this.setState({
+          userLocationMarker: {
+            location: destinationLocation,
+            title: details.name,
+            description: details.vicinity,
+          },
           mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
         })
-        const coords = [this.state.currentLocation, destinationLocation]
+        const coords = [
+          this.state.destinationMarker.location,
+          destinationLocation,
+        ]
         this.mapRef.fitToCoordinates(coords, {
           edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
           animated: true,
@@ -237,13 +245,13 @@ class Map extends React.Component {
 
   fetchRoutes = async () => {
     const routesPayload = {
-      start: _.pick(this.state.currentLocation, ['latitude', 'longitude']),
+      start: this.state.userLocationMarker.location,
       destination: this.state.destinationMarker.location,
     }
     console.log(routesPayload)
     try {
       const {data} = await api.post('/routes', routesPayload)
-      this.setState({routes: data})
+      this.setState({routes: data, mapState: MapState.ROUTE_SEARCHED})
     } catch (e) {
       console.warn(e)
       this.setState({routes: null})
@@ -276,10 +284,10 @@ class Map extends React.Component {
           }}
           initialRegion={this.state.initialRegion}
           showsUserLocation
-          followsUserLocation>
+          showsMyLocationButton={false}>
           {this.state.userLocationMarker && (
             <Marker
-              location={this.state.currentLocation}
+              location={this.state.userLocationMarker.location}
               title={'My Current Location'}
               image="person"
             />
