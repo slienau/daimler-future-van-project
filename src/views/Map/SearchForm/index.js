@@ -24,7 +24,7 @@ const SearchForm = props => {
         </Item>
         <Item onPress={props.onDestinationPress}>
           <Input placeholder="to" editable={false}>
-            <Text>{props.text}</Text>
+            <Text>{props.destinationText}</Text>
           </Input>
         </Item>
       </StyledSearchForm>
@@ -35,10 +35,10 @@ const SearchForm = props => {
 }
 
 SearchForm.propTypes = {
+  destinationText: PropTypes.string,
   onDestinationPress: PropTypes.func,
   onStartPress: PropTypes.func,
   startText: PropTypes.string,
-  text: PropTypes.string,
 }
 
 export default SearchForm

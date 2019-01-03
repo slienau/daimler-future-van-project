@@ -22,6 +22,14 @@ const BRANDENBURGER_TOR = {
   geometry: {location: {lat: 52.51653599999999, lng: 13.3817032}},
 }
 
+const SIDOS_HOOD = {
+  id: 3,
+  description: 'Märkisches Viertel',
+  name: 'Märkisches Viertel',
+  vicinity: 'SIDOs Hoos',
+  geometry: {location: {lat: 52.599759, lng: 13.355755}},
+}
+
 const initialState = {
   start: null, // {lat, lng, name, description}
   destination: null, // {lat, lng, name, description}
@@ -29,7 +37,7 @@ const initialState = {
   route: null,
   vanLocation: null,
   order: null,
-  searchResults: [TU_BERLIN, BRANDENBURGER_TOR],
+  searchResults: [TU_BERLIN, BRANDENBURGER_TOR, SIDOS_HOOD],
 }
 
 const map = (state = initialState, action) => {
