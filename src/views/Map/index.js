@@ -30,12 +30,13 @@ const StyledMapView = styled(MapView)`
 `
 // For bottom button
 const StyledMenu = styled(Fab)`
-  margin-top: 5px;
+  position: absolute;
+  top: 22%;
   background-color: gray;
 `
 
 const StyledFab = styled(Fab)`
-  margin-bottom: 55;
+  margin-bottom: 52;
 `
 
 const MapState = {
@@ -94,15 +95,16 @@ class Map extends React.Component {
       error => {
         this.setState({error: error.message})
         Alert.alert('TIMEOUT')
-      },
-      {enableHighAccuracy: true, timeout: 5000, maximumAge: 1000}
+      }
+      // {enableHighAccuracy: true, timeout: 10000, maximumAge: 1000} // OMITTING THESE OPTIONS RESULTS IN BETTER EXPERIENCE
     )
   }
 
-  toSearchView = () => {
+  toSearchView = type => {
     this.props.navigation.navigate('Search', {
       predefinedPlaces: _.uniqBy(this.props.map.searchResults, 'id'),
-      onSearchResult: (data, details) => this.handleSearchResult(data, details),
+      onSearchResult: (data, details) =>
+        this.handleSearchResult(data, details, type),
     })
   }
   renderBottomButtons() {
@@ -112,7 +114,7 @@ class Map extends React.Component {
         key={0}
         visible={this.state.mapState === MapState.INIT}
         iconRight
-        addFunc={() => this.toSearchView()}
+        addFunc={() => this.toSearchView('DESTINATION')}
         text="destination"
         iconName="arrow-forward"
         bottom="3%"
@@ -153,7 +155,7 @@ class Map extends React.Component {
         visible={this.state.mapState === MapState.ROUTE_SEARCHED}
         iconRight
         key={3}
-        addFunc={() => alert('TODO - Place Order function')}
+        addFunc={() => this.orderRoute()}
         text="Place Order"
         iconName="arrow-forward"
         left="42%"
@@ -194,28 +196,44 @@ class Map extends React.Component {
     ]
   }
 
-  handleSearchResult = (data, details) => {
+  handleSearchResult = (data, details, type) => {
     if (!details) return
-    details.description = details.name
-    this.props.addSearchResult(details)
-    const destinationLocation = {
+
+    // extract needed data from the search result and distinguish between current location or not
+    // if current location, we dont want to add it to the list of last searches
+    if (details.description === 'Current location') {
+      // name field is not set for current location, so set it
+      details.name = details.description
+    } else {
+      details.description = details.name
+      this.props.addSearchResult(details)
+    }
+    const location = {
       latitude: details.geometry.location.lat,
       longitude: details.geometry.location.lng,
     }
+    if (type === 'DESTINATION') {
+      this.handleDestinationSearchResult(details, location)
+    } else if (type === 'START') {
+      this.handleStartSearchResult(details, location)
+    }
+  }
+
+  handleDestinationSearchResult = (details, location) => {
     switch (this.state.mapState) {
       case MapState.INIT:
         this.setState({
           mapState: MapState.SEARCH_ROUTES,
           destinationMarker: {
-            location: destinationLocation,
+            location: location,
             title: details.name,
             description: details.vicinity,
           },
         })
         this.mapRef.animateToRegion(
           {
-            latitude: details.geometry.location.latitude,
-            longitude: details.geometry.location.longitude,
+            latitude: location.latitude,
+            longitude: location.longitude,
             latitudeDelta: 0.02,
             longitudeDelta: 0.02,
           },
@@ -224,23 +242,51 @@ class Map extends React.Component {
         break
       case MapState.SEARCH_ROUTES:
         this.setState({
-          userLocationMarker: {
-            location: destinationLocation,
+          destinationMarker: {
+            location: location,
             title: details.name,
             description: details.vicinity,
           },
           mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
         })
-        const coords = [
-          this.state.destinationMarker.location,
-          destinationLocation,
-        ]
-        this.mapRef.fitToCoordinates(coords, {
-          edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
-          animated: true,
-        })
+        // check whether start location is already set
+        if (this.state.userLocationMarker != null) {
+          // fit zoom to start and destination if so
+          const coords = [location, this.state.userLocationMarker.location]
+          this.mapRef.fitToCoordinates(coords, {
+            edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+            animated: true,
+          })
+        } else {
+          // otherwise, only zoom to destination
+          this.mapRef.animateToRegion(
+            {
+              latitude: location.latitude,
+              longitude: location.longitude,
+              latitudeDelta: 0.02,
+              longitudeDelta: 0.02,
+            },
+            ANIMATION_DUR
+          )
+        }
         break
     }
+  }
+
+  handleStartSearchResult = (details, location) => {
+    this.setState({
+      userLocationMarker: {
+        location: location,
+        title: details.name,
+        description: details.vicinity,
+      },
+      mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
+    })
+    const coords = [this.state.destinationMarker.location, location]
+    this.mapRef.fitToCoordinates(coords, {
+      edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+      animated: true,
+    })
   }
 
   fetchRoutes = async () => {
@@ -275,6 +321,24 @@ class Map extends React.Component {
       ))
   }
 
+  renderVBS() {
+    if (!this.state.routes || !this.state.routes.length) return
+    return [
+      <Marker
+        key={0}
+        location={_.get(this.state.routes[0], 'startStation.location')}
+        title={'Start station'}
+        image="vbs"
+      />,
+      <Marker
+        key={1}
+        location={_.get(this.state.routes[0], 'endStation.location')}
+        title={'End station'}
+        image="vbs"
+      />,
+    ]
+  }
+
   render() {
     return (
       <Container>
@@ -296,16 +360,17 @@ class Map extends React.Component {
             <Marker image="destination" {...this.state.destinationMarker} />
           )}
           {this.renderRoutes()}
+          {this.renderVBS()}
         </StyledMapView>
         <SearchForm
           onStartPress={() => {
-            this.toSearchView()
+            this.toSearchView('START')
           }}
           onDestinationPress={() => {
-            this.toSearchView()
+            this.toSearchView('DESTINATION')
           }}
           visible={this.state.mapState === MapState.SEARCH_ROUTES}
-          text={_.get(this.state, 'destinationMarker.title')}
+          destinationText={_.get(this.state, 'destinationMarker.title')}
           startText={_.get(this.state, 'userLocationMarker.title')}
         />
         <StyledMenu
