@@ -1,4 +1,4 @@
 export default {
-  apiEndpoint: 'http://40.89.153.255:8080/',
+  apiEndpoint: '3.120.249.73',
   googleApiKey: 'AIzaSyBLjSLCSdnDP2K1muAvuiREJmMdY5ahPgk',
 }

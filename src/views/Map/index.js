@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import Marker from './Marker'
 import SearchForm from '../Map/SearchForm'
-import BottomButtons from '../Map/BottomButtons'
+import BottomButton from './BottomButton'
 import {createStackNavigator} from 'react-navigation'
 import SearchView from './SearchView'
 import {connect} from 'react-redux'
@@ -93,7 +93,7 @@ class Map extends React.Component {
   renderBottomButtons() {
     return [
       // destination button
-      <BottomButtons
+      <BottomButton
         key={0}
         visible={this.state.mapState === MapState.INIT}
         iconRight
@@ -103,7 +103,7 @@ class Map extends React.Component {
         bottom="3%"
       />,
       // back button
-      <BottomButtons
+      <BottomButton
         key={1}
         visible={this.state.mapState === MapState.SEARCH_ROUTES}
         iconLeft
@@ -122,7 +122,7 @@ class Map extends React.Component {
         bottom="3%"
       />,
       // search routes button
-      <BottomButtons
+      <BottomButton
         key={2}
         visible={this.state.mapState === MapState.SEARCH_ROUTES}
         iconRight
@@ -134,11 +134,11 @@ class Map extends React.Component {
         bottom="3%"
       />,
       // place order button
-      <BottomButtons
+      <BottomButton
         visible={this.state.mapState === MapState.ROUTE_SEARCHED}
         iconRight
         key={3}
-        addFunc={() => this.orderRoute()}
+        addFunc={() => this.placeOrder()}
         text="Place Order"
         iconName="arrow-forward"
         left="42%"
@@ -146,7 +146,7 @@ class Map extends React.Component {
         bottom="3%"
       />,
       // cancel order button
-      <BottomButtons
+      <BottomButton
         visible={this.state.mapState === MapState.ROUTE_SEARCHED}
         iconLeft
         key={4}
@@ -305,10 +305,27 @@ class Map extends React.Component {
     try {
       const {data} = await api.post('/routes', routesPayload)
       this.setState({routes: data, mapState: MapState.ROUTE_SEARCHED})
-      console.log('DATA', data)
     } catch (e) {
       console.warn(e)
       this.setState({routes: null})
+    }
+  }
+
+  placeOrder = async () => {
+    const orderPayload = {
+      start: this.state.routes[0].startStation._id,
+      destination: this.state.routes[0].endStation._id,
+    }
+    console.log(orderPayload)
+    try {
+      const {data} = await api.post('/orders', orderPayload)
+      this.setState({order: data, mapState: MapState.ROUTE_ORDERED})
+      console.log(data)
+      const order = this.props.navigation.getParam('order')
+      console.log(order)
+    } catch (e) {
+      console.warn(e)
+      this.setState({orders: null})
     }
   }
 
