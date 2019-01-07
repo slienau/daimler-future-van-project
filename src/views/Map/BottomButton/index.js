@@ -19,7 +19,7 @@ const StyledButton = styled(Button)`
 //   bottom: 3%;
 // `
 
-const BottomButtons = props => {
+const BottomButton = props => {
   if (props.visible) {
     return (
       <StyledButton
@@ -38,7 +38,7 @@ const BottomButtons = props => {
   }
 }
 
-BottomButtons.propTypes = {
+BottomButton.propTypes = {
   addFunc: PropTypes.func,
   bottom: PropTypes.string,
   iconName: PropTypes.string,
@@ -48,4 +48,4 @@ BottomButtons.propTypes = {
   visible: PropTypes.bool,
 }
 
-export default BottomButtons
+export default BottomButton

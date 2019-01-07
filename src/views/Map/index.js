@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import Marker from './Marker'
 import SearchForm from '../Map/SearchForm'
-import BottomButtons from '../Map/BottomButtons'
+import BottomButton from './BottomButton'
 import {createStackNavigator} from 'react-navigation'
 import SearchView from './SearchView'
 import {connect} from 'react-redux'
@@ -110,7 +110,7 @@ class Map extends React.Component {
   renderBottomButtons() {
     return [
       // destination button
-      <BottomButtons
+      <BottomButton
         key={0}
         visible={this.state.mapState === MapState.INIT}
         iconRight
@@ -120,7 +120,7 @@ class Map extends React.Component {
         bottom="3%"
       />,
       // back button
-      <BottomButtons
+      <BottomButton
         key={1}
         visible={this.state.mapState === MapState.SEARCH_ROUTES}
         iconLeft
@@ -139,7 +139,7 @@ class Map extends React.Component {
         bottom="3%"
       />,
       // search routes button
-      <BottomButtons
+      <BottomButton
         key={2}
         visible={this.state.mapState === MapState.SEARCH_ROUTES}
         iconRight
@@ -151,7 +151,7 @@ class Map extends React.Component {
         bottom="3%"
       />,
       // place order button
-      <BottomButtons
+      <BottomButton
         visible={this.state.mapState === MapState.ROUTE_SEARCHED}
         iconRight
         key={3}
@@ -163,7 +163,7 @@ class Map extends React.Component {
         bottom="3%"
       />,
       // cancel order button
-      <BottomButtons
+      <BottomButton
         visible={this.state.mapState === MapState.ROUTE_SEARCHED}
         iconLeft
         key={4}
