@@ -43,17 +43,16 @@ router.post('/', async function (req, res) {
   res.json(order)
 })
 
-router.put('/', async function(req, res){
+router.put('/', async function (req, res) {
+  console.log('Put Request to Order : ' + req.query.orderId)
 
-  console.log('Put Request to Order : '+req.query.orderId)
+  if (!req.query.orderId) res.json({ code: 400, description: 'No orderId as been sent as param.', reasonPhrase: 'Bad Request' })
 
-  if(!req.query.orderId) res.json({code:400,description: "No orderId as been sent as param.", reasonPhrase:"Bad Request"})
-
-  if(req.body.canceled) {
-    await Order.updateOne({_id: req.query.orderId}, {$set: {canceled: req.body.canceled}});
+  if (req.body.canceled) {
+    await Order.updateOne({ _id: req.query.orderId }, { $set: { canceled: req.body.canceled } })
   }
-  if(req.body.active) {
-    await Order.updateOne({_id: req.query.orderId}, {$set: {active: req.body.active}});
+  if (req.body.active) {
+    await Order.updateOne({ _id: req.query.orderId }, { $set: { active: req.body.active } })
   }
   const order = await Order.findById(req.query.orderId)
   res.json(order)
