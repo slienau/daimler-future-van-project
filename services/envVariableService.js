@@ -3,7 +3,7 @@ const fs = require('fs')
 
 class EnvVariableService {
   constructor () {
-    this.values = yaml.safeLoad(fs.readFileSync('./environmentVariables.yaml', 'utf8'))
+    this.values = yaml.safeLoad(fs.readFileSync('./config.yaml', 'utf8'))
   }
 
   static apiKey () {
