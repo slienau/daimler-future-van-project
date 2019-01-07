@@ -30,7 +30,7 @@ router.post('/', async function (req, res) {
 
   const accountID = req.user._id
   const vb1 = req.body.start
-  const vb2 = req.body.end
+  const vb2 = req.body.destination
   const pickupTime = req.query.time ? req.query.time : null
   let order
 
