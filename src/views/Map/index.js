@@ -15,12 +15,6 @@ import * as act from '../../ducks/map'
 import {Container, Icon, Fab} from 'native-base'
 import api from '../../lib/api'
 
-/* const StyledContainer = styled(Container)`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-` */
-
 const StyledMapView = styled(MapView)`
   position: absolute;
   top: 0;
@@ -39,7 +33,7 @@ const StyledFab = styled(Fab)`
   margin-bottom: 52;
 `
 
-const MapState = {
+export const MapState = {
   INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
   SEARCH_ROUTES: 'SEARCH_ROUTES', // the state, when a destination is set, shows the SearchForm and the butto search for a route
   ROUTE_SEARCHED: 'ROUTE_SEARCHED', // when a route has been searched and we get a route from the backend, which we then can order
@@ -71,26 +65,15 @@ class Map extends React.Component {
         this.setState({
           currentLocation: position.coords,
         })
-        if (this.state.mapState === MapState.SEARCH_ROUTES) {
-          const coords = [
-            this.state.destinationMarker.location,
-            position.coords,
-          ]
-          this.mapRef.fitToCoordinates(coords, {
-            edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
-            animated: true,
-          })
-        } else {
-          this.mapRef.animateToRegion(
-            {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.001,
-            },
-            ANIMATION_DUR
-          )
-        }
+        this.mapRef.animateToRegion(
+          {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.001,
+          },
+          ANIMATION_DUR
+        )
       },
       error => {
         this.setState({error: error.message})
@@ -282,10 +265,34 @@ class Map extends React.Component {
       },
       mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
     })
-    const coords = [this.state.destinationMarker.location, location]
-    this.mapRef.fitToCoordinates(coords, {
-      edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
-      animated: true,
+    // check if destination is set
+    if (this.state.destinationMarker != null) {
+      // fit zoom to start and destination if so
+      const coords = [location, this.state.destinationMarker.location]
+      this.mapRef.fitToCoordinates(coords, {
+        edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+        animated: true,
+      })
+    } else {
+      // otherwise, only zoom to start
+      this.mapRef.animateToRegion(
+        {
+          latitude: location.latitude,
+          longitude: location.longitude,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
+        },
+        ANIMATION_DUR
+      )
+    }
+  }
+
+  swapStartAndDestination = () => {
+    const start = this.state.userLocationMarker
+    const destination = this.state.destinationMarker
+    this.setState({
+      userLocationMarker: destination,
+      destinationMarker: start,
     })
   }
 
@@ -298,6 +305,7 @@ class Map extends React.Component {
     try {
       const {data} = await api.post('/routes', routesPayload)
       this.setState({routes: data, mapState: MapState.ROUTE_SEARCHED})
+      console.log('DATA', data)
     } catch (e) {
       console.warn(e)
       this.setState({routes: null})
@@ -369,18 +377,25 @@ class Map extends React.Component {
           onDestinationPress={() => {
             this.toSearchView('DESTINATION')
           }}
-          visible={this.state.mapState === MapState.SEARCH_ROUTES}
           destinationText={_.get(this.state, 'destinationMarker.title')}
           startText={_.get(this.state, 'userLocationMarker.title')}
+          mapState={this.state.mapState}
+          onSwapPress={() => {
+            this.swapStartAndDestination()
+          }}
+          departure={_.get(_.first(this.state.routes), 'vanStartTime')}
+          arrival={_.get(_.first(this.state.routes), 'destinationTime')}
         />
-        <StyledMenu
-          active={this.state.active}
-          direction="up"
-          containerStyle={{}}
-          position="topLeft"
-          onPress={() => this.props.navigation.openDrawer()}>
-          <Icon name="menu" />
-        </StyledMenu>
+        {this.state.mapState === MapState.INIT && (
+          <StyledMenu
+            active={this.state.active}
+            direction="up"
+            containerStyle={{}}
+            position="topLeft"
+            onPress={() => this.props.navigation.openDrawer()}>
+            <Icon name="menu" />
+          </StyledMenu>
+        )}
 
         {/* Floating Button to show current location */}
         <StyledFab
