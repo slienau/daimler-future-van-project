@@ -155,7 +155,7 @@ class Map extends React.Component {
         visible={this.state.mapState === MapState.ROUTE_SEARCHED}
         iconRight
         key={3}
-        addFunc={() => this.orderRoute()}
+        addFunc={() => this.placeOrder()}
         text="Place Order"
         iconName="arrow-forward"
         left="42%"
@@ -301,6 +301,24 @@ class Map extends React.Component {
     } catch (e) {
       console.warn(e)
       this.setState({routes: null})
+    }
+  }
+
+  placeOrder = async () => {
+    const orderPayload = {
+      start: this.state.routes[0].startStation._id,
+      destination: this.state.routes[0].endStation._id,
+    }
+    console.log(orderPayload)
+    try {
+      const {data} = await api.post('/orders', orderPayload)
+      this.setState({order: data, mapState: MapState.ROUTE_ORDERED})
+      console.log(data)
+      const order = this.props.navigation.getParam('order')
+      console.log(order)
+    } catch (e) {
+      console.warn(e)
+      this.setState({orders: null})
     }
   }
 
