@@ -21,7 +21,7 @@ const BottomButton = props => {
         bottom={props.bottom}
         rounded
         light
-        onPress={props.addFunc}>
+        onPress={props.onPress}>
         <Text>{props.text} </Text>
         <Icon name={props.iconName} />
       </StyledButton>
@@ -32,10 +32,10 @@ const BottomButton = props => {
 }
 
 BottomButton.propTypes = {
-  addFunc: PropTypes.func,
   bottom: PropTypes.string,
   iconName: PropTypes.string,
   left: PropTypes.string,
+  onPress: PropTypes.func,
   right: PropTypes.string,
   text: PropTypes.string,
   visible: PropTypes.bool,

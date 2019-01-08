@@ -1,64 +1,40 @@
 import React from 'react'
-import BottomButton from './BottomButton'
 import {MapState} from '../../../ducks/map'
 import {Alert} from 'react-native'
+import DestinationButton from './DestinationButton'
+import BackButton from './BackButton'
+import SearchRoutesButton from './SearchRoutesButton'
+import PlaceOrderButton from './PlaceOrderButton'
+import CancelOrderButton from './CancelOrderButton'
 
 const BottomButtons = props => {
   return [
-    // destination button
-    <BottomButton
+    <DestinationButton
       key={0}
-      visible={props.mapState === MapState.INIT}
-      iconRight
-      addFunc={() => props.toSearchView('DESTINATION')}
-      text="destination"
-      iconName="arrow-forward"
-      bottom="3%"
+      mapState={props.mapState}
+      onPress={() => props.toSearchView('DESTINATION')}
     />,
-    // back button
-    <BottomButton
+    <BackButton
       key={1}
-      visible={props.mapState === MapState.SEARCH_ROUTES}
-      iconLeft
-      addFunc={() => {
+      mapState={props.mapState}
+      onPress={() => {
         props.resetMapState()
       }}
-      text=""
-      iconName="arrow-back"
-      left="10%"
-      right="70%"
-      bottom="3%"
     />,
-    // search routes button
-    <BottomButton
+    <SearchRoutesButton
       key={2}
-      visible={props.mapState === MapState.SEARCH_ROUTES}
-      iconRight
-      addFunc={() => props.fetchRoutes()}
-      text="Search Route"
-      iconName="arrow-forward"
-      left="45%"
-      right="10%"
-      bottom="3%"
+      mapState={props.mapState}
+      onPress={() => props.fetchRoutes()}
     />,
-    // place order button
-    <BottomButton
-      visible={props.mapState === MapState.ROUTE_SEARCHED}
-      iconRight
+    <PlaceOrderButton
+      mapState={props.mapState}
       key={3}
-      addFunc={() => props.placeOrder()}
-      text="Place Order"
-      iconName="arrow-forward"
-      left="42%"
-      right="10%"
-      bottom="3%"
+      onPress={() => props.placeOrder()}
     />,
-    // cancel order button
-    <BottomButton
-      visible={props.mapState === MapState.ROUTE_SEARCHED}
-      iconLeft
+    <CancelOrderButton
+      mapState={props.mapState}
       key={4}
-      addFunc={() =>
+      onPress={() =>
         Alert.alert(
           'Cancel Order',
           'Are you sure to cancel your order?',
@@ -76,11 +52,6 @@ const BottomButtons = props => {
           {cancelable: false}
         )
       }
-      text="Cancel"
-      iconName="close"
-      left="10%"
-      right="60%"
-      bottom="3%"
     />,
   ]
 }
