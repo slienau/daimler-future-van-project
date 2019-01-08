@@ -8,6 +8,7 @@ import Marker from './Marker'
 import SearchForm from '../Map/SearchForm'
 import BottomButtons from './BottomButtons'
 import Routes from './Routes'
+import VirtualBusStops from './VirtualBusStops'
 import {connect} from 'react-redux'
 import {Container, Icon, Fab} from 'native-base'
 import {placeOrder} from '../../ducks/orders'
@@ -225,24 +226,6 @@ class MapScreen extends React.Component {
     this.props.onChangeMapState(MapState.ROUTE_ORDERED)
   }
 
-  renderVBS() {
-    if (!this.props.routes || !this.props.routes.length) return
-    return [
-      <Marker
-        key={0}
-        location={_.get(this.props.routes[0], 'startStation.location')}
-        title={'Start station'}
-        image="vbs"
-      />,
-      <Marker
-        key={1}
-        location={_.get(this.props.routes[0], 'endStation.location')}
-        title={'End station'}
-        image="vbs"
-      />,
-    ]
-  }
-
   render() {
     return (
       <Container>
@@ -264,7 +247,7 @@ class MapScreen extends React.Component {
             <Marker image="destination" {...this.state.destinationMarker} />
           )}
           <Routes routes={this.props.routes} />
-          {this.renderVBS()}
+          <VirtualBusStops routes={this.props.routes} />
         </StyledMapView>
         <SearchForm
           onStartPress={() => {
