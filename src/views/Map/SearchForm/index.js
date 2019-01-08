@@ -13,7 +13,7 @@ import {
 import PropTypes from 'prop-types'
 import styled from 'styled-components/native'
 import moment from 'moment'
-import {MapState} from '../../Map'
+import {MapState} from '../../../ducks/map'
 
 const StyledSearchForm = styled(View)`
   position: absolute;

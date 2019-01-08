@@ -13,7 +13,12 @@ import SearchView from './SearchView'
 import {connect} from 'react-redux'
 import {Container, Icon, Fab} from 'native-base'
 import {placeOrder} from '../../ducks/orders'
-import {fetchRoutes, addSearchResultAction} from '../../ducks/map'
+import {
+  fetchRoutes,
+  addSearchResultAction,
+  changeMapState,
+  MapState,
+} from '../../ducks/map'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -32,14 +37,6 @@ const StyledMenu = styled(Fab)`
 const StyledFab = styled(Fab)`
   margin-bottom: 52;
 `
-
-export const MapState = {
-  INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
-  SEARCH_ROUTES: 'SEARCH_ROUTES', // the state, when a destination is set, shows the SearchForm and the butto search for a route
-  ROUTE_SEARCHED: 'ROUTE_SEARCHED', // when a route has been searched and we get a route from the backend, which we then can order
-  ROUTE_ORDERED: 'ROUTE_ORDERED', // the state after ordering the route, where we can cancel the order and track the vans live position (own view?)
-  ORDER_CANCELLED: 'ORDER_CANCELLED', // after the order is cancelled (necessary? own view? pop up?)
-}
 
 const ANIMATION_DUR = 1500
 
@@ -95,7 +92,7 @@ class Map extends React.Component {
       // destination button
       <BottomButton
         key={0}
-        visible={this.state.mapState === MapState.INIT}
+        visible={this.props.mapState === MapState.INIT}
         iconRight
         addFunc={() => this.toSearchView('DESTINATION')}
         text="destination"
@@ -105,11 +102,11 @@ class Map extends React.Component {
       // back button
       <BottomButton
         key={1}
-        visible={this.state.mapState === MapState.SEARCH_ROUTES}
+        visible={this.props.mapState === MapState.SEARCH_ROUTES}
         iconLeft
         addFunc={() => {
+          this.props.onChangeMapState(MapState.INIT)
           this.setState({
-            mapState: MapState.INIT,
             destinationMarker: null,
             userLocationMarker: null,
             routes: null,
@@ -124,7 +121,7 @@ class Map extends React.Component {
       // search routes button
       <BottomButton
         key={2}
-        visible={this.state.mapState === MapState.SEARCH_ROUTES}
+        visible={this.props.mapState === MapState.SEARCH_ROUTES}
         iconRight
         addFunc={() => this.fetchRoutes()}
         text="Search Route"
@@ -135,7 +132,7 @@ class Map extends React.Component {
       />,
       // place order button
       <BottomButton
-        visible={this.state.mapState === MapState.ROUTE_SEARCHED}
+        visible={this.props.mapState === MapState.ROUTE_SEARCHED}
         iconRight
         key={3}
         addFunc={() => this.placeOrder()}
@@ -147,7 +144,7 @@ class Map extends React.Component {
       />,
       // cancel order button
       <BottomButton
-        visible={this.state.mapState === MapState.ROUTE_SEARCHED}
+        visible={this.props.mapState === MapState.ROUTE_SEARCHED}
         iconLeft
         key={4}
         addFunc={() =>
@@ -158,10 +155,8 @@ class Map extends React.Component {
               {
                 text: 'Yes',
                 onPress: () => {
-                  this.setState({
-                    mapState: MapState.SEARCH_ROUTES,
-                    routes: null,
-                  })
+                  this.props.onChangeMapState(MapState.SEARCH_ROUTES)
+                  // TODO: set routes in redux state to null
                 },
                 style: 'cancel',
               },
@@ -203,10 +198,10 @@ class Map extends React.Component {
   }
 
   handleDestinationSearchResult = (details, location) => {
-    switch (this.state.mapState) {
+    switch (this.props.mapState) {
       case MapState.INIT:
+        this.props.onChangeMapState(MapState.SEARCH_ROUTES)
         this.setState({
-          mapState: MapState.SEARCH_ROUTES,
           destinationMarker: {
             location: location,
             title: details.name,
@@ -230,8 +225,8 @@ class Map extends React.Component {
             title: details.name,
             description: details.vicinity,
           },
-          mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
         })
+        this.props.onChangeMapState(MapState.SEARCH_ROUTES) // TODO: kann weg??
         // check whether start location is already set
         if (this.state.userLocationMarker != null) {
           // fit zoom to start and destination if so
@@ -263,8 +258,9 @@ class Map extends React.Component {
         title: details.name,
         description: details.vicinity,
       },
-      mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
+      // mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
     })
+    this.props.onChangeMapState(MapState.SEARCH_ROUTES)
     // check if destination is set
     if (this.state.destinationMarker != null) {
       // fit zoom to start and destination if so
@@ -303,7 +299,7 @@ class Map extends React.Component {
     }
     console.log(routesPayload)
     this.props.onFetchRoutes(routesPayload)
-    this.setState({mapState: MapState.ROUTE_SEARCHED})
+    this.props.onChangeMapState(MapState.ROUTE_SEARCHED)
   }
 
   placeOrder = async () => {
@@ -382,14 +378,14 @@ class Map extends React.Component {
           }}
           destinationText={_.get(this.state, 'destinationMarker.title')}
           startText={_.get(this.state, 'userLocationMarker.title')}
-          mapState={this.state.mapState}
+          mapState={this.props.mapState}
           onSwapPress={() => {
             this.swapStartAndDestination()
           }}
           departure={_.get(_.first(this.props.routes), 'vanStartTime')}
           arrival={_.get(_.first(this.props.routes), 'destinationTime')}
         />
-        {this.state.mapState === MapState.INIT && (
+        {this.props.mapState === MapState.INIT && (
           <StyledMenu
             active={this.state.active}
             direction="up"
@@ -417,11 +413,18 @@ class Map extends React.Component {
 Map.propTypes = {
   addSearchResult: PropTypes.func,
   map: PropTypes.object,
+  mapState: PropTypes.string,
+  onChangeMapState: PropTypes.func,
+  onFetchRoutes: PropTypes.func,
+  onPlaceOrder: PropTypes.func,
+  orders: PropTypes.object,
+  routes: PropTypes.array,
 }
 
 const MapScreen = connect(
   state => ({
     map: state.map,
+    mapState: state.map.mapState,
     routes: state.map.routes,
     orders: state.orders,
   }),
@@ -431,6 +434,7 @@ const MapScreen = connect(
     },
     onPlaceOrder: payload => dispatch(placeOrder(payload)),
     onFetchRoutes: payload => dispatch(fetchRoutes(payload)),
+    onChangeMapState: payload => dispatch(changeMapState(payload)),
   })
 )(Map)
 
