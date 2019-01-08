@@ -226,7 +226,6 @@ class Map extends React.Component {
             description: details.vicinity,
           },
         })
-        this.props.onChangeMapState(MapState.SEARCH_ROUTES) // TODO: kann weg??
         // check whether start location is already set
         if (this.state.userLocationMarker != null) {
           // fit zoom to start and destination if so
@@ -258,7 +257,6 @@ class Map extends React.Component {
         title: details.name,
         description: details.vicinity,
       },
-      // mapState: MapState.SEARCH_ROUTES, // stay in SEARCH_ROUTES
     })
     this.props.onChangeMapState(MapState.SEARCH_ROUTES)
     // check if destination is set
@@ -293,22 +291,19 @@ class Map extends React.Component {
   }
 
   fetchRoutes = async () => {
-    const routesPayload = {
+    this.props.onFetchRoutes({
       start: this.state.userLocationMarker.location,
       destination: this.state.destinationMarker.location,
-    }
-    console.log(routesPayload)
-    this.props.onFetchRoutes(routesPayload)
+    })
     this.props.onChangeMapState(MapState.ROUTE_SEARCHED)
   }
 
   placeOrder = async () => {
-    const orderPayload = {
+    this.props.onPlaceOrder({
       start: this.props.routes[0].startStation._id,
       destination: this.props.routes[0].endStation._id,
-    }
-    console.log(orderPayload)
-    this.props.onPlaceOrder(orderPayload)
+    })
+    this.props.onChangeMapState(MapState.ROUTE_ORDERED)
   }
 
   renderRoutes = () => {
