@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import Marker from './Marker'
 import SearchForm from '../Map/SearchForm'
-import BottomButton from './BottomButton'
+import BottomButtons from './BottomButtons'
 import {connect} from 'react-redux'
 import {Container, Icon, Fab} from 'native-base'
 import {placeOrder} from '../../ducks/orders'
@@ -76,98 +76,21 @@ class MapScreen extends React.Component {
     )
   }
 
+  resetMapState = () => {
+    this.props.onChangeMapState(MapState.INIT)
+    this.setState({
+      destinationMarker: null,
+      userLocationMarker: null,
+      routes: null,
+    })
+  }
+
   toSearchView = type => {
     this.props.navigation.navigate('Search', {
       predefinedPlaces: _.uniqBy(this.props.map.searchResults, 'id'),
       onSearchResult: (data, details) =>
         this.handleSearchResult(data, details, type),
     })
-  }
-  renderBottomButtons() {
-    return [
-      // destination button
-      <BottomButton
-        key={0}
-        visible={this.props.mapState === MapState.INIT}
-        iconRight
-        addFunc={() => this.toSearchView('DESTINATION')}
-        text="destination"
-        iconName="arrow-forward"
-        bottom="3%"
-      />,
-      // back button
-      <BottomButton
-        key={1}
-        visible={this.props.mapState === MapState.SEARCH_ROUTES}
-        iconLeft
-        addFunc={() => {
-          this.props.onChangeMapState(MapState.INIT)
-          this.setState({
-            destinationMarker: null,
-            userLocationMarker: null,
-            routes: null,
-          })
-        }}
-        text=""
-        iconName="arrow-back"
-        left="10%"
-        right="70%"
-        bottom="3%"
-      />,
-      // search routes button
-      <BottomButton
-        key={2}
-        visible={this.props.mapState === MapState.SEARCH_ROUTES}
-        iconRight
-        addFunc={() => this.fetchRoutes()}
-        text="Search Route"
-        iconName="arrow-forward"
-        left="45%"
-        right="10%"
-        bottom="3%"
-      />,
-      // place order button
-      <BottomButton
-        visible={this.props.mapState === MapState.ROUTE_SEARCHED}
-        iconRight
-        key={3}
-        addFunc={() => this.placeOrder()}
-        text="Place Order"
-        iconName="arrow-forward"
-        left="42%"
-        right="10%"
-        bottom="3%"
-      />,
-      // cancel order button
-      <BottomButton
-        visible={this.props.mapState === MapState.ROUTE_SEARCHED}
-        iconLeft
-        key={4}
-        addFunc={() =>
-          Alert.alert(
-            'Cancel Order',
-            'Are you sure to cancel your order?',
-            [
-              {
-                text: 'Yes',
-                onPress: () => {
-                  this.props.onChangeMapState(MapState.SEARCH_ROUTES)
-                  // TODO: set routes in redux state to null
-                },
-                style: 'cancel',
-              },
-              {text: 'No', onPress: () => console.log('No Pressed')},
-            ],
-            {cancelable: false}
-          )
-        }
-        text="Cancel"
-        iconName="close"
-        left="10%"
-        right="60%"
-        bottom="3%"
-      />,
-    ]
   }
 
   handleSearchResult = (data, details, type) => {
@@ -395,7 +318,14 @@ class MapScreen extends React.Component {
           onPress={() => this.showCurrentLocation()}>
           <Icon name="locate" />
         </StyledFab>
-        {this.renderBottomButtons()}
+        <BottomButtons
+          mapState={this.props.mapState}
+          toSearchView={this.toSearchView}
+          onChangeMapState={this.props.onChangeMapState}
+          resetMapState={this.resetMapState}
+          fetchRoutes={this.fetchRoutes}
+          placeOrder={this.placeOrder}
+        />
       </Container>
     )
   }

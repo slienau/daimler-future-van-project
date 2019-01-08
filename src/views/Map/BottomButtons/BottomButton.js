@@ -12,13 +12,6 @@ const StyledButton = styled(Button)`
   justify-content: center;
 `
 
-// const StyledPlaceOrderButton = styled(Button)`
-//   position: absolute;
-//   right: 10%;
-//   left: 50%;
-//   bottom: 3%;
-// `
-
 const BottomButton = props => {
   if (props.visible) {
     return (
