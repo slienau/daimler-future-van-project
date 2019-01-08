@@ -3,7 +3,7 @@ import {Container, Content, List} from 'native-base'
 import {View, Dimensions, StyleSheet} from 'react-native'
 import MapView from 'react-native-maps'
 import {getRegionForCoordinates} from '../../lib/utils'
-import Marker from '../../components/MapMarker'
+import MapMarker from '../../components/MapMarker'
 import OrderDetailListItem from './OrderDetailListItem'
 
 const OrderDetail = props => {
@@ -24,13 +24,13 @@ const OrderDetail = props => {
             region={mapRegion}
             style={styles.map}
             showsMyLocationButton={false}>
-            <Marker
+            <MapMarker
               title="Pickup point"
               description={order.virtualBusStopStart.name}
               location={order.virtualBusStopStart.location}
               image="person"
             />
-            <Marker
+            <MapMarker
               title="Dropoff point"
               description={order.virtualBusStopEnd.name}
               location={order.virtualBusStopEnd.location}

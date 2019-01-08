@@ -1,18 +1,18 @@
 import React from 'react'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
-import Marker from '../../../components/MapMarker'
+import MapMarker from '../../../components/MapMarker'
 
 const VirtualBusStops = props => {
   if (!props.routes || !props.routes.length) return null
   return [
-    <Marker
+    <MapMarker
       key={0}
       location={_.get(props.routes[0], 'startStation.location')}
       title={'Start station'}
       image="vbs"
     />,
-    <Marker
+    <MapMarker
       key={1}
       location={_.get(props.routes[0], 'endStation.location')}
       title={'End station'}

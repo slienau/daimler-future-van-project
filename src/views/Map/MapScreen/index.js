@@ -4,7 +4,7 @@ import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import Marker from '../../../components/MapMarker'
+import MapMarker from '../../../components/MapMarker'
 import SearchForm from './SearchForm'
 import BottomButtons from './BottomButtons'
 import Routes from './Routes'
@@ -237,14 +237,14 @@ class MapScreen extends React.Component {
           showsUserLocation
           showsMyLocationButton={false}>
           {this.state.userLocationMarker && (
-            <Marker
+            <MapMarker
               location={this.state.userLocationMarker.location}
               title={'My Current Location'}
               image="person"
             />
           )}
           {this.state.destinationMarker && (
-            <Marker image="destination" {...this.state.destinationMarker} />
+            <MapMarker image="destination" {...this.state.destinationMarker} />
           )}
           <Routes routes={this.props.routes} />
           <VirtualBusStops routes={this.props.routes} />
