@@ -4,20 +4,20 @@ import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import Marker from './Marker'
-import SearchForm from '../Map/SearchForm'
+import Marker from '../../../components/MapMarker'
+import SearchForm from './SearchForm'
 import BottomButtons from './BottomButtons'
 import Routes from './Routes'
 import VirtualBusStops from './VirtualBusStops'
 import {connect} from 'react-redux'
 import {Container, Icon, Fab} from 'native-base'
-import {placeOrder} from '../../ducks/orders'
+import {placeOrder} from '../../../ducks/orders'
 import {
   fetchRoutes,
   addSearchResultAction,
   changeMapState,
   MapState,
-} from '../../ducks/map'
+} from '../../../ducks/map'
 
 const StyledMapView = styled(MapView)`
   position: absolute;

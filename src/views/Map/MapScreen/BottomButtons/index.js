@@ -1,5 +1,5 @@
 import React from 'react'
-import {MapState} from '../../../ducks/map'
+import {MapState} from '../../../../ducks/map'
 import {Alert} from 'react-native'
 import DestinationButton from './DestinationButton'
 import BackButton from './BackButton'

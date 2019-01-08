@@ -3,7 +3,7 @@ import {Container, Content, List} from 'native-base'
 import {View, Dimensions, StyleSheet} from 'react-native'
 import MapView from 'react-native-maps'
 import {getRegionForCoordinates} from '../../lib/utils'
-import Marker from '../Map/Marker'
+import Marker from '../../components/MapMarker'
 import OrderDetailListItem from './OrderDetailListItem'
 
 const OrderDetail = props => {

@@ -1,5 +1,5 @@
 import BottomButton from './BottomButton'
-import {MapState} from '../../../ducks/map'
+import {MapState} from '../../../../ducks/map'
 import React from 'react'
 import PropTypes from 'prop-types'
 

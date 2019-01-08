@@ -1,26 +1,26 @@
 import BottomButton from './BottomButton'
-import {MapState} from '../../../ducks/map'
+import {MapState} from '../../../../ducks/map'
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const PlaceOrderButton = props => {
+const CancelOrderButton = props => {
   return (
     <BottomButton
       visible={props.mapState === MapState.ROUTE_SEARCHED}
-      iconRight
+      iconLeft
       onPress={props.onPress}
-      text="Place Order"
-      iconName="arrow-forward"
-      left="42%"
-      right="10%"
+      text="Cancel"
+      iconName="close"
+      left="10%"
+      right="60%"
       bottom="3%"
     />
   )
 }
 
-PlaceOrderButton.propTypes = {
+CancelOrderButton.propTypes = {
   mapState: PropTypes.string,
   onPress: PropTypes.func,
 }
 
-export default PlaceOrderButton
+export default CancelOrderButton

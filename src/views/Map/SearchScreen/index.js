@@ -1,7 +1,7 @@
 import React from 'react'
 import {Image} from 'react-native'
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete'
-import config from '../../lib/config'
+import config from '../../../lib/config'
 
 const SearchScreen = props => {
   return (

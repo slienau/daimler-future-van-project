@@ -1,26 +1,26 @@
 import BottomButton from './BottomButton'
-import {MapState} from '../../../ducks/map'
+import {MapState} from '../../../../ducks/map'
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const BackButton = props => {
+const SearchRoutesButton = props => {
   return (
     <BottomButton
       visible={props.mapState === MapState.SEARCH_ROUTES}
-      iconLeft
+      iconRight
       onPress={props.onPress}
-      text=""
-      iconName="arrow-back"
-      left="10%"
-      right="70%"
+      text="Search Route"
+      iconName="arrow-forward"
+      left="45%"
+      right="10%"
       bottom="3%"
     />
   )
 }
 
-BackButton.propTypes = {
+SearchRoutesButton.propTypes = {
   mapState: PropTypes.string,
   onPress: PropTypes.func,
 }
 
-export default BackButton
+export default SearchRoutesButton

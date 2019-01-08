@@ -1,7 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
-import Marker from './Marker'
+import Marker from '../../../components/MapMarker'
 
 const VirtualBusStops = props => {
   if (!props.routes || !props.routes.length) return null

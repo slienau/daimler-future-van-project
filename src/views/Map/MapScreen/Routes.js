@@ -1,6 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
-import MapEncodedPolyline from '../../components/MapEncodedPolyline'
+import MapEncodedPolyline from '../../../components/MapEncodedPolyline'
 import PropTypes from 'prop-types'
 
 const Routes = props => {
