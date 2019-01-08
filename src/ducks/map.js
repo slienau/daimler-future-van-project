@@ -43,39 +43,29 @@ const initialState = {
 }
 
 const map = (state = initialState, action) => {
+  const newState = _.cloneDeep(state)
   switch (action.type) {
     case SET_START:
-      return {
-        ...state,
-        start: action.payload.start,
-        // or: location: {...action.payload.location} ??
-      }
+      newState.start = action.payload.start
+      return newState
     case SET_DESTINATION:
     case SET_LOCATION:
-      return {
-        ...state,
-        location: action.payload.location,
-        // or: location: {...action.payload.location} ??
-      }
+      newState.location = action.payload.location
+      return newState
     case SET_ROUTES:
-      const newState = _.cloneDeep(state)
       newState.routes = action.payload
       return newState
     case SET_VAN_LOCATION:
-      return {
-        ...state,
-        vanLocation: action.payload.vanLocation,
-      }
+      newState.vanLocation = action.payload.vanLocation
+      return newState
     case ADD_SEARCH_RESULT:
       // set latitude and longitude attribute of the location as we use it regularly
       action.payload.result.geometry.location.latitude =
         action.payload.result.geometry.location.lat
       action.payload.result.geometry.location.longitude =
         action.payload.result.geometry.location.lng
-      return {
-        ...state,
-        searchResults: state.searchResults.concat(action.payload.result),
-      }
+      newState.searchResults = state.searchResults.concat(action.payload.result)
+      return newState
     default:
       return state
   }
