@@ -1,9 +1,11 @@
+import api from '../lib/api'
+import _ from 'lodash'
+
 export const SET_START = 'map/SET_START'
 export const SET_DESTINATION = 'map/SET_DESTINATION'
 export const SET_LOCATION = 'map/SET_LOCATION'
-export const SET_ROUTE = 'map/SET_ROUTE'
+export const SET_ROUTES = 'map/SET_ROUTES'
 export const SET_VAN_LOCATION = 'map/SET_VAN_LOCATION'
-export const SET_ORDER = 'map/SET_ORDER'
 export const ADD_SEARCH_RESULT = 'map/ADD_SEARCH_RESULT'
 
 const TU_BERLIN = {
@@ -34,7 +36,7 @@ const initialState = {
   start: null, // {lat, lng, name, description}
   destination: null, // {lat, lng, name, description}
   location: null,
-  route: null,
+  routes: null,
   vanLocation: null,
   order: null,
   searchResults: [TU_BERLIN, BRANDENBURGER_TOR, SIDOS_HOOD],
@@ -55,13 +57,15 @@ const map = (state = initialState, action) => {
         location: action.payload.location,
         // or: location: {...action.payload.location} ??
       }
-    case SET_ROUTE:
+    case SET_ROUTES:
+      const newState = _.cloneDeep(state)
+      newState.routes = action.payload
+      return newState
     case SET_VAN_LOCATION:
       return {
         ...state,
         vanLocation: action.payload.vanLocation,
       }
-    case SET_ORDER:
     case ADD_SEARCH_RESULT:
       // set latitude and longitude attribute of the location as we use it regularly
       action.payload.result.geometry.location.latitude =
@@ -88,6 +92,20 @@ export const addSearchResultAction = result => {
   return {
     type: ADD_SEARCH_RESULT,
     payload: {result},
+  }
+}
+
+export const fetchRoutes = payload => {
+  return async dispatch => {
+    const {data} = await api.post('/routes', payload)
+    dispatch(setRoutes(data))
+  }
+}
+
+const setRoutes = payload => {
+  return {
+    type: SET_ROUTES,
+    payload: payload,
   }
 }
 

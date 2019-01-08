@@ -11,10 +11,9 @@ import BottomButton from './BottomButton'
 import {createStackNavigator} from 'react-navigation'
 import SearchView from './SearchView'
 import {connect} from 'react-redux'
-import * as act from '../../ducks/map'
 import {Container, Icon, Fab} from 'native-base'
-import api from '../../lib/api'
-import {fetchOrders, placeOrder} from '../../ducks/orders'
+import {placeOrder} from '../../ducks/orders'
+import {fetchRoutes, addSearchResultAction} from '../../ducks/map'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -303,30 +302,25 @@ class Map extends React.Component {
       destination: this.state.destinationMarker.location,
     }
     console.log(routesPayload)
-    try {
-      const {data} = await api.post('/routes', routesPayload)
-      this.setState({routes: data, mapState: MapState.ROUTE_SEARCHED})
-    } catch (e) {
-      console.warn(e)
-      this.setState({routes: null})
-    }
+    this.props.onFetchRoutes(routesPayload)
+    this.setState({mapState: MapState.ROUTE_SEARCHED})
   }
 
   placeOrder = async () => {
     const orderPayload = {
-      start: this.state.routes[0].startStation._id,
-      destination: this.state.routes[0].endStation._id,
+      start: this.props.routes[0].startStation._id,
+      destination: this.props.routes[0].endStation._id,
     }
     console.log(orderPayload)
     this.props.onPlaceOrder(orderPayload)
   }
 
   renderRoutes = () => {
-    if (!this.state.routes || !this.state.routes.length) return
+    if (!this.props.routes || !this.props.routes.length) return
     const colors = ['red', 'green', 'blue']
     return ['toStartRoute', 'vanRoute', 'toDestinationRoute']
       .map(r =>
-        _.get(this.state.routes[0][r], 'routes.0.overview_polyline.points')
+        _.get(this.props.routes[0][r], 'routes.0.overview_polyline.points')
       )
       .map((p, i) => (
         <MapEncodedPolyline
@@ -339,17 +333,17 @@ class Map extends React.Component {
   }
 
   renderVBS() {
-    if (!this.state.routes || !this.state.routes.length) return
+    if (!this.props.routes || !this.props.routes.length) return
     return [
       <Marker
         key={0}
-        location={_.get(this.state.routes[0], 'startStation.location')}
+        location={_.get(this.props.routes[0], 'startStation.location')}
         title={'Start station'}
         image="vbs"
       />,
       <Marker
         key={1}
-        location={_.get(this.state.routes[0], 'endStation.location')}
+        location={_.get(this.props.routes[0], 'endStation.location')}
         title={'End station'}
         image="vbs"
       />,
@@ -392,8 +386,8 @@ class Map extends React.Component {
           onSwapPress={() => {
             this.swapStartAndDestination()
           }}
-          departure={_.get(_.first(this.state.routes), 'vanStartTime')}
-          arrival={_.get(_.first(this.state.routes), 'destinationTime')}
+          departure={_.get(_.first(this.props.routes), 'vanStartTime')}
+          arrival={_.get(_.first(this.props.routes), 'destinationTime')}
         />
         {this.state.mapState === MapState.INIT && (
           <StyledMenu
@@ -428,13 +422,15 @@ Map.propTypes = {
 const MapScreen = connect(
   state => ({
     map: state.map,
+    routes: state.map.routes,
     orders: state.orders,
   }),
   dispatch => ({
     addSearchResult: result => {
-      dispatch(act.addSearchResultAction(result))
+      dispatch(addSearchResultAction(result))
     },
     onPlaceOrder: payload => dispatch(placeOrder(payload)),
+    onFetchRoutes: payload => dispatch(fetchRoutes(payload)),
   })
 )(Map)
 
