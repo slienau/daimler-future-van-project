@@ -40,10 +40,8 @@ const ANIMATION_DUR = 1500
 
 class MapScreen extends React.Component {
   state = {
-    mapState: MapState.INIT,
     userLocationMarker: null,
     destinationMarker: null,
-    routes: null,
     initialRegion: {
       latitude: 52.509663,
       longitude: 13.376481,
