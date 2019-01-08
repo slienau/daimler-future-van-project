@@ -2,12 +2,12 @@ import React from 'react'
 import {Alert} from 'react-native'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
-import MapEncodedPolyline from '../../components/MapEncodedPolyline'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import Marker from './Marker'
 import SearchForm from '../Map/SearchForm'
 import BottomButtons from './BottomButtons'
+import Routes from './Routes'
 import {connect} from 'react-redux'
 import {Container, Icon, Fab} from 'native-base'
 import {placeOrder} from '../../ducks/orders'
@@ -225,23 +225,6 @@ class MapScreen extends React.Component {
     this.props.onChangeMapState(MapState.ROUTE_ORDERED)
   }
 
-  renderRoutes = () => {
-    if (!this.props.routes || !this.props.routes.length) return
-    const colors = ['red', 'green', 'blue']
-    return ['toStartRoute', 'vanRoute', 'toDestinationRoute']
-      .map(r =>
-        _.get(this.props.routes[0][r], 'routes.0.overview_polyline.points')
-      )
-      .map((p, i) => (
-        <MapEncodedPolyline
-          key={i}
-          points={p}
-          strokeWidth={3}
-          strokeColor={colors[i]}
-        />
-      ))
-  }
-
   renderVBS() {
     if (!this.props.routes || !this.props.routes.length) return
     return [
@@ -280,7 +263,7 @@ class MapScreen extends React.Component {
           {this.state.destinationMarker && (
             <Marker image="destination" {...this.state.destinationMarker} />
           )}
-          {this.renderRoutes()}
+          <Routes routes={this.props.routes} />
           {this.renderVBS()}
         </StyledMapView>
         <SearchForm
