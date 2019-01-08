@@ -14,6 +14,7 @@ import {connect} from 'react-redux'
 import * as act from '../../ducks/map'
 import {Container, Icon, Fab} from 'native-base'
 import api from '../../lib/api'
+import {fetchOrders, placeOrder} from '../../ducks/orders'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -317,16 +318,7 @@ class Map extends React.Component {
       destination: this.state.routes[0].endStation._id,
     }
     console.log(orderPayload)
-    try {
-      const {data} = await api.post('/orders', orderPayload)
-      this.setState({order: data, mapState: MapState.ROUTE_ORDERED})
-      console.log(data)
-      const order = this.props.navigation.getParam('order')
-      console.log(order)
-    } catch (e) {
-      console.warn(e)
-      this.setState({orders: null})
-    }
+    this.props.onPlaceOrder(orderPayload)
   }
 
   renderRoutes = () => {
@@ -436,11 +428,13 @@ Map.propTypes = {
 const MapScreen = connect(
   state => ({
     map: state.map,
+    orders: state.orders,
   }),
   dispatch => ({
     addSearchResult: result => {
       dispatch(act.addSearchResultAction(result))
     },
+    onPlaceOrder: payload => dispatch(placeOrder(payload)),
   })
 )(Map)
 
