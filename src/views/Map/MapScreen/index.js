@@ -2,21 +2,22 @@ import React from 'react'
 import {Alert} from 'react-native'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
-import MapEncodedPolyline from '../../components/MapEncodedPolyline'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import Marker from './Marker'
-import SearchForm from '../Map/SearchForm'
-import BottomButton from './BottomButton'
+import MapMarker from '../../../components/MapMarker'
+import SearchForm from './SearchForm'
+import BottomButtons from './BottomButtons'
+import Routes from './Routes'
+import VirtualBusStops from './VirtualBusStops'
 import {connect} from 'react-redux'
 import {Container, Icon, Fab} from 'native-base'
-import {placeOrder} from '../../ducks/orders'
+import {placeOrder} from '../../../ducks/orders'
 import {
   fetchRoutes,
   addSearchResultAction,
   changeMapState,
   MapState,
-} from '../../ducks/map'
+} from '../../../ducks/map'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -40,10 +41,8 @@ const ANIMATION_DUR = 1500
 
 class MapScreen extends React.Component {
   state = {
-    mapState: MapState.INIT,
     userLocationMarker: null,
     destinationMarker: null,
-    routes: null,
     initialRegion: {
       latitude: 52.509663,
       longitude: 13.376481,
@@ -78,98 +77,21 @@ class MapScreen extends React.Component {
     )
   }
 
+  resetMapState = () => {
+    this.props.onChangeMapState(MapState.INIT)
+    this.setState({
+      destinationMarker: null,
+      userLocationMarker: null,
+      routes: null,
+    })
+  }
+
   toSearchView = type => {
     this.props.navigation.navigate('Search', {
       predefinedPlaces: _.uniqBy(this.props.map.searchResults, 'id'),
       onSearchResult: (data, details) =>
         this.handleSearchResult(data, details, type),
     })
-  }
-  renderBottomButtons() {
-    return [
-      // destination button
-      <BottomButton
-        key={0}
-        visible={this.props.mapState === MapState.INIT}
-        iconRight
-        addFunc={() => this.toSearchView('DESTINATION')}
-        text="destination"
-        iconName="arrow-forward"
-        bottom="3%"
-      />,
-      // back button
-      <BottomButton
-        key={1}
-        visible={this.props.mapState === MapState.SEARCH_ROUTES}
-        iconLeft
-        addFunc={() => {
-          this.props.onChangeMapState(MapState.INIT)
-          this.setState({
-            destinationMarker: null,
-            userLocationMarker: null,
-            routes: null,
-          })
-        }}
-        text=""
-        iconName="arrow-back"
-        left="10%"
-        right="70%"
-        bottom="3%"
-      />,
-      // search routes button
-      <BottomButton
-        key={2}
-        visible={this.props.mapState === MapState.SEARCH_ROUTES}
-        iconRight
-        addFunc={() => this.fetchRoutes()}
-        text="Search Route"
-        iconName="arrow-forward"
-        left="45%"
-        right="10%"
-        bottom="3%"
-      />,
-      // place order button
-      <BottomButton
-        visible={this.props.mapState === MapState.ROUTE_SEARCHED}
-        iconRight
-        key={3}
-        addFunc={() => this.placeOrder()}
-        text="Place Order"
-        iconName="arrow-forward"
-        left="42%"
-        right="10%"
-        bottom="3%"
-      />,
-      // cancel order button
-      <BottomButton
-        visible={this.props.mapState === MapState.ROUTE_SEARCHED}
-        iconLeft
-        key={4}
-        addFunc={() =>
-          Alert.alert(
-            'Cancel Order',
-            'Are you sure to cancel your order?',
-            [
-              {
-                text: 'Yes',
-                onPress: () => {
-                  this.props.onChangeMapState(MapState.SEARCH_ROUTES)
-                  // TODO: set routes in redux state to null
-                },
-                style: 'cancel',
-              },
-              {text: 'No', onPress: () => console.log('No Pressed')},
-            ],
-            {cancelable: false}
-          )
-        }
-        text="Cancel"
-        iconName="close"
-        left="10%"
-        right="60%"
-        bottom="3%"
-      />,
-    ]
   }
 
   handleSearchResult = (data, details, type) => {
@@ -305,41 +227,6 @@ class MapScreen extends React.Component {
     this.props.onChangeMapState(MapState.ROUTE_ORDERED)
   }
 
-  renderRoutes = () => {
-    if (!this.props.routes || !this.props.routes.length) return
-    const colors = ['red', 'green', 'blue']
-    return ['toStartRoute', 'vanRoute', 'toDestinationRoute']
-      .map(r =>
-        _.get(this.props.routes[0][r], 'routes.0.overview_polyline.points')
-      )
-      .map((p, i) => (
-        <MapEncodedPolyline
-          key={i}
-          points={p}
-          strokeWidth={3}
-          strokeColor={colors[i]}
-        />
-      ))
-  }
-
-  renderVBS() {
-    if (!this.props.routes || !this.props.routes.length) return
-    return [
-      <Marker
-        key={0}
-        location={_.get(this.props.routes[0], 'startStation.location')}
-        title={'Start station'}
-        image="vbs"
-      />,
-      <Marker
-        key={1}
-        location={_.get(this.props.routes[0], 'endStation.location')}
-        title={'End station'}
-        image="vbs"
-      />,
-    ]
-  }
-
   render() {
     return (
       <Container>
@@ -351,17 +238,17 @@ class MapScreen extends React.Component {
           showsUserLocation
           showsMyLocationButton={false}>
           {this.state.userLocationMarker && (
-            <Marker
+            <MapMarker
               location={this.state.userLocationMarker.location}
               title={'My Current Location'}
               image="person"
             />
           )}
           {this.state.destinationMarker && (
-            <Marker image="destination" {...this.state.destinationMarker} />
+            <MapMarker image="destination" {...this.state.destinationMarker} />
           )}
-          {this.renderRoutes()}
-          {this.renderVBS()}
+          <Routes routes={this.props.routes} />
+          <VirtualBusStops routes={this.props.routes} />
         </StyledMapView>
         <SearchForm
           onStartPress={() => {
@@ -395,7 +282,14 @@ class MapScreen extends React.Component {
           onPress={() => this.showCurrentLocation()}>
           <Icon name="locate" />
         </StyledFab>
-        {this.renderBottomButtons()}
+        <BottomButtons
+          mapState={this.props.mapState}
+          toSearchView={this.toSearchView}
+          onChangeMapState={this.props.onChangeMapState}
+          resetMapState={this.resetMapState}
+          fetchRoutes={this.fetchRoutes}
+          placeOrder={this.placeOrder}
+        />
       </Container>
     )
   }

@@ -1,6 +1,6 @@
 import React from 'react'
 import {createStackNavigator} from 'react-navigation'
-import SearchView from './SearchView'
+import SearchScreen from './SearchScreen'
 import {Icon} from 'native-base'
 import MapScreen from './MapScreen'
 
@@ -16,7 +16,7 @@ export default createStackNavigator(
       }),
     },
     Search: {
-      screen: SearchView,
+      screen: SearchScreen,
     },
   },
   {

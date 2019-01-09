@@ -1,9 +1,9 @@
 import React from 'react'
 import {Image} from 'react-native'
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete'
-import config from '../../lib/config'
+import config from '../../../lib/config'
 
-const SearchView = props => {
+const SearchScreen = props => {
   return (
     <GooglePlacesAutocomplete
       placeholder={'Search'}
@@ -71,4 +71,4 @@ const SearchView = props => {
   )
 }
 
-export default SearchView
+export default SearchScreen

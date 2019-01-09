@@ -1,5 +1,5 @@
 import React from 'react'
-import {Marker as MapsMarker} from 'react-native-maps'
+import {Marker} from 'react-native-maps'
 import PropTypes from 'prop-types'
 
 const images = {
@@ -9,9 +9,9 @@ const images = {
   vbs: require('./assets/vbs.png'),
 }
 
-const Marker = props => {
+const MapMarker = props => {
   return (
-    <MapsMarker
+    <Marker
       coordinate={props.location}
       title={props.title}
       description={props.description}
@@ -20,11 +20,11 @@ const Marker = props => {
   )
 }
 
-Marker.propTypes = {
+MapMarker.propTypes = {
   description: PropTypes.string,
   image: PropTypes.string,
   location: PropTypes.object,
   title: PropTypes.string,
 }
 
-export default Marker
+export default MapMarker
