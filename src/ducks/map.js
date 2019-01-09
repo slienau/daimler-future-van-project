@@ -111,6 +111,13 @@ export const changeMapState = payload => {
   }
 }
 
+export const clearRoutes = () => {
+  return {
+    type: SET_ROUTES,
+    payload: null,
+  }
+}
+
 const setRoutes = payload => {
   return {
     type: SET_ROUTES,

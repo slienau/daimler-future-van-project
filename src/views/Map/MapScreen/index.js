@@ -17,6 +17,7 @@ import {
   addSearchResultAction,
   changeMapState,
   MapState,
+  clearRoutes,
 } from '../../../ducks/map'
 
 const StyledMapView = styled(MapView)`
@@ -289,6 +290,7 @@ class MapScreen extends React.Component {
           resetMapState={this.resetMapState}
           fetchRoutes={this.fetchRoutes}
           placeOrder={this.placeOrder}
+          onClearRoutes={this.props.onClearRoutes}
         />
       </Container>
     )
@@ -300,6 +302,7 @@ MapScreen.propTypes = {
   map: PropTypes.object,
   mapState: PropTypes.string,
   onChangeMapState: PropTypes.func,
+  onClearRoutes: PropTypes.func,
   onFetchRoutes: PropTypes.func,
   onPlaceOrder: PropTypes.func,
   orders: PropTypes.object,
@@ -320,5 +323,6 @@ export default connect(
     onPlaceOrder: payload => dispatch(placeOrder(payload)),
     onFetchRoutes: payload => dispatch(fetchRoutes(payload)),
     onChangeMapState: payload => dispatch(changeMapState(payload)),
+    onClearRoutes: () => dispatch(clearRoutes()),
   })
 )(MapScreen)

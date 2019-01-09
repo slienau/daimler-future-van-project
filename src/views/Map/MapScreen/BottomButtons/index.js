@@ -43,7 +43,7 @@ const BottomButtons = props => {
               text: 'Yes',
               onPress: () => {
                 props.onChangeMapState(MapState.SEARCH_ROUTES)
-                // TODO: set routes in redux state to null
+                props.onClearRoutes()
               },
               style: 'cancel',
             },
