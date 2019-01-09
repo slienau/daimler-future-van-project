@@ -12,40 +12,28 @@ const StyledButton = styled(Button)`
   justify-content: center;
 `
 
-// const StyledPlaceOrderButton = styled(Button)`
-//   position: absolute;
-//   right: 10%;
-//   left: 50%;
-//   bottom: 3%;
-// `
-
 const BottomButton = props => {
-  if (props.visible) {
-    return (
-      <StyledButton
-        left={props.left}
-        right={props.right}
-        bottom={props.bottom}
-        rounded
-        light
-        onPress={props.addFunc}>
-        <Text>{props.text} </Text>
-        <Icon name={props.iconName} />
-      </StyledButton>
-    )
-  } else {
-    return null
-  }
+  return (
+    <StyledButton
+      left={props.left}
+      right={props.right}
+      bottom={props.bottom}
+      rounded
+      light
+      onPress={props.onPress}>
+      <Text>{props.text} </Text>
+      <Icon name={props.iconName} />
+    </StyledButton>
+  )
 }
 
 BottomButton.propTypes = {
-  addFunc: PropTypes.func,
   bottom: PropTypes.string,
   iconName: PropTypes.string,
   left: PropTypes.string,
+  onPress: PropTypes.func,
   right: PropTypes.string,
   text: PropTypes.string,
-  visible: PropTypes.bool,
 }
 
 export default BottomButton

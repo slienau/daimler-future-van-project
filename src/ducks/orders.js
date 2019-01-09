@@ -3,8 +3,7 @@ import moment from 'moment'
 import _ from 'lodash'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
-export const CREATE_ORDER = 'orders/CREATE_ORDER'
-export const CHANGE_ORDER = 'orders/CHANGE_ORDER'
+export const PLACE_ORDER = 'orders/PLACE_ORDER'
 
 const initialState = {
   activeOrder: null,
@@ -42,6 +41,13 @@ export function fetchOrders(active, fromDate, toDate) {
   return async dispatch => {
     const {data} = await api.get('/orders') // TODO: set query parameters according to API
     dispatch(setOrderData(data))
+  }
+}
+
+export function placeOrder(payload) {
+  return async dispatch => {
+    const {data} = await api.post('/orders', payload)
+    dispatch(setOrderData([data]))
   }
 }
 
