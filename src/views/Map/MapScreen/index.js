@@ -64,6 +64,13 @@ class MapScreen extends React.Component {
     )
   }
 
+  fitToCoordinates(coords) {
+    this.mapRef.fitToCoordinates(coords, {
+      edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+      animated: true,
+    })
+  }
+
   showCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
       position => {
@@ -164,10 +171,7 @@ class MapScreen extends React.Component {
         if (this.state.userLocationMarker != null) {
           // fit zoom to start and destination if so
           const coords = [location, this.state.userLocationMarker.location]
-          this.mapRef.fitToCoordinates(coords, {
-            edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
-            animated: true,
-          })
+          this.fitToCoordinates(coords)
         } else {
           // otherwise, only zoom to destination
           this.animateToRegion(location)
@@ -189,10 +193,7 @@ class MapScreen extends React.Component {
     if (this.state.destinationMarker != null) {
       // fit zoom to start and destination if so
       const coords = [location, this.state.destinationMarker.location]
-      this.mapRef.fitToCoordinates(coords, {
-        edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
-        animated: true,
-      })
+      this.fitToCoordinates(coords)
     } else {
       // otherwise, only zoom to start
       this.animateToRegion(location)
