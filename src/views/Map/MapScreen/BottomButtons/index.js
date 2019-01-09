@@ -14,8 +14,6 @@ const BottomButtons = props => {
       visibleButtons = (
         <>
           <DestinationButton
-            key={0}
-            mapState={props.mapState}
             onPress={() => props.toSearchView('DESTINATION')}
           />
         </>
@@ -25,31 +23,19 @@ const BottomButtons = props => {
       visibleButtons = (
         <>
           <BackButton
-            key={1}
-            mapState={props.mapState}
             onPress={() => {
               props.resetMapState()
             }}
           />
-          <SearchRoutesButton
-            key={2}
-            mapState={props.mapState}
-            onPress={() => props.fetchRoutes()}
-          />
+          <SearchRoutesButton onPress={() => props.fetchRoutes()} />
         </>
       )
       break
     case MapState.ROUTE_SEARCHED:
       visibleButtons = (
         <>
-          <PlaceOrderButton
-            mapState={props.mapState}
-            key={3}
-            onPress={() => props.placeOrder()}
-          />
+          <PlaceOrderButton onPress={() => props.placeOrder()} />
           <CancelOrderButton
-            mapState={props.mapState}
-            key={4}
             onPress={() =>
               Alert.alert(
                 'Cancel Order',

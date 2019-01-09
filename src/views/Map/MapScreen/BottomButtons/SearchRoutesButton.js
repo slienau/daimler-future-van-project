@@ -1,12 +1,10 @@
 import BottomButton from './BottomButton'
-import {MapState} from '../../../../ducks/map'
 import React from 'react'
 import PropTypes from 'prop-types'
 
 const SearchRoutesButton = props => {
   return (
     <BottomButton
-      visible={props.mapState === MapState.SEARCH_ROUTES}
       iconRight
       onPress={props.onPress}
       text="Search Route"
@@ -19,7 +17,6 @@ const SearchRoutesButton = props => {
 }
 
 SearchRoutesButton.propTypes = {
-  mapState: PropTypes.string,
   onPress: PropTypes.func,
 }
 
