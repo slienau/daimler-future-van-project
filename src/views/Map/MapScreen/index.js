@@ -38,8 +38,6 @@ const StyledFab = styled(Fab)`
   margin-bottom: 52;
 `
 
-const ANIMATION_DUR = 1500
-
 class MapScreen extends React.Component {
   state = {
     userLocationMarker: null,
@@ -54,21 +52,25 @@ class MapScreen extends React.Component {
 
   mapRef = null
 
+  animateToRegion(location) {
+    this.mapRef.animateToRegion(
+      {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
+      },
+      1500
+    )
+  }
+
   showCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
       position => {
         this.setState({
           currentLocation: position.coords,
         })
-        this.mapRef.animateToRegion(
-          {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.001,
-          },
-          ANIMATION_DUR
-        )
+        this.animateToRegion(location)
       },
       error => {
         this.setState({error: error.message})
@@ -148,15 +150,7 @@ class MapScreen extends React.Component {
             description: details.vicinity,
           },
         })
-        this.mapRef.animateToRegion(
-          {
-            latitude: location.latitude,
-            longitude: location.longitude,
-            latitudeDelta: 0.02,
-            longitudeDelta: 0.02,
-          },
-          ANIMATION_DUR
-        )
+        this.animateToRegion(location)
         break
       case MapState.SEARCH_ROUTES:
         this.setState({
@@ -176,15 +170,7 @@ class MapScreen extends React.Component {
           })
         } else {
           // otherwise, only zoom to destination
-          this.mapRef.animateToRegion(
-            {
-              latitude: location.latitude,
-              longitude: location.longitude,
-              latitudeDelta: 0.02,
-              longitudeDelta: 0.02,
-            },
-            ANIMATION_DUR
-          )
+          this.animateToRegion(location)
         }
         break
     }
@@ -209,15 +195,7 @@ class MapScreen extends React.Component {
       })
     } else {
       // otherwise, only zoom to start
-      this.mapRef.animateToRegion(
-        {
-          latitude: location.latitude,
-          longitude: location.longitude,
-          latitudeDelta: 0.02,
-          longitudeDelta: 0.02,
-        },
-        ANIMATION_DUR
-      )
+      this.animateToRegion(location)
     }
   }
 
