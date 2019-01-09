@@ -19,6 +19,7 @@ import {
   MapState,
   clearRoutes,
 } from '../../../ducks/map'
+import {initialMapRegion} from '../../../lib/config'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -42,12 +43,6 @@ class MapScreen extends React.Component {
   state = {
     userLocationMarker: null,
     destinationMarker: null,
-    initialRegion: {
-      latitude: 52.509663,
-      longitude: 13.376481,
-      latitudeDelta: 0.1,
-      longitudeDelta: 0.1,
-    },
   }
 
   mapRef = null
@@ -233,7 +228,7 @@ class MapScreen extends React.Component {
           ref={ref => {
             this.mapRef = ref
           }}
-          initialRegion={this.state.initialRegion}
+          initialRegion={initialMapRegion}
           showsUserLocation
           showsMyLocationButton={false}>
           {this.state.userLocationMarker && (
