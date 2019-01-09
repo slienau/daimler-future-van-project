@@ -77,7 +77,7 @@ class MapScreen extends React.Component {
         this.setState({
           currentLocation: position.coords,
         })
-        this.animateToRegion(location)
+        this.animateToRegion(position.coords)
       },
       error => {
         this.setState({error: error.message})
