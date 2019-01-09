@@ -95,6 +95,25 @@ class MapScreen extends React.Component {
     })
   }
 
+  handleCancelOrder = () => {
+    Alert.alert(
+      'Cancel Order',
+      'Are you sure to cancel your order?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            this.props.onChangeMapState(MapState.SEARCH_ROUTES)
+            this.props.onClearRoutes()
+          },
+          style: 'cancel',
+        },
+        {text: 'No', onPress: () => console.log('No Pressed')},
+      ],
+      {cancelable: false}
+    )
+  }
+
   handleSearchResult = (data, details, type) => {
     if (!details) return
 
@@ -266,7 +285,7 @@ class MapScreen extends React.Component {
         />
         {this.props.mapState === MapState.INIT && (
           <StyledMenu
-            active={this.state.active}
+            active={this.state.active} // TODO: this.state.active gibts nicht ??
             direction="up"
             containerStyle={{}}
             position="topLeft"
@@ -277,7 +296,7 @@ class MapScreen extends React.Component {
 
         {/* Floating Button to show current location */}
         <StyledFab
-          active={this.state.active}
+          active={this.state.active} // TODO: this.state.active gibts nicht ??
           direction="up"
           position="bottomRight"
           onPress={() => this.showCurrentLocation()}>
@@ -291,6 +310,7 @@ class MapScreen extends React.Component {
           fetchRoutes={this.fetchRoutes}
           placeOrder={this.placeOrder}
           onClearRoutes={this.props.onClearRoutes}
+          onCancelOrder={this.handleCancelOrder}
         />
       </Container>
     )
