@@ -14,6 +14,8 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components/native'
 import moment from 'moment'
 import {MapState} from '../../../ducks/map'
+import {connect} from 'react-redux'
+import _ from 'lodash'
 
 const StyledSearchForm = styled(View)`
   position: absolute;
@@ -60,96 +62,121 @@ const CardItemNoBorders = styled(CardItem)`
 
 const SearchForm = props => {
   const parseDeparture = () => {
-    const date = moment(props.departure)
+    if (!props.routes || !props.routes.length) return
+
+    const departure = _.get(props.routes[0], 'vanStartTime')
+    const date = moment(departure)
     return date.format('HH:mm')
   }
 
   const calculateDuration = () => {
-    const start = moment(props.departure)
-    const end = moment(props.arrival)
+    if (!props.routes || !props.routes.length) return
+
+    const departure = _.get(props.routes[0], 'vanStartTime')
+    const arrival = _.get(props.routes[0], 'destinationTime')
+    const start = moment(departure)
+    const end = moment(arrival)
     const diff = end.diff(start)
     return moment.utc(diff).format('HH:mm')
   }
 
   const calculateWaitingTime = () => {
+    if (!props.routes || !props.routes.length) return
+
+    const departure = _.get(props.routes[0], 'vanStartTime')
     const start = moment()
-    const end = moment(props.departure)
+    const end = moment(departure)
     return start.to(end)
   }
 
-  if (props.mapState === MapState.SEARCH_ROUTES) {
-    return (
-      <StyledSearchForm>
-        <Content padder>
-          <StyledCard>
-            <CardItemBorderBottom button onPress={props.onStartPress}>
-              <Icon type="MaterialIcons" name="location-on" />
-              {props.startText ? (
-                <TextFlex>{props.startText}</TextFlex>
-              ) : (
-                <TextFlexGray>{'Start...'}</TextFlexGray>
-              )}
-            </CardItemBorderBottom>
-            <CardItemNoBorders button onPress={props.onDestinationPress}>
-              <Icon type="MaterialCommunityIcons" name="flag-variant" />
-              {props.destinationText ? (
-                <TextFlex>{props.destinationText}</TextFlex>
-              ) : (
-                <TextFlexGray>{'Destination...'}</TextFlexGray>
-              )}
-              <StyledTouchableOpacity onPress={props.onSwapPress}>
-                <IconBlack type="MaterialCommunityIcons" name="swap-vertical" />
-              </StyledTouchableOpacity>
-            </CardItemNoBorders>
-          </StyledCard>
-        </Content>
-      </StyledSearchForm>
-    )
-  } else if (props.mapState === MapState.ROUTE_SEARCHED) {
-    return (
-      <StyledSearchForm>
-        <Content padder>
-          <StyledCard>
-            <CardItemBorderBottom>
-              <Icon type="MaterialIcons" name="location-on" />
-              <TextDarkGray>{props.startText}</TextDarkGray>
-              <Right />
-            </CardItemBorderBottom>
-            <CardItemBorderBottom>
-              <Icon type="MaterialCommunityIcons" name="flag-variant" />
-              <TextDarkGray>{props.destinationText}</TextDarkGray>
-              <Right />
-            </CardItemBorderBottom>
+  switch (props.mapState) {
+    case MapState.SEARCH_ROUTES:
+      return (
+        <StyledSearchForm>
+          <Content padder>
+            <StyledCard>
+              <CardItemBorderBottom button onPress={props.onStartPress}>
+                <Icon type="MaterialIcons" name="location-on" />
+                {props.startText ? (
+                  <TextFlex>{props.startText}</TextFlex>
+                ) : (
+                  <TextFlexGray>{'Start...'}</TextFlexGray>
+                )}
+              </CardItemBorderBottom>
+              <CardItemNoBorders button onPress={props.onDestinationPress}>
+                <Icon type="MaterialCommunityIcons" name="flag-variant" />
+                {props.destinationText ? (
+                  <TextFlex>{props.destinationText}</TextFlex>
+                ) : (
+                  <TextFlexGray>{'Destination...'}</TextFlexGray>
+                )}
+                <StyledTouchableOpacity onPress={props.onSwapPress}>
+                  <IconBlack
+                    type="MaterialCommunityIcons"
+                    name="swap-vertical"
+                  />
+                </StyledTouchableOpacity>
+              </CardItemNoBorders>
+            </StyledCard>
+          </Content>
+        </StyledSearchForm>
+      )
+    case MapState.ROUTE_SEARCHED:
+      return (
+        <StyledSearchForm>
+          <Content padder>
+            <StyledCard>
+              <CardItemBorderBottom>
+                <Icon type="MaterialIcons" name="location-on" />
+                <TextDarkGray>{props.startText}</TextDarkGray>
+                <Right />
+              </CardItemBorderBottom>
+              <CardItemBorderBottom>
+                <Icon type="MaterialCommunityIcons" name="flag-variant" />
+                <TextDarkGray>{props.destinationText}</TextDarkGray>
+                <Right />
+              </CardItemBorderBottom>
 
-            <CardItemNoBorders>
-              <Left>
-                <Body>
-                  <TextBoldBlue>Departure: {parseDeparture()}</TextBoldBlue>
-                  <TextBoldBlue note>{calculateWaitingTime()}</TextBoldBlue>
-                </Body>
-              </Left>
-              <Right>
-                <TextBoldBlue>Duration: {calculateDuration()}</TextBoldBlue>
-              </Right>
-            </CardItemNoBorders>
-          </StyledCard>
-        </Content>
-      </StyledSearchForm>
-    )
-  } else {
-    return null
+              <CardItemNoBorders>
+                <Left>
+                  <Body>
+                    <TextBoldBlue>Departure: {parseDeparture()}</TextBoldBlue>
+                    <TextBoldBlue note>{calculateWaitingTime()}</TextBoldBlue>
+                  </Body>
+                </Left>
+                <Right>
+                  <TextBoldBlue>Duration: {calculateDuration()}</TextBoldBlue>
+                </Right>
+              </CardItemNoBorders>
+            </StyledCard>
+          </Content>
+        </StyledSearchForm>
+      )
+    default:
+      return null
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    map: state.map,
+    mapState: state.map.mapState,
+    routes: state.map.routes,
   }
 }
 
 SearchForm.propTypes = {
-  arrival: PropTypes.string,
-  departure: PropTypes.string,
   destinationText: PropTypes.string,
+  map: PropTypes.object,
   mapState: PropTypes.string,
   onDestinationPress: PropTypes.func,
   onStartPress: PropTypes.func,
   onSwapPress: PropTypes.func,
+  routes: PropTypes.array,
   startText: PropTypes.string,
 }
 
-export default SearchForm
+export default connect(
+  mapStateToProps,
+  null
+)(SearchForm)

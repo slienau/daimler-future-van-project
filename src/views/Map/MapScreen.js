@@ -289,11 +289,12 @@ class MapScreen extends React.Component {
   }
 
   fetchRoutes = async () => {
+    // immernoch asyn?
     this.props.onFetchRoutes({
       start: this.state.userLocationMarker.location,
       destination: this.state.destinationMarker.location,
     })
-    this.props.onChangeMapState(MapState.ROUTE_SEARCHED)
+    this.props.onChangeMapState(MapState.ROUTE_SEARCHED) // TODO müsste abhängig vom result von onfetch routes sein
   }
 
   placeOrder = async () => {
@@ -371,12 +372,9 @@ class MapScreen extends React.Component {
           }}
           destinationText={_.get(this.state, 'destinationMarker.title')}
           startText={_.get(this.state, 'userLocationMarker.title')}
-          mapState={this.props.mapState}
           onSwapPress={() => {
             this.swapStartAndDestination()
           }}
-          departure={_.get(_.first(this.props.routes), 'vanStartTime')}
-          arrival={_.get(_.first(this.props.routes), 'destinationTime')}
         />
         {this.props.mapState === MapState.INIT && (
           <StyledMenu
