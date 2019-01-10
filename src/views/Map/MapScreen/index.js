@@ -74,7 +74,7 @@ class MapScreen extends React.Component {
   showCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
       position => {
-        this.props.onSetUserPosition(position.coords)
+        this.props.setUserPosition(position.coords)
         this.animateToRegion(position.coords)
       },
       error => {
@@ -101,8 +101,8 @@ class MapScreen extends React.Component {
         {
           text: 'Yes',
           onPress: () => {
-            this.props.onChangeMapState(MapState.SEARCH_ROUTES)
-            this.props.onClearRoutes()
+            this.props.changeMapState(MapState.SEARCH_ROUTES)
+            this.props.clearRoutes()
           },
           style: 'cancel',
         },
@@ -143,12 +143,12 @@ class MapScreen extends React.Component {
     }
     switch (this.props.mapState) {
       case MapState.INIT:
-        this.props.onChangeMapState(MapState.SEARCH_ROUTES)
-        this.props.onSetJourneyDestination(journeyDestination)
+        this.props.changeMapState(MapState.SEARCH_ROUTES)
+        this.props.setJourneyDestination(journeyDestination)
         this.animateToRegion(location)
         break
       case MapState.SEARCH_ROUTES:
-        this.props.onSetJourneyDestination(journeyDestination)
+        this.props.setJourneyDestination(journeyDestination)
         // check whether start location is already set
         if (this.props.journeyStart != null) {
           // fit zoom to start and destination if so
@@ -168,8 +168,8 @@ class MapScreen extends React.Component {
       title: details.name,
       description: details.vicinity,
     }
-    this.props.onSetJourneyStart(journeyStart)
-    this.props.onChangeMapState(MapState.SEARCH_ROUTES)
+    this.props.setJourneyStart(journeyStart)
+    this.props.changeMapState(MapState.SEARCH_ROUTES)
     // check if destination is set
     if (this.props.journeyDestination != null) {
       // fit zoom to start and destination if so
@@ -183,27 +183,27 @@ class MapScreen extends React.Component {
 
   fetchRoutes = async () => {
     // TODO: start und destination direkt in redux handeln
-    this.props.onFetchRoutes({
+    this.props.fetchRoutes({
       start: this.props.journeyStart.location,
       destination: this.props.journeyDestination.location,
     })
-    this.props.onChangeMapState(MapState.ROUTE_SEARCHED) // TODO müsste abhängig vom result von onfetch routes sein
+    this.props.changeMapState(MapState.ROUTE_SEARCHED) // TODO müsste abhängig vom result von onfetch routes sein
   }
 
   placeOrder = async () => {
-    this.props.onPlaceOrder({
+    this.props.placeOrder({
       // vanId: this.props.routes[0].vanId
       start: this.props.routes[0].startStation._id,
       destination: this.props.routes[0].endStation._id,
     })
-    this.props.onChangeMapState(MapState.ROUTE_ORDERED)
+    this.props.changeMapState(MapState.ROUTE_ORDERED)
   }
 
   cancelOrder = async () => {
-    await this.props.onCancelOrder({
+    await this.props.cancelOrder({
       id: this.props.orders.activeOrder._id,
     })
-    this.props.onChangeMapState(MapState.ROUTE_ORDERED)
+    this.props.changeMapState(MapState.ROUTE_ORDERED)
   }
 
   render() {
@@ -264,11 +264,11 @@ class MapScreen extends React.Component {
         <BottomButtons
           mapState={this.props.mapState}
           toSearchView={this.toSearchView}
-          onChangeMapState={this.props.onChangeMapState}
-          resetMapState={this.props.onResetMapState}
+          onChangeMapState={this.props.changeMapState}
+          resetMapState={this.props.resetMapState}
           fetchRoutes={this.fetchRoutes}
           placeOrder={this.placeOrder}
-          onClearRoutes={this.props.onClearRoutes}
+          onClearRoutes={this.props.clearRoutes}
           onCancelOrder={this.handleCancelOrder}
           cancelOrder={this.cancelOrder}
         />
@@ -279,21 +279,21 @@ class MapScreen extends React.Component {
 
 MapScreen.propTypes = {
   addSearchResult: PropTypes.func,
+  cancelOrder: PropTypes.func,
+  changeMapState: PropTypes.func,
+  clearRoutes: PropTypes.func,
+  fetchRoutes: PropTypes.func,
   journeyDestination: PropTypes.object,
   journeyStart: PropTypes.object,
   map: PropTypes.object,
   mapState: PropTypes.string,
-  onCancelOrder: PropTypes.func,
-  onChangeMapState: PropTypes.func,
-  onClearRoutes: PropTypes.func,
-  onFetchRoutes: PropTypes.func,
-  onPlaceOrder: PropTypes.func,
-  onResetMapState: PropTypes.func,
-  onSetJourneyDestination: PropTypes.func,
-  onSetJourneyStart: PropTypes.func,
-  onSetUserPosition: PropTypes.func,
   orders: PropTypes.object,
+  placeOrder: PropTypes.func,
+  resetMapState: PropTypes.func,
   routes: PropTypes.array,
+  setJourneyDestination: PropTypes.func,
+  setJourneyStart: PropTypes.func,
+  setUserPosition: PropTypes.func,
   userPosition: PropTypes.object,
 }
 
@@ -311,16 +311,15 @@ export default connect(
     addSearchResult: result => {
       dispatch(addSearchResultAction(result))
     },
-    onPlaceOrder: payload => dispatch(placeOrder(payload)),
-    onFetchRoutes: payload => dispatch(fetchRoutes(payload)),
-    onChangeMapState: payload => dispatch(changeMapState(payload)),
-    onClearRoutes: () => dispatch(clearRoutes()),
-    onCancelOrder: payload => dispatch(cancelOrder(payload)),
-    onResetMapState: () => dispatch(resetMapState()),
-    onSetJourneyStart: payload => dispatch(setJourneyStart(payload)),
-    onSetJourneyDestination: payload =>
-      dispatch(setJourneyDestination(payload)),
-    onSetUserPosition: payload => dispatch(setUserPosition(payload)),
+    placeOrder: payload => dispatch(placeOrder(payload)),
+    fetchRoutes: payload => dispatch(fetchRoutes(payload)),
+    changeMapState: payload => dispatch(changeMapState(payload)),
+    clearRoutes: () => dispatch(clearRoutes()),
+    cancelOrder: payload => dispatch(cancelOrder(payload)),
+    resetMapState: () => dispatch(resetMapState()),
+    setJourneyStart: payload => dispatch(setJourneyStart(payload)),
+    setJourneyDestination: payload => dispatch(setJourneyDestination(payload)),
+    setUserPosition: payload => dispatch(setUserPosition(payload)),
     swapJourneyStartAndDestination: () =>
       dispatch(swapJourneyStartAndDestination()),
   })
