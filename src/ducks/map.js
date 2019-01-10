@@ -1,11 +1,12 @@
 import api from '../lib/api'
 import _ from 'lodash'
+import {initialMapSearchResults} from '../lib/config'
 
-export const SET_START = 'map/SET_START'
-export const SET_DESTINATION = 'map/SET_DESTINATION'
-export const SET_LOCATION = 'map/SET_LOCATION'
+export const SET_JOURNEY_START = 'map/SET_JOURNEY_START'
+export const SET_JOURNEY_DESTINATION = 'map/SET_JOURNEY_DESTINATION'
+export const SET_USER_POSITION = 'map/SET_USER_POSITION'
+export const SET_VAN_POSITION = 'map/SET_VAN_POSITION'
 export const SET_ROUTES = 'map/SET_ROUTES'
-export const SET_VAN_LOCATION = 'map/SET_VAN_LOCATION'
 export const ADD_SEARCH_RESULT = 'map/ADD_SEARCH_RESULT'
 export const CHANGE_MAP_STATE = 'map/CHANGE_MAP_STATE'
 
@@ -17,55 +18,37 @@ export const MapState = {
   ORDER_CANCELLED: 'ORDER_CANCELLED', // after the order is cancelled (necessary? own view? pop up?)
 }
 
-const TU_BERLIN = {
-  id: 1,
-  description: 'TU Berlin',
-  name: 'Technische Universität Berlin',
-  vicinity: 'Straße des 17. Juni 135, Berlin',
-  geometry: {location: {lat: 52.5125322, lng: 13.3269446}},
-}
-
-const BRANDENBURGER_TOR = {
-  id: 2,
-  description: 'Brandenburger Tor',
-  name: 'Brandenburger Tor',
-  vicinity: 'Germany',
-  geometry: {location: {lat: 52.51653599999999, lng: 13.3817032}},
-}
-
-const SIDOS_HOOD = {
-  id: 3,
-  description: 'Märkisches Viertel',
-  name: 'Märkisches Viertel',
-  vicinity: 'SIDOs Hoos',
-  geometry: {location: {lat: 52.599759, lng: 13.355755}},
-}
-
 const initialState = {
-  start: null, // {lat, lng, name, description}
-  destination: null, // {lat, lng, name, description}
-  location: null,
+  journeyStart: null, // {lat, lng, name, description}
+  journeyDestination: null, // {lat, lng, name, description}
+  userPosition: null,
+  vanPosition: null,
   mapState: MapState.INIT,
   routes: null,
-  vanLocation: null,
-  searchResults: [TU_BERLIN, BRANDENBURGER_TOR, SIDOS_HOOD],
+  searchResults: [
+    initialMapSearchResults.TU_BERLIN,
+    initialMapSearchResults.BRANDENBURGER_TOR,
+    initialMapSearchResults.SIDOS_HOOD,
+  ],
 }
 
 const map = (state = initialState, action) => {
   const newState = _.cloneDeep(state)
   switch (action.type) {
-    case SET_START:
-      newState.start = action.payload.start
+    case SET_JOURNEY_START:
+      newState.journeyStart = action.payload
       return newState
-    case SET_DESTINATION:
-    case SET_LOCATION:
-      newState.location = action.payload.location
+    case SET_JOURNEY_DESTINATION:
+      newState.journeyDestination = action.payload
+      return newState
+    case SET_USER_POSITION:
+      newState.userPosition = action.payload
       return newState
     case SET_ROUTES:
       newState.routes = action.payload
       return newState
-    case SET_VAN_LOCATION:
-      newState.vanLocation = action.payload.vanLocation
+    case SET_VAN_POSITION:
+      newState.vanPosition = action.payload
       return newState
     case ADD_SEARCH_RESULT:
       // set latitude and longitude attribute of the location as we use it regularly
@@ -80,13 +63,6 @@ const map = (state = initialState, action) => {
       return newState
     default:
       return state
-  }
-}
-
-export const setStartAction = (latitude, longitude, name) => {
-  return {
-    type: SET_START,
-    payload: {start: {latitude: latitude, longitude: longitude, name: name}},
   }
 }
 
@@ -114,7 +90,6 @@ export const changeMapState = payload => {
 export const clearRoutes = () => {
   return {
     type: SET_ROUTES,
-    payload: null,
   }
 }
 
