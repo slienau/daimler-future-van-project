@@ -9,6 +9,8 @@ export const SET_VAN_POSITION = 'map/SET_VAN_POSITION'
 export const SET_ROUTES = 'map/SET_ROUTES'
 export const ADD_SEARCH_RESULT = 'map/ADD_SEARCH_RESULT'
 export const CHANGE_MAP_STATE = 'map/CHANGE_MAP_STATE'
+export const SWAP_JOURNEY_START_AND_DESTINATION =
+  'map/SWAP_JOURNEY_START_AND_DESTINATION'
 
 export const MapState = {
   INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
@@ -61,6 +63,10 @@ const map = (state = initialState, action) => {
     case CHANGE_MAP_STATE:
       newState.mapState = action.payload
       return newState
+    case SWAP_JOURNEY_START_AND_DESTINATION:
+      newState.journeyStart = state.journeyDestination
+      newState.journeyDestination = state.journeyStart
+      return newState
     default:
       return state
   }
@@ -111,6 +117,12 @@ export const setUserPosition = userPosition => {
   return {
     type: SET_USER_POSITION,
     payload: userPosition,
+  }
+}
+
+export const swapJourneyStartAndDestination = () => {
+  return {
+    type: SWAP_JOURNEY_START_AND_DESTINATION,
   }
 }
 

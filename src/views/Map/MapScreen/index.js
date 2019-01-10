@@ -22,6 +22,7 @@ import {
   setJourneyDestination,
   setUserPosition,
   resetMapState,
+  swapJourneyStartAndDestination,
 } from '../../../ducks/map'
 import {initialMapRegion} from '../../../lib/config'
 
@@ -180,14 +181,6 @@ class MapScreen extends React.Component {
     }
   }
 
-  swapStartAndDestination = () => {
-    // TODO: handle this directly in redux
-    const start = this.props.journeyStart
-    const destination = this.props.journeyDestination
-    this.props.onSetJourneyStart(destination)
-    this.props.onSetJourneyDestination(start)
-  }
-
   fetchRoutes = async () => {
     // TODO: start und destination direkt in redux handeln
     this.props.onFetchRoutes({
@@ -246,7 +239,7 @@ class MapScreen extends React.Component {
           destinationText={_.get(this.props, 'journeyDestination.title')}
           startText={_.get(this.props, 'journeyStart.title')}
           onSwapPress={() => {
-            this.swapStartAndDestination()
+            this.props.swapJourneyStartAndDestination()
           }}
         />
         {this.props.mapState === MapState.INIT && (
@@ -328,5 +321,7 @@ export default connect(
     onSetJourneyDestination: payload =>
       dispatch(setJourneyDestination(payload)),
     onSetUserPosition: payload => dispatch(setUserPosition(payload)),
+    swapJourneyStartAndDestination: () =>
+      dispatch(swapJourneyStartAndDestination()),
   })
 )(MapScreen)
