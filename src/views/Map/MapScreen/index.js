@@ -17,11 +17,9 @@ import {
   addSearchResultAction,
   changeMapState,
   MapState,
-  clearRoutes,
   setJourneyStart,
   setJourneyDestination,
   setUserPosition,
-  resetMapState,
   swapJourneyStartAndDestination,
 } from '../../../ducks/map'
 import RouteInfo from './RouteInfo'
@@ -221,11 +219,8 @@ class MapScreen extends React.Component {
         <CurrentLocationButton onPress={() => this.showCurrentLocation()} />
         <BottomButtons
           toSearchView={this.toSearchView}
-          changeMapState={this.props.changeMapState}
-          resetMapState={this.props.resetMapState}
           fetchRoutes={this.fetchRoutes}
           placeOrder={this.placeOrder}
-          clearRoutes={this.props.clearRoutes}
           cancelOrder={this.cancelOrder}
           fitToCoordinates={this.fitToCoordinates}
         />
@@ -239,7 +234,6 @@ MapScreen.propTypes = {
   addSearchResult: PropTypes.func,
   cancelOrder: PropTypes.func,
   changeMapState: PropTypes.func,
-  clearRoutes: PropTypes.func,
   fetchRoutes: PropTypes.func,
   journeyDestination: PropTypes.object,
   journeyStart: PropTypes.object,
@@ -247,7 +241,6 @@ MapScreen.propTypes = {
   mapState: PropTypes.string,
   orders: PropTypes.object,
   placeOrder: PropTypes.func,
-  resetMapState: PropTypes.func,
   routes: PropTypes.array,
   setJourneyDestination: PropTypes.func,
   setJourneyStart: PropTypes.func,
@@ -272,9 +265,7 @@ export default connect(
     placeOrder: payload => dispatch(placeOrder(payload)),
     fetchRoutes: payload => dispatch(fetchRoutes(payload)),
     changeMapState: payload => dispatch(changeMapState(payload)),
-    clearRoutes: () => dispatch(clearRoutes()),
     cancelOrder: payload => dispatch(cancelOrder(payload)),
-    resetMapState: () => dispatch(resetMapState()),
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
     setJourneyDestination: payload => dispatch(setJourneyDestination(payload)),
     setUserPosition: payload => dispatch(setUserPosition(payload)),

@@ -1,5 +1,10 @@
 import React from 'react'
-import {MapState} from '../../../../ducks/map'
+import {
+  changeMapState,
+  clearRoutes,
+  MapState,
+  resetMapState,
+} from '../../../../ducks/map'
 import {connect} from 'react-redux'
 import DestinationButton from './DestinationButton'
 import BackButton from './BackButton'
@@ -70,4 +75,15 @@ const mapStateToProps = state => {
   return {mapState: state.map.mapState, map: state.map}
 }
 
-export default connect(mapStateToProps)(BottomButtons)
+const mapDispatchToProps = dispatch => {
+  return {
+    changeMapState: payload => dispatch(changeMapState(payload)),
+    resetMapState: () => dispatch(resetMapState()),
+    clearRoutes: () => dispatch(clearRoutes()),
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BottomButtons)
