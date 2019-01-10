@@ -223,11 +223,8 @@ class MapScreen extends React.Component {
   }
 
   cancelOrder = async () => {
-    const updatedOrder = this.props.orders.activeOrder
-    updatedOrder.canceled = true
     await this.props.onCancelOrder({
       id: this.props.orders.activeOrder._id,
-      updatedOrder: updatedOrder,
     })
     this.props.onChangeMapState(MapState.ROUTE_ORDERED)
   }

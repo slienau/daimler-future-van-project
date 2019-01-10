@@ -54,7 +54,7 @@ export function placeOrder(payload) {
 
 export function cancelOrder(payload) {
   return async dispatch => {
-    const {data} = await api.put('/orders/' + payload.id, payload.updatedOrder)
+    const {data} = await api.put('/orders/' + payload.id, {canceled: true})
     dispatch(setOrderData([data]))
   }
 }
