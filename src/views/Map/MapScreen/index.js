@@ -37,6 +37,7 @@ const StyledMenu = styled(Fab)`
 
 const StyledFab = styled(Fab)`
   margin-bottom: 52;
+  z-index: 999;
 `
 
 const ANIMATION_DUR = 1500
@@ -213,12 +214,11 @@ class MapScreen extends React.Component {
   }
 
   fetchRoutes = async () => {
-    // immernoch asyn?
     await this.props.onFetchRoutes({
       start: this.state.userLocationMarker.location,
       destination: this.state.destinationMarker.location,
     })
-    this.props.onChangeMapState(MapState.ROUTE_SEARCHED) // TODO müsste abhängig vom result von onfetch routes sein
+    this.props.onChangeMapState(MapState.ROUTE_SEARCHED)
   }
 
   placeOrder = async () => {
@@ -226,41 +226,53 @@ class MapScreen extends React.Component {
       start: this.props.routes[0].startStation._id,
       destination: this.props.routes[0].endStation._id,
     })
-    this.props.onChangeMapState(MapState.ROUTE_ORDERED) // TODO hier muss auch eine art promis rein
+    this.props.onChangeMapState(MapState.ROUTE_ORDERED)
   }
 
   zoomToStartWalk = () => {
-    if (!this.props.orders.activeOrder || !this.state.userLocationMarker) return
+    if (!this.props.routes || !this.props.routes.length) return
     const coords = [
-      this.state.userLocationMarker.location,
-      this.props.orders.activeOrder.virtualBusStopStart.location,
+      this.props.routes[0].startLocation,
+      this.props.routes[0].startStation.location,
     ]
     this.mapRef.fitToCoordinates(coords, {
-      edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+      edgePadding: {top: 600, right: 100, left: 100, bottom: 350},
       animated: true,
     })
   }
 
   zoomToDestinationWalk = () => {
-    if (!this.props.orders.activeOrder || !this.state.destinationMarker) return
+    if (!this.props.routes || !this.props.routes.length) return
     const coords = [
-      this.state.destinationMarker.location,
-      this.props.orders.activeOrder.virtualBusStopEnd.location,
+      this.props.routes[0].endStation.location,
+      this.props.routes[0].destination,
     ]
     this.mapRef.fitToCoordinates(coords, {
-      edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+      edgePadding: {top: 600, right: 100, left: 100, bottom: 350},
       animated: true,
     })
   }
 
   zoomToVanRide = () => {
-    if (!this.props.orders.activeOrder) return
+    if (!this.props.routes || !this.props.routes.length) return
     const coords = [
-      this.props.orders.activeOrder.virtualBusStopStart.location,
-      this.props.orders.activeOrder.virtualBusStopEnd.location,
+      this.props.routes[0].startStation.location,
+      this.props.routes[0].endStation.location,
     ]
     this.mapRef.fitToCoordinates(coords, {
-      edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+      edgePadding: {top: 600, right: 100, left: 100, bottom: 350},
+      animated: true,
+    })
+  }
+
+  zoomToMarkers = () => {
+    if (!this.state.userLocationMarker || !this.state.destinationMarker) return
+    const coords = [
+      this.state.userLocationMarker.location,
+      this.state.destinationMarker.location,
+    ]
+    this.mapRef.fitToCoordinates(coords, {
+      edgePadding: {top: 35, right: 100, left: 100, bottom: 350},
       animated: true,
     })
   }
@@ -328,6 +340,7 @@ class MapScreen extends React.Component {
           fetchRoutes={this.fetchRoutes}
           placeOrder={this.placeOrder}
           onClearRoutes={this.props.onClearRoutes}
+          zoomToMarkers={this.zoomToMarkers}
         />
         <RouteInfo
           zoomToStartWalk={this.zoomToStartWalk}

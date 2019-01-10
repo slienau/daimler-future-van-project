@@ -1,4 +1,4 @@
-import {Text, Body, Icon, Left, Right, Button} from 'native-base'
+import {Text, Body, Icon, Left, Right} from 'native-base'
 import PropTypes from 'prop-types'
 import {
   StyledCard,
@@ -10,16 +10,16 @@ import React from 'react'
 
 class StartWalkCard extends React.Component {
   componentDidMount() {
-    this.props.zoomToStartWalk()
-    this.interval = setInterval(() => {
-      console.log('TIMED')
-      this.setState()
-    }, 60000)
+    // this.props.zoomToStartWalk()
+    // this.interval = setInterval(() => {
+    //   console.log('TIMED')
+    //   this.setState()
+    // }, 60000)
   }
 
-  componentWillUnmount() {
-    clearInterval(this.interval)
-  }
+  // componentWillUnmount() {
+  //   clearInterval(this.interval)
+  // }
 
   render() {
     return (
@@ -38,19 +38,12 @@ class StartWalkCard extends React.Component {
               <Text>{this.props.busStopStartName}</Text>
             </Right>
           </CardItemNoBorders>
-          <CardItemNoBorders>
-            {/* <Left> */}
+          {/* <CardItemNoBorders>
             <Body>
-              <Text>Van departure: {this.props.departure}</Text>
-              <Text note>{this.props.waitingTime}</Text>
+              <TextBoldBlue>Van departure: {this.props.departure}</TextBoldBlue>
+              <TextBoldBlue note>{this.props.waitingTime}</TextBoldBlue>
             </Body>
-            {/* </Left> */}
-          </CardItemNoBorders>
-          <CardItemNoBorders>
-            <Button rounded>
-              <Text>Enter van</Text>
-            </Button>
-          </CardItemNoBorders>
+          </CardItemNoBorders> */}
         </StyledCard>
       </StyledContainer>
     )
@@ -59,11 +52,8 @@ class StartWalkCard extends React.Component {
 
 StartWalkCard.propTypes = {
   busStopStartName: PropTypes.string,
-  departure: PropTypes.string,
-  waitingTime: PropTypes.string,
   walkingDistance: PropTypes.string,
   walkingDuration: PropTypes.string,
-  zoomToStartWalk: PropTypes.func,
 }
 
 export default StartWalkCard

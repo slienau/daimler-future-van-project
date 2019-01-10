@@ -3,8 +3,8 @@ import {Text, Card, Container, CardItem, Icon} from 'native-base'
 import styled from 'styled-components/native'
 
 export const StyledRouteInfo = styled(View)`
-  height: 35%;
-  margin-top: 420;
+  height: 15%;
+  margin-top: 560;
 `
 export const StyledContainer = styled(Container)`
   flex: 1;
@@ -30,6 +30,10 @@ export const TextDarkGray = styled(Text)`
 `
 export const TextBoldBlue = styled(Text)`
   color: #3f51b5;
+  font-weight: bold;
+`
+export const TextGreen = styled(Text)`
+  color: green;
   font-weight: bold;
 `
 

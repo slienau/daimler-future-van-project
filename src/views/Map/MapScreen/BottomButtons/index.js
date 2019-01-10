@@ -44,6 +44,7 @@ const BottomButtons = props => {
               onPress: () => {
                 props.onChangeMapState(MapState.SEARCH_ROUTES)
                 props.onClearRoutes()
+                props.zoomToMarkers()
               },
               style: 'cancel',
             },

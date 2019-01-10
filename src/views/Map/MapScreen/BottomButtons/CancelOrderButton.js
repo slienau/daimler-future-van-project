@@ -9,11 +9,10 @@ const CancelOrderButton = props => {
       visible={props.mapState === MapState.ROUTE_SEARCHED}
       iconLeft
       onPress={props.onPress}
-      text="Cancel"
-      iconName="close"
-      left="10%"
-      right="60%"
-      bottom="3%"
+      iconName="arrow-back"
+      left="3%"
+      right="85%"
+      bottom="15%"
     />
   )
 }

@@ -9,7 +9,6 @@ const BackButton = props => {
       visible={props.mapState === MapState.SEARCH_ROUTES}
       iconLeft
       onPress={props.onPress}
-      text=""
       iconName="arrow-back"
       left="10%"
       right="70%"
