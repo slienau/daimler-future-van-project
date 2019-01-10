@@ -46,7 +46,6 @@ const RouteInfo = props => {
   }
 
   const onSwipe = index => {
-    console.log('PROPS', props)
     switch (index) {
       case 0:
         props.zoomToStartWalk()
