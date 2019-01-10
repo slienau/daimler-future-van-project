@@ -10,7 +10,7 @@ import BottomButtons from './BottomButtons'
 import Routes from './Routes'
 import VirtualBusStops from './VirtualBusStops'
 import {connect} from 'react-redux'
-import {Container, Icon, Fab} from 'native-base'
+import {Container} from 'native-base'
 import {placeOrder, cancelOrder} from '../../../ducks/orders'
 import {
   fetchRoutes,
@@ -26,6 +26,8 @@ import {
 } from '../../../ducks/map'
 import RouteInfo from './RouteInfo'
 import {initialMapRegion} from '../../../lib/config'
+import MenuButton from './Buttons/MenuButton'
+import CurrentLocationButton from './Buttons/CurrentLocationButton'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -34,24 +36,8 @@ const StyledMapView = styled(MapView)`
   right: 0;
   bottom: 0;
 `
-// For bottom button
-const StyledMenu = styled(Fab)`
-  position: absolute;
-  top: 22%;
-  background-color: gray;
-`
-
-const StyledFab = styled(Fab)`
-  margin-bottom: 52;
-  z-index: 999;
-`
 
 class MapScreen extends React.Component {
-  state = {
-    userLocationMarker: null,
-    destinationMarker: null,
-  }
-
   mapRef = null
 
   animateToRegion(location) {
@@ -248,24 +234,10 @@ class MapScreen extends React.Component {
           }}
         />
         {this.props.mapState === MapState.INIT && (
-          <StyledMenu
-            active={this.state.active} // TODO: this.state.active gibts nicht ??
-            direction="up"
-            containerStyle={{}}
-            position="topLeft"
-            onPress={() => this.props.navigation.openDrawer()}>
-            <Icon name="menu" />
-          </StyledMenu>
+          <MenuButton onPress={() => this.props.navigation.openDrawer()} />
         )}
 
-        {/* Floating Button to show current location */}
-        <StyledFab
-          active={this.state.active} // TODO: this.state.active gibts nicht ??
-          direction="up"
-          position="bottomRight"
-          onPress={() => this.showCurrentLocation()}>
-          <Icon name="locate" />
-        </StyledFab>
+        <CurrentLocationButton onPress={() => this.showCurrentLocation()} />
         <BottomButtons
           mapState={this.props.mapState}
           map={this.props.map}
