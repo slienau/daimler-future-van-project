@@ -93,6 +93,43 @@ export const clearRoutes = () => {
   }
 }
 
+export const setJourneyStart = journeyStart => {
+  return {
+    type: SET_JOURNEY_START,
+    payload: journeyStart,
+  }
+}
+
+export const setJourneyDestination = journeyDestination => {
+  return {
+    type: SET_JOURNEY_DESTINATION,
+    payload: journeyDestination,
+  }
+}
+
+export const setUserPosition = userPosition => {
+  return {
+    type: SET_USER_POSITION,
+    payload: userPosition,
+  }
+}
+
+export const setVanPosition = vanPosition => {
+  return {
+    type: SET_VAN_POSITION,
+    payload: vanPosition,
+  }
+}
+
+export const resetMapState = () => {
+  return dispatch => {
+    dispatch(changeMapState(MapState.INIT))
+    dispatch(setJourneyStart(null))
+    dispatch(setJourneyDestination(null))
+    dispatch(clearRoutes())
+  }
+}
+
 const setRoutes = payload => {
   return {
     type: SET_ROUTES,

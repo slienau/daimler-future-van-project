@@ -18,6 +18,10 @@ import {
   changeMapState,
   MapState,
   clearRoutes,
+  setJourneyStart,
+  setJourneyDestination,
+  setUserPosition,
+  resetMapState,
 } from '../../../ducks/map'
 import {initialMapRegion} from '../../../lib/config'
 
@@ -69,9 +73,7 @@ class MapScreen extends React.Component {
   showCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
       position => {
-        this.setState({
-          currentLocation: position.coords,
-        })
+        this.props.onSetUserPosition(position.coords)
         this.animateToRegion(position.coords)
       },
       error => {
@@ -80,15 +82,6 @@ class MapScreen extends React.Component {
       }
       // {enableHighAccuracy: true, timeout: 10000, maximumAge: 1000} // OMITTING THESE OPTIONS RESULTS IN BETTER EXPERIENCE
     )
-  }
-
-  resetMapState = () => {
-    this.props.onChangeMapState(MapState.INIT)
-    this.setState({
-      destinationMarker: null,
-      userLocationMarker: null,
-      routes: null,
-    })
   }
 
   toSearchView = type => {
@@ -142,30 +135,23 @@ class MapScreen extends React.Component {
   }
 
   handleDestinationSearchResult = (details, location) => {
+    const journeyDestination = {
+      location: location,
+      title: details.name,
+      description: details.vicinity,
+    }
     switch (this.props.mapState) {
       case MapState.INIT:
         this.props.onChangeMapState(MapState.SEARCH_ROUTES)
-        this.setState({
-          destinationMarker: {
-            location: location,
-            title: details.name,
-            description: details.vicinity,
-          },
-        })
+        this.props.onSetJourneyDestination(journeyDestination)
         this.animateToRegion(location)
         break
       case MapState.SEARCH_ROUTES:
-        this.setState({
-          destinationMarker: {
-            location: location,
-            title: details.name,
-            description: details.vicinity,
-          },
-        })
+        this.props.onSetJourneyDestination(journeyDestination)
         // check whether start location is already set
-        if (this.state.userLocationMarker != null) {
+        if (this.props.journeyStart != null) {
           // fit zoom to start and destination if so
-          const coords = [location, this.state.userLocationMarker.location]
+          const coords = [location, this.props.journeyStart.location]
           this.fitToCoordinates(coords)
         } else {
           // otherwise, only zoom to destination
@@ -176,18 +162,17 @@ class MapScreen extends React.Component {
   }
 
   handleStartSearchResult = (details, location) => {
-    this.setState({
-      userLocationMarker: {
-        location: location,
-        title: details.name,
-        description: details.vicinity,
-      },
-    })
+    const journeyStart = {
+      location: location,
+      title: details.name,
+      description: details.vicinity,
+    }
+    this.props.onSetJourneyStart(journeyStart)
     this.props.onChangeMapState(MapState.SEARCH_ROUTES)
     // check if destination is set
-    if (this.state.destinationMarker != null) {
+    if (this.props.journeyDestination != null) {
       // fit zoom to start and destination if so
-      const coords = [location, this.state.destinationMarker.location]
+      const coords = [location, this.props.journeyDestination.location]
       this.fitToCoordinates(coords)
     } else {
       // otherwise, only zoom to start
@@ -196,19 +181,18 @@ class MapScreen extends React.Component {
   }
 
   swapStartAndDestination = () => {
-    const start = this.state.userLocationMarker
-    const destination = this.state.destinationMarker
-    this.setState({
-      userLocationMarker: destination,
-      destinationMarker: start,
-    })
+    // TODO: handle this directly in redux
+    const start = this.props.journeyStart
+    const destination = this.props.journeyDestination
+    this.props.onSetJourneyStart(destination)
+    this.props.onSetJourneyDestination(start)
   }
 
   fetchRoutes = async () => {
-    // immernoch asyn?
+    // TODO: start und destination direkt in redux handeln
     this.props.onFetchRoutes({
-      start: this.state.userLocationMarker.location,
-      destination: this.state.destinationMarker.location,
+      start: this.props.journeyStart.location,
+      destination: this.props.journeyDestination.location,
     })
     this.props.onChangeMapState(MapState.ROUTE_SEARCHED) // TODO müsste abhängig vom result von onfetch routes sein
   }
@@ -239,15 +223,15 @@ class MapScreen extends React.Component {
           initialRegion={initialMapRegion}
           showsUserLocation
           showsMyLocationButton={false}>
-          {this.state.userLocationMarker && (
+          {this.props.journeyStart && (
             <MapMarker
-              location={this.state.userLocationMarker.location}
+              location={this.props.journeyStart.location}
               title={'My Current Location'}
               image="person"
             />
           )}
-          {this.state.destinationMarker && (
-            <MapMarker image="destination" {...this.state.destinationMarker} />
+          {this.props.journeyDestination && (
+            <MapMarker image="destination" {...this.props.journeyDestination} />
           )}
           <Routes routes={this.props.routes} />
           <VirtualBusStops routes={this.props.routes} />
@@ -259,8 +243,8 @@ class MapScreen extends React.Component {
           onDestinationPress={() => {
             this.toSearchView('DESTINATION')
           }}
-          destinationText={_.get(this.state, 'destinationMarker.title')}
-          startText={_.get(this.state, 'userLocationMarker.title')}
+          destinationText={_.get(this.props, 'journeyDestination.title')}
+          startText={_.get(this.props, 'journeyStart.title')}
           onSwapPress={() => {
             this.swapStartAndDestination()
           }}
@@ -288,7 +272,7 @@ class MapScreen extends React.Component {
           mapState={this.props.mapState}
           toSearchView={this.toSearchView}
           onChangeMapState={this.props.onChangeMapState}
-          resetMapState={this.resetMapState}
+          resetMapState={this.props.onResetMapState}
           fetchRoutes={this.fetchRoutes}
           placeOrder={this.placeOrder}
           onClearRoutes={this.props.onClearRoutes}
@@ -302,6 +286,8 @@ class MapScreen extends React.Component {
 
 MapScreen.propTypes = {
   addSearchResult: PropTypes.func,
+  journeyDestination: PropTypes.object,
+  journeyStart: PropTypes.object,
   map: PropTypes.object,
   mapState: PropTypes.string,
   onCancelOrder: PropTypes.func,
@@ -309,14 +295,22 @@ MapScreen.propTypes = {
   onClearRoutes: PropTypes.func,
   onFetchRoutes: PropTypes.func,
   onPlaceOrder: PropTypes.func,
+  onResetMapState: PropTypes.func,
+  onSetJourneyDestination: PropTypes.func,
+  onSetJourneyStart: PropTypes.func,
+  onSetUserPosition: PropTypes.func,
   orders: PropTypes.object,
   routes: PropTypes.array,
+  userPosition: PropTypes.object,
 }
 
 export default connect(
   state => ({
     map: state.map,
     mapState: state.map.mapState,
+    journeyStart: state.map.journeyStart,
+    journeyDestination: state.map.journeyDestination,
+    userPosition: state.map.userPosition,
     routes: state.map.routes,
     orders: state.orders,
   }),
@@ -329,5 +323,10 @@ export default connect(
     onChangeMapState: payload => dispatch(changeMapState(payload)),
     onClearRoutes: () => dispatch(clearRoutes()),
     onCancelOrder: payload => dispatch(cancelOrder(payload)),
+    onResetMapState: () => dispatch(resetMapState()),
+    onSetJourneyStart: payload => dispatch(setJourneyStart(payload)),
+    onSetJourneyDestination: payload =>
+      dispatch(setJourneyDestination(payload)),
+    onSetUserPosition: payload => dispatch(setUserPosition(payload)),
   })
 )(MapScreen)
