@@ -130,6 +130,8 @@ This object represents a van order which can be made by a user.
 | `virtualBusStopEnd` | `Object` `(VirtualBusStop)` | yes | Ending Virtual Bus Stop |  |
 | `startTime` | `Datetime` | no | Time at which the user entered the van.<br> Null if the user canceled the order. | `2018-11-23T18:30:25.000Z` |
 | `endTime` | `Datetime` | no | Time at which the user left the van.<br> Null if the user canceled the order. | `2018-11-23T18:45:48.000Z` |
+| `vanId` | `Number` | yes | The van which will carry the user. | |
+| `vanArrivalTime` | `Datetime` | yes | The expected time at which the van will arrive at the `virtualBusStopStart` | `2018-11-23T18:30:25.000Z` |
 
 #### Example
 
@@ -159,7 +161,9 @@ This object represents a van order which can be made by a user.
     }
   },
   "startTime": "2018-11-23T18:30:25.000Z",
-  "endTime": "2018-11-23T18:45:48.000Z"
+  "endTime": "2018-11-23T18:45:48.000Z",
+  "vanId": 7,
+  "vanArrivalTime": "2018-11-23T18:30:24.000Z"
 }
 ```
 
@@ -414,7 +418,9 @@ Get the orders of a user.
       }
     },
     "startTime": "2018-02-23T18:30:25.000Z",
-    "endTime": "2018-02-23T18:45:48.000Z"
+    "endTime": "2018-02-23T18:45:48.000Z",
+    "vanId": 7,
+    "vanArrivalTime": "2018-11-23T18:30:24.000Z"
   },
   {
     "_id": "32c6281a-b05c-4cb7-8926-739842c0be86",
@@ -441,8 +447,10 @@ Get the orders of a user.
       }
     },
     "startTime": "2018-03-23T18:30:25.000Z",
-    "endTime": "2018-03-23T18:45:48.000Z"
-  }
+    "endTime": "2018-03-23T18:45:48.000Z",
+    "vanId": 7,
+    "vanArrivalTime": "2018-11-23T18:30:24.000Z"
+  },
 ]
 ```
 
@@ -505,7 +513,9 @@ To create (place) a new van order.
     }
   },
   "startTime": null,
-  "endTime": null
+  "endTime": null,
+  "vanId": 7,
+  "vanArrivalTime": "2018-11-23T18:30:24.000Z"
 }
 ```
 
@@ -526,41 +536,40 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
 
 ###### Body
 
-| Property | Type | Required | Description |
-|--- |--- |--- |--- |
-| `updatedOrder` | `Order` | Yes | The updated order. |
+| Type | Required | Description |
+|--- |--- |--- |
+| `Order` | Yes | The updated order. |
 
 ###### Example
 
 ```json
 {
-  "updatedOrder": {
-    "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-    "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
-    "orderTime": "2018-11-23T18:25:43.511Z",
-    "active": true,
-    "canceled": true,
-    "virtualBusStopStart": {
-      "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
-      "name": "Straße des 17. Juni 135",
-      "accessible": true,
-      "location": {
-        "latitude": 52.515729,
-        "longitude": 13.323373
-      }
-    },
-    "virtualBusStopEnd": {
-      "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
-      "name": "Straße des 17. Juni 120",
-      "accessible": true,
-      "location": {
-        "latitude": 52.512974,
-        "longitude": 13.329145
-      }
-    },
-    "startTime": null,
-    "endTime": null
-  }
+  "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
+  "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
+  "orderTime": "2018-11-23T18:25:43.511Z",
+  "active": true,
+  "canceled": true,
+  "virtualBusStopStart": {
+    "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
+    "name": "Straße des 17. Juni 135",
+    "accessible": true,
+    "location": {
+      "latitude": 52.515729,
+      "longitude": 13.323373
+    }
+  },
+  "virtualBusStopEnd": {
+    "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
+    "name": "Straße des 17. Juni 120",
+    "accessible": true,
+    "location": {
+      "latitude": 52.512974,
+      "longitude": 13.329145
+    }
+  },
+  "startTime": null,
+  "endTime": null,
+  "vanId": 7
 }
 ```
 
@@ -599,7 +608,9 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
     }
   },
   "startTime": null,
-  "endTime": null
+  "endTime": null,
+  "vanId": 7,
+  "vanArrivalTime": "2018-11-23T18:30:24.000Z"
 }
 ```
 
