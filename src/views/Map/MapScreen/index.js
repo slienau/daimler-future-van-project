@@ -10,7 +10,7 @@ import Routes from './Routes'
 import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
 import {Container} from 'native-base'
-import {placeOrder, cancelOrder} from '../../../ducks/orders'
+import {placeOrder} from '../../../ducks/orders'
 import {
   fetchRoutes,
   addSearchResultAction,
@@ -168,13 +168,6 @@ class MapScreen extends React.Component {
     this.props.changeMapState(MapState.ROUTE_ORDERED)
   }
 
-  cancelOrder = async () => {
-    await this.props.cancelOrder({
-      id: this.props.orders.activeOrder._id,
-    })
-    this.props.changeMapState(MapState.ROUTE_ORDERED)
-  }
-
   render() {
     return (
       <Container>
@@ -214,7 +207,6 @@ class MapScreen extends React.Component {
           toSearchView={this.toSearchView}
           fetchRoutes={this.fetchRoutes}
           placeOrder={this.placeOrder}
-          cancelOrder={this.cancelOrder}
           fitToCoordinates={this.fitToCoordinates}
         />
 
@@ -226,21 +218,18 @@ class MapScreen extends React.Component {
 
 MapScreen.propTypes = {
   addSearchResult: PropTypes.func,
-  cancelOrder: PropTypes.func,
   changeMapState: PropTypes.func,
   fetchRoutes: PropTypes.func,
   journeyDestination: PropTypes.object,
   journeyStart: PropTypes.object,
   map: PropTypes.object,
   mapState: PropTypes.string,
-  orders: PropTypes.object,
   placeOrder: PropTypes.func,
   routes: PropTypes.array,
   setJourneyDestination: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
   swapJourneyStartAndDestination: PropTypes.func,
-  // userPosition: PropTypes.object,
 }
 
 export default connect(
@@ -249,9 +238,7 @@ export default connect(
     mapState: state.map.mapState,
     journeyStart: state.map.journeyStart,
     journeyDestination: state.map.journeyDestination,
-    // userPosition: state.map.userPosition,
     routes: state.map.routes,
-    orders: state.orders,
   }),
   dispatch => ({
     addSearchResult: result => {
@@ -260,7 +247,6 @@ export default connect(
     placeOrder: payload => dispatch(placeOrder(payload)),
     fetchRoutes: payload => dispatch(fetchRoutes(payload)),
     changeMapState: payload => dispatch(changeMapState(payload)),
-    cancelOrder: payload => dispatch(cancelOrder(payload)),
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
     setJourneyDestination: payload => dispatch(setJourneyDestination(payload)),
     setUserPosition: payload => dispatch(setUserPosition(payload)),
