@@ -1,5 +1,6 @@
 import React from 'react'
 import {MapState} from '../../../../ducks/map'
+import {connect} from 'react-redux'
 import DestinationButton from './DestinationButton'
 import BackButton from './BackButton'
 import SearchRoutesButton from './SearchRoutesButton'
@@ -65,4 +66,8 @@ const BottomButtons = props => {
   return visibleButtons
 }
 
-export default BottomButtons
+const mapStateToProps = state => {
+  return {mapState: state.map.mapState, map: state.map}
+}
+
+export default connect(mapStateToProps)(BottomButtons)

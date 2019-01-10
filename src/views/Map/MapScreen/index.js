@@ -220,8 +220,6 @@ class MapScreen extends React.Component {
 
         <CurrentLocationButton onPress={() => this.showCurrentLocation()} />
         <BottomButtons
-          mapState={this.props.mapState}
-          map={this.props.map}
           toSearchView={this.toSearchView}
           changeMapState={this.props.changeMapState}
           resetMapState={this.props.resetMapState}
