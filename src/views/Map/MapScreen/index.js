@@ -225,7 +225,7 @@ class MapScreen extends React.Component {
   cancelOrder = async () => {
     const updatedOrder = this.props.orders.activeOrder
     updatedOrder.canceled = true
-    this.props.onCancelOrder({
+    await this.props.onCancelOrder({
       id: this.props.orders.activeOrder._id,
       updatedOrder: updatedOrder,
     })
