@@ -188,6 +188,7 @@ class MapScreen extends React.Component {
           <Routes />
           <MapMarkers />
         </StyledMapView>
+
         <SearchForm
           onStartPress={() => {
             this.toSearchView('START')
@@ -201,11 +202,14 @@ class MapScreen extends React.Component {
             this.props.swapJourneyStartAndDestination()
           }}
         />
-        {this.props.mapState === MapState.INIT && (
-          <MenuButton onPress={() => this.props.navigation.openDrawer()} />
-        )}
+
+        <MenuButton
+          mapState={this.props.mapState}
+          onPress={() => this.props.navigation.openDrawer()}
+        />
 
         <CurrentLocationButton onPress={() => this.showCurrentLocation()} />
+
         <BottomButtons
           toSearchView={this.toSearchView}
           fetchRoutes={this.fetchRoutes}
@@ -213,6 +217,7 @@ class MapScreen extends React.Component {
           cancelOrder={this.cancelOrder}
           fitToCoordinates={this.fitToCoordinates}
         />
+
         <RouteInfo fitToCoordinates={this.fitToCoordinates} />
       </Container>
     )
