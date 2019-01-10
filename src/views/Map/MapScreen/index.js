@@ -11,15 +11,21 @@ import Routes from './Routes'
 import VirtualBusStops from './VirtualBusStops'
 import {connect} from 'react-redux'
 import {Container, Icon, Fab} from 'native-base'
-import {placeOrder} from '../../../ducks/orders'
+import {placeOrder, cancelOrder} from '../../../ducks/orders'
 import {
   fetchRoutes,
   addSearchResultAction,
   changeMapState,
   MapState,
   clearRoutes,
+  setJourneyStart,
+  setJourneyDestination,
+  setUserPosition,
+  resetMapState,
+  swapJourneyStartAndDestination,
 } from '../../../ducks/map'
 import RouteInfo from './RouteInfo'
+import {initialMapRegion} from '../../../lib/config'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -40,37 +46,41 @@ const StyledFab = styled(Fab)`
   z-index: 999;
 `
 
-const ANIMATION_DUR = 1500
-
 class MapScreen extends React.Component {
   state = {
     userLocationMarker: null,
     destinationMarker: null,
-    initialRegion: {
-      latitude: 52.509663,
-      longitude: 13.376481,
-      latitudeDelta: 0.1,
-      longitudeDelta: 0.1,
-    },
   }
 
   mapRef = null
 
+  animateToRegion(location) {
+    this.mapRef.animateToRegion(
+      {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
+      },
+      1500
+    )
+  }
+
+  fitToCoordinates = (
+    coords,
+    edgePadding = {top: 400, right: 100, left: 100, bottom: 350}
+  ) => {
+    this.mapRef.fitToCoordinates(coords, {
+      edgePadding: edgePadding,
+      animated: true,
+    })
+  }
+
   showCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
       position => {
-        this.setState({
-          currentLocation: position.coords,
-        })
-        this.mapRef.animateToRegion(
-          {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.001,
-          },
-          ANIMATION_DUR
-        )
+        this.props.setUserPosition(position.coords)
+        this.animateToRegion(position.coords)
       },
       error => {
         this.setState({error: error.message})
@@ -80,21 +90,31 @@ class MapScreen extends React.Component {
     )
   }
 
-  resetMapState = () => {
-    this.props.onChangeMapState(MapState.INIT)
-    this.setState({
-      destinationMarker: null,
-      userLocationMarker: null,
-      routes: null,
-    })
-  }
-
   toSearchView = type => {
     this.props.navigation.navigate('Search', {
       predefinedPlaces: _.uniqBy(this.props.map.searchResults, 'id'),
       onSearchResult: (data, details) =>
         this.handleSearchResult(data, details, type),
     })
+  }
+
+  handleCancelOrder = () => {
+    Alert.alert(
+      'Cancel Order',
+      'Are you sure to cancel your order?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            this.props.changeMapState(MapState.SEARCH_ROUTES)
+            this.props.clearRoutes()
+          },
+          style: 'cancel',
+        },
+        {text: 'No', onPress: () => console.log('No Pressed')},
+      ],
+      {cancelable: false}
+    )
   }
 
   handleSearchResult = (data, details, type) => {
@@ -121,160 +141,74 @@ class MapScreen extends React.Component {
   }
 
   handleDestinationSearchResult = (details, location) => {
+    const journeyDestination = {
+      location: location,
+      title: details.name,
+      description: details.vicinity,
+    }
     switch (this.props.mapState) {
       case MapState.INIT:
-        this.props.onChangeMapState(MapState.SEARCH_ROUTES)
-        this.setState({
-          destinationMarker: {
-            location: location,
-            title: details.name,
-            description: details.vicinity,
-          },
-        })
-        this.mapRef.animateToRegion(
-          {
-            latitude: location.latitude,
-            longitude: location.longitude,
-            latitudeDelta: 0.02,
-            longitudeDelta: 0.02,
-          },
-          ANIMATION_DUR
-        )
+        this.props.changeMapState(MapState.SEARCH_ROUTES)
+        this.props.setJourneyDestination(journeyDestination)
+        this.animateToRegion(location)
         break
       case MapState.SEARCH_ROUTES:
-        this.setState({
-          destinationMarker: {
-            location: location,
-            title: details.name,
-            description: details.vicinity,
-          },
-        })
+        this.props.setJourneyDestination(journeyDestination)
         // check whether start location is already set
-        if (this.state.userLocationMarker != null) {
+        if (this.props.journeyStart != null) {
           // fit zoom to start and destination if so
-          const coords = [location, this.state.userLocationMarker.location]
-          this.mapRef.fitToCoordinates(coords, {
-            edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
-            animated: true,
-          })
+          const coords = [location, this.props.journeyStart.location]
+          this.fitToCoordinates(coords)
         } else {
           // otherwise, only zoom to destination
-          this.mapRef.animateToRegion(
-            {
-              latitude: location.latitude,
-              longitude: location.longitude,
-              latitudeDelta: 0.02,
-              longitudeDelta: 0.02,
-            },
-            ANIMATION_DUR
-          )
+          this.animateToRegion(location)
         }
         break
     }
   }
 
   handleStartSearchResult = (details, location) => {
-    this.setState({
-      userLocationMarker: {
-        location: location,
-        title: details.name,
-        description: details.vicinity,
-      },
-    })
-    this.props.onChangeMapState(MapState.SEARCH_ROUTES)
+    const journeyStart = {
+      location: location,
+      title: details.name,
+      description: details.vicinity,
+    }
+    this.props.setJourneyStart(journeyStart)
+    this.props.changeMapState(MapState.SEARCH_ROUTES)
     // check if destination is set
-    if (this.state.destinationMarker != null) {
+    if (this.props.journeyDestination != null) {
       // fit zoom to start and destination if so
-      const coords = [location, this.state.destinationMarker.location]
-      this.mapRef.fitToCoordinates(coords, {
-        edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
-        animated: true,
-      })
+      const coords = [location, this.props.journeyDestination.location]
+      this.fitToCoordinates(coords)
     } else {
       // otherwise, only zoom to start
-      this.mapRef.animateToRegion(
-        {
-          latitude: location.latitude,
-          longitude: location.longitude,
-          latitudeDelta: 0.02,
-          longitudeDelta: 0.02,
-        },
-        ANIMATION_DUR
-      )
+      this.animateToRegion(location)
     }
   }
 
-  swapStartAndDestination = () => {
-    const start = this.state.userLocationMarker
-    const destination = this.state.destinationMarker
-    this.setState({
-      userLocationMarker: destination,
-      destinationMarker: start,
-    })
-  }
-
   fetchRoutes = async () => {
-    await this.props.onFetchRoutes({
-      start: this.state.userLocationMarker.location,
-      destination: this.state.destinationMarker.location,
+    // TODO: start und destination direkt in redux handeln
+    await this.props.fetchRoutes({
+      start: this.props.journeyStart.location,
+      destination: this.props.journeyDestination.location,
     })
-    this.props.onChangeMapState(MapState.ROUTE_SEARCHED)
+    this.props.changeMapState(MapState.ROUTE_SEARCHED)
   }
 
   placeOrder = async () => {
-    await this.props.onPlaceOrder({
+    await this.props.placeOrder({
+      // vanId: this.props.routes[0].vanId
       start: this.props.routes[0].startStation._id,
       destination: this.props.routes[0].endStation._id,
     })
-    this.props.onChangeMapState(MapState.ROUTE_ORDERED)
+    this.props.changeMapState(MapState.ROUTE_ORDERED)
   }
 
-  zoomToStartWalk = () => {
-    if (!this.props.routes || !this.props.routes.length) return
-    const coords = [
-      this.props.routes[0].startLocation,
-      this.props.routes[0].startStation.location,
-    ]
-    this.mapRef.fitToCoordinates(coords, {
-      edgePadding: {top: 600, right: 100, left: 100, bottom: 350},
-      animated: true,
+  cancelOrder = async () => {
+    await this.props.cancelOrder({
+      id: this.props.orders.activeOrder._id,
     })
-  }
-
-  zoomToDestinationWalk = () => {
-    if (!this.props.routes || !this.props.routes.length) return
-    const coords = [
-      this.props.routes[0].endStation.location,
-      this.props.routes[0].destination,
-    ]
-    this.mapRef.fitToCoordinates(coords, {
-      edgePadding: {top: 600, right: 100, left: 100, bottom: 350},
-      animated: true,
-    })
-  }
-
-  zoomToVanRide = () => {
-    if (!this.props.routes || !this.props.routes.length) return
-    const coords = [
-      this.props.routes[0].startStation.location,
-      this.props.routes[0].endStation.location,
-    ]
-    this.mapRef.fitToCoordinates(coords, {
-      edgePadding: {top: 600, right: 100, left: 100, bottom: 350},
-      animated: true,
-    })
-  }
-
-  zoomToMarkers = () => {
-    if (!this.state.userLocationMarker || !this.state.destinationMarker) return
-    const coords = [
-      this.state.userLocationMarker.location,
-      this.state.destinationMarker.location,
-    ]
-    this.mapRef.fitToCoordinates(coords, {
-      edgePadding: {top: 35, right: 100, left: 100, bottom: 350},
-      animated: true,
-    })
+    this.props.changeMapState(MapState.ROUTE_ORDERED)
   }
 
   render() {
@@ -284,18 +218,18 @@ class MapScreen extends React.Component {
           ref={ref => {
             this.mapRef = ref
           }}
-          initialRegion={this.state.initialRegion}
+          initialRegion={initialMapRegion}
           showsUserLocation
           showsMyLocationButton={false}>
-          {this.state.userLocationMarker && (
+          {this.props.journeyStart && (
             <MapMarker
-              location={this.state.userLocationMarker.location}
+              location={this.props.journeyStart.location}
               title={'My Current Location'}
               image="person"
             />
           )}
-          {this.state.destinationMarker && (
-            <MapMarker image="destination" {...this.state.destinationMarker} />
+          {this.props.journeyDestination && (
+            <MapMarker image="destination" {...this.props.journeyDestination} />
           )}
           <Routes routes={this.props.routes} />
           <VirtualBusStops routes={this.props.routes} />
@@ -307,15 +241,15 @@ class MapScreen extends React.Component {
           onDestinationPress={() => {
             this.toSearchView('DESTINATION')
           }}
-          destinationText={_.get(this.state, 'destinationMarker.title')}
-          startText={_.get(this.state, 'userLocationMarker.title')}
+          destinationText={_.get(this.props, 'journeyDestination.title')}
+          startText={_.get(this.props, 'journeyStart.title')}
           onSwapPress={() => {
-            this.swapStartAndDestination()
+            this.props.swapJourneyStartAndDestination()
           }}
         />
         {this.props.mapState === MapState.INIT && (
           <StyledMenu
-            active={this.state.active}
+            active={this.state.active} // TODO: this.state.active gibts nicht ??
             direction="up"
             containerStyle={{}}
             position="topLeft"
@@ -326,7 +260,7 @@ class MapScreen extends React.Component {
 
         {/* Floating Button to show current location */}
         <StyledFab
-          active={this.state.active}
+          active={this.state.active} // TODO: this.state.active gibts nicht ??
           direction="up"
           position="bottomRight"
           onPress={() => this.showCurrentLocation()}>
@@ -334,19 +268,18 @@ class MapScreen extends React.Component {
         </StyledFab>
         <BottomButtons
           mapState={this.props.mapState}
+          map={this.props.map}
           toSearchView={this.toSearchView}
-          onChangeMapState={this.props.onChangeMapState}
-          resetMapState={this.resetMapState}
+          onChangeMapState={this.props.changeMapState}
+          resetMapState={this.props.resetMapState}
           fetchRoutes={this.fetchRoutes}
           placeOrder={this.placeOrder}
-          onClearRoutes={this.props.onClearRoutes}
-          zoomToMarkers={this.zoomToMarkers}
+          onClearRoutes={this.props.clearRoutes}
+          onCancelOrder={this.handleCancelOrder}
+          cancelOrder={this.cancelOrder}
+          fitToCoordinates={this.fitToCoordinates}
         />
-        <RouteInfo
-          zoomToStartWalk={this.zoomToStartWalk}
-          zoomToDestinationWalk={this.zoomToDestinationWalk}
-          zoomToVanRide={this.zoomToVanRide}
-        />
+        <RouteInfo fitToCoordinates={this.fitToCoordinates} />
       </Container>
     )
   }
@@ -354,20 +287,31 @@ class MapScreen extends React.Component {
 
 MapScreen.propTypes = {
   addSearchResult: PropTypes.func,
+  cancelOrder: PropTypes.func,
+  changeMapState: PropTypes.func,
+  clearRoutes: PropTypes.func,
+  fetchRoutes: PropTypes.func,
+  journeyDestination: PropTypes.object,
+  journeyStart: PropTypes.object,
   map: PropTypes.object,
   mapState: PropTypes.string,
-  onChangeMapState: PropTypes.func,
-  onClearRoutes: PropTypes.func,
-  onFetchRoutes: PropTypes.func,
-  onPlaceOrder: PropTypes.func,
   orders: PropTypes.object,
+  placeOrder: PropTypes.func,
+  resetMapState: PropTypes.func,
   routes: PropTypes.array,
+  setJourneyDestination: PropTypes.func,
+  setJourneyStart: PropTypes.func,
+  setUserPosition: PropTypes.func,
+  userPosition: PropTypes.object,
 }
 
 export default connect(
   state => ({
     map: state.map,
     mapState: state.map.mapState,
+    journeyStart: state.map.journeyStart,
+    journeyDestination: state.map.journeyDestination,
+    userPosition: state.map.userPosition,
     routes: state.map.routes,
     orders: state.orders,
   }),
@@ -375,9 +319,16 @@ export default connect(
     addSearchResult: result => {
       dispatch(addSearchResultAction(result))
     },
-    onPlaceOrder: payload => dispatch(placeOrder(payload)),
-    onFetchRoutes: payload => dispatch(fetchRoutes(payload)),
-    onChangeMapState: payload => dispatch(changeMapState(payload)),
-    onClearRoutes: () => dispatch(clearRoutes()),
+    placeOrder: payload => dispatch(placeOrder(payload)),
+    fetchRoutes: payload => dispatch(fetchRoutes(payload)),
+    changeMapState: payload => dispatch(changeMapState(payload)),
+    clearRoutes: () => dispatch(clearRoutes()),
+    cancelOrder: payload => dispatch(cancelOrder(payload)),
+    resetMapState: () => dispatch(resetMapState()),
+    setJourneyStart: payload => dispatch(setJourneyStart(payload)),
+    setJourneyDestination: payload => dispatch(setJourneyDestination(payload)),
+    setUserPosition: payload => dispatch(setUserPosition(payload)),
+    swapJourneyStartAndDestination: () =>
+      dispatch(swapJourneyStartAndDestination()),
   })
 )(MapScreen)

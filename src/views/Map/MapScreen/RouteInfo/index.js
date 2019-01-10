@@ -45,16 +45,58 @@ const RouteInfo = props => {
     return start.to(end)
   }
 
+  const zoomToStartWalk = () => {
+    if (!props.routes || !props.routes.length) return
+    const coords = [
+      props.routes[0].startLocation,
+      props.routes[0].startStation.location,
+    ]
+    props.fitToCoordinates(coords, {
+      top: 600,
+      right: 100,
+      left: 100,
+      bottom: 350,
+    })
+  }
+
+  const zoomToDestinationWalk = () => {
+    if (!props.routes || !props.routes.length) return
+    const coords = [
+      props.routes[0].endStation.location,
+      props.routes[0].destination,
+    ]
+    props.fitToCoordinates(coords, {
+      top: 600,
+      right: 100,
+      left: 100,
+      bottom: 350,
+    })
+  }
+
+  const zoomToVanRide = () => {
+    if (!props.routes || !props.routes.length) return
+    const coords = [
+      props.routes[0].startStation.location,
+      props.routes[0].endStation.location,
+    ]
+    props.fitToCoordinates(coords, {
+      top: 600,
+      right: 100,
+      left: 100,
+      bottom: 350,
+    })
+  }
+
   const onSwipe = index => {
     switch (index) {
       case 0:
-        props.zoomToStartWalk()
+        zoomToStartWalk()
         break
       case 1:
-        props.zoomToVanRide()
+        zoomToVanRide()
         break
       case 2:
-        props.zoomToDestinationWalk()
+        zoomToDestinationWalk()
         break
     }
   }
@@ -122,6 +164,7 @@ const RouteInfo = props => {
                   .text
               }
               destinationTime={parseDestinationTime()}
+              destinationName={props.map.journeyDestination.name}
             />
           </Swiper>
         </StyledRouteInfo>
@@ -145,14 +188,12 @@ const mapDispatchToProps = dispatch => ({
 })
 
 RouteInfo.propTypes = {
+  fitToCoordinates: PropTypes.func,
   map: PropTypes.object,
   mapState: PropTypes.string,
   onChangeMapState: PropTypes.func,
   onClearRoutes: PropTypes.func,
   routes: PropTypes.array,
-  zoomToDestinationWalk: PropTypes.func,
-  zoomToStartWalk: PropTypes.func,
-  zoomToVanRide: PropTypes.func,
 }
 
 export default connect(

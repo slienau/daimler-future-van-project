@@ -1,12 +1,10 @@
 import BottomButton from './BottomButton'
-import {MapState} from '../../../../ducks/map'
 import React from 'react'
 import PropTypes from 'prop-types'
 
 const CancelOrderButton = props => {
   return (
     <BottomButton
-      visible={props.mapState === MapState.ROUTE_SEARCHED}
       iconLeft
       onPress={props.onPress}
       iconName="arrow-back"
@@ -18,7 +16,6 @@ const CancelOrderButton = props => {
 }
 
 CancelOrderButton.propTypes = {
-  mapState: PropTypes.string,
   onPress: PropTypes.func,
 }
 
