@@ -2,7 +2,7 @@ const rpn = require('request-promise-native')
 const EnvVariableService = require('../services/envVariableService.js')
 
 class GoogleMapsHelper {
-  static async googleAPICall (start, destination, vb1, vb2, time) {
+  static async googleAPICall (start, destination, vb1, vb2, time, vanArrivalTime) {
     const responses = []
     const key = EnvVariableService.apiKey()
 
@@ -12,11 +12,18 @@ class GoogleMapsHelper {
 
     const response1 = await rpn({ uri: url1, json: true })
     const duration1 = this.readDurationFromGoogleResponse(response1)
+
     responses.push(response1)
 
     // Second API Call to get to second Virtual Bus stop
     const time2 = parseInt(new Date(time).getTime() / 1000 + duration1)
-    const url2 = `https://maps.googleapis.com/maps/api/directions/json?origin=${vb1.location.latitude},${vb1.location.longitude}&destination=${vb2.location.latitude},${vb2.location.longitude}&key=${key}&mode=driving&departure_time=${time2}`
+    const vanArrival = parseInt(new Date(time).getTime() / 1000 + vanArrivalTime)
+
+    // if van arrival time is after the passenger arrival time passenger has to wait
+    const rideTime = (time2 >= vanArrival) ? time2 : vanArrival
+    console.log('passenger time: ' + time2 + ' van arrival time: ' + vanArrival + '. Choosing: ' + rideTime)
+
+    const url2 = `https://maps.googleapis.com/maps/api/directions/json?origin=${vb1.location.latitude},${vb1.location.longitude}&destination=${vb2.location.latitude},${vb2.location.longitude}&key=${key}&mode=driving&departure_time=${rideTime}`
     console.log(url2)
 
     const response2 = await rpn({ uri: url2, json: true })
@@ -30,6 +37,7 @@ class GoogleMapsHelper {
 
     const response3 = await rpn({ uri: url3, json: true })
     responses.push(response3)
+    responses.push(vanArrival)
     return responses
   }
 

@@ -1,6 +1,8 @@
 const VirtualBusStop = require('../models/VirtualBusStop.js')
 const Order = require('../models/Order.js')
 const Account = require('../models/Account.js')
+const ManagementSystem = require('./ManagementSystem.js')
+const geolib = require('geolib')
 
 class OrderHelper {
   // Check if any users are there and if not create two static users
@@ -41,7 +43,9 @@ class OrderHelper {
       virtualBusStopStart: vbs[0]._id,
       virtualBusStopEnd: vbs[1]._id,
       startTime: time1Start,
-      endTime: time1End
+      endTime: time1End,
+      vanId: 3,
+      vanArrivalTime: new Date(Date.now() - 837268)
     })
 
     const order2 = new Order({
@@ -53,14 +57,16 @@ class OrderHelper {
       virtualBusStopStart: vbs[1]._id,
       virtualBusStopEnd: vbs[0]._id,
       startTime: time2Start,
-      endTime: time2End
+      endTime: time2End,
+      vanId: 4,
+      vanArrivalTime: new Date(Date.now() - 587268)
     })
 
     await order1.save()
     await order2.save()
   }
 
-  static async createOrder (accountID, virtualBusStopStart, virtualBusStopEnd, startTime, arrivalTime) {
+  static async createOrder (accountID, virtualBusStopStart, virtualBusStopEnd, vanId) {
     const vbs = []
     try {
       vbs[0] = await VirtualBusStop.findById(virtualBusStopStart)
@@ -69,35 +75,48 @@ class OrderHelper {
       return error
     }
 
-    const pickupTime = startTime ? new Date(startTime) : null
-    const destTime = startTime ? new Date(startTime) : null
+    // Set van and the pickup time, which is the later of either the passenger and van arrival times
 
-    const newOrder = new Order({
+    const van = { vanId: vanId, vanArrivalTime: ManagementSystem.vanTimes[vanId] }
 
-      accountID: accountID,
-      orderTime: new Date(),
-      active: true,
-      canceled: false,
-      virtualBusStopStart: vbs[0]._id,
-      virtualBusStopEnd: vbs[1]._id,
-      startTime: pickupTime,
-      endTime: destTime
-    })
+    let newOrder
     try {
-      await newOrder.save()
+      newOrder = new Order({
+
+        accountID: accountID,
+        orderTime: new Date(),
+        active: true,
+        canceled: false,
+        virtualBusStopStart: vbs[0]._id,
+        virtualBusStopEnd: vbs[1]._id,
+        startTime: null,
+        endTime: null,
+        vanId: van.vanId,
+        vanArrivalTime: van.vanArrivalTime
+      })
+    } catch (e) {
+      console.log(e)
+    }
+
+    try {
+      const obj = await newOrder.save()
+
+      return obj._id
     } catch (error) {
+      console.log(error)
       return error
     }
-    return {
-      accountID: accountID,
-      orderTime: new Date(),
-      active: true,
-      canceled: false,
-      virtualBusStopStart: vbs[0],
-      virtualBusStopEnd: vbs[1],
-      startTime: pickupTime,
-      endTime: destTime
-    }
+  }
+  static async checkOrderLocationStatus (orderId, passengerLocation) {
+    const order = await Order.findById(orderId)
+    const virtualBusStop = await VirtualBusStop.findById(order.virtualBusStopStart)
+    const vanTime = order.vanArrivalTime
+
+    if (order.active === false) return { status: false, message: 'Order is not active' }
+    if (new Date() < new Date(vanTime)) return { status: false, message: 'Van has not arrived yet' }
+    if (geolib.getDistance(virtualBusStop.location, passengerLocation) > 10) return { status: false, message: 'Passenger is not close enough to the van' }
+
+    return { status: true, message: 'Van is ready to be entered.' }
   }
 }
 

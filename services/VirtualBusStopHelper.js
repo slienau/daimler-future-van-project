@@ -58,7 +58,7 @@ class VirtualBusStopHelper {
     await kotti.save()
   }
   // get Suggestions for Jouney
-  static async getRouteSuggestions (start, destination, startTime) {
+  static async getRouteSuggestions (start, destination, startTime, vanArrivalTime, vanID) {
     let suggestions = []
 
     const startVB = await this.getClosestVB(start)
@@ -68,10 +68,10 @@ class VirtualBusStopHelper {
     if (startVB._id === destinationVB._id) return { error: 'NoCarRouteError', message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' }
 
     // Get Google Responses
-    const googleResponse = await GoogleMapsHelper.googleAPICall(start, destination, startVB, destinationVB, startTime)
+    const googleResponse = await GoogleMapsHelper.googleAPICall(start, destination, startVB, destinationVB, startTime, vanArrivalTime)
 
     // Calculate Durations from Google Responses
-    const vanStartTime = new Date(new Date(startTime).getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[0]) * 1000)
+    const vanStartTime = new Date(googleResponse[3] * 1000)
     const vanEndTime = new Date(vanStartTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[1]) * 1000)
     const destinationTime = new Date(vanEndTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[2]) * 1000)
 
@@ -87,7 +87,8 @@ class VirtualBusStopHelper {
       destinationTime: destinationTime.toISOString(),
       toStartRoute: googleResponse[0],
       vanRoute: googleResponse[1],
-      toDestinationRoute: googleResponse[2]
+      toDestinationRoute: googleResponse[2],
+      vanId: vanID
 
     })
 

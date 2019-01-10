@@ -34,6 +34,14 @@ const OrderSchema = new Schema({
   endTime: {
     type: Date,
     required: false
+  },
+  vanId: {
+    type: Number,
+    required: true
+  },
+  vanArrivalTime: {
+    type: Date,
+    required: true
   }
 }
 )

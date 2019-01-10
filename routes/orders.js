@@ -22,6 +22,18 @@ router.get('/', async function (req, res) {
   res.json(ordersObject)
 })
 
+router.get('/:orderId/status', async function (req, res) {
+  console.log('Get Status zu OrderID: ' + req.params.orderId + ' mit query:')
+  console.log(req.query)
+  res.setHeader('Content-Type', 'application/json')
+
+  if (!req.params.orderId || !req.query.passengerLatitude || !req.query.passengerLongitude) res.json({ code: 400, message: 'Bad params, you need passengerLongitude and passengerLatitude' })
+
+  const result = await OrderHelper.checkOrderLocationStatus(req.params.orderId, { latitude: req.query.passengerLatitude, longitude: req.query.passengerLongitude })
+
+  res.json(result)
+})
+
 router.post('/', async function (req, res) {
   console.log('Request to Post Orders with body: ')
   console.log(req.body)
@@ -29,32 +41,45 @@ router.post('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
 
   const accountID = req.user._id
+  // test if parameters are there
+  if (!req.body.start || !req.body.destination || !req.body.vanId) res.json({ code: 400, message: 'bad parameters, you need start, destination, and vanId (from route request)' })
+
   const vb1 = req.body.start
   const vb2 = req.body.destination
-  const pickupTime = req.query.time ? req.query.time : null
-  let order
+  const vanId = req.body.vanId
+
+  let order, orderId
 
   try {
-    order = await OrderHelper.createOrder(accountID, vb1, vb2, pickupTime)
+    orderId = await OrderHelper.createOrder(accountID, vb1, vb2, vanId)
+  } catch (error) {
+    console.log(error)
+    res.json(error)
+  }
+  try {
+    order = await Order.findById(orderId)
   } catch (error) {
     res.json(error)
   }
-  console.log('created active order for user ' + accountID)
+  console.log('created active order for user ' + accountID + ' with orderId: ' + orderId)
   res.json(order)
 })
 
-router.put('/', async function (req, res) {
+router.put('/:orderId', async function (req, res) {
   console.log('Put Request to Order : ' + req.query.orderId)
+  console.log('Put Request to Order : ' + req.params.orderId)
 
-  if (!req.query.orderId) res.json({ code: 400, description: 'No orderId as been sent as param.', reasonPhrase: 'Bad Request' })
+  const orderId = req.params.orderId || req.query.orderId
+
+  if (!req.query.orderId && !req.params.orderId) res.json({ code: 400, description: 'No orderId as been sent as param.', reasonPhrase: 'Bad Request' })
 
   if (req.body.canceled) {
-    await Order.updateOne({ _id: req.query.orderId }, { $set: { canceled: req.body.canceled } })
+    await Order.updateOne({ _id: orderId }, { $set: { canceled: req.body.canceled, endTime: new Date() } })
   }
   if (req.body.active) {
-    await Order.updateOne({ _id: req.query.orderId }, { $set: { active: req.body.active } })
+    await Order.updateOne({ _id: orderId }, { $set: { active: req.body.active, endTime: new Date() } })
   }
-  const order = await Order.findById(req.query.orderId)
+  const order = await Order.findById(orderId)
   res.json(order)
 })
 
