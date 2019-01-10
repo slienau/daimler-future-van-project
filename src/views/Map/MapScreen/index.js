@@ -4,11 +4,10 @@ import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import MapMarker from '../../../components/MapMarker'
 import SearchForm from './SearchForm'
 import BottomButtons from './BottomButtons'
 import Routes from './Routes'
-import VirtualBusStops from './VirtualBusStops'
+import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
 import {Container} from 'native-base'
 import {placeOrder, cancelOrder} from '../../../ducks/orders'
@@ -186,18 +185,8 @@ class MapScreen extends React.Component {
           initialRegion={initialMapRegion}
           showsUserLocation
           showsMyLocationButton={false}>
-          {this.props.journeyStart && (
-            <MapMarker
-              location={this.props.journeyStart.location}
-              title={'My Current Location'}
-              image="person"
-            />
-          )}
-          {this.props.journeyDestination && (
-            <MapMarker image="destination" {...this.props.journeyDestination} />
-          )}
-          <Routes routes={this.props.routes} />
-          <VirtualBusStops routes={this.props.routes} />
+          <Routes />
+          <MapMarkers />
         </StyledMapView>
         <SearchForm
           onStartPress={() => {
@@ -245,7 +234,8 @@ MapScreen.propTypes = {
   setJourneyDestination: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
-  userPosition: PropTypes.object,
+  swapJourneyStartAndDestination: PropTypes.func,
+  // userPosition: PropTypes.object,
 }
 
 export default connect(
@@ -254,7 +244,7 @@ export default connect(
     mapState: state.map.mapState,
     journeyStart: state.map.journeyStart,
     journeyDestination: state.map.journeyDestination,
-    userPosition: state.map.userPosition,
+    // userPosition: state.map.userPosition,
     routes: state.map.routes,
     orders: state.orders,
   }),
