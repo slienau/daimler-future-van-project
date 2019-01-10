@@ -19,6 +19,7 @@ import {
   MapState,
   clearRoutes,
 } from '../../../ducks/map'
+import RouteInfo from './RouteInfo'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -213,7 +214,7 @@ class MapScreen extends React.Component {
 
   fetchRoutes = async () => {
     // immernoch asyn?
-    this.props.onFetchRoutes({
+    await this.props.onFetchRoutes({
       start: this.state.userLocationMarker.location,
       destination: this.state.destinationMarker.location,
     })
@@ -221,11 +222,47 @@ class MapScreen extends React.Component {
   }
 
   placeOrder = async () => {
-    this.props.onPlaceOrder({
+    await this.props.onPlaceOrder({
       start: this.props.routes[0].startStation._id,
       destination: this.props.routes[0].endStation._id,
     })
-    this.props.onChangeMapState(MapState.ROUTE_ORDERED)
+    this.props.onChangeMapState(MapState.ROUTE_ORDERED) // TODO hier muss auch eine art promis rein
+  }
+
+  zoomToStartWalk = () => {
+    if (!this.props.orders.activeOrder || !this.state.userLocationMarker) return
+    const coords = [
+      this.state.userLocationMarker.location,
+      this.props.orders.activeOrder.virtualBusStopStart.location,
+    ]
+    this.mapRef.fitToCoordinates(coords, {
+      edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+      animated: true,
+    })
+  }
+
+  zoomToDestinationWalk = () => {
+    if (!this.props.orders.activeOrder || !this.state.destinationMarker) return
+    const coords = [
+      this.state.destinationMarker.location,
+      this.props.orders.activeOrder.virtualBusStopEnd.location,
+    ]
+    this.mapRef.fitToCoordinates(coords, {
+      edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+      animated: true,
+    })
+  }
+
+  zoomToVanRide = () => {
+    if (!this.props.orders.activeOrder) return
+    const coords = [
+      this.props.orders.activeOrder.virtualBusStopStart.location,
+      this.props.orders.activeOrder.virtualBusStopEnd.location,
+    ]
+    this.mapRef.fitToCoordinates(coords, {
+      edgePadding: {top: 400, right: 100, left: 100, bottom: 350},
+      animated: true,
+    })
   }
 
   render() {
@@ -291,6 +328,11 @@ class MapScreen extends React.Component {
           fetchRoutes={this.fetchRoutes}
           placeOrder={this.placeOrder}
           onClearRoutes={this.props.onClearRoutes}
+        />
+        <RouteInfo
+          zoomToStartWalk={this.zoomToStartWalk}
+          zoomToDestinationWalk={this.zoomToDestinationWalk}
+          zoomToVanRide={this.zoomToVanRide}
         />
       </Container>
     )
