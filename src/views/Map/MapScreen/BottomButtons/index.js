@@ -31,7 +31,11 @@ const BottomButtons = props => {
       )
       break
     case MapState.ROUTE_ORDERED:
-      visibleButtons = <></>
+      visibleButtons = (
+        <>
+          <CancelOrderButton onPress={() => props.cancelOrder()} />
+        </>
+      )
       break
     case MapState.ORDER_CANCELLED:
       visibleButtons = <></>

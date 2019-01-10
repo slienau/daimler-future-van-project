@@ -4,6 +4,7 @@ import _ from 'lodash'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
 export const PLACE_ORDER = 'orders/PLACE_ORDER'
+export const CANCEL_ORDER = 'orders/CANCEL_ORDER'
 
 const initialState = {
   activeOrder: null,
@@ -47,6 +48,13 @@ export function fetchOrders(active, fromDate, toDate) {
 export function placeOrder(payload) {
   return async dispatch => {
     const {data} = await api.post('/orders', payload)
+    dispatch(setOrderData([data]))
+  }
+}
+
+export function cancelOrder(payload) {
+  return async dispatch => {
+    const {data} = await api.put('/orders/' + payload.id, payload.updatedOrder)
     dispatch(setOrderData([data]))
   }
 }

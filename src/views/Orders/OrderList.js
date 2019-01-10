@@ -41,7 +41,12 @@ class OrderList extends Component {
     if (!this.props.activeOrder) {
       activeOrderItem = <Text>There is no active order at the moment.</Text>
     } else {
-      activeOrderItem = <Text>TODO: show active order</Text>
+      activeOrderItem = (
+        <OrderListItem
+          key={this.props.activeOrder._id}
+          order={this.props.activeOrder}
+        />
+      )
     }
     return (
       <Container>
