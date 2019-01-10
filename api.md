@@ -616,6 +616,76 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
 
 ---
 
+#### GET /orders/{orderId}/status
+
+Get information if the user is close enough to the van to enter.
+
+##### Request Query Parameters
+
+| Property | Type | Required | Description |
+|--- |--- |--- |--- |
+| `passengerLatitude` | `Number` | Yes | The users latitude. |
+| `passengerLongitude` | `Number` | Yes | The users longitude. |
+
+###### Example
+
+```
+GET /orders/13cf81ee-8898-4b7a-a96e-8b5f675deb3c/status?passengerLatitude=52.123456&passengerLongitude=13.123456
+```
+
+##### Response
+
+- `status`: `true` if user can enter the van (if the user is close enough to the van), `false` otherwise.
+
+```json
+{
+  "status": false,
+  "message": "Van has not arrived yet"
+}
+```
+
+---
+
+#### POST /orders/{orderId}/startRide
+
+User has entered the van. After this request the van should lock the doors and start the ride. Error if the user didn't enter the van previously.
+
+##### Request Query Parameters
+
+| Property | Type | Required | Description |
+|--- |--- |--- |--- |
+| `passengerLatitude` | `Number` | Yes | The users latitude. |
+| `passengerLongitude` | `Number` | Yes | The users longitude. |
+
+###### Example
+
+```
+GET /orders/13cf81ee-8898-4b7a-a96e-8b5f675deb3c/startRide?passengerLatitude=52.123456&passengerLongitude=13.123456
+```
+
+##### Responses
+
+| Code | Body Type | Description |
+|--- |--- |--- |
+| `200` | `Order` | |
+| `400` | `Error` | |
+
+---
+
+#### POST /orders/{orderId}/endRide
+
+User left the van.
+
+##### Request
+
+Empty request body.
+
+##### Responses
+
+Updated order object.
+
+---
+
 ### /routes
 
 ---
