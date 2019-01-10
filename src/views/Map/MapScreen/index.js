@@ -84,25 +84,6 @@ class MapScreen extends React.Component {
     })
   }
 
-  handleCancelOrder = () => {
-    Alert.alert(
-      'Cancel Order',
-      'Are you sure to cancel your order?',
-      [
-        {
-          text: 'Yes',
-          onPress: () => {
-            this.props.changeMapState(MapState.SEARCH_ROUTES)
-            this.props.clearRoutes()
-          },
-          style: 'cancel',
-        },
-        {text: 'No', onPress: () => console.log('No Pressed')},
-      ],
-      {cancelable: false}
-    )
-  }
-
   handleSearchResult = (data, details, type) => {
     if (!details) return
 
@@ -242,12 +223,11 @@ class MapScreen extends React.Component {
           mapState={this.props.mapState}
           map={this.props.map}
           toSearchView={this.toSearchView}
-          onChangeMapState={this.props.changeMapState}
+          changeMapState={this.props.changeMapState}
           resetMapState={this.props.resetMapState}
           fetchRoutes={this.fetchRoutes}
           placeOrder={this.placeOrder}
-          onClearRoutes={this.props.clearRoutes}
-          onCancelOrder={this.handleCancelOrder}
+          clearRoutes={this.props.clearRoutes}
           cancelOrder={this.cancelOrder}
           fitToCoordinates={this.fitToCoordinates}
         />

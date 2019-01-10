@@ -42,8 +42,8 @@ const BottomButtons = props => {
           <PlaceOrderButton onPress={() => props.placeOrder()} />
           <CancelOrderButton
             onPress={() => {
-              props.onClearRoutes()
-              props.onChangeMapState(MapState.SEARCH_ROUTES)
+              props.clearRoutes()
+              props.changeMapState(MapState.SEARCH_ROUTES)
               zoomToMarkers()
             }}
           />
