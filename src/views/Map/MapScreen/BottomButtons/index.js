@@ -16,10 +16,10 @@ import {cancelOrder} from '../../../../ducks/orders'
 
 const BottomButtons = props => {
   const zoomToMarkers = () => {
-    if (!props.map.journeyStart || !props.map.journeyDestination) return
+    if (!props.journeyStart || !props.journeyDestination) return
     const coords = [
-      props.map.journeyStart.location,
-      props.map.journeyDestination.location,
+      props.journeyStart.location,
+      props.journeyDestination.location,
     ]
     props.fitToCoordinates(coords, {
       top: 35,
@@ -92,7 +92,6 @@ const mapStateToProps = state => {
   return {
     activeOrder: state.orders.activeOrder,
     mapState: state.map.mapState,
-    map: state.map,
     journeyStart: state.map.journeyStart,
     journeyDestination: state.map.journeyDestination,
   }
