@@ -11,11 +11,6 @@ import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
 import {Container} from 'native-base'
 import {
-  addSearchResultAction,
-  changeMapState,
-  MapState,
-  setJourneyStart,
-  setJourneyDestination,
   setUserPosition,
   swapJourneyStartAndDestination,
 } from '../../../ducks/map'
@@ -73,79 +68,10 @@ class MapScreen extends React.Component {
 
   toSearchView = type => {
     this.props.navigation.navigate('Search', {
-      predefinedPlaces: _.uniqBy(this.props.map.searchResults, 'id'),
-      onSearchResult: (data, details) =>
-        this.handleSearchResult(data, details, type),
+      type: type,
+      animateToRegion: this.animateToRegion.bind(this),
+      fitToCoordinates: this.fitToCoordinates.bind(this),
     })
-  }
-
-  handleSearchResult = (data, details, type) => {
-    if (!details) return
-
-    // extract needed data from the search result and distinguish between current location or not
-    // if current location, we dont want to add it to the list of last searches
-    if (details.description === 'Current location') {
-      // name field is not set for current location, so set it
-      details.name = details.description
-    } else {
-      details.description = details.name
-      this.props.addSearchResult(details)
-    }
-    const location = {
-      latitude: details.geometry.location.lat,
-      longitude: details.geometry.location.lng,
-    }
-    if (type === 'DESTINATION') {
-      this.handleDestinationSearchResult(details, location)
-    } else if (type === 'START') {
-      this.handleStartSearchResult(details, location)
-    }
-  }
-
-  handleDestinationSearchResult = (details, location) => {
-    const journeyDestination = {
-      location: location,
-      title: details.name,
-      description: details.vicinity,
-    }
-    switch (this.props.mapState) {
-      case MapState.INIT:
-        this.props.changeMapState(MapState.SEARCH_ROUTES)
-        this.props.setJourneyDestination(journeyDestination)
-        this.animateToRegion(location)
-        break
-      case MapState.SEARCH_ROUTES:
-        this.props.setJourneyDestination(journeyDestination)
-        // check whether start location is already set
-        if (this.props.journeyStart != null) {
-          // fit zoom to start and destination if so
-          const coords = [location, this.props.journeyStart.location]
-          this.fitToCoordinates(coords)
-        } else {
-          // otherwise, only zoom to destination
-          this.animateToRegion(location)
-        }
-        break
-    }
-  }
-
-  handleStartSearchResult = (details, location) => {
-    const journeyStart = {
-      location: location,
-      title: details.name,
-      description: details.vicinity,
-    }
-    this.props.setJourneyStart(journeyStart)
-    this.props.changeMapState(MapState.SEARCH_ROUTES)
-    // check if destination is set
-    if (this.props.journeyDestination != null) {
-      // fit zoom to start and destination if so
-      const coords = [location, this.props.journeyDestination.location]
-      this.fitToCoordinates(coords)
-    } else {
-      // otherwise, only zoom to start
-      this.animateToRegion(location)
-    }
   }
 
   render() {
@@ -195,32 +121,20 @@ class MapScreen extends React.Component {
 }
 
 MapScreen.propTypes = {
-  addSearchResult: PropTypes.func,
-  changeMapState: PropTypes.func,
-  journeyDestination: PropTypes.object,
-  journeyStart: PropTypes.object,
-  map: PropTypes.object,
+  // journeyDestination: PropTypes.object, // it's used by lodash: _.get(this.props, 'journeyDestination.title')
+  // journeyStart: PropTypes.object, // same here
   mapState: PropTypes.string,
-  setJourneyDestination: PropTypes.func,
-  setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
   swapJourneyStartAndDestination: PropTypes.func,
 }
 
 export default connect(
   state => ({
-    map: state.map,
     mapState: state.map.mapState,
     journeyStart: state.map.journeyStart,
     journeyDestination: state.map.journeyDestination,
   }),
   dispatch => ({
-    addSearchResult: result => {
-      dispatch(addSearchResultAction(result))
-    },
-    changeMapState: payload => dispatch(changeMapState(payload)),
-    setJourneyStart: payload => dispatch(setJourneyStart(payload)),
-    setJourneyDestination: payload => dispatch(setJourneyDestination(payload)),
     setUserPosition: payload => dispatch(setUserPosition(payload)),
     swapJourneyStartAndDestination: () =>
       dispatch(swapJourneyStartAndDestination()),
