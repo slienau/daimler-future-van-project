@@ -11,7 +11,7 @@ import Routes from './Routes'
 import VirtualBusStops from './VirtualBusStops'
 import {connect} from 'react-redux'
 import {Container, Icon, Fab} from 'native-base'
-import {placeOrder} from '../../../ducks/orders'
+import {placeOrder, cancelOrder} from '../../../ducks/orders'
 import {
   fetchRoutes,
   addSearchResultAction,
@@ -19,6 +19,7 @@ import {
   MapState,
   clearRoutes,
 } from '../../../ducks/map'
+import {initialMapRegion} from '../../../lib/config'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -42,12 +43,6 @@ class MapScreen extends React.Component {
   state = {
     userLocationMarker: null,
     destinationMarker: null,
-    initialRegion: {
-      latitude: 52.509663,
-      longitude: 13.376481,
-      latitudeDelta: 0.1,
-      longitudeDelta: 0.1,
-    },
   }
 
   mapRef = null
@@ -220,8 +215,16 @@ class MapScreen extends React.Component {
 
   placeOrder = async () => {
     this.props.onPlaceOrder({
+      // vanId: this.props.routes[0].vanId
       start: this.props.routes[0].startStation._id,
       destination: this.props.routes[0].endStation._id,
+    })
+    this.props.onChangeMapState(MapState.ROUTE_ORDERED)
+  }
+
+  cancelOrder = async () => {
+    await this.props.onCancelOrder({
+      id: this.props.orders.activeOrder._id,
     })
     this.props.onChangeMapState(MapState.ROUTE_ORDERED)
   }
@@ -233,7 +236,7 @@ class MapScreen extends React.Component {
           ref={ref => {
             this.mapRef = ref
           }}
-          initialRegion={this.state.initialRegion}
+          initialRegion={initialMapRegion}
           showsUserLocation
           showsMyLocationButton={false}>
           {this.state.userLocationMarker && (
@@ -290,6 +293,7 @@ class MapScreen extends React.Component {
           placeOrder={this.placeOrder}
           onClearRoutes={this.props.onClearRoutes}
           onCancelOrder={this.handleCancelOrder}
+          cancelOrder={this.cancelOrder}
         />
       </Container>
     )
@@ -300,6 +304,7 @@ MapScreen.propTypes = {
   addSearchResult: PropTypes.func,
   map: PropTypes.object,
   mapState: PropTypes.string,
+  onCancelOrder: PropTypes.func,
   onChangeMapState: PropTypes.func,
   onClearRoutes: PropTypes.func,
   onFetchRoutes: PropTypes.func,
@@ -323,5 +328,6 @@ export default connect(
     onFetchRoutes: payload => dispatch(fetchRoutes(payload)),
     onChangeMapState: payload => dispatch(changeMapState(payload)),
     onClearRoutes: () => dispatch(clearRoutes()),
+    onCancelOrder: payload => dispatch(cancelOrder(payload)),
   })
 )(MapScreen)
