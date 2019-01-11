@@ -21,7 +21,7 @@ const BottomButton = props => {
       rounded
       light
       onPress={props.onPress}>
-      <Text>{props.text} </Text>
+      {props.text != null && <Text>{props.text} </Text>}
       <Icon name={props.iconName} />
     </StyledButton>
   )

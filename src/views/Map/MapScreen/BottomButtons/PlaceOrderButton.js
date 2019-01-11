@@ -7,11 +7,11 @@ const PlaceOrderButton = props => {
     <BottomButton
       iconRight
       onPress={props.onPress}
-      text="Place Order"
+      text="Order"
       iconName="arrow-forward"
-      left="42%"
-      right="10%"
-      bottom="3%"
+      left="65%"
+      right="3%"
+      bottom="15%"
     />
   )
 }
