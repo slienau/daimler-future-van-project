@@ -52,24 +52,17 @@ const SearchScreen = props => {
       title: details.name,
       description: details.vicinity,
     }
-    switch (props.mapState) {
-      case MapState.INIT:
-        props.changeMapState(MapState.SEARCH_ROUTES)
-        props.setJourneyDestination(journeyDestination)
-        animateToRegion(location)
-        break
-      case MapState.SEARCH_ROUTES:
-        props.setJourneyDestination(journeyDestination)
-        // check whether start location is already set
-        if (props.journeyStart != null) {
-          // fit zoom to start and destination if so
-          const coords = [location, props.journeyStart.location]
-          fitToCoordinates(coords)
-        } else {
-          // otherwise, only zoom to destination
-          animateToRegion(location)
-        }
-        break
+    if (props.mapState === MapState.INIT)
+      props.changeMapState(MapState.SEARCH_ROUTES)
+    props.setJourneyDestination(journeyDestination)
+    // check whether start location is already set
+    if (props.journeyStart != null) {
+      // fit zoom to start and destination if so
+      const coords = [location, props.journeyStart.location]
+      fitToCoordinates(coords)
+    } else {
+      // otherwise, only zoom to destination
+      animateToRegion(location)
     }
   }
 
