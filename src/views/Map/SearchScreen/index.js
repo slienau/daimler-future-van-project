@@ -163,27 +163,17 @@ SearchScreen.propTypes = {
   setJourneyStart: PropTypes.func,
 }
 
-const mapStateToProps = state => {
-  return {
+export default connect(
+  state => ({
     mapState: state.map.mapState,
     searchResults: state.map.searchResults,
     journeyStart: state.map.journeyStart,
     journeyDestination: state.map.journeyDestination,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    addSearchResult: result => {
-      dispatch(addSearchResultAction(result))
-    },
+  }),
+  dispatch => ({
+    addSearchResult: result => dispatch(addSearchResultAction(result)),
     changeMapState: payload => dispatch(changeMapState(payload)),
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
     setJourneyDestination: payload => dispatch(setJourneyDestination(payload)),
-  }
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  })
 )(SearchScreen)
