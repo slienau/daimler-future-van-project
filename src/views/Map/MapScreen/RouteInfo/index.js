@@ -1,5 +1,4 @@
 import React from 'react'
-import {Alert} from 'react-native'
 import PropTypes from 'prop-types'
 import Swiper from 'react-native-swiper'
 import {MapState, changeMapState, clearRoutes} from '../../../../ducks/map'
@@ -113,24 +112,6 @@ const RouteInfo = props => {
               onSwipe(index)
             }}>
             <StartWalkCard
-              cancelRoute={() => {
-                Alert.alert(
-                  'Cancel Route',
-                  'Are you sure to cancel your route?',
-                  [
-                    {
-                      text: 'Yes',
-                      onPress: () => {
-                        props.onChangeMapState(MapState.SEARCH_ROUTES)
-                        props.onClearRoutes()
-                      },
-                      style: 'cancel',
-                    },
-                    {text: 'No', onPress: () => console.log('No Pressed')},
-                  ],
-                  {cancelable: false}
-                )
-              }}
               walkingDuration={
                 props.routes[0].toStartRoute.routes[0].legs[0].duration.text
               }
@@ -164,7 +145,7 @@ const RouteInfo = props => {
                   .text
               }
               destinationTime={parseDestinationTime()}
-              destinationName={props.map.journeyDestination.name}
+              destinationName={props.map.journeyDestination.title}
             />
           </Swiper>
         </StyledRouteInfo>
