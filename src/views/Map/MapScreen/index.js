@@ -10,7 +10,6 @@ import Routes from './Routes'
 import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
 import {Container} from 'native-base'
-import {placeOrder} from '../../../ducks/orders'
 import {
   addSearchResultAction,
   changeMapState,
@@ -149,15 +148,6 @@ class MapScreen extends React.Component {
     }
   }
 
-  placeOrder = async () => {
-    await this.props.placeOrder({
-      // vanId: this.props.routes[0].vanId
-      start: this.props.routes[0].startStation._id,
-      destination: this.props.routes[0].endStation._id,
-    })
-    this.props.changeMapState(MapState.ROUTE_ORDERED)
-  }
-
   render() {
     return (
       <Container>
@@ -195,7 +185,6 @@ class MapScreen extends React.Component {
 
         <BottomButtons
           toSearchView={this.toSearchView}
-          placeOrder={this.placeOrder}
           fitToCoordinates={this.fitToCoordinates}
         />
 
@@ -212,8 +201,6 @@ MapScreen.propTypes = {
   journeyStart: PropTypes.object,
   map: PropTypes.object,
   mapState: PropTypes.string,
-  placeOrder: PropTypes.func,
-  routes: PropTypes.array,
   setJourneyDestination: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
@@ -226,13 +213,11 @@ export default connect(
     mapState: state.map.mapState,
     journeyStart: state.map.journeyStart,
     journeyDestination: state.map.journeyDestination,
-    routes: state.map.routes,
   }),
   dispatch => ({
     addSearchResult: result => {
       dispatch(addSearchResultAction(result))
     },
-    placeOrder: payload => dispatch(placeOrder(payload)),
     changeMapState: payload => dispatch(changeMapState(payload)),
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
     setJourneyDestination: payload => dispatch(setJourneyDestination(payload)),

@@ -12,7 +12,7 @@ import BackButton from './BackButton'
 import SearchRoutesButton from './SearchRoutesButton'
 import PlaceOrderButton from './PlaceOrderButton'
 import CancelOrderButton from './CancelOrderButton'
-import {cancelOrder} from '../../../../ducks/orders'
+import {cancelOrder, placeOrder} from '../../../../ducks/orders'
 
 const BottomButtons = props => {
   const zoomToMarkers = () => {
@@ -44,6 +44,14 @@ const BottomButtons = props => {
     props.changeMapState(MapState.ROUTE_SEARCHED)
   }
 
+  const placeOrder = async () => {
+    await props.placeOrder({
+      start: props.routes[0].startStation._id,
+      destination: props.routes[0].endStation._id,
+    })
+    props.changeMapState(MapState.ROUTE_ORDERED)
+  }
+
   let visibleButtons = null
   switch (props.mapState) {
     case MapState.INIT:
@@ -62,7 +70,7 @@ const BottomButtons = props => {
     case MapState.ROUTE_SEARCHED:
       visibleButtons = (
         <>
-          <PlaceOrderButton onPress={() => props.placeOrder()} />
+          <PlaceOrderButton onPress={() => placeOrder()} />
           <CancelOrderButton
             onPress={() => {
               props.clearRoutes()
@@ -94,6 +102,7 @@ const mapStateToProps = state => {
     mapState: state.map.mapState,
     journeyStart: state.map.journeyStart,
     journeyDestination: state.map.journeyDestination,
+    routes: state.map.routes,
   }
 }
 
@@ -104,6 +113,7 @@ const mapDispatchToProps = dispatch => {
     clearRoutes: () => dispatch(clearRoutes()),
     cancelOrder: payload => dispatch(cancelOrder(payload)),
     fetchRoutes: payload => dispatch(fetchRoutes(payload)),
+    placeOrder: payload => dispatch(placeOrder(payload)),
   }
 }
 
