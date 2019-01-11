@@ -7,7 +7,6 @@ const BackButton = props => {
     <BottomButton
       iconLeft
       onPress={props.onPress}
-      text=""
       iconName="arrow-back"
       left="10%"
       right="70%"

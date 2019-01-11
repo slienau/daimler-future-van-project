@@ -2,7 +2,7 @@ import React from 'react'
 import {Content} from 'native-base'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import {MapState} from '../../../../ducks/map'
+import {MapState, swapJourneyStartAndDestination} from '../../../../ducks/map'
 import {StyledSearchForm, StyledCard} from './StyledComponents'
 import RouteSearched from './RouteSearched'
 import SearchRoutes from './SearchRoutes'
@@ -38,6 +38,9 @@ const SearchForm = props => {
     return start.to(end)
   }
 
+  const destinationText = _.get(props, 'journeyDestination.title')
+  const startText = _.get(props, 'journeyStart.title')
+
   let content = null
   switch (props.mapState) {
     case MapState.SEARCH_ROUTES:
@@ -45,17 +48,17 @@ const SearchForm = props => {
         <SearchRoutes
           onStartPress={props.onStartPress}
           onDestinationPress={props.onDestinationPress}
-          startText={props.startText}
-          destinationText={props.destinationText}
-          onSwapPress={props.onSwapPress}
+          startText={startText}
+          destinationText={destinationText}
+          onSwapPress={() => props.swapJourneyStartAndDestination()}
         />
       )
       break
     case MapState.ROUTE_SEARCHED:
       content = (
         <RouteSearched
-          startText={props.startText}
-          destinationText={props.destinationText}
+          startText={startText}
+          destinationText={destinationText}
           departureTime={parseDeparture()}
           waitingTime={calculateWaitingTime()}
           durationTime={calculateDuration()}
@@ -75,24 +78,33 @@ const SearchForm = props => {
   )
 }
 
+SearchForm.propTypes = {
+  // journeyDestination: PropTypes.object, // used by lodash: _.get(this.props, 'journeyDestination.title')
+  // journeyStart: PropTypes.object, // same here
+  mapState: PropTypes.string,
+  onDestinationPress: PropTypes.func,
+  onStartPress: PropTypes.func,
+  routes: PropTypes.array,
+  swapJourneyStartAndDestination: PropTypes.func,
+}
+
 const mapStateToProps = state => {
   return {
     mapState: state.map.mapState,
     routes: state.map.routes,
+    journeyStart: state.map.journeyStart,
+    journeyDestination: state.map.journeyDestination,
   }
 }
 
-SearchForm.propTypes = {
-  destinationText: PropTypes.string,
-  mapState: PropTypes.string,
-  onDestinationPress: PropTypes.func,
-  onStartPress: PropTypes.func,
-  onSwapPress: PropTypes.func,
-  routes: PropTypes.array,
-  startText: PropTypes.string,
+const mapDispatchToProps = dispatch => {
+  return {
+    swapJourneyStartAndDestination: () =>
+      dispatch(swapJourneyStartAndDestination()),
+  }
 }
 
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(SearchForm)
