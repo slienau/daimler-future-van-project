@@ -4,6 +4,7 @@ import {
   clearRoutes,
   MapState,
   resetMapState,
+  fetchRoutes,
 } from '../../../../ducks/map'
 import {connect} from 'react-redux'
 import DestinationButton from './DestinationButton'
@@ -35,6 +36,14 @@ const BottomButtons = props => {
     props.changeMapState(MapState.INIT)
   }
 
+  const fetchRoutes = async () => {
+    await props.fetchRoutes({
+      start: props.journeyStart.location,
+      destination: props.journeyDestination.location,
+    })
+    props.changeMapState(MapState.ROUTE_SEARCHED)
+  }
+
   let visibleButtons = null
   switch (props.mapState) {
     case MapState.INIT:
@@ -46,7 +55,7 @@ const BottomButtons = props => {
       visibleButtons = (
         <>
           <BackButton onPress={() => props.resetMapState()} />
-          <SearchRoutesButton onPress={() => props.fetchRoutes()} />
+          <SearchRoutesButton onPress={() => fetchRoutes()} />
         </>
       )
       break
@@ -84,6 +93,8 @@ const mapStateToProps = state => {
     activeOrder: state.orders.activeOrder,
     mapState: state.map.mapState,
     map: state.map,
+    journeyStart: state.map.journeyStart,
+    journeyDestination: state.map.journeyDestination,
   }
 }
 
@@ -93,6 +104,7 @@ const mapDispatchToProps = dispatch => {
     resetMapState: () => dispatch(resetMapState()),
     clearRoutes: () => dispatch(clearRoutes()),
     cancelOrder: payload => dispatch(cancelOrder(payload)),
+    fetchRoutes: payload => dispatch(fetchRoutes(payload)),
   }
 }
 
