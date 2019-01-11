@@ -3,17 +3,13 @@ import {Alert} from 'react-native'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
 import PropTypes from 'prop-types'
-import _ from 'lodash'
 import SearchForm from './SearchForm'
 import BottomButtons from './BottomButtons'
 import Routes from './Routes'
 import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
 import {Container} from 'native-base'
-import {
-  setUserPosition,
-  swapJourneyStartAndDestination,
-} from '../../../ducks/map'
+import {setUserPosition} from '../../../ducks/map'
 import RouteInfo from './RouteInfo'
 import {initialMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
@@ -95,11 +91,6 @@ class MapScreen extends React.Component {
           onDestinationPress={() => {
             this.toSearchView('DESTINATION')
           }}
-          destinationText={_.get(this.props, 'journeyDestination.title')}
-          startText={_.get(this.props, 'journeyStart.title')}
-          onSwapPress={() => {
-            this.props.swapJourneyStartAndDestination()
-          }}
         />
 
         <MenuButton
@@ -121,22 +112,15 @@ class MapScreen extends React.Component {
 }
 
 MapScreen.propTypes = {
-  // journeyDestination: PropTypes.object, // it's used by lodash: _.get(this.props, 'journeyDestination.title')
-  // journeyStart: PropTypes.object, // same here
   mapState: PropTypes.string,
   setUserPosition: PropTypes.func,
-  swapJourneyStartAndDestination: PropTypes.func,
 }
 
 export default connect(
   state => ({
     mapState: state.map.mapState,
-    journeyStart: state.map.journeyStart,
-    journeyDestination: state.map.journeyDestination,
   }),
   dispatch => ({
     setUserPosition: payload => dispatch(setUserPosition(payload)),
-    swapJourneyStartAndDestination: () =>
-      dispatch(swapJourneyStartAndDestination()),
   })
 )(MapScreen)
