@@ -98,7 +98,10 @@ class MapScreen extends React.Component {
           onPress={() => this.props.navigation.openDrawer()}
         />
 
-        <CurrentLocationButton onPress={() => this.showCurrentLocation()} />
+        <CurrentLocationButton
+          mapState={this.props.mapState}
+          onPress={() => this.showCurrentLocation()}
+        />
 
         <BottomButtons
           toSearchView={this.toSearchView}

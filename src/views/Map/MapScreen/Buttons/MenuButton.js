@@ -11,21 +11,12 @@ const StyledMenu = styled(Fab)`
 `
 
 const MenuButton = props => {
-  if (props.mapState === MapState.INIT)
-    return (
-      <StyledMenu
-        iconLeft
-        onPress={props.onPress}
-        iconName="arrow-back"
-        left="3%"
-        right="85%"
-        bottom="15%"
-        direction="up"
-        position="topLeft">
-        <Icon name="menu" />
-      </StyledMenu>
-    )
-  else return null
+  if (props.mapState !== MapState.INIT) return null
+  return (
+    <StyledMenu onPress={props.onPress} position="topLeft">
+      <Icon name="menu" />
+    </StyledMenu>
+  )
 }
 
 MenuButton.propTypes = {
