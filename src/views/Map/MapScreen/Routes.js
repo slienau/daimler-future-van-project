@@ -2,6 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import MapEncodedPolyline from '../../../components/MapEncodedPolyline'
 import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
 
 const Routes = props => {
   if (!props.routes || !props.routes.length) return null
@@ -22,4 +23,8 @@ Routes.propTypes = {
   routes: PropTypes.array,
 }
 
-export default Routes
+const mapStateToProps = state => {
+  return {routes: state.map.routes}
+}
+
+export default connect(mapStateToProps)(Routes)
