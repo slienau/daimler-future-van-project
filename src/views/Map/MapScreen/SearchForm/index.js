@@ -38,16 +38,16 @@ const SearchForm = props => {
     return start.to(end)
   }
 
-  const destinationText = _.get(props, 'journeyDestination.title')
-  const startText = _.get(props, 'journeyStart.title')
+  const destinationText = _.get(props.journeyDestination, 'title')
+  const startText = _.get(props.journeyStart, 'title')
 
   let content = null
   switch (props.mapState) {
     case MapState.SEARCH_ROUTES:
       content = (
         <SearchRoutes
-          onStartPress={props.onStartPress}
-          onDestinationPress={props.onDestinationPress}
+          onStartPress={() => props.toSearchView('START')}
+          onDestinationPress={() => props.toSearchView('DESTINATION')}
           startText={startText}
           destinationText={destinationText}
           onSwapPress={() => props.swapJourneyStartAndDestination()}
@@ -79,13 +79,12 @@ const SearchForm = props => {
 }
 
 SearchForm.propTypes = {
-  // journeyDestination: PropTypes.object, // used by lodash: _.get(this.props, 'journeyDestination.title')
-  // journeyStart: PropTypes.object, // same here
+  journeyDestination: PropTypes.object,
+  journeyStart: PropTypes.object,
   mapState: PropTypes.string,
-  onDestinationPress: PropTypes.func,
-  onStartPress: PropTypes.func,
   routes: PropTypes.array,
   swapJourneyStartAndDestination: PropTypes.func,
+  toSearchView: PropTypes.func,
 }
 
 const mapStateToProps = state => {

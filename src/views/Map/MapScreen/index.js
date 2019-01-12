@@ -10,7 +10,7 @@ import {connect} from 'react-redux'
 import {Container} from 'native-base'
 import {setUserPosition, setJourneyStart} from '../../../ducks/map'
 import RouteInfo from './RouteInfo'
-import {initialMapRegion} from '../../../lib/config'
+import {defaultMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
 import CurrentLocationButton from './Buttons/CurrentLocationButton'
 
@@ -61,13 +61,10 @@ class MapScreen extends React.Component {
           title: 'Current location',
           description: 'Current location',
         })
+        this.animateToRegion(position.coords)
       },
       error => this.setState({error: error.message})
     )
-  }
-
-  showCurrentLocation = () => {
-    this.animateToRegion(this.props.userPosition)
   }
 
   toSearchView = type => {
@@ -79,27 +76,30 @@ class MapScreen extends React.Component {
   }
 
   render() {
+    let mapRegion = defaultMapRegion
+    if (this.props.userPosition !== null) {
+      mapRegion = {
+        latitude: this.props.userPosition.latitude,
+        longitude: this.props.userPosition.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }
+    }
+
     return (
       <Container>
         <StyledMapView
           ref={ref => {
             this.mapRef = ref
           }}
-          initialRegion={initialMapRegion}
+          initialRegion={mapRegion}
           showsUserLocation
           showsMyLocationButton={false}>
           <Routes />
           <MapMarkers />
         </StyledMapView>
 
-        <SearchForm
-          onStartPress={() => {
-            this.toSearchView('START')
-          }}
-          onDestinationPress={() => {
-            this.toSearchView('DESTINATION')
-          }}
-        />
+        <SearchForm toSearchView={this.toSearchView} />
 
         <MenuButton
           mapState={this.props.mapState}
@@ -108,7 +108,7 @@ class MapScreen extends React.Component {
 
         <CurrentLocationButton
           mapState={this.props.mapState}
-          onPress={() => this.showCurrentLocation()}
+          onPress={() => this.getCurrentPosition()}
         />
 
         <BottomButtons
