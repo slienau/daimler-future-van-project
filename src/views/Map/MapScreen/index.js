@@ -1,5 +1,4 @@
 import React from 'react'
-import {Alert} from 'react-native'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
 import PropTypes from 'prop-types'
@@ -9,7 +8,7 @@ import Routes from './Routes'
 import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
 import {Container} from 'native-base'
-import {setUserPosition} from '../../../ducks/map'
+import {setUserPosition, setJourneyStart} from '../../../ducks/map'
 import RouteInfo from './RouteInfo'
 import {initialMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
@@ -24,9 +23,13 @@ const StyledMapView = styled(MapView)`
 `
 
 class MapScreen extends React.Component {
+  componentDidMount() {
+    this.getCurrentPosition()
+  }
+
   mapRef = null
 
-  animateToRegion(location) {
+  animateToRegion = location => {
     this.mapRef.animateToRegion(
       {
         latitude: location.latitude,
@@ -48,18 +51,23 @@ class MapScreen extends React.Component {
     })
   }
 
-  showCurrentLocation() {
+  getCurrentPosition = () => {
     navigator.geolocation.getCurrentPosition(
       position => {
         this.props.setUserPosition(position.coords)
-        this.animateToRegion(position.coords)
+        console.log(position.coords)
+        this.props.setJourneyStart({
+          location: position.coords,
+          title: 'Current location',
+          description: 'Current location',
+        })
       },
-      error => {
-        this.setState({error: error.message})
-        Alert.alert('TIMEOUT')
-      }
-      // {enableHighAccuracy: true, timeout: 10000, maximumAge: 1000} // OMITTING THESE OPTIONS RESULTS IN BETTER EXPERIENCE
+      error => this.setState({error: error.message})
     )
+  }
+
+  showCurrentLocation = () => {
+    this.animateToRegion(this.props.userPosition)
   }
 
   toSearchView = type => {
@@ -98,7 +106,10 @@ class MapScreen extends React.Component {
           onPress={() => this.props.navigation.openDrawer()}
         />
 
-        <CurrentLocationButton onPress={() => this.showCurrentLocation()} />
+        <CurrentLocationButton
+          mapState={this.props.mapState}
+          onPress={() => this.showCurrentLocation()}
+        />
 
         <BottomButtons
           toSearchView={this.toSearchView}
@@ -113,14 +124,18 @@ class MapScreen extends React.Component {
 
 MapScreen.propTypes = {
   mapState: PropTypes.string,
+  setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
+  userPosition: PropTypes.object,
 }
 
 export default connect(
   state => ({
     mapState: state.map.mapState,
+    userPosition: state.map.userPosition,
   }),
   dispatch => ({
     setUserPosition: payload => dispatch(setUserPosition(payload)),
+    setJourneyStart: payload => dispatch(setJourneyStart(payload)),
   })
 )(MapScreen)
