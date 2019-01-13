@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "standard",
+    "test": "standard && ./test.sh",
     "fix": "standard --fix",
-    "test2": "node ./tests/orderTest"
+    "test2": "node ./tests/orderTest",
+    "integration-tests": "node ./tests/orderTest.js"
   },
   "lint-staged": {
     "*.js": [

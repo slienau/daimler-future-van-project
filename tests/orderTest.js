@@ -1,9 +1,9 @@
 const axios = require('axios')
 
-async function starttest () {
-  const address = 'http://localhost:8080'
-  const passengerLocation = { latitude: 52.52302, longitude: 13.411019 }
+const address = 'http://localhost:8080'
+const passengerLocation = { latitude: 52.52302, longitude: 13.411019 }
 
+async function starttest () {
   const credentials = await axios.post(address + '/login', { username: 'admin', password: 'adminiscooler' })
   console.log('Login worked')
   console.log('----------------------')
@@ -50,4 +50,9 @@ async function starttest () {
   console.log('----------------------')
 }
 
-starttest()
+starttest().catch(e => {
+  console.log('FAILED')
+  console.log(e)
+  process.exit(1)
+})
+  .then(() => console.log('OK'))
