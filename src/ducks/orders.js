@@ -3,6 +3,7 @@ import moment from 'moment'
 import _ from 'lodash'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
+export const SET_ACTIVE_ORDER = 'orders/SET_ACTIVE_ORDER'
 export const PLACE_ORDER = 'orders/PLACE_ORDER'
 export const CANCEL_ORDER = 'orders/CANCEL_ORDER'
 
@@ -32,6 +33,11 @@ export default function orders(state = initialState, action) {
         activeOrder: _.find(orders, 'active'),
         pastOrders: _.filter(orders, ['active', false]),
       }
+    case SET_ACTIVE_ORDER:
+      return {
+        ...state,
+        activeOrder: action.payload,
+      }
     default:
       return state
   }
@@ -48,14 +54,22 @@ export function fetchOrders(active, fromDate, toDate) {
 export function placeOrder(payload) {
   return async dispatch => {
     const {data} = await api.post('/orders', payload)
-    dispatch(setOrderData([data]))
+    dispatch(setActiveOrder(data))
   }
 }
 
-export function cancelOrder(payload) {
+export function cancelOrder(id) {
   return async dispatch => {
-    const {data} = await api.put('/orders/' + payload.id, {canceled: true})
-    dispatch(setOrderData([data]))
+    const {data} = await api.put('/orders/' + id, {canceled: true})
+    console.log('cancelOrder', data)
+    // TODO update store
+  }
+}
+
+export function cancelActiveOrder() {
+  return async (dispatch, getState) => {
+    const {activeOrder} = getState().orders
+    cancelOrder(activeOrder._id)(dispatch)
   }
 }
 
@@ -66,6 +80,13 @@ export function fetchActiveOrders() {
 function setOrderData(orderData) {
   return {
     type: SET_ORDER_DATA,
+    payload: orderData,
+  }
+}
+
+function setActiveOrder(orderData) {
+  return {
+    type: SET_ACTIVE_ORDER,
     payload: orderData,
   }
 }

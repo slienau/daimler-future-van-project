@@ -55,7 +55,6 @@ class MapScreen extends React.Component {
     navigator.geolocation.getCurrentPosition(
       position => {
         this.props.setUserPosition(position.coords)
-        console.log(position.coords)
         this.props.setJourneyStart({
           location: position.coords,
           title: 'Current location',
