@@ -60,16 +60,15 @@ export function placeOrder(payload) {
 
 export function cancelOrder(id) {
   return async dispatch => {
-    const {data} = await api.put('/orders/' + id, {canceled: true})
-    console.log('cancelOrder', data)
-    // TODO update store
+    await api.put('/orders/' + id, {canceled: true})
   }
 }
 
 export function cancelActiveOrder() {
   return async (dispatch, getState) => {
     const {activeOrder} = getState().orders
-    cancelOrder(activeOrder._id)(dispatch)
+    await cancelOrder(activeOrder._id)(dispatch)
+    dispatch(setActiveOrder(null))
   }
 }
 
