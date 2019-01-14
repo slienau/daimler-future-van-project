@@ -16,12 +16,14 @@ router.post('/', async function (req, res) {
   const van = ManagementSystem.requestVan(req.body.start, req.body.destination, time)
 
   let suggestions = []
+  let route
   try {
-    suggestions = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, req.body.destination, time, van.timeToVB, van.vanID)
+    route = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, req.body.destination, time, van.timeToVB, van.vanID)
   } catch (error) {
     res.json(error)
   }
-  console.log(ManagementSystem.vanTimes[van.vanID])
+
+  suggestions.push(route)
   res.json(suggestions)
 })
 

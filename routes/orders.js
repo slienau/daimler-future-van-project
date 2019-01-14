@@ -41,23 +41,20 @@ router.post('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
 
   const accountID = req.user._id
-  // test if parameters are there
-  if (!req.body.start || !req.body.destination || !req.body.vanId) res.json({ code: 400, message: 'bad parameters, you need start, destination, and vanId (from route request)' })
 
-  const vb1 = req.body.start
-  const vb2 = req.body.destination
-  const vanId = req.body.vanId
+  // test if parameters are there
+  if (!req.body.routeId) res.json({ code: 400, message: 'bad parameters, you need routeId (from route request)' })
 
   let order, orderId
 
   try {
-    orderId = await OrderHelper.createOrder(accountID, vb1, vb2, vanId)
+    orderId = await OrderHelper.createOrder(accountID, req.body.routeId)
   } catch (error) {
     console.log(error)
     res.json(error)
   }
   try {
-    order = await Order.findById(orderId)
+    order = await Order.findById(orderId, '-bonusMultiplier -route')
   } catch (error) {
     res.json(error)
   }
@@ -73,11 +70,11 @@ router.put('/:orderId', async function (req, res) {
 
   if (!req.query.orderId && !req.params.orderId) res.json({ code: 400, description: 'No orderId as been sent as param.', reasonPhrase: 'Bad Request' })
 
-  if (req.body.canceled) {
-    await Order.updateOne({ _id: orderId }, { $set: { canceled: req.body.canceled, endTime: new Date() } })
+  if (req.body.canceled === false || req.body.canceled === 'false') {
+    await Order.updateOne({ _id: orderId }, { $set: { canceled: false, endTime: new Date(), active: false } })
   }
-  if (req.body.active) {
-    await Order.updateOne({ _id: orderId }, { $set: { active: req.body.active, endTime: new Date() } })
+  if (req.body.active === false || req.body.active === 'false') {
+    await Order.updateOne({ _id: orderId }, { $set: { active: false, endTime: new Date() } })
   }
   const order = await Order.findById(orderId)
   res.json(order)

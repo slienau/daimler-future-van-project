@@ -35,7 +35,7 @@ async function starttest () {
   console.log('Route is ok')
   console.log('----------------------')
 
-  const order = await axiosInstance.post('/orders', { start: routeInfo.startStation._id, destination: routeInfo.endStation._id, vanId: routeInfo.vanId })
+  const order = await axiosInstance.post('/orders', { routeId: routeInfo.id })
   const orderInfo = order.data
 
   console.log(orderInfo)
