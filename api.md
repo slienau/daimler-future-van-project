@@ -1,5 +1,47 @@
 # API
 
+## Table of Content
+
+<!-- toc -->
+
+- [Endpoint](#endpoint)
+- [Error handling](#error-handling)
+  * [Error types](#error-types)
+  * [Error object](#error-object)
+    + [Example](#example)
+- [Objects](#objects)
+  * [Location](#location)
+    + [Example](#example-1)
+  * [VirtualBusStop](#virtualbusstop)
+    + [Example](#example-2)
+  * [Account](#account)
+    + [Example](#example-3)
+  * [Order](#order)
+    + [Example](#example-4)
+  * [Route](#route)
+    + [Examples](#examples)
+- [Resources](#resources)
+  * [Authorization](#authorization)
+    + [Authorization Header](#authorization-header)
+  * [/login](#login)
+    + [POST /login](#post-login)
+  * [/account](#account)
+    + [GET /account](#get-account)
+    + [PUT /account](#put-account)
+  * [/orders](#orders)
+    + [GET /orders](#get-orders)
+    + [POST /orders](#post-orders)
+    + [PUT /orders/{orderId}](#put-ordersorderid)
+    + [GET /orders/{orderId}/status](#get-ordersorderidstatus)
+    + [POST /orders/{orderId}/startRide](#post-ordersorderidstartride)
+    + [POST /orders/{orderId}/endRide](#post-ordersorderidendride)
+  * [/routes](#routes)
+    + [POST /routes](#post-routes)
+  * [/virtualbusstops](#virtualbusstops)
+    + [GET /virtualbusstops](#get-virtualbusstops)
+
+<!-- tocstop -->
+
 ## Endpoint
 
 The base URL for this APIs endpoint is  
