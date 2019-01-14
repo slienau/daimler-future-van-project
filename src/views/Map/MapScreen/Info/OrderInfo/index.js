@@ -5,6 +5,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import StartWalkCardLarge from './StartWalkCardLarge'
 import {StyledOrderInfo} from '../StyledComponents'
+import {setVisibleCoordinates} from '../../../../../ducks/map'
 
 const OrderInfo = props => {
   const parseDeparture = () => {
@@ -38,11 +39,11 @@ const OrderInfo = props => {
       props.routes[0].startLocation,
       props.routes[0].startStation.location,
     ]
-    props.fitToCoordinates(coords, {
-      top: 600,
-      right: 100,
-      left: 100,
-      bottom: 450,
+    props.setVisibleCoordinates(coords, {
+      top: 0.2,
+      right: 0.15,
+      left: 0.15,
+      bottom: 0.3,
     })
   }
 
@@ -52,7 +53,7 @@ const OrderInfo = props => {
   //     props.routes[0].endStation.location,
   //     props.routes[0].destination,
   //   ]
-  //   props.fitToCoordinates(coords, {
+  //   props.setVisibleCoordinates(coords, {
   //     top: 600,
   //     right: 100,
   //     left: 100,
@@ -84,12 +85,19 @@ const mapStateToProps = state => {
   }
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+    setVisibleCoordinates: (coords, edgePadding) =>
+      dispatch(setVisibleCoordinates(coords, edgePadding)),
+  }
+}
+
 OrderInfo.propTypes = {
-  fitToCoordinates: PropTypes.func,
   routes: PropTypes.array,
+  setVisibleCoordinates: PropTypes.func,
 }
 
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(OrderInfo)

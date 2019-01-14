@@ -8,9 +8,9 @@ import RouteInfo from './RouteInfo'
 const Info = props => {
   switch (props.mapState) {
     case MapState.ROUTE_SEARCHED:
-      return <RouteInfo fitToCoordinates={props.fitToCoordinates} />
+      return <RouteInfo />
     case MapState.ROUTE_ORDERED:
-      return <OrderInfo fitToCoordinates={props.fitToCoordinates} />
+      return <OrderInfo />
 
     default:
       return null
@@ -24,7 +24,6 @@ const mapStateToProps = state => {
 }
 
 Info.propTypes = {
-  fitToCoordinates: PropTypes.func,
   mapState: PropTypes.string,
 }
 

@@ -11,6 +11,7 @@ export const ADD_SEARCH_RESULT = 'map/ADD_SEARCH_RESULT'
 export const CHANGE_MAP_STATE = 'map/CHANGE_MAP_STATE'
 export const SWAP_JOURNEY_START_AND_DESTINATION =
   'map/SWAP_JOURNEY_START_AND_DESTINATION'
+export const SET_VISIBLE_COORDINATES = 'map/SET_VISIBLE_COORDINATES'
 
 export const MapState = {
   INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
@@ -27,6 +28,8 @@ const initialState = {
   vanPosition: null,
   mapState: MapState.INIT,
   routes: null,
+  visibleCoordinates: [],
+  edgePadding: {top: 0.2, right: 0.1, left: 0.1, bottom: 0.2},
   searchResults: [
     initialMapSearchResults.TU_BERLIN,
     initialMapSearchResults.BRANDENBURGER_TOR,
@@ -66,6 +69,10 @@ const map = (state = initialState, action) => {
     case SWAP_JOURNEY_START_AND_DESTINATION:
       newState.journeyStart = state.journeyDestination
       newState.journeyDestination = state.journeyStart
+      return newState
+    case SET_VISIBLE_COORDINATES:
+      newState.visibleCoordinates = action.payload.visibleCoordinates
+      newState.edgePadding = action.payload.edgePadding
       return newState
     default:
       return state
@@ -139,6 +146,19 @@ export const resetMapState = () => {
     dispatch(setJourneyStart(null))
     dispatch(setJourneyDestination(null))
     dispatch(clearRoutes())
+  }
+}
+
+export const setVisibleCoordinates = (
+  visibleCoordinates,
+  edgePadding = initialState.edgePadding
+) => {
+  return {
+    type: SET_VISIBLE_COORDINATES,
+    payload: {
+      visibleCoordinates: visibleCoordinates,
+      edgePadding: edgePadding,
+    },
   }
 }
 
