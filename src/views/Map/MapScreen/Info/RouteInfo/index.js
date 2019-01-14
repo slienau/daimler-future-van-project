@@ -8,6 +8,7 @@ import StartWalkCard from './StartWalkCard'
 import VanRideCard from './VanRideCard'
 import DestinationWalkCard from './DestinationWalkCard'
 import {StyledRouteInfo} from '../StyledComponents'
+import {setVisibleCoordinates} from '../../../../../ducks/map'
 
 const RouteInfo = props => {
   const parseDeparture = () => {
@@ -43,18 +44,20 @@ const RouteInfo = props => {
     return start.to(end)
   }
 
+  const edgePadding = {
+    top: 0.33,
+    right: 0.1,
+    left: 0.1,
+    bottom: 0.2,
+  }
+
   const zoomToStartWalk = () => {
     if (!props.routes || !props.routes.length) return
     const coords = [
       props.routes[0].startLocation,
       props.routes[0].startStation.location,
     ]
-    props.fitToCoordinates(coords, {
-      top: 600,
-      right: 100,
-      left: 100,
-      bottom: 350,
-    })
+    props.setVisibleCoordinates(coords, edgePadding)
   }
 
   const zoomToDestinationWalk = () => {
@@ -63,12 +66,7 @@ const RouteInfo = props => {
       props.routes[0].endStation.location,
       props.routes[0].destination,
     ]
-    props.fitToCoordinates(coords, {
-      top: 600,
-      right: 100,
-      left: 100,
-      bottom: 350,
-    })
+    props.setVisibleCoordinates(coords, edgePadding)
   }
 
   const zoomToVanRide = () => {
@@ -77,12 +75,7 @@ const RouteInfo = props => {
       props.routes[0].startStation.location,
       props.routes[0].endStation.location,
     ]
-    props.fitToCoordinates(coords, {
-      top: 600,
-      right: 100,
-      left: 100,
-      bottom: 350,
-    })
+    props.setVisibleCoordinates(coords, edgePadding)
   }
 
   const onSwipe = index => {
@@ -150,13 +143,20 @@ const mapStateToProps = state => {
   }
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+    setVisibleCoordinates: (coords, edgePadding) =>
+      dispatch(setVisibleCoordinates(coords, edgePadding)),
+  }
+}
+
 RouteInfo.propTypes = {
-  fitToCoordinates: PropTypes.func,
   map: PropTypes.object,
   routes: PropTypes.array,
+  setVisibleCoordinates: PropTypes.func,
 }
 
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(RouteInfo)

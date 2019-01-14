@@ -9,14 +9,13 @@ import {
   MapState,
   setJourneyDestination,
   setJourneyStart,
+  setVisibleCoordinates,
 } from '../../../ducks/map'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
 
 const SearchScreen = props => {
   const predefinedPlaces = _.uniqBy(props.searchResults, 'id')
-  const animateToRegion = props.navigation.getParam('animateToRegion')
-  const fitToCoordinates = props.navigation.getParam('fitToCoordinates')
 
   const onSearchResult = (data, details) => {
     const type = props.navigation.getParam('type')
@@ -59,10 +58,10 @@ const SearchScreen = props => {
     if (props.journeyStart != null) {
       // fit zoom to start and destination if so
       const coords = [location, props.journeyStart.location]
-      fitToCoordinates(coords)
+      props.setVisibleCoordinates(coords)
     } else {
       // otherwise, only zoom to destination
-      animateToRegion(location)
+      props.setVisibleCoordinates([location])
     }
   }
 
@@ -78,10 +77,10 @@ const SearchScreen = props => {
     if (props.journeyDestination != null) {
       // fit zoom to start and destination if so
       const coords = [location, props.journeyDestination.location]
-      fitToCoordinates(coords)
+      props.setVisibleCoordinates(coords)
     } else {
       // otherwise, only zoom to start
-      animateToRegion(location)
+      props.setVisibleCoordinates([location])
     }
   }
 
@@ -161,6 +160,7 @@ SearchScreen.propTypes = {
   searchResults: PropTypes.array,
   setJourneyDestination: PropTypes.func,
   setJourneyStart: PropTypes.func,
+  setVisibleCoordinates: PropTypes.func,
 }
 
 export default connect(
@@ -175,5 +175,7 @@ export default connect(
     changeMapState: payload => dispatch(changeMapState(payload)),
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
     setJourneyDestination: payload => dispatch(setJourneyDestination(payload)),
+    setVisibleCoordinates: (coords, edgePadding) =>
+      dispatch(setVisibleCoordinates(coords, edgePadding)),
   })
 )(SearchScreen)

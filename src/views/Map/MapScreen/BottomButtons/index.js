@@ -5,6 +5,7 @@ import {
   MapState,
   resetMapState,
   fetchRoutes,
+  setVisibleCoordinates,
 } from '../../../../ducks/map'
 import {connect} from 'react-redux'
 import DestinationButton from './DestinationButton'
@@ -23,12 +24,7 @@ const BottomButtons = props => {
       props.journeyStart.location,
       props.journeyDestination.location,
     ]
-    props.fitToCoordinates(coords, {
-      top: 35,
-      right: 100,
-      left: 100,
-      bottom: 350,
-    })
+    props.setVisibleCoordinates(coords)
   }
 
   const cancelActiveOrder = async () => {
@@ -136,6 +132,8 @@ const mapDispatchToProps = dispatch => {
     cancelActiveOrder: payload => dispatch(cancelActiveOrder(payload)),
     fetchRoutes: payload => dispatch(fetchRoutes(payload)),
     placeOrder: payload => dispatch(placeOrder(payload)),
+    setVisibleCoordinates: (coords, edgePadding) =>
+      dispatch(setVisibleCoordinates(coords, edgePadding)),
   }
 }
 
