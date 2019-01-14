@@ -1,10 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {View, Dimensions, StyleSheet} from 'react-native'
-import MapView from 'react-native-maps'
-import {getRegionForCoordinates} from '../../lib/utils'
-import MapMarker from '../../components/MapMarker'
-import {Text, Card, CardItem, Body, Icon} from 'native-base'
+import {
+  Text,
+  Card,
+  CardItem,
+  Body,
+  Icon,
+  ListItem,
+  Left,
+  Button,
+  Right,
+} from 'native-base'
+import {StyleSheet} from 'react-native'
 
 const VanCard = props => {
   let bodyCardItem = null
@@ -22,49 +29,21 @@ const VanCard = props => {
   } else {
     bodyCardItem = (
       <CardItem>
-        <Body style={styles.cardItemHeader}>
+        <Body>
           <Text style={styles.cardItemText}>{props.header}</Text>
-          <Text />
-          <Text>Time od Arrival: 10:23</Text>
-          <Text>Time od Arrival: 10:23</Text>
-          <Text>Time od Arrival: 10:23</Text>
-          <Text>Time od Arrival: 10:23</Text>
-        </Body>
-      </CardItem>
-    )
-  }
-  const {width, height} = Dimensions.get('window')
-  const mapHeight = 0.3 * height // 60% height
-
-  const mapRegion = getRegionForCoordinates([
-    {longitude: 13.33079338, latitude: 52.49158698},
-    {longitude: 13.33611488, latitude: 52.51329582},
-  ])
-  if (props.header === 'Map') {
-    bodyCardItem = (
-      <CardItem
-        button
-        onPress={() => alert('TODO: connect with navigation to subviews')}>
-        <Body style={styles.cardItemHeader}>
-          <View style={{width, height: mapHeight}}>
-            <MapView
-              region={mapRegion}
-              style={styles.map}
-              showsMyLocationButton={false}>
-              <MapMarker
-                title="Pickup point"
-                description={'Pickup point'}
-                location={{longitude: 13.33079338, latitude: 52.49158698}}
-                image="person"
-              />
-              <MapMarker
-                title="Dropoff point"
-                description={'Dropoff point'}
-                image="destination"
-                location={{longitude: 13.33611488, latitude: 52.51329582}}
-              />
-            </MapView>
-          </View>
+          <ListItem icon>
+            <Left>
+              <Button>
+                <Icon active name="globe" />
+              </Button>
+            </Left>
+            <Body>
+              <Text>Airplane Mode</Text>
+            </Body>
+            <Right>
+              <Text>15:00 PM</Text>
+            </Right>
+          </ListItem>
         </Body>
       </CardItem>
     )
@@ -89,9 +68,6 @@ const styles = StyleSheet.create({
   },
   iconSize: {
     fontSize: 100,
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
   },
 })
 
