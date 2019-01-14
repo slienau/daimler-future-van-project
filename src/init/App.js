@@ -12,6 +12,7 @@ import Map from '../views/Map'
 import Account from '../views/Account'
 import Orders from '../views/Orders'
 import Games from '../views/Games'
+import RideScreen from '../views/RideScreen'
 import {configureStore} from './store'
 import {Root} from 'native-base'
 
@@ -21,6 +22,7 @@ const MainView = createDrawerNavigator(
     Map,
     Orders,
     Games,
+    RideScreen,
   },
   {
     initialRouteName: 'Map',

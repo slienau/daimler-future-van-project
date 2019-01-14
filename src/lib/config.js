@@ -3,7 +3,7 @@ export default {
   googleApiKey: 'AIzaSyBLjSLCSdnDP2K1muAvuiREJmMdY5ahPgk',
 }
 
-export const initialMapRegion = {
+export const defaultMapRegion = {
   latitude: 52.509663,
   longitude: 13.376481,
   latitudeDelta: 0.1,

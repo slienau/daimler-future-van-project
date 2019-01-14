@@ -12,7 +12,7 @@ import BackButton from './BackButton'
 import SearchRoutesButton from './SearchRoutesButton'
 import PlaceOrderButton from './PlaceOrderButton'
 import CancelOrderButton from './CancelOrderButton'
-import {cancelOrder, placeOrder} from '../../../../ducks/orders'
+import {cancelActiveOrder, placeOrder} from '../../../../ducks/orders'
 import {Alert} from 'react-native'
 import {Toast} from 'native-base'
 
@@ -31,10 +31,8 @@ const BottomButtons = props => {
     })
   }
 
-  const cancelOrder = async () => {
-    await props.cancelOrder({
-      id: props.activeOrder._id,
-    })
+  const cancelActiveOrder = async () => {
+    await props.cancelActiveOrder()
     props.changeMapState(MapState.INIT)
   }
 
@@ -57,6 +55,7 @@ const BottomButtons = props => {
             await props.placeOrder({
               start: props.routes[0].startStation._id,
               destination: props.routes[0].endStation._id,
+              vanId: props.routes[0].vanId,
             })
             props.changeMapState(MapState.ROUTE_ORDERED)
             Toast.show({
@@ -104,13 +103,11 @@ const BottomButtons = props => {
       break
     case MapState.ROUTE_ORDERED:
       visibleButtons = (
-        <>
-          <CancelOrderButton
-            bottom="88%"
-            iconName="close"
-            onPress={() => cancelOrder()}
-          />
-        </>
+        <CancelOrderButton
+          bottom="88%"
+          iconName="close"
+          onPress={() => cancelActiveOrder()}
+        />
       )
       break
     case MapState.ORDER_CANCELLED:
@@ -136,7 +133,7 @@ const mapDispatchToProps = dispatch => {
     changeMapState: payload => dispatch(changeMapState(payload)),
     resetMapState: () => dispatch(resetMapState()),
     clearRoutes: () => dispatch(clearRoutes()),
-    cancelOrder: payload => dispatch(cancelOrder(payload)),
+    cancelActiveOrder: payload => dispatch(cancelActiveOrder(payload)),
     fetchRoutes: payload => dispatch(fetchRoutes(payload)),
     placeOrder: payload => dispatch(placeOrder(payload)),
   }
