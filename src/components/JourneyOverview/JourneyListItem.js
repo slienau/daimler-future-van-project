@@ -20,7 +20,7 @@ const JourneyListItem = props => {
 
 JourneyListItem.propTypes = {
   description: PropTypes.string,
-  iconColor: PropTypes,
+  iconColor: PropTypes.string,
   iconName: PropTypes.string,
   info: PropTypes.string,
 }

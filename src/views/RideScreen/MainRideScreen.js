@@ -29,7 +29,12 @@ const MainRideScreen = props => {
           </Row>
           <Row>
             <Col>
-              <VanCard header="Fun Facts" description={''} icon="star" />
+              <VanCard
+                header="Fun Facts"
+                description={''}
+                icon="star"
+                onPress={() => props.navigation.navigate('FunfactsScreen')}
+              />
             </Col>
             <Col>
               <VanCard header="Map" icon="map" />

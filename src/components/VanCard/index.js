@@ -17,9 +17,7 @@ const VanCard = props => {
   let bodyCardItem = null
   if (props.information !== '') {
     bodyCardItem = (
-      <CardItem
-        button
-        onPress={() => alert('TODO: connect with navigation to subviews')}>
+      <CardItem button onPress={props.onPress}>
         <Body style={styles.cardItemHeader}>
           <Icon name={props.icon} style={styles.iconSize} />
           <Text style={styles.cardItemText}>{props.header}</Text>
@@ -56,7 +54,7 @@ VanCard.propTypes = {
   header: PropTypes.string,
   icon: PropTypes.string,
   information: PropTypes.string,
-  // image: PropTypes.string,
+  onPress: PropTypes.func,
 }
 
 const styles = StyleSheet.create({
