@@ -31,14 +31,18 @@
   * [/orders](#orders)
     + [GET /orders](#get-orders)
     + [POST /orders](#post-orders)
+  * [/orders/{orderId}](#ordersorderid)
     + [PUT /orders/{orderId}](#put-ordersorderid)
-    + [GET /orders/{orderId}/status](#get-ordersorderidstatus)
-    + [POST /orders/{orderId}/startRide](#post-ordersorderidstartride)
-    + [POST /orders/{orderId}/endRide](#post-ordersorderidendride)
+  * [/activeorder/status](#activeorderstatus)
+    + [GET /activeorder/status](#get-activeorderstatus)
+    + [POST /activeorder/startride](#post-activeorderstartride)
+    + [POST /activeorder/endride](#post-activeorderendride)
   * [/routes](#routes)
     + [POST /routes](#post-routes)
   * [/virtualbusstops](#virtualbusstops)
     + [GET /virtualbusstops](#get-virtualbusstops)
+  * [/leaderboard](#leaderboard)
+    + [GET /leaderboard](#get-leaderboard)
 
 <!-- tocstop -->
 
@@ -54,7 +58,7 @@ This API uses standard HTTP status codes to indicate the status of a response.
 
 ### Error types
 
-| Name | Code |	Description |
+| Name | Code | Description |
 |--- |--- |--- |
 | Bad request | 400 | The request was unacceptable |
 | Unauthorized | 401 | The request has not been applied because it lacks valid authentication credentials for the target resource. |
@@ -138,7 +142,10 @@ This object represents a user account.
 | `lastName` | `String` | Yes | The users last name. | `Müller` |
 | `email` | `String` | Yes | The users email. | `maxmueller@tu-berlin.de` |
 | `username` | `String` | Yes | The username. | `maxiboy123` |
+| `bonuspoints` | `Number` | Yes | The users total bonuspoints. | `234` |
 | `address` | `Object` | No | The users address. Contains `street`, `zipcode` and `city` | *See account example.* |
+| `distance` | `Number` | yes | Total amount of kilometres driven by the user. | `423.34` |
+| `co2savings` | `Number` | yes | Total amount of CO2 savings (in kilogram) for all van rides. | `70.4` |
 
 #### Example
 
@@ -149,11 +156,14 @@ This object represents a user account.
   "lastName": "Müller",
   "email": "maxmueller@tu-berlin.de",
   "username": "maxiboy123",
+  "bonuspoints": 234,
   "address": {
     "street": "Salzufer 1",
     "zipcode": "10587",
     "city": "Berlin"
-  }
+  },
+  "distance": 423.34,
+  "co2savings": 70.4
 }
 ```
 
@@ -163,8 +173,8 @@ This object represents a van order which can be made by a user.
 
 | Field | Type | Required | Description | Examples |
 |--- |--- |--- |--- |--- |
-| `_id` | `String` | yes | The order ID. | `13cf81ee-8898-4b7a-a96e-8b5f675deb3c` |
-| `accountID` | `String` | yes | User account ID which placed this order. | `0e8cedd0-ad98-11e6-bf2e-47644ada7c0f` |
+| `id` | `String` | yes | The order ID. | `13cf81ee-8898-4b7a-a96e-8b5f675deb3c` |
+| `accountId` | `String` | yes | User account ID which placed this order. | `0e8cedd0-ad98-11e6-bf2e-47644ada7c0f` |
 | `orderTime` | `Datetime` | yes | Time at which the order was placed. | `2018-11-23T18:25:43.511Z` |
 | `active` | `Boolean` | yes | True if this order is active (user is still travelling to the ending virtual bus stop).<br>False if the user reached the ending virtual bus stop (finished the journey), or if the order was canceled. | `true` |
 | `canceled` | `Boolean` | yes | True if the user canceled the order. | `false` |
@@ -174,13 +184,16 @@ This object represents a van order which can be made by a user.
 | `endTime` | `Datetime` | no | Time at which the user left the van.<br> Null if the user canceled the order. | `2018-11-23T18:45:48.000Z` |
 | `vanId` | `Number` | yes | The van which will carry the user. | |
 | `vanArrivalTime` | `Datetime` | yes | The expected time at which the van will arrive at the `virtualBusStopStart` | `2018-11-23T18:30:25.000Z` |
+| `bonuspoints` | `Number` | yes | The amount of bonus points the user will earn for this order. | |
+| `distance` | `Number` | yes | Amount of kilometres the van has driven / will drive. | `12.4` |
+| `co2savings` | `Number` | yes | Amount of CO2 savings (in kilogram) for this ride . | `2.2` |
 
 #### Example
 
 ```json
 {
-  "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-  "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
+  "id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
+  "accountId": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
   "orderTime": "2018-11-23T18:25:43.511Z",
   "active": true,
   "canceled": false,
@@ -205,7 +218,10 @@ This object represents a van order which can be made by a user.
   "startTime": "2018-11-23T18:30:25.000Z",
   "endTime": "2018-11-23T18:45:48.000Z",
   "vanId": 7,
-  "vanArrivalTime": "2018-11-23T18:30:24.000Z"
+  "vanArrivalTime": "2018-11-23T18:30:24.000Z",
+  "bonuspoints": 3980,
+  "distance": 12.4,
+  "co2savings": 2.2
 }
 ```
 
@@ -215,6 +231,7 @@ This object represents a travel route from journey start to the final destinatio
 
 | Field | Type | Required | Description | Examples |
 |--- |--- |--- |--- |--- |
+| `id` | `String` | yes | The route ID. | `13cf81ee-8898-4b7a-a96e-8b5f675deb3c` |
 | `startLocation` | `Object` `(Location)` | yes | Location where the journey starts. |  |
 | `startStation` | `Object` `(VirtualBusStop)` | yes | Location (VirtualBusStop) where the user should enter the van. |  |
 | `endStation` | `Object` `(VirtualBusStop)` | yes | Location (VirtualBusStop) where the user should exit the van. |  |
@@ -226,6 +243,8 @@ This object represents a travel route from journey start to the final destinatio
 | `toStartRoute` | `Object` | Yes | Route from `startLocation` to `startStation` |  |
 | `vanRoute` | `Object` | Yes | Van route from `startStation` to `endStation` |  |
 | `toDestinationRoute` | `Object` | Yes | Route from `endStation` to `destination` |  |
+| `vanId` | `Number` | yes | The van which will drive this route. | |
+| `validUntil` | `Datetime` | Yes | Time until the route can be confirmed (create an order from this route). After this time has elapsed, a new request must be sent, otherwise no order can be created. | `2018-12-17T17:10:00.000Z` |
 
 #### Examples
 
@@ -263,7 +282,9 @@ This object represents a travel route from journey start to the final destinatio
   "destinationTime": "2018-12-17T17:40:00.000Z",
   "toStartRoute": {},
   "vanRoute": {},
-  "toDestinationRoute": {}
+  "toDestinationRoute": {},
+  "vanId": 7,
+  "validUntil": "2018-12-17T17:10:00.000Z"
 }
 ```
 
@@ -321,25 +342,8 @@ To get the user account information.
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `Account` | containing the user account information. |
+| `200` | `Account` | See [Account](#account) |
 | `400` | `Error` | |
-
-###### Example
-
-```json
-{
-  "id": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
-  "firstName": "Max",
-  "lastName": "Müller",
-  "email": "maxmueller@tu-berlin.de",
-  "username": "maxiboy123",
-  "address": {
-    "street": "Salzufer 1",
-    "zipcode": "10587",
-    "city": "Berlin"
-  }
-}
-```
 
 ---
 
@@ -349,52 +353,16 @@ To update user account information.
 
 ##### Body
 
-| Property | Type | Required | Description |
-|--- |--- |--- |--- |
-| `newAccountData` | `Account` | Yes | containing the updated user account information. |
-
-###### Example
-
-```json
-{
-  "newAccountData": {
-    "id": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
-    "firstName": "Max",
-    "lastName": "Müller",
-    "email": "maxmueller@tu-berlin.de",
-    "username": "maxiboy123",
-    "address": {
-      "street": "Ernst-Reuter-Platz 123",
-      "zipcode": "10587",
-      "city": "Berlin"
-    }
-  }
-}
-```
+| Type | Required | Description |
+|--- |--- |--- |
+| `Account` | Yes | Containing the updated user account information. See [Account](#account) |
 
 ##### Responses
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `Account` | containing the updated user account information. |
+| `200` | `Account` | Containing the updated user account information. See [Account](#account) |
 | `400` | `Error` | |
-
-###### Example
-
-```json
-{
-  "id": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
-  "firstName": "Max",
-  "lastName": "Müller",
-  "email": "maxmueller@tu-berlin.de",
-  "username": "maxiboy123",
-  "address": {
-    "street": "Ernst-Reuter-Platz 123",
-    "zipcode": "10587",
-    "city": "Berlin"
-  }
-}
-```
 
 ---
 
@@ -414,21 +382,16 @@ Get the orders of a user.
 | `fromDate` | `Datetime` | No | If set, the response will only contain orders which were placed *after* this date. |
 | `toDate` | `Datetime` | No | If set, the response will only contain orders which were placed *before* this date. |
 
-###### Example (TODO: Change from JSON format to query format)
+###### Example
 
-```json
-{
-  "active": false,
-  "fromDate": "2018-01-01T00:00:00.000Z",
-  "toDate": "2018-10-01T00:00:00.000Z"
-}
-```
+- ```/orders```  
+- ```/orders?active=false&fromDate=2018-01-01T00:00:00.000Z&toDate=2018-10-01T00:00:00.000Z```
 
 ##### Responses
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | Array of `Order` | Orders which match the request parameters. |
+| `200` | Array of `Order` | Orders which match the request parameters. See [Order](#order) |
 | `400` | `Error` | |
 
 ###### Example
@@ -436,63 +399,21 @@ Get the orders of a user.
 ```json
 [
   {
-    "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-    "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
+    "id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
+    "accountId": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
     "orderTime": "2018-02-23T18:25:43.511Z",
     "active": false,
     "canceled": false,
-    "virtualBusStopStart": {
-      "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
-      "name": "Straße des 17. Juni 135",
-      "accessible": true,
-      "location": {
-        "latitude": 52.515598,
-        "longitude": 13.326860
-      }
-    },
-    "virtualBusStopEnd": {
-      "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
-      "name": "Straße des 17. Juni 120",
-      "accessible": true,
-      "location": {
-        "latitude": 52.512974,
-        "longitude": 13.329145
-      }
-    },
-    "startTime": "2018-02-23T18:30:25.000Z",
-    "endTime": "2018-02-23T18:45:48.000Z",
-    "vanId": 7,
-    "vanArrivalTime": "2018-11-23T18:30:24.000Z"
+    ...,
   },
   {
-    "_id": "32c6281a-b05c-4cb7-8926-739842c0be86",
-    "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
-    "orderTime": "2018-03-23T18:25:43.511Z",
+    "id": "13cf81ee-4b7a-8898-a96e-8b5f675deb3c",
+    "accountId": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
+    "orderTime": "2018-02-24T18:25:43.511Z",
     "active": false,
     "canceled": false,
-    "virtualBusStopStart": {
-      "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
-      "name": "Straße des 17. Juni 135",
-      "accessible": true,
-      "location": {
-        "latitude": 52.515598,
-        "longitude": 13.326860
-      }
-    },
-    "virtualBusStopEnd": {
-      "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
-      "name": "Straße des 17. Juni 120",
-      "accessible": true,
-      "location": {
-        "latitude": 52.512974,
-        "longitude": 13.329145
-      }
-    },
-    "startTime": "2018-03-23T18:30:25.000Z",
-    "endTime": "2018-03-23T18:45:48.000Z",
-    "vanId": 7,
-    "vanArrivalTime": "2018-11-23T18:30:24.000Z"
-  },
+    ...,
+  }
 ]
 ```
 
@@ -508,15 +429,13 @@ To create (place) a new van order.
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
-| `start` | `String` | Yes | ID of the starting virtual bus stop |
-| `destination` | `String` | Yes | ID of the ending virtual bus stop |
+| `routeId` | `String` | Yes | ID of the route. |
 
 ###### Example
 
 ```json
 {
-  "start": "d79ab15d-39e8-4817-83d0-ed21d395dded",
-  "destination": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532"
+  "routeId": "d79ab15d-39e8-4817-83d0-ed21d395dded",
 }
 ```
 
@@ -524,42 +443,19 @@ To create (place) a new van order.
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `Order` | The new created order. |
+| `200` | `Order` | The new created order. See [Order](#order) |
 | `400` | `Error` | If the order couldn't be created. |
+| `404` | `Error` | If the `routeId` wasn't found. See [Error object](#error-object) |
 
-###### Example
+---
 
-```json
-{
-  "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-  "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
-  "orderTime": "2018-11-23T18:25:43.511Z",
-  "active": true,
-  "canceled": false,
-  "virtualBusStopStart": {
-    "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
-    "name": "Straße des 17. Juni 135",
-    "accessible": true,
-    "location": {
-      "latitude": 52.515729,
-      "longitude": 13.323373
-    }
-  },
-  "virtualBusStopEnd": {
-    "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
-    "name": "Straße des 17. Juni 120",
-    "accessible": true,
-    "location": {
-      "latitude": 52.512974,
-      "longitude": 13.329145
-    }
-  },
-  "startTime": null,
-  "endTime": null,
-  "vanId": 7,
-  "vanArrivalTime": "2018-11-23T18:30:24.000Z"
-}
-```
+### /orders/{orderId}
+
+Path variables:
+
+| Parameter | Type | Required | Description |
+|--- |--- |--- |--- |
+| `{orderId}` | `String` | Yes | The order id. |
 
 ---
 
@@ -570,97 +466,28 @@ The order can either be *changed* or *canceled*. To *cancel* an order, set the `
 
 ##### Request
 
-###### Path Variables
-
-| Parameter | Type | Required | Description |
-|--- |--- |--- |--- |
-| `{orderId}` | `String` | Yes | The order id |
-
 ###### Body
 
 | Type | Required | Description |
 |--- |--- |--- |
-| `Order` | Yes | The updated order. |
-
-###### Example
-
-```json
-{
-  "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-  "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
-  "orderTime": "2018-11-23T18:25:43.511Z",
-  "active": true,
-  "canceled": true,
-  "virtualBusStopStart": {
-    "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
-    "name": "Straße des 17. Juni 135",
-    "accessible": true,
-    "location": {
-      "latitude": 52.515729,
-      "longitude": 13.323373
-    }
-  },
-  "virtualBusStopEnd": {
-    "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
-    "name": "Straße des 17. Juni 120",
-    "accessible": true,
-    "location": {
-      "latitude": 52.512974,
-      "longitude": 13.329145
-    }
-  },
-  "startTime": null,
-  "endTime": null,
-  "vanId": 7
-}
-```
+| `Order` | Yes | The updated order. See [Order](#order) |
 
 ##### Responses
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `Order` | The updated order |
+| `200` | `Order` | The updated order. See [Order](#order) |
 | `400` | `Error` | If the order couldn't be updated. |
-
-###### Example
-
-```json
-{
-  "_id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
-  "accountID": "0e8cedd0-ad98-11e6-bf2e-47644ada7c0f",
-  "orderTime": "2018-11-23T18:25:43.511Z",
-  "active": false,
-  "canceled": true,
-  "virtualBusStopStart": {
-    "id": "d79ab15d-39e8-4817-83d0-ed21d395dded",
-    "name": "Straße des 17. Juni 135",
-    "accessible": true,
-    "location": {
-      "latitude": 52.515729,
-      "longitude": 13.323373
-    }
-  },
-  "virtualBusStopEnd": {
-    "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
-    "name": "Straße des 17. Juni 120",
-    "accessible": true,
-    "location": {
-      "latitude": 52.512974,
-      "longitude": 13.329145
-    }
-  },
-  "startTime": null,
-  "endTime": null,
-  "vanId": 7,
-  "vanArrivalTime": "2018-11-23T18:30:24.000Z"
-}
-```
 
 ---
 
-#### GET /orders/{orderId}/status
+### /activeorder/status
 
-Get information if the user is close enough to the van to enter.
+---
+
+#### GET /activeorder/status
+
+Get information about the current active order.
 
 ##### Request Query Parameters
 
@@ -672,25 +499,40 @@ Get information if the user is close enough to the van to enter.
 ###### Example
 
 ```
-GET /orders/13cf81ee-8898-4b7a-a96e-8b5f675deb3c/status?passengerLatitude=52.123456&passengerLongitude=13.123456
+GET /activeorder?passengerLatitude=52.123456&passengerLongitude=13.123456
 ```
 
 ##### Response
 
-- `status`: `true` if user can enter the van (if the user is close enough to the van), `false` otherwise.
+| Code | Body Type | Description |
+|--- |--- |--- |
+| `200` | `Object` | The updated order (see example) |
+| `400` | `Error` | |
+
+On `HTTP 200` the following object will be returned:
+
+| Property | Type | Description |
+|--- |--- |--- |
+|`userAllowedToEnter`| `Boolean` | `true` if user can enter the van (if the user is close enough to the van), `false` otherwise. |
+|`vanPosition`| `Object` | The current position of the van. |
+|`statusMessage`| `String` |  |
 
 ```json
 {
-  "status": false,
-  "message": "Van has not arrived yet"
+  "userAllowedToEnter": false,
+  "vanPosition": {
+    "latitude": 52.515598,
+    "longitude": 13.326860
+  },
+  "statusMessage": "Van has not arrived yet"
 }
 ```
 
 ---
 
-#### POST /orders/{orderId}/startRide
+#### POST /activeorder/startride
 
-User has entered the van. After this request the van should lock the doors and start the ride. Error if the user didn't enter the van previously.
+User has entered the van. After this request has been sent, the van should lock the doors and start the ride. Error if the user isn't close enough to the van / didn't enter the van.
 
 ##### Request Query Parameters
 
@@ -709,12 +551,13 @@ GET /orders/13cf81ee-8898-4b7a-a96e-8b5f675deb3c/startRide?passengerLatitude=52.
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `Order` | |
+| `200` | `Order` | See [Order](#order) |
 | `400` | `Error` | |
+| `403` | `Error` | If the user is not close enough to the van. See [Error object](#error-object) |
 
 ---
 
-#### POST /orders/{orderId}/endRide
+#### POST /activeorder/endride
 
 User left the van.
 
@@ -724,7 +567,11 @@ Empty request body.
 
 ##### Responses
 
-Updated order object.
+| Code | Body Type | Description |
+|--- |--- |--- |
+| `200` | `Order` | See [Order](#order) |
+| `400` | `Error` | |
+| `403` | `Error` | If the van hasn't arrived at the destination virtual bus stop yet. See [Error object](#error-object) |
 
 ---
 
@@ -766,7 +613,7 @@ Get suggested routes from starting point to destination.
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | Array of `Route` | Array of possible routes from desired start location to destination. Array will contain *max. 5 items* |
+| `200` | Array of `Route` | Array of possible routes from desired start location to destination. Array will contain *max. 5 items*. See [Route](#route). |
 | `400` | `Error` | If the order couldn't be updated. |
 
 ###### Example
@@ -778,70 +625,15 @@ Get suggested routes from starting point to destination.
       "latitude": 52.516639,
       "longitude": 13.331985
     },
-    "startStation": {
-      "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
-      "name": "Straße des 17. Juni 135",
-      "accessible": true,
-      "location": {
-        "latitude": 52.515598,
-        "longitude": 13.326860
-      }
-    },
-    "endStation": {
-      "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
-      "name": "Straße des 17. Juni 120",
-      "accessible": true,
-      "location": {
-        "latitude": 52.512974,
-        "longitude": 13.329145
-      }
-    },
-    "destination": {
-      "latitude": 52.513245,
-      "longitude": 13.332684
-    },
-    "journeyStartTime": "2018-12-17T17:15:00.000Z",
-    "vanStartTime": "2018-12-17T17:20:00.000Z",
-    "vanEndTime": "2018-12-17T17:35:00.000Z",
-    "destinationTime": "2018-12-17T17:40:00.000Z",
-    "toStartRoute": {},
-    "vanRoute": {},
-    "toDestinationRoute": {}
-  },
-  {
+    "startStation": ...
+    ...
+  },{
     "startLocation": {
       "latitude": 52.516639,
       "longitude": 13.331985
     },
-    "startStation": {
-      "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
-      "name": "Straße des 17. Juni 135",
-      "accessible": true,
-      "location": {
-        "latitude": 52.515598,
-        "longitude": 13.326860
-      }
-    },
-    "endStation": {
-      "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
-      "name": "Straße des 17. Juni 120",
-      "accessible": true,
-      "location": {
-        "latitude": 52.512974,
-        "longitude": 13.329145
-      }
-    },
-    "destination": {
-      "latitude": 52.513245,
-      "longitude": 13.332684
-    },
-    "journeyStartTime": "2018-12-17T17:15:00.000Z",
-    "vanStartTime": "2018-12-17T17:20:00.000Z",
-    "vanEndTime": "2018-12-17T17:35:00.000Z",
-    "destinationTime": "2018-12-17T17:40:00.000Z",
-    "toStartRoute": {},
-    "vanRoute": {},
-    "toDestinationRoute": {}
+    "startStation": ...
+    ...
   }
 ]
 ```
@@ -881,7 +673,7 @@ Get nearby virtual bus stops.
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | Array of `VirtualBusStop` | Array of virtual bus stops which are inside of the radius from the given location. |
+| `200` | Array of `VirtualBusStop` | Array of virtual bus stops which are inside of the radius from the given location. See [VirtualBusStop](#virtualbusstop) |
 | `400` | `Error` | If the order couldn't be updated. |
 
 ###### Examples
@@ -909,24 +701,38 @@ Get nearby virtual bus stops.
       "latitude": 52.515598,
       "longitude": 13.326860
     }
-  },
-  {
-    "id": "15869209-5f70-48a7-ad35-52133b959b79",
-    "name": "Straße des 17. Juni",
-    "accessible": true,
-    "location": {
-      "latitude": 52.513287,
-      "longitude": 13.333973
-    }
-  },
-  {
-    "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
-    "name": "Straße des 17. Juni",
-    "accessible": true,
-    "location": {
-      "latitude": 52.512974,
-      "longitude": 13.329145
-    }
   }
+```
+
+---
+
+### /leaderboard
+
+---
+
+#### GET /leaderboard
+
+Get the top 10 users with the most bonus points.
+
+##### Response
+
+| Code | Body Type | Description |
+|--- |--- |--- |
+| `200` | Array of `Objects` | Containing the bonus points (for schema see example). Sorted by property `bonuspoints` |
+| `400` | `Error` | |
+
+###### Example
+
+```json
+[
+    {
+        "bonuspoints": 3980
+    },
+    {
+        "bonuspoints": 2120
+    },
+    {
+        "bonuspoints": 1400
+    }
 ]
 ```
