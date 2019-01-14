@@ -7,15 +7,17 @@ const CancelOrderButton = props => {
     <BottomButton
       iconLeft
       onPress={props.onPress}
-      iconName="arrow-back"
+      iconName={props.iconName ? props.iconName : 'arrow-back'}
       left="3%"
       right="85%"
-      bottom="15%"
+      bottom={props.bottom ? props.bottom : '15%'}
     />
   )
 }
 
 CancelOrderButton.propTypes = {
+  bottom: PropTypes.string,
+  iconName: PropTypes.string,
   onPress: PropTypes.func,
 }
 

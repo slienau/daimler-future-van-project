@@ -4,7 +4,7 @@ import {
   CardItemNoBorders,
   StyledContainer,
   IconCenterFlex,
-} from './StyledComponents'
+} from '../StyledComponents'
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -22,7 +22,7 @@ const DestinationWalkCard = props => {
           </Left>
           <IconCenterFlex type="Entypo" name="arrow-long-right" />
           <Right>
-            <Text>Kommt noch</Text>
+            <Text>{props.destinationName}</Text>
           </Right>
         </CardItemNoBorders>
         {/* <CardItemNoBorders>
@@ -36,6 +36,7 @@ const DestinationWalkCard = props => {
 }
 
 DestinationWalkCard.propTypes = {
+  destinationName: PropTypes.string,
   destinationWalkingDistance: PropTypes.string,
   destinationWalkingDuration: PropTypes.string,
 }

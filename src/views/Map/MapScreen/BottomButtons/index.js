@@ -13,6 +13,8 @@ import SearchRoutesButton from './SearchRoutesButton'
 import PlaceOrderButton from './PlaceOrderButton'
 import CancelOrderButton from './CancelOrderButton'
 import {cancelActiveOrder, placeOrder} from '../../../../ducks/orders'
+import {Alert} from 'react-native'
+import {Toast} from 'native-base'
 
 const BottomButtons = props => {
   const zoomToMarkers = () => {
@@ -43,12 +45,31 @@ const BottomButtons = props => {
   }
 
   const placeOrder = async () => {
-    await props.placeOrder({
-      start: props.routes[0].startStation._id,
-      destination: props.routes[0].endStation._id,
-      vanId: props.routes[0].vanId,
-    })
-    props.changeMapState(MapState.ROUTE_ORDERED)
+    Alert.alert(
+      'Confirm your order',
+      'Do you want to order this route?',
+      [
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await props.placeOrder({
+              start: props.routes[0].startStation._id,
+              destination: props.routes[0].endStation._id,
+              vanId: props.routes[0].vanId,
+            })
+            props.changeMapState(MapState.ROUTE_ORDERED)
+            Toast.show({
+              text: 'Your order has been confirmed!',
+              buttonText: 'Okay',
+              type: 'success',
+              duration: 10000,
+            })
+          },
+        },
+        {text: 'Cancel'},
+      ],
+      {cancelable: true}
+    )
   }
 
   let visibleButtons = null
@@ -82,9 +103,11 @@ const BottomButtons = props => {
       break
     case MapState.ROUTE_ORDERED:
       visibleButtons = (
-        <>
-          <CancelOrderButton onPress={() => cancelActiveOrder()} />
-        </>
+        <CancelOrderButton
+          bottom="88%"
+          iconName="close"
+          onPress={() => cancelActiveOrder()}
+        />
       )
       break
     case MapState.ORDER_CANCELLED:
