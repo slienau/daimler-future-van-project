@@ -13,6 +13,7 @@ import Account from '../views/Account'
 import Orders from '../views/Orders'
 import Games from '../views/Games'
 import {configureStore} from './store'
+import {Root} from 'native-base'
 
 const MainView = createDrawerNavigator(
   {
@@ -54,7 +55,9 @@ export default class App extends React.Component {
     if (store === null) return null
     return (
       <Provider store={store}>
-        <AppNavigator />
+        <Root>
+          <AppNavigator />
+        </Root>
       </Provider>
     )
   }

@@ -1,14 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Swiper from 'react-native-swiper'
-import {MapState, changeMapState, clearRoutes} from '../../../../ducks/map'
 import {connect} from 'react-redux'
 import _ from 'lodash'
 import moment from 'moment'
 import StartWalkCard from './StartWalkCard'
 import VanRideCard from './VanRideCard'
 import DestinationWalkCard from './DestinationWalkCard'
-import {StyledRouteInfo} from './StyledComponents'
+import {StyledRouteInfo} from '../StyledComponents'
 
 const RouteInfo = props => {
   const parseDeparture = () => {
@@ -100,84 +99,64 @@ const RouteInfo = props => {
     }
   }
 
-  switch (props.mapState) {
-    case MapState.ROUTE_SEARCHED:
-      return (
-        <StyledRouteInfo>
-          <Swiper
-            loop={false}
-            index={1}
-            showsButtons={false}
-            onIndexChanged={index => {
-              onSwipe(index)
-            }}>
-            <StartWalkCard
-              walkingDuration={
-                props.routes[0].toStartRoute.routes[0].legs[0].duration.text
-              }
-              walkingDistance={
-                props.routes[0].toStartRoute.routes[0].legs[0].distance.text
-              }
-              departure={parseDeparture()}
-              waitingTime={calculateWaitingTime()}
-              busStopStartName={_.get(props.routes[0], 'startStation.name')}
-              zoomToStartWalk={props.zoomToStartWalk}
-            />
-            <VanRideCard
-              vanDuration={
-                props.routes[0].vanRoute.routes[0].legs[0].duration.text
-              }
-              vanDistance={
-                props.routes[0].vanRoute.routes[0].legs[0].distance.text
-              }
-              departure={parseDeparture()}
-              arrival={parseArrival()}
-              waitingTime={calculateWaitingTime()}
-              busStopEndName={_.get(props.routes[0], 'endStation.name')}
-            />
-            <DestinationWalkCard
-              destinationWalkingDuration={
-                props.routes[0].toDestinationRoute.routes[0].legs[0].duration
-                  .text
-              }
-              destinationWalkingDistance={
-                props.routes[0].toDestinationRoute.routes[0].legs[0].distance
-                  .text
-              }
-              destinationTime={parseDestinationTime()}
-              destinationName={props.map.journeyDestination.title}
-            />
-          </Swiper>
-        </StyledRouteInfo>
-      )
-    default:
-      return null
-  }
+  return (
+    <StyledRouteInfo>
+      <Swiper
+        loop={false}
+        index={1}
+        showsButtons={false}
+        onIndexChanged={index => {
+          onSwipe(index)
+        }}>
+        <StartWalkCard
+          walkingDuration={
+            props.routes[0].toStartRoute.routes[0].legs[0].duration.text
+          }
+          walkingDistance={
+            props.routes[0].toStartRoute.routes[0].legs[0].distance.text
+          }
+          departure={parseDeparture()}
+          waitingTime={calculateWaitingTime()}
+          busStopStartName={_.get(props.routes[0], 'startStation.name')}
+          zoomToStartWalk={zoomToStartWalk}
+        />
+        <VanRideCard
+          vanDuration={props.routes[0].vanRoute.routes[0].legs[0].duration.text}
+          vanDistance={props.routes[0].vanRoute.routes[0].legs[0].distance.text}
+          departure={parseDeparture()}
+          arrival={parseArrival()}
+          waitingTime={calculateWaitingTime()}
+          busStopEndName={_.get(props.routes[0], 'endStation.name')}
+        />
+        <DestinationWalkCard
+          destinationWalkingDuration={
+            props.routes[0].toDestinationRoute.routes[0].legs[0].duration.text
+          }
+          destinationWalkingDistance={
+            props.routes[0].toDestinationRoute.routes[0].legs[0].distance.text
+          }
+          destinationTime={parseDestinationTime()}
+          destinationName={props.map.journeyDestination.title}
+        />
+      </Swiper>
+    </StyledRouteInfo>
+  )
 }
 
 const mapStateToProps = state => {
   return {
     map: state.map,
-    mapState: state.map.mapState,
     routes: state.map.routes,
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  onChangeMapState: payload => dispatch(changeMapState(payload)),
-  onClearRoutes: () => dispatch(clearRoutes()),
-})
-
 RouteInfo.propTypes = {
   fitToCoordinates: PropTypes.func,
   map: PropTypes.object,
-  mapState: PropTypes.string,
-  onChangeMapState: PropTypes.func,
-  onClearRoutes: PropTypes.func,
   routes: PropTypes.array,
 }
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  null
 )(RouteInfo)

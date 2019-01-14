@@ -10,7 +10,7 @@ import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
 import {Container} from 'native-base'
 import {setUserPosition} from '../../../ducks/map'
-import RouteInfo from './RouteInfo'
+import Info from './Info'
 import {initialMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
 import CurrentLocationButton from './Buttons/CurrentLocationButton'
@@ -108,7 +108,7 @@ class MapScreen extends React.Component {
           fitToCoordinates={this.fitToCoordinates}
         />
 
-        <RouteInfo fitToCoordinates={this.fitToCoordinates} />
+        <Info fitToCoordinates={this.fitToCoordinates} />
       </Container>
     )
   }
