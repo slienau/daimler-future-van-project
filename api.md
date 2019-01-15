@@ -463,6 +463,7 @@ Path variables:
 
 Update an active order.  
 The order can either be *changed* or *canceled*. To *cancel* an order, set the `canceled` property to `true` in the request body.
+__Important:__ If the `canceled` property is set to `true`, the `active` property will automatically be set to `false` in the response object.
 
 ##### Request
 
