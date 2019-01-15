@@ -30,7 +30,7 @@ const BottomButtons = props => {
   }
 
   const cancelActiveOrder = async () => {
-    await props.cancelActiveOrder()
+    // await props.cancelActiveOrder()
     props.changeMapState(MapState.INIT)
   }
 

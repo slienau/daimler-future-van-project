@@ -1,30 +1,32 @@
 import React from 'react'
-import {View, Text} from 'native-base'
+import {View} from 'native-base'
 import JourneyListItem from './JourneyListItem'
 import {connect} from 'react-redux'
 import _ from 'lodash'
+import moment from 'moment'
 import PropTypes from 'prop-types'
 
 const JourneyOverview = props => {
-  let checker = null
-  if (!props.activeOrder) checker = <Text>Active Order null</Text>
+  const getdestinationTime = _.get(props.routes[0], 'destinationTime')
+  const destinationTime = moment(getdestinationTime).format('HH:mm')
+
+  const getVanArrivalTime = _.get(props.routes[0], 'vanEndTime')
+  const vanArrivalTime = moment(getVanArrivalTime).format('HH:mm')
+
   return (
     <View>
-      {checker}
-      <Text>{_.get(props.journeyStart, 'title')}</Text>
-      <Text>{_.get(props.journeyDestination, 'description')}</Text>
-      <Text>{_.get(props.activeOrder, 'name')}</Text>
       <JourneyListItem
         description="Time of arrival"
         iconColor="darkgreen"
         iconName="flag"
-        info="bla"
+        info={destinationTime}
+        vanEndTime
       />
       <JourneyListItem
         description="Time of arrival of exit point"
         iconColor="darkblue"
         iconName="bus"
-        info="14:43 PM"
+        info={vanArrivalTime}
       />
       <JourneyListItem
         description="Overall Kilometers"
@@ -43,9 +45,7 @@ const JourneyOverview = props => {
 }
 
 JourneyOverview.propTypes = {
-  activeOrder: PropTypes.object,
-  journeyDestination: PropTypes.object,
-  journeyStart: PropTypes.object,
+  routes: PropTypes.object,
 }
 
 const mapStateToProps = state => {
@@ -57,4 +57,5 @@ const mapStateToProps = state => {
     routes: state.map.routes,
   }
 }
+
 export default connect(mapStateToProps)(JourneyOverview)
