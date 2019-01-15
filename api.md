@@ -33,10 +33,10 @@
     + [POST /orders](#post-orders)
   * [/orders/{orderId}](#ordersorderid)
     + [PUT /orders/{orderId}](#put-ordersorderid)
-  * [/activeorder/status](#activeorderstatus)
+  * [/activeorder](#activeorder)
+    + [GET /activeorder](#get-activeorder)
+    + [PUT /activeorder](#put-activeorder)
     + [GET /activeorder/status](#get-activeorderstatus)
-    + [POST /activeorder/startride](#post-activeorderstartride)
-    + [POST /activeorder/endride](#post-activeorderendride)
   * [/routes](#routes)
     + [POST /routes](#post-routes)
   * [/virtualbusstops](#virtualbusstops)
@@ -482,7 +482,62 @@ __Important:__ If the `canceled` property is set to `true`, the `active` propert
 
 ---
 
-### /activeorder/status
+### /activeorder
+
+---
+
+#### GET /activeorder
+
+Get the current active order object (See [Order](#order)).  
+`404` error if there is no active order at the moment (See [Error object](#error-object)).
+
+---
+
+#### PUT /activeorder
+
+Update an active order.
+
+##### Request Query Parameters
+
+| Property | Type | Required | Description |
+|--- |--- |--- |--- |
+| `passengerLatitude` | `Number` | Yes | The users latitude. |
+| `passengerLongitude` | `Number` | Yes | The users longitude. |
+
+##### Request Body
+
+The request body contains a JSON with the single property `action`, which describes what should be done/changed in the active order.  
+Possible `action`-types are:
+
+| Value | Description |
+|--- |--- |
+| `startride` | User has entered the van. After this request has been sent, the van should lock the doors and start the ride. `403` Error if the user isn't close enough to the van / didn't enter the van. |
+| `endride` | User left the van. `403` error if the van hasn't arrived at the destination virtual bus stop yet. |
+| `cancel` | User wants to cancel the order. `403` error if the order can not be canceled anymore (ride already started or ended). |
+
+###### Example
+
+Request URL
+
+```
+PUT /activeorder?passengerLatitude=52.123456&passengerLongitude=13.123456
+```
+
+Request Body
+
+```json
+{
+  "action": "startride"
+}
+```
+
+##### Responses
+
+| Code | Body Type | Description |
+|--- |--- |--- |
+| `200` | `Order` | See [Order](#order) |
+| `400` | `Error` | |
+| `403` | `Error` | If the `action` requested by the user is not allowed. See request body and [Error object](#error-object) |
 
 ---
 
@@ -500,7 +555,7 @@ Get information about the current active order.
 ###### Example
 
 ```
-GET /activeorder?passengerLatitude=52.123456&passengerLongitude=13.123456
+GET /activeorder/status?passengerLatitude=52.123456&passengerLongitude=13.123456
 ```
 
 ##### Response
@@ -528,51 +583,6 @@ On `HTTP 200` the following object will be returned:
   "statusMessage": "Van has not arrived yet"
 }
 ```
-
----
-
-#### POST /activeorder/startride
-
-User has entered the van. After this request has been sent, the van should lock the doors and start the ride. Error if the user isn't close enough to the van / didn't enter the van.
-
-##### Request Query Parameters
-
-| Property | Type | Required | Description |
-|--- |--- |--- |--- |
-| `passengerLatitude` | `Number` | Yes | The users latitude. |
-| `passengerLongitude` | `Number` | Yes | The users longitude. |
-
-###### Example
-
-```
-GET /orders/13cf81ee-8898-4b7a-a96e-8b5f675deb3c/startRide?passengerLatitude=52.123456&passengerLongitude=13.123456
-```
-
-##### Responses
-
-| Code | Body Type | Description |
-|--- |--- |--- |
-| `200` | `Order` | See [Order](#order) |
-| `400` | `Error` | |
-| `403` | `Error` | If the user is not close enough to the van. See [Error object](#error-object) |
-
----
-
-#### POST /activeorder/endride
-
-User left the van.
-
-##### Request
-
-Empty request body.
-
-##### Responses
-
-| Code | Body Type | Description |
-|--- |--- |--- |
-| `200` | `Order` | See [Order](#order) |
-| `400` | `Error` | |
-| `403` | `Error` | If the van hasn't arrived at the destination virtual bus stop yet. See [Error object](#error-object) |
 
 ---
 
