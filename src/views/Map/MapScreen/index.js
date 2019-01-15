@@ -15,6 +15,8 @@ import {
   setJourneyStart,
   setVisibleCoordinates,
 } from '../../../ducks/map'
+import {fetchOrders} from '../../../ducks/orders'
+import {getStore} from '../../../init/store'
 import Info from './Info'
 import {defaultMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
@@ -31,6 +33,7 @@ const StyledMapView = styled(MapView)`
 class MapScreen extends React.Component {
   componentDidMount() {
     this.getCurrentPosition()
+    this.loadOrders()
   }
 
   componentDidUpdate() {
@@ -52,6 +55,15 @@ class MapScreen extends React.Component {
   }
 
   mapRef = null
+
+  loadOrders = () => {
+    const reduxStore = getStore()
+    const unsubscribe = reduxStore.subscribe(() => {
+      console.log(reduxStore.getState().orders.activeOrder)
+      unsubscribe()
+    })
+    this.props.fetchOrders()
+  }
 
   animateToRegion = location => {
     this.mapRef.animateToRegion(
@@ -142,6 +154,7 @@ class MapScreen extends React.Component {
 
 MapScreen.propTypes = {
   edgePadding: PropTypes.object,
+  fetchOrders: PropTypes.func,
   mapState: PropTypes.string,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
@@ -158,6 +171,7 @@ export default connect(
     edgePadding: state.map.edgePadding,
   }),
   dispatch => ({
+    fetchOrders: payload => dispatch(fetchOrders(payload)),
     setUserPosition: payload => dispatch(setUserPosition(payload)),
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
     setVisibleCoordinates: (coords, edgePadding) =>
