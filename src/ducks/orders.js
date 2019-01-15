@@ -12,20 +12,24 @@ const initialState = {
   pastOrders: [],
 }
 
+function momentifyOrder(order) {
+  const moments = _.compact(
+    ['orderTime', 'startTime', 'endTime'].map(t => {
+      if (!order[t]) return null
+      return {
+        [t]: moment(order[t]),
+      }
+    })
+  )
+  return Object.assign({}, order, ...moments)
+}
+
 // reducers (pure functions, no side-effects!)
 export default function orders(state = initialState, action) {
   switch (action.type) {
     case SET_ORDER_DATA:
       const orders = _.uniqBy(
-        [].concat(
-          state.pastOrders,
-          action.payload.map(order => {
-            const moments = ['order', 'start', 'end'].map(t => ({
-              [`${t}Time`]: moment(order[`${t}Time`]),
-            }))
-            return Object.assign({}, order, ...moments)
-          })
-        ),
+        [].concat(state.pastOrders, action.payload.map(momentifyOrder)),
         '_id'
       )
       return {
@@ -36,7 +40,7 @@ export default function orders(state = initialState, action) {
     case SET_ACTIVE_ORDER:
       return {
         ...state,
-        activeOrder: action.payload,
+        activeOrder: momentifyOrder(action.payload),
       }
     default:
       return state
