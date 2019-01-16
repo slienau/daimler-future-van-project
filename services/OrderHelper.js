@@ -146,12 +146,15 @@ class OrderHelper {
     const order = await Order.findById(orderId)
     const virtualBusStop = await VirtualBusStop.findById(order.virtualBusStopStart)
     const vanTime = order.vanArrivalTime
+    const vanLocationBeforeArrival = ManagementSystem.vanPositions[order.vanId]
 
-    if (order.active === false) return { status: false, message: 'Order is not active' }
-    if (new Date() < new Date(vanTime)) return { status: false, message: 'Van has not arrived yet' }
-    if (geolib.getDistance(virtualBusStop.location, passengerLocation) > 10) return { status: false, message: 'Passenger is not close enough to the van' }
+    if (order.active === false) return { userAllowedToEnter: false, message: 'Order is not active', vanPosition: null }
+    console.log(virtualBusStop)
+    if (new Date() < new Date(vanTime)) return { userAllowedToEnter: false, message: 'Van has not arrived yet', vanPosition: vanLocationBeforeArrival }
 
-    return { status: true, message: 'Van is ready to be entered.' }
+    if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, passengerLocation) > 10) return { userAllowedToEnter: false, message: 'Van is ready, but passenger is not close enough to the van', vanPosition: { latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude } }
+
+    return { userAllowedToEnter: true, message: 'Van is ready to be entered.', vanPosition: { latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude } }
   }
 }
 
