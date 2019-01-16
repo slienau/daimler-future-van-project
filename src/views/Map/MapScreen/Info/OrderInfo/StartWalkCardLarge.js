@@ -9,6 +9,7 @@ import {
   TextDarkGray,
   ViewCentered,
   TextLarge,
+  CardItemBorderBottom,
 } from '../StyledComponents'
 import React from 'react'
 
@@ -34,7 +35,7 @@ class StartWalkCardLarge extends React.Component {
               <Text>{this.props.busStopStartName}</Text>
             </Right>
           </CardItemNoBorders>
-          <CardItemNoBorders>
+          <CardItemBorderBottom>
             <Left>
               <Icon name="bus" />
               {/* <Body> */}
@@ -45,7 +46,7 @@ class StartWalkCardLarge extends React.Component {
             <Right>
               <TextGreen note>{this.props.waitingTime}</TextGreen>
             </Right>
-          </CardItemNoBorders>
+          </CardItemBorderBottom>
           <CardItemNoBorders>
             <Body>
               <ViewCentered>
