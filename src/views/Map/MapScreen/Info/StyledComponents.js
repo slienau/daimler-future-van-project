@@ -11,7 +11,6 @@ export const StyledOrderInfo = styled(View)`
   bottom: 0%;
   left: 0%;
   right: 0%;
-  alignitems: center;
 `
 
 export const ViewCentered = styled(View)`
