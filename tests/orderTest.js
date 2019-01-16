@@ -1,7 +1,8 @@
 const axios = require('axios')
 
 const address = 'http://localhost:8080'
-const passengerLocation = { latitude: 52.52302, longitude: 13.411019 }
+const passengerLocationClose = { latitude: 52.52302, longitude: 13.411019 }
+const passengerLocationFar = { latitude: 52.52802, longitude: 13.420019 }
 
 async function starttest () {
   const credentials = await axios.post(address + '/login', { username: 'admin', password: 'adminiscooler' })
@@ -10,7 +11,7 @@ async function starttest () {
 
   const axiosInstance = axios.create({
     baseURL: address,
-    timeout: 30000,
+    timeout: 5000,
     headers: { 'Authorization': 'Bearer ' + credentials.data.token }
   })
 
@@ -42,11 +43,32 @@ async function starttest () {
   console.log('Order is ok')
   console.log('----------------------')
 
-  const orderStatus = await axiosInstance.get('/orders/' + orderInfo._id + '/status?passengerLatitude=' + passengerLocation.latitude + '&passengerLongitude=' + passengerLocation.longitude)
+  const orderStatusFar = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationFar.latitude + '&passengerLongitude=' + passengerLocationFar.longitude)
+  const orderStatusInfoFar = orderStatusFar.data
+
+  console.log('order status:')
+  console.log(orderStatusInfoFar)
+  console.log('----------------------')
+
+  const orderStatus = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude)
   const orderStatusInfo = orderStatus.data
 
   console.log('order status:')
   console.log(orderStatusInfo)
+  console.log('----------------------')
+
+  const orderPut1 = await axiosInstance.put('/activeorder?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude, { action: 'cancel' })
+  const orderPut1Info = orderPut1.data
+
+  console.log('order status:')
+  console.log(orderPut1Info)
+  console.log('----------------------')
+
+  const orderPut2 = await axiosInstance.put('/activeorder?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude, { action: 'startride' })
+  const orderPut2Info = orderPut2.data
+
+  console.log('order status:')
+  console.log(orderPut2Info)
   console.log('----------------------')
 }
 

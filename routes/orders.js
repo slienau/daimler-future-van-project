@@ -5,7 +5,8 @@ const VirtualBusStop = require('../models/VirtualBusStop.js')
 const OrderHelper = require('../services/OrderHelper')
 
 router.get('/', async function (req, res) {
-  const orders = await Order.find({ 'accountID': req.user._id })
+  const orders = await Order.find({ 'accountId': req.user._id })
+  console.log(orders)
   const ordersObject = JSON.parse(JSON.stringify(orders))
   res.setHeader('Content-Type', 'application/json')
 
@@ -22,25 +23,17 @@ router.get('/', async function (req, res) {
   res.json(ordersObject)
 })
 
-router.get('/:orderId/status', async function (req, res) {
-  console.log('Get Status zu OrderID: ' + req.params.orderId + ' mit query:')
-  console.log(req.query)
-  res.setHeader('Content-Type', 'application/json')
-
-  if (!req.params.orderId || !req.query.passengerLatitude || !req.query.passengerLongitude) res.json({ code: 400, message: 'Bad params, you need passengerLongitude and passengerLatitude' })
-
-  const result = await OrderHelper.checkOrderLocationStatus(req.params.orderId, { latitude: req.query.passengerLatitude, longitude: req.query.passengerLongitude })
-
-  res.json(result)
-})
-
 router.post('/', async function (req, res) {
   console.log('Request to Post Orders with body: ')
   console.log(req.body)
 
   res.setHeader('Content-Type', 'application/json')
 
-  const accountID = req.user._id
+  const accountId = req.user._id
+
+  const potentialOrder = await Order.find({ accountId: accountId, active: true })
+
+  if (potentialOrder[0]) res.json({ code: 400, message: 'user still has active order, which has to be stopped first' })
 
   // test if parameters are there
   if (!req.body.routeId) res.json({ code: 400, message: 'bad parameters, you need routeId (from route request)' })
@@ -48,7 +41,7 @@ router.post('/', async function (req, res) {
   let order, orderId
 
   try {
-    orderId = await OrderHelper.createOrder(accountID, req.body.routeId)
+    orderId = await OrderHelper.createOrder(accountId, req.body.routeId)
   } catch (error) {
     console.log(error)
     res.json(error)
@@ -58,7 +51,7 @@ router.post('/', async function (req, res) {
   } catch (error) {
     res.json(error)
   }
-  console.log('created active order for user ' + accountID + ' with orderId: ' + orderId)
+  console.log('created active order for user ' + accountId + ' with orderId: ' + orderId)
   res.json(order)
 })
 
@@ -71,7 +64,7 @@ router.put('/:orderId', async function (req, res) {
   if (!req.query.orderId && !req.params.orderId) res.json({ code: 400, description: 'No orderId as been sent as param.', reasonPhrase: 'Bad Request' })
 
   if (req.body.canceled === false || req.body.canceled === 'false') {
-    await Order.updateOne({ _id: orderId }, { $set: { canceled: false, endTime: new Date(), active: false } })
+    await Order.updateOne({ _id: orderId }, { $set: { canceled: true, endTime: new Date(), active: false } })
   }
   if (req.body.active === false || req.body.active === 'false') {
     await Order.updateOne({ _id: orderId }, { $set: { active: false, endTime: new Date() } })
