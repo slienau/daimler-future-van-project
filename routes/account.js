@@ -25,12 +25,10 @@ router.get('/', async function (req, res) {
           }
       }
     ])
-    console.log(bonusitem)
     if (bonusitem.length > 0) {
       bonuspoints = bonusitem[0].bonuspoints
     }
     bonuspoints = Number(bonuspoints.toFixed(0))
-    console.log('bonuspoints: ' + bonuspoints + ' for account ' + account._id)
     responsebody = account.toObject()
     responsebody.bonuspoints = bonuspoints
     res.json(responsebody)

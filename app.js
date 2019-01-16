@@ -10,6 +10,7 @@ const vbRouter = require('./routes/virtualBusStops')
 const orderRouter = require('./routes/orders')
 const routesRouter = require('./routes/routes')
 const auth = require('./routes/auth')
+const leaderboardRouter = require('./routes/leaderboard')
 const passport = require('passport')
 require('./services/passport')
 
@@ -29,6 +30,7 @@ app.use('/account', jwtlogin, accountRouter)
 app.use('/virtualbusstops', jwtlogin, vbRouter)
 app.use('/orders', jwtlogin, orderRouter)
 app.use('/routes', jwtlogin, routesRouter)
+app.use('/leaderboard', jwtlogin, leaderboardRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
