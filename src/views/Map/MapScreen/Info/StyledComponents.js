@@ -7,8 +7,12 @@ export const StyledRouteInfo = styled(View)`
   margin-top: 560;
 `
 export const StyledOrderInfo = styled(View)`
-  height: 23%;
-  margin-top: 505;
+  height: 35%;
+  margin-top: 427;
+`
+
+export const ViewCentered = styled(View)`
+  align-items: center;
 `
 
 export const StyledContainer = styled(Container)`
@@ -40,6 +44,9 @@ export const TextBoldBlue = styled(Text)`
 export const TextGreen = styled(Text)`
   color: green;
   font-weight: bold;
+`
+export const TextLarge = styled(Text)`
+  font-size: 35;
 `
 
 export const IconBlack = styled(Icon)`

@@ -6,6 +6,9 @@ import {
   StyledContainer,
   IconCenterFlex,
   TextGreen,
+  TextDarkGray,
+  ViewCentered,
+  TextLarge,
 } from '../StyledComponents'
 import React from 'react'
 
@@ -32,13 +35,29 @@ class StartWalkCardLarge extends React.Component {
             </Right>
           </CardItemNoBorders>
           <CardItemNoBorders>
-            <Body>
+            <Left>
+              <Icon name="bus" />
+              {/* <Body> */}
               <Text>Van departure: {this.props.departure}</Text>
+              {/* <TextGreen note>{this.props.waitingTime}</TextGreen> */}
+              {/* </Body> */}
+            </Left>
+            <Right>
               <TextGreen note>{this.props.waitingTime}</TextGreen>
+            </Right>
+          </CardItemNoBorders>
+          <CardItemNoBorders>
+            <Body>
+              <ViewCentered>
+                <TextLarge>{this.props.vanId}</TextLarge>
+                <TextDarkGray>Van number</TextDarkGray>
+              </ViewCentered>
             </Body>
-            <Button rounded disabled>
-              <Text>Hop on</Text>
-            </Button>
+            <Right>
+              <Button rounded disabled>
+                <Text>Hop on</Text>
+              </Button>
+            </Right>
           </CardItemNoBorders>
         </StyledCard>
       </StyledContainer>
@@ -49,6 +68,7 @@ class StartWalkCardLarge extends React.Component {
 StartWalkCardLarge.propTypes = {
   busStopStartName: PropTypes.string,
   departure: PropTypes.string,
+  vanId: PropTypes.number,
   waitingTime: PropTypes.string,
   walkingDistance: PropTypes.string,
   walkingDuration: PropTypes.string,

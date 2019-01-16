@@ -73,6 +73,7 @@ const OrderInfo = props => {
         departure={parseDeparture()}
         waitingTime={calculateWaitingTime()}
         busStopStartName={_.get(props.routes[0], 'startStation.name')}
+        vanId={_.get(props.activeOrder, 'vanId')}
         zoomToStartWalk={zoomToStartWalk}
       />
     </StyledOrderInfo>
@@ -82,6 +83,7 @@ const OrderInfo = props => {
 const mapStateToProps = state => {
   return {
     routes: state.map.routes,
+    activeOrder: state.orders.activeOrder,
   }
 }
 
@@ -93,6 +95,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 OrderInfo.propTypes = {
+  activeOrder: PropTypes.object,
   routes: PropTypes.array,
   setVisibleCoordinates: PropTypes.func,
 }
