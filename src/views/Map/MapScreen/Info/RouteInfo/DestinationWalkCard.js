@@ -1,9 +1,9 @@
 import {Text, Body, Icon, Left, Right} from 'native-base'
 import {
-  StyledCard,
   CardItemNoBorders,
   StyledContainer,
   IconCenterFlex,
+  StyledCardFlex,
 } from '../StyledComponents'
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -11,7 +11,7 @@ import PropTypes from 'prop-types'
 const DestinationWalkCard = props => {
   return (
     <StyledContainer>
-      <StyledCard>
+      <StyledCardFlex>
         <CardItemNoBorders>
           <Left>
             <Icon name="walk" />
@@ -30,7 +30,7 @@ const DestinationWalkCard = props => {
               <Text>Arrival: {props.destinationTime}</Text>
             </Body>
           </CardItemNoBorders> */}
-      </StyledCard>
+      </StyledCardFlex>
     </StyledContainer>
   )
 }

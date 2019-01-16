@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import {
   StyledCard,
   CardItemNoBorders,
-  StyledContainer,
   IconCenterFlex,
   TextGreen,
   TextDarkGray,
@@ -20,48 +19,46 @@ class StartWalkCardLarge extends React.Component {
 
   render() {
     return (
-      <StyledContainer>
-        <StyledCard>
-          <CardItemNoBorders button onPress={this.props.zoomToStartWalk}>
-            <Left>
-              <Icon name="walk" />
-              <Body>
-                <Text>{this.props.walkingDuration}</Text>
-                <Text note>{this.props.walkingDistance}</Text>
-              </Body>
-            </Left>
-            <IconCenterFlex type="Entypo" name="arrow-long-right" />
-            <Right>
-              <Text>{this.props.busStopStartName}</Text>
-            </Right>
-          </CardItemNoBorders>
-          <CardItemBorderBottom>
-            <Left>
-              <Icon name="bus" />
-              {/* <Body> */}
-              <Text>Van departure: {this.props.departure}</Text>
-              {/* <TextGreen note>{this.props.waitingTime}</TextGreen> */}
-              {/* </Body> */}
-            </Left>
-            <Right>
-              <TextGreen note>{this.props.waitingTime}</TextGreen>
-            </Right>
-          </CardItemBorderBottom>
-          <CardItemNoBorders>
+      <StyledCard>
+        <CardItemNoBorders button onPress={this.props.zoomToStartWalk}>
+          <Left>
+            <Icon name="walk" />
             <Body>
-              <ViewCentered>
-                <TextLarge>{this.props.vanId}</TextLarge>
-                <TextDarkGray>Van number</TextDarkGray>
-              </ViewCentered>
+              <Text>{this.props.walkingDuration}</Text>
+              <Text note>{this.props.walkingDistance}</Text>
             </Body>
-            <Right>
-              <Button rounded disabled>
-                <Text>Hop on</Text>
-              </Button>
-            </Right>
-          </CardItemNoBorders>
-        </StyledCard>
-      </StyledContainer>
+          </Left>
+          <IconCenterFlex type="Entypo" name="arrow-long-right" />
+          <Right>
+            <Text>{this.props.busStopStartName}</Text>
+          </Right>
+        </CardItemNoBorders>
+        <CardItemBorderBottom>
+          <Left>
+            <Icon name="bus" />
+            {/* <Body> */}
+            <Text>Van departure: {this.props.departure}</Text>
+            {/* <TextGreen note>{this.props.waitingTime}</TextGreen> */}
+            {/* </Body> */}
+          </Left>
+          <Right>
+            <TextGreen note>{this.props.waitingTime}</TextGreen>
+          </Right>
+        </CardItemBorderBottom>
+        <CardItemNoBorders>
+          <Body>
+            <ViewCentered>
+              <TextLarge>{this.props.vanId}</TextLarge>
+              <TextDarkGray>Van number</TextDarkGray>
+            </ViewCentered>
+          </Body>
+          <Right>
+            <Button rounded disabled>
+              <Text>Hop on</Text>
+            </Button>
+          </Right>
+        </CardItemNoBorders>
+      </StyledCard>
     )
   }
 }

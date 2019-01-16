@@ -1,17 +1,17 @@
 import {Text, Body, Icon, Left, Right} from 'native-base'
 import PropTypes from 'prop-types'
 import {
-  StyledCard,
   CardItemNoBorders,
   StyledContainer,
   IconCenterFlex,
+  StyledCardFlex,
 } from '../StyledComponents'
 import React from 'react'
 
 const StartWalkCard = props => {
   return (
     <StyledContainer>
-      <StyledCard>
+      <StyledCardFlex>
         <CardItemNoBorders>
           <Left>
             <Icon name="walk" />
@@ -31,7 +31,7 @@ const StartWalkCard = props => {
             <TextBoldBlue note>{props.waitingTime}</TextBoldBlue>
           </Body>
         </CardItemNoBorders> */}
-      </StyledCard>
+      </StyledCardFlex>
     </StyledContainer>
   )
 }
