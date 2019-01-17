@@ -31,9 +31,10 @@ export default function orders(state = initialState, action) {
         [].concat(state.pastOrders, action.payload.map(momentifyOrder)),
         'id'
       )
+      const activeOrder = _.find(orders, 'active')
       return {
         ...state,
-        activeOrder: _.find(orders, 'active'),
+        activeOrder: activeOrder !== undefined ? activeOrder : null, // must be null or an order object. if undefined it would be removed from the redux state
         pastOrders: _.filter(orders, ['active', false]),
       }
     case SET_ACTIVE_ORDER:
@@ -56,8 +57,8 @@ export function fetchOrders() {
 
 export function fetchActiveOrder() {
   return async dispatch => {
-    const {data} = await api.get('/activeorder')
-    dispatch(setActiveOrder(data))
+    const {data, status} = await api.get('/activeorder')
+    if (status === 200) dispatch(setActiveOrder(data))
   }
 }
 
