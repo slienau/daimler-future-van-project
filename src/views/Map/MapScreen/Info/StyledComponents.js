@@ -9,8 +9,8 @@ export const StyledRouteInfo = styled(View)`
 export const StyledOrderInfo = styled(View)`
   position: absolute;
   bottom: 0%;
-  left: 0%;
-  right: 0%;
+  left: 1%;
+  right: -1%;
 `
 
 export const ViewCentered = styled(View)`
