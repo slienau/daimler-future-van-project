@@ -15,13 +15,21 @@ const api = axios.create({
 api.interceptors.request.use(
   config => {
     console.log(`🌍 ${_.toUpper(config.method)} ${config.url}`)
+    console.log('request body', config.data)
     return config
   },
   error => Promise.reject(error)
 )
 
 api.interceptors.response.use(null, async error => {
-  if (error.config.loginRetry || error.response.status !== 401) throw error
+  if (error.config.loginRetry || error.response.status !== 401) {
+    console.log(
+      'http response error',
+      error.response.status,
+      error.response.data
+    )
+    throw error
+  }
   try {
     await loginWithStoreCredentials()
     const retryConfig = {

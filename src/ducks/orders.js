@@ -4,8 +4,6 @@ import _ from 'lodash'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
 export const SET_ACTIVE_ORDER = 'orders/SET_ACTIVE_ORDER'
-export const PLACE_ORDER = 'orders/PLACE_ORDER'
-export const CANCEL_ORDER = 'orders/CANCEL_ORDER'
 
 const initialState = {
   activeOrder: null,
@@ -13,6 +11,7 @@ const initialState = {
 }
 
 function momentifyOrder(order) {
+  if (!order) return order
   const moments = _.compact(
     ['orderTime', 'startTime', 'endTime'].map(t => {
       if (!order[t]) return null
@@ -48,36 +47,39 @@ export default function orders(state = initialState, action) {
 }
 
 // actions (can cause side-effects)
-export function fetchOrders(active, fromDate, toDate) {
+export function fetchOrders() {
   return async dispatch => {
-    const {data} = await api.get('/orders') // TODO: set query parameters according to API
+    const {data} = await api.get('/orders')
     dispatch(setOrderData(data))
+  }
+}
+
+export function fetchActiveOrder() {
+  return async dispatch => {
+    const {data} = await api.get('/activeorder')
+    dispatch(setActiveOrder(data))
   }
 }
 
 export function placeOrder(payload) {
   return async dispatch => {
+    try {
+      // TODO: remove cancelActiveOrder() as soon as cancel order button works. otherwise it's not possible to place a new order as long there is another active order
+      await cancelActiveOrder()(dispatch)
+    } catch (err) {}
+
     const {data} = await api.post('/orders', payload)
     dispatch(setActiveOrder(data))
   }
 }
 
-export function cancelOrder(id) {
-  return async dispatch => {
-    await api.put('/orders/' + id, {canceled: true})
-  }
-}
-
 export function cancelActiveOrder() {
-  return async (dispatch, getState) => {
-    const {activeOrder} = getState().orders
-    await cancelOrder(activeOrder._id)(dispatch)
-    dispatch(setActiveOrder(null))
+  return async dispatch => {
+    await api.put('/activeorder?passengerLatitude=0.0&passengerLongitude=0.0', {
+      action: 'cancel',
+    })
+    dispatch(setActiveOrder(null)) // won't be done if put response code is not 200 because .put() throws an error
   }
-}
-
-export function fetchActiveOrders() {
-  fetchOrders(true)
 }
 
 function setOrderData(orderData) {

@@ -127,7 +127,7 @@ const mapDispatchToProps = dispatch => {
     changeMapState: payload => dispatch(changeMapState(payload)),
     resetMapState: () => dispatch(resetMapState()),
     clearRoutes: () => dispatch(clearRoutes()),
-    cancelActiveOrder: payload => dispatch(cancelActiveOrder(payload)),
+    cancelActiveOrder: () => dispatch(cancelActiveOrder()),
     fetchRoutes: payload => dispatch(fetchRoutes(payload)),
     placeOrder: payload => dispatch(placeOrder(payload)),
     setVisibleCoordinates: (coords, edgePadding) =>
