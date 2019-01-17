@@ -15,7 +15,7 @@ router.get('/status', async function (req, res) {
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
 
-  if (!order) res.status(400).json({ code: 400, description: 'No active order' })
+  if (!order) res.status(404).json({ code: 404, description: 'No active order' })
 
   const result = await OrderHelper.checkOrderLocationStatus(order._id, { latitude: req.query.passengerLatitude, longitude: req.query.passengerLongitude })
 
@@ -35,10 +35,10 @@ router.get('/', async function (req, res) {
 router.put('/', async function (req, res) {
   console.log('Put activeOrder request zu user: ' + req.user._id + ' mit Action: ' + req.body.action)
 
-  if (!req.query.passengerLatitude || !req.query.passengerLongitude) res.status(400).json({ code: 400, description: 'Bad params, you need passengerLongitude and passengerLatitude' })
+  if (!req.body.userLocation.latitude || !req.body.userLocation.longitude) res.status(400).json({ code: 400, description: 'Bad params, you need userLocation' })
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
-  if (!order) return res.status(400).json({ code: 400, description: 'user has no active order' })
+  if (!order) return res.status(404).json({ code: 404, description: 'user has no active order' })
 
   const orderId = order._id
 
@@ -49,7 +49,7 @@ router.put('/', async function (req, res) {
   switch (req.body.action) {
     case 'startride':
 
-      if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: req.query.passengerLatitude, longitude: req.query.passengerLongitude }) > 10) {
+      if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: req.body.userLocation.latitude, longitude: req.body.userLocation.longitude }) > 10) {
         res.status(403).json({ code: 403, description: 'User is not close enough to the van.' })
         break
       } else if (new Date() < order.vanArrivalTime) {
@@ -63,6 +63,7 @@ router.put('/', async function (req, res) {
       orderNew = await Order.findById(orderId)
       res.json(orderNew)
       break
+
     case 'endride':
       if (!order.startTime) {
         res.status(403).json({ code: 403, description: 'The ride has not yet started.' })
@@ -75,6 +76,7 @@ router.put('/', async function (req, res) {
       orderNew = await Order.findById(orderId)
       res.json(orderNew)
       break
+
     case 'cancel':
       if (order.startTime) {
         res.status(403).json({ code: 403, description: 'Cannot be canceled. Ride has already started.' })

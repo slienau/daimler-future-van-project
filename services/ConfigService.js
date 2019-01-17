@@ -1,7 +1,7 @@
 const yaml = require('js-yaml')
 const fs = require('fs')
 
-class EnvVariableService {
+class ConfigService {
   constructor () {
     this.values = yaml.safeLoad(fs.readFileSync('./config.yaml', 'utf8'))
   }
@@ -13,5 +13,5 @@ class EnvVariableService {
     return this._instance.values.jwtSecret
   }
 }
-EnvVariableService._instance = new EnvVariableService()
-module.exports = EnvVariableService
+ConfigService._instance = new ConfigService()
+module.exports = ConfigService

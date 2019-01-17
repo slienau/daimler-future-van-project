@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
-const EnvVariableService = require('../services/envVariableService.js')
+const EnvVariableService = require('../services/ConfigService.js')
 /* POST login. */
 router.get('/', function (req, res) {
   res.send('Please post to this URL to receive Log-In-Token. username and password needs to be included in the body as x-www-form-encoded.')
