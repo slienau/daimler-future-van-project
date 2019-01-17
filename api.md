@@ -31,8 +31,6 @@
   * [/orders](#orders)
     + [GET /orders](#get-orders)
     + [POST /orders](#post-orders)
-  * [/orders/{orderId}](#ordersorderid)
-    + [PUT /orders/{orderId}](#put-ordersorderid)
   * [/activeorder](#activeorder)
     + [GET /activeorder](#get-activeorder)
     + [PUT /activeorder](#put-activeorder)
@@ -378,14 +376,13 @@ Get the orders of a user.
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
-| `active` | `Boolean` | No | - True if the response should only contain active orders<br>- False if the response should only contain active orders<br>- empty for active and past orders. |
 | `fromDate` | `Datetime` | No | If set, the response will only contain orders which were placed *after* this date. |
 | `toDate` | `Datetime` | No | If set, the response will only contain orders which were placed *before* this date. |
 
 ###### Example
 
 - ```/orders```  
-- ```/orders?active=false&fromDate=2018-01-01T00:00:00.000Z&toDate=2018-10-01T00:00:00.000Z```
+- ```/orders?fromDate=2018-01-01T00:00:00.000Z&toDate=2018-10-01T00:00:00.000Z```
 
 ##### Responses
 
@@ -449,39 +446,6 @@ To create (place) a new van order.
 
 ---
 
-### /orders/{orderId}
-
-Path variables:
-
-| Parameter | Type | Required | Description |
-|--- |--- |--- |--- |
-| `{orderId}` | `String` | Yes | The order id. |
-
----
-
-#### PUT /orders/{orderId}
-
-Update an active order.  
-The order can either be *changed* or *canceled*. To *cancel* an order, set the `canceled` property to `true` in the request body.
-__Important:__ If the `canceled` property is set to `true`, the `active` property will automatically be set to `false` in the response object.
-
-##### Request
-
-###### Body
-
-| Type | Required | Description |
-|--- |--- |--- |
-| `Order` | Yes | The updated order. See [Order](#order) |
-
-##### Responses
-
-| Code | Body Type | Description |
-|--- |--- |--- |
-| `200` | `Order` | The updated order. See [Order](#order) |
-| `400` | `Error` | If the order couldn't be updated. |
-
----
-
 ### /activeorder
 
 ---
@@ -497,13 +461,6 @@ Get the current active order object (See [Order](#order)).
 
 Update an active order.
 
-##### Request Query Parameters
-
-| Property | Type | Required | Description |
-|--- |--- |--- |--- |
-| `passengerLatitude` | `Number` | Yes | The users latitude. |
-| `passengerLongitude` | `Number` | Yes | The users longitude. |
-
 ##### Request Body
 
 The request body contains a JSON with the single property `action`, which describes what should be done/changed in the active order.  
@@ -517,17 +474,13 @@ Possible `action`-types are:
 
 ###### Example
 
-Request URL
-
-```
-PUT /activeorder?passengerLatitude=52.123456&passengerLongitude=13.123456
-```
-
-Request Body
-
 ```json
 {
-  "action": "startride"
+  "action": "startride",
+  "userLocation": {
+    "latitude": 52.123456,
+    "longitude": 13.123456
+  }
 }
 ```
 
