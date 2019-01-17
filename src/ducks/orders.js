@@ -29,7 +29,7 @@ export default function orders(state = initialState, action) {
     case SET_ORDER_DATA:
       const orders = _.uniqBy(
         [].concat(state.pastOrders, action.payload.map(momentifyOrder)),
-        '_id'
+        'id'
       )
       return {
         ...state,

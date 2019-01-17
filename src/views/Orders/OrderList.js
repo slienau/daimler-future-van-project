@@ -43,7 +43,7 @@ class OrderList extends Component {
     } else {
       activeOrderItem = (
         <OrderListItem
-          key={this.props.activeOrder._id}
+          key={this.props.activeOrder.id}
           order={this.props.activeOrder}
         />
       )
@@ -62,7 +62,7 @@ class OrderList extends Component {
             dataArray={this.props.pastOrders}
             renderRow={item => (
               <OrderListItem
-                key={item._id}
+                key={item.id}
                 order={item}
                 onItemPress={() =>
                   this.props.navigation.navigate('OrderDetail', {
