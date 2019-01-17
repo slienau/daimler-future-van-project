@@ -1,6 +1,6 @@
 const passport = require('passport')
 const passportJWT = require('passport-jwt')
-const EnvVariableService = require('./envVariableService.js')
+const EnvVariableService = require('./ConfigService.js')
 
 const ExtractJWT = passportJWT.ExtractJwt
 

@@ -1,5 +1,5 @@
 const rpn = require('request-promise-native')
-const EnvVariableService = require('../services/envVariableService.js')
+const EnvVariableService = require('./ConfigService.js')
 
 class GoogleMapsHelper {
   static async googleAPICall (start, destination, vb1, vb2, time, vanArrivalTime) {
@@ -37,7 +37,7 @@ class GoogleMapsHelper {
 
     const response3 = await rpn({ uri: url3, json: true })
     responses.push(response3)
-    responses.push(vanArrival)
+    responses.push(rideTime)
     return responses
   }
 

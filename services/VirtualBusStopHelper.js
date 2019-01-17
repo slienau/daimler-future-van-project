@@ -59,7 +59,7 @@ class VirtualBusStopHelper {
     await kotti.save()
   }
 
-  // get Suggestions for Jouney
+  // get Suggestions for Journey
   static async getRouteSuggestions (start, destination, startTime, vanArrivalTime, vanID) {
     const startVB = await this.getClosestVB(start)
     const destinationVB = await this.getClosestVB(destination)
