@@ -15,7 +15,7 @@ import {
   setJourneyStart,
   setVisibleCoordinates,
 } from '../../../ducks/map'
-import {fetchOrders} from '../../../ducks/orders'
+import {fetchActiveOrder} from '../../../ducks/orders'
 import {getStore} from '../../../init/store'
 import Info from './Info'
 import {defaultMapRegion} from '../../../lib/config'
@@ -62,7 +62,7 @@ class MapScreen extends React.Component {
       console.log(reduxStore.getState().orders.activeOrder)
       unsubscribe()
     })
-    this.props.fetchOrders()
+    this.props.fetchActiveOrder()
   }
 
   animateToRegion = location => {
@@ -154,7 +154,7 @@ class MapScreen extends React.Component {
 
 MapScreen.propTypes = {
   edgePadding: PropTypes.object,
-  fetchOrders: PropTypes.func,
+  fetchActiveOrder: PropTypes.func,
   mapState: PropTypes.string,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
@@ -171,7 +171,7 @@ export default connect(
     edgePadding: state.map.edgePadding,
   }),
   dispatch => ({
-    fetchOrders: payload => dispatch(fetchOrders(payload)),
+    fetchActiveOrder: payload => dispatch(fetchActiveOrder(payload)),
     setUserPosition: payload => dispatch(setUserPosition(payload)),
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
     setVisibleCoordinates: (coords, edgePadding) =>
