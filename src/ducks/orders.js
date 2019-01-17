@@ -77,6 +77,10 @@ export function cancelActiveOrder() {
   return async dispatch => {
     await api.put('/activeorder?passengerLatitude=0.0&passengerLongitude=0.0', {
       action: 'cancel',
+      userLocation: {
+        latitude: 0.0,
+        longitude: 0.0,
+      },
     })
     dispatch(setActiveOrder(null)) // won't be done if put response code is not 200 because .put() throws an error
   }
