@@ -1,10 +1,14 @@
+const _ = require('lodash')
 const createError = require('http-errors')
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+
 const expressWinston = require('express-winston')
 const winston = require('winston') // for transports.Console
 const MongoDB = require('winston-mongodb').MongoDB
+const mung = require('express-mung')
+
 
 const indexRouter = require('./routes/index')
 const accountsRouter = require('./routes/accounts')
@@ -23,6 +27,21 @@ const app = express()
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
+function transformObjectId (obj) {
+  if (_.isArray(obj)) return _.map(obj, transformObjectId)
+  if (_.hasIn(obj, 'toObject')) obj = obj.toObject()
+  if (!_.isPlainObject(obj)) return obj
+  delete obj.__v
+  if (obj._id) {
+    obj.id = obj._id
+    delete obj._id
+  }
+  return _.mapValues(obj, transformObjectId)
+}
+
+app.use(mung.json(transformObjectId))
+
 // view engine setup
 const jwtlogin = passport.authenticate('jwt', { session: false })
 
