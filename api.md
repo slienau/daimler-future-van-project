@@ -185,6 +185,7 @@ This object represents a van order which can be made by a user.
 | `bonuspoints` | `Number` | yes | The amount of bonus points the user will earn for this order. | |
 | `distance` | `Number` | yes | Amount of kilometres the van has driven / will drive. | `12.4` |
 | `co2savings` | `Number` | yes | Amount of CO2 savings (in kilogram) for this ride . | `2.2` |
+| `route` | `Object` `(Route)` | only if `active` is `true` | The route object for this order. | See [Route](#route) |
 
 #### Example
 
@@ -219,7 +220,8 @@ This object represents a van order which can be made by a user.
   "vanArrivalTime": "2018-11-23T18:30:24.000Z",
   "bonuspoints": 3980,
   "distance": 12.4,
-  "co2savings": 2.2
+  "co2savings": 2.2,
+  "route": {}
 }
 ```
 
