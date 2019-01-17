@@ -43,7 +43,7 @@ const OrderInfo = props => {
       top: 0.2,
       right: 0.15,
       left: 0.15,
-      bottom: 0.3,
+      bottom: 0.4,
     })
   }
 
