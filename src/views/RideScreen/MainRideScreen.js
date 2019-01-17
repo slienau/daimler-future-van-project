@@ -3,8 +3,8 @@ import {Col, Row, Grid} from 'react-native-easy-grid'
 import {Container, Content, ListItem, Text, Button, Icon} from 'native-base'
 import {StyleSheet} from 'react-native'
 
-import VanCard from '../../components/VanCard'
-import JourneyOverview from '../../components/JourneyOverview'
+import VanCard from './VanCard'
+import JourneyOverview from './JourneyOverview'
 
 const MainRideScreen = props => {
   return (
