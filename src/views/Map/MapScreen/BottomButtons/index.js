@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  changeMapState,
   clearRoutes,
   MapState,
   resetMapState,
@@ -28,16 +27,30 @@ const BottomButtons = props => {
   }
 
   const cancelActiveOrder = async () => {
-    await props.cancelActiveOrder()
-    props.changeMapState(MapState.INIT)
+    Alert.alert(
+      'Cancel your order',
+      'Do you want to cancel your current order?',
+      [
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await props.cancelActiveOrder()
+            Toast.show({
+              text: 'Your order has been canceled!',
+              buttonText: 'Okay',
+              type: 'success',
+              duration: 10000,
+            })
+          },
+        },
+        {text: 'No'},
+      ],
+      {cancelable: true}
+    )
   }
 
   const fetchRoutes = async () => {
-    await props.fetchRoutes({
-      start: props.journeyStart.location,
-      destination: props.journeyDestination.location,
-    })
-    props.changeMapState(MapState.ROUTE_SEARCHED)
+    await props.fetchRoutes()
   }
 
   const placeOrder = async () => {
@@ -51,7 +64,6 @@ const BottomButtons = props => {
             await props.placeOrder({
               routeId: props.routes[0].id,
             })
-            props.changeMapState(MapState.ROUTE_ORDERED)
             Toast.show({
               text: 'Your order has been confirmed!',
               buttonText: 'Okay',
@@ -88,7 +100,6 @@ const BottomButtons = props => {
           <CancelOrderButton
             onPress={() => {
               props.clearRoutes()
-              props.changeMapState(MapState.SEARCH_ROUTES)
               zoomToMarkers()
             }}
           />
@@ -124,11 +135,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    changeMapState: payload => dispatch(changeMapState(payload)),
     resetMapState: () => dispatch(resetMapState()),
     clearRoutes: () => dispatch(clearRoutes()),
     cancelActiveOrder: () => dispatch(cancelActiveOrder()),
-    fetchRoutes: payload => dispatch(fetchRoutes(payload)),
+    fetchRoutes: () => dispatch(fetchRoutes()),
     placeOrder: payload => dispatch(placeOrder(payload)),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),

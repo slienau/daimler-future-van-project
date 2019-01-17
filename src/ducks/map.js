@@ -86,10 +86,15 @@ export const addSearchResultAction = result => {
   }
 }
 
-export const fetchRoutes = payload => {
-  return async dispatch => {
-    const {data} = await api.post('/routes', payload)
+export const fetchRoutes = () => {
+  return async (dispatch, getState) => {
+    const {map} = getState()
+    const {data} = await api.post('/routes', {
+      start: map.journeyStart.location,
+      destination: map.journeyDestination.location,
+    })
     dispatch(setRoutes(data))
+    dispatch(changeMapState(MapState.ROUTE_SEARCHED))
   }
 }
 
@@ -101,8 +106,9 @@ export const changeMapState = payload => {
 }
 
 export const clearRoutes = () => {
-  return {
-    type: SET_ROUTES,
+  return dispatch => {
+    dispatch(setRoutes(null))
+    dispatch(changeMapState(MapState.SEARCH_ROUTES))
   }
 }
 
@@ -145,7 +151,7 @@ export const resetMapState = () => {
     dispatch(changeMapState(MapState.INIT))
     dispatch(setJourneyStart(null))
     dispatch(setJourneyDestination(null))
-    dispatch(clearRoutes())
+    dispatch(setRoutes(null))
   }
 }
 
@@ -162,7 +168,7 @@ export const setVisibleCoordinates = (
   }
 }
 
-const setRoutes = payload => {
+export const setRoutes = payload => {
   return {
     type: SET_ROUTES,
     payload: payload,
