@@ -54,11 +54,18 @@ async function starttest () {
   console.log(orderStatusInfoFar)
   console.log('----------------------')
 
-  const orderStatus = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude)
+  const orderStatus = await axiosInstance.get('/activeorder')
   const orderStatusInfo = orderStatus.data
 
   console.log('order status:')
   console.log(orderStatusInfo)
+  console.log('----------------------')
+
+  const orderStatus2 = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude)
+  const orderStatusInfo2 = orderStatus2.data
+
+  console.log('order status:')
+  console.log(orderStatusInfo2)
   console.log('----------------------')
 
   const orderPut1 = await axiosInstance.put('/activeorder', { action: 'cancel', userLocation: { latitude: passengerLocationClose.latitude, longitude: passengerLocationClose.longitude } })

@@ -3,6 +3,10 @@ const createError = require('http-errors')
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+
+const expressWinston = require('express-winston')
+const winston = require('winston') // for transports.Console
+const MongoDB = require('winston-mongodb').MongoDB
 const mung = require('express-mung')
 
 const indexRouter = require('./routes/index')
@@ -42,6 +46,26 @@ const jwtlogin = passport.authenticate('jwt', { session: false })
 
 app.use(cookieParser())
 // app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(expressWinston.logger({
+  transports: [
+    new (winston.transports.MongoDB)({
+      db: 'mongodb://mongo:27017/PAS-Backend',
+      level: 'info',
+      capped: true
+    }),
+    new (winston.transports.MongoDB)({
+      db: 'mongodb://mongo:27017/PAS-Backend',
+      level: 'error',
+      capped: true,
+      collection: 'error'
+    })
+  ],
+  format: winston.format.combine(winston.format.colorize(), winston.format.json())
+}))
+console.log('using the following log DB:')
+console.log(MongoDB)
+
 app.use('/login', auth)
 app.use('/', jwtlogin, indexRouter)
 app.use('/accounts', jwtlogin, accountsRouter)

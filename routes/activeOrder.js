@@ -3,6 +3,7 @@ const router = express.Router()
 const Order = require('../models/Order.js')
 const VirtualBusStop = require('../models/VirtualBusStop.js')
 const OrderHelper = require('../services/OrderHelper')
+const Route = require('../models/Route.js')
 const geolib = require('geolib')
 
 router.get('/status', async function (req, res) {
@@ -28,6 +29,7 @@ router.get('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
+  order.route = await Route.findById(order.route, '-confirmed -validUntil')
 
   res.json(order)
 })
