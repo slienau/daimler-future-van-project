@@ -12,6 +12,7 @@ const JourneyOverview = props => {
 
   const getVanArrivalTime = _.get(props.routes[0], 'vanEndTime')
   const vanArrivalTime = moment(getVanArrivalTime).format('HH:mm')
+  const bonusPoints = _.round(_.get(props.activeOrder, 'bonuspoints'), 2)
 
   return (
     <View>
@@ -38,13 +39,14 @@ const JourneyOverview = props => {
         description="Bonus Points"
         iconColor="orange"
         iconName="star"
-        info="5 Points"
+        info={bonusPoints}
       />
     </View>
   )
 }
 
 JourneyOverview.propTypes = {
+  activeOrder: PropTypes.object,
   routes: PropTypes.object,
 }
 
