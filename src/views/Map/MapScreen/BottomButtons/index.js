@@ -49,9 +49,7 @@ const BottomButtons = props => {
           text: 'Yes',
           onPress: async () => {
             await props.placeOrder({
-              start: props.routes[0].startStation._id,
-              destination: props.routes[0].endStation._id,
-              vanId: props.routes[0].vanId,
+              routeId: props.routes[0].id,
             })
             props.changeMapState(MapState.ROUTE_ORDERED)
             Toast.show({
