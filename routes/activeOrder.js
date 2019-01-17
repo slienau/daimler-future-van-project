@@ -29,9 +29,12 @@ router.get('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
-  order.route = await Route.findById(order.route, '-confirmed -validUntil')
+  const orderLean = await Order.findById(order._id).lean()
+  orderLean.id = order._id
 
-  res.json(order)
+  orderLean.route = await Route.findById(order.route, '-confirmed -validUntil')
+
+  res.json(orderLean)
 })
 
 router.put('/', async function (req, res) {
