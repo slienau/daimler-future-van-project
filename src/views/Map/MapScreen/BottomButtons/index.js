@@ -33,10 +33,7 @@ const BottomButtons = props => {
   }
 
   const fetchRoutes = async () => {
-    await props.fetchRoutes({
-      start: props.journeyStart.location,
-      destination: props.journeyDestination.location,
-    })
+    await props.fetchRoutes()
     props.changeMapState(MapState.ROUTE_SEARCHED)
   }
 
@@ -128,7 +125,7 @@ const mapDispatchToProps = dispatch => {
     resetMapState: () => dispatch(resetMapState()),
     clearRoutes: () => dispatch(clearRoutes()),
     cancelActiveOrder: () => dispatch(cancelActiveOrder()),
-    fetchRoutes: payload => dispatch(fetchRoutes(payload)),
+    fetchRoutes: () => dispatch(fetchRoutes()),
     placeOrder: payload => dispatch(placeOrder(payload)),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),

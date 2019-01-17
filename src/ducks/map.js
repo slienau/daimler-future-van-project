@@ -86,9 +86,13 @@ export const addSearchResultAction = result => {
   }
 }
 
-export const fetchRoutes = payload => {
-  return async dispatch => {
-    const {data} = await api.post('/routes', payload)
+export const fetchRoutes = () => {
+  return async (dispatch, getState) => {
+    const {map} = getState()
+    const {data} = await api.post('/routes', {
+      start: map.journeyStart.location,
+      destination: map.journeyDestination.location,
+    })
     dispatch(setRoutes(data))
   }
 }
