@@ -55,6 +55,11 @@ const OrderSchema = new Schema({
     type: Number,
     default: 10,
     required: true
+  },
+  bonuspoints: {
+    type: Number,
+    default: 0,
+    required: true
   }
 }
 )

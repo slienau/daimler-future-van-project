@@ -4,6 +4,7 @@ const Account = require('../models/Account.js')
 const Route = require('../models/Route.js')
 const ManagementSystem = require('./ManagementSystem.js')
 const geolib = require('geolib')
+const bonusMultiplierStandard = 10
 
 class OrderHelper {
   // Check if any users are there and if not create two static users
@@ -48,7 +49,9 @@ class OrderHelper {
       startTime: time1Start,
       endTime: time1End,
       vanId: 3,
-      distance: 6.89,
+      distance: 6,
+      bonuspoints: 6 * bonusMultiplierStandard,
+      bonusMultiplier: bonusMultiplierStandard,
       route: '273jsnsb9201',
       vanArrivalTime: new Date(Date.now() - 837268)
     })
@@ -65,6 +68,8 @@ class OrderHelper {
       endTime: time2End,
       vanId: 4,
       distance: 7.65,
+      bonuspoints: 7.65 * bonusMultiplierStandard,
+      bonusMultiplier: bonusMultiplierStandard,
       route: '273jsnsb9250',
       vanArrivalTime: new Date(Date.now() - 587268)
     })
@@ -80,6 +85,8 @@ class OrderHelper {
       endTime: time2End,
       vanId: 4,
       distance: 18,
+      bonuspoints: 18 * bonusMultiplierStandard,
+      bonusMultiplier: bonusMultiplierStandard,
       route: '273jsnsb9250',
       vanArrivalTime: new Date(Date.now() - 587268)
     })
@@ -127,7 +134,9 @@ class OrderHelper {
         vanId: van.vanId,
         route: routeId,
         distance: distance,
-        vanArrivalTime: van.vanArrivalTime
+        vanArrivalTime: van.vanArrivalTime,
+        bonuspoints: distance * bonusMultiplierStandard,
+        bonusMultiplier: bonusMultiplierStandard
       })
     } catch (e) {
       console.log(e)
