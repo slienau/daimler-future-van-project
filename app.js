@@ -9,7 +9,6 @@ const winston = require('winston') // for transports.Console
 const MongoDB = require('winston-mongodb').MongoDB
 const mung = require('express-mung')
 
-
 const indexRouter = require('./routes/index')
 const accountsRouter = require('./routes/accounts')
 const accountRouter = require('./routes/account')
