@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const OrderSchema = new Schema({
 
-  accountID: {
+  accountId: {
     type: String,
     required: true
   },
@@ -41,6 +41,24 @@ const OrderSchema = new Schema({
   },
   vanArrivalTime: {
     type: Date,
+    required: true
+  },
+  route: {
+    type: String,
+    required: true
+  },
+  distance: {
+    type: Number,
+    required: true
+  },
+  bonusMultiplier: {
+    type: Number,
+    default: 10,
+    required: true
+  },
+  bonuspoints: {
+    type: Number,
+    default: 0,
     required: true
   }
 }

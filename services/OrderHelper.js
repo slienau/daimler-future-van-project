@@ -1,8 +1,10 @@
 const VirtualBusStop = require('../models/VirtualBusStop.js')
 const Order = require('../models/Order.js')
 const Account = require('../models/Account.js')
+const Route = require('../models/Route.js')
 const ManagementSystem = require('./ManagementSystem.js')
 const geolib = require('geolib')
+const bonusMultiplierStandard = 10
 
 class OrderHelper {
   // Check if any users are there and if not create two static users
@@ -11,12 +13,14 @@ class OrderHelper {
 
     if (items !== null && items.length !== 0) return console.log('no setup needed')
 
-    let accountID, vbs
+    let adminId, maexleId, vbs
     let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End
 
     try {
-      const item = await Account.findOne({ 'username': 'admin' })
-      accountID = item._id
+      const admin = await Account.findOne({ 'username': 'admin' })
+      adminId = admin._id
+      const maexle = await Account.findOne({ 'username': 'maexle' })
+      maexleId = maexle._id
     } catch (error) {
       console.log(error)
     }
@@ -36,7 +40,7 @@ class OrderHelper {
 
     const order1 = new Order({
 
-      accountID: accountID,
+      accountId: adminId,
       orderTime: orderTime1,
       active: false,
       canceled: false,
@@ -45,12 +49,16 @@ class OrderHelper {
       startTime: time1Start,
       endTime: time1End,
       vanId: 3,
+      distance: 6,
+      bonuspoints: 6 * bonusMultiplierStandard,
+      bonusMultiplier: bonusMultiplierStandard,
+      route: '273jsnsb9201',
       vanArrivalTime: new Date(Date.now() - 837268)
     })
 
     const order2 = new Order({
 
-      accountID: accountID,
+      accountId: adminId,
       orderTime: orderTime2,
       active: false,
       canceled: false,
@@ -59,14 +67,49 @@ class OrderHelper {
       startTime: time2Start,
       endTime: time2End,
       vanId: 4,
+      distance: 7.65,
+      bonuspoints: 7.65 * bonusMultiplierStandard,
+      bonusMultiplier: bonusMultiplierStandard,
+      route: '273jsnsb9250',
+      vanArrivalTime: new Date(Date.now() - 587268)
+    })
+
+    const order3 = new Order({
+      accountId: maexleId,
+      orderTime: orderTime2,
+      active: false,
+      canceled: false,
+      virtualBusStopStart: vbs[1]._id,
+      virtualBusStopEnd: vbs[0]._id,
+      startTime: time2Start,
+      endTime: time2End,
+      vanId: 4,
+      distance: 18,
+      bonuspoints: 18 * bonusMultiplierStandard,
+      bonusMultiplier: bonusMultiplierStandard,
+      route: '273jsnsb9250',
       vanArrivalTime: new Date(Date.now() - 587268)
     })
 
     await order1.save()
     await order2.save()
+    await order3.save()
   }
 
-  static async createOrder (accountID, virtualBusStopStart, virtualBusStopEnd, vanId) {
+  // Creates an order Object and stores this in the db
+  static async createOrder (accountID, routeId) {
+    await Route.updateOne({ _id: routeId }, { $set: { confirmed: true } })
+    const route = await Route.findById(routeId)
+
+    // Check if Route is still valid, if not return an error
+    if (route.validUntil < new Date(Date.now() + 1000)) return { code: 404, message: 'your route is no longer valid, please get a new route' }
+
+    const virtualBusStopStart = route.startStation
+    const virtualBusStopEnd = route.endStation
+
+    const vanId = route.vanId
+    const van = { vanId: vanId, vanArrivalTime: ManagementSystem.vanTimes[vanId] }
+
     const vbs = []
     try {
       vbs[0] = await VirtualBusStop.findById(virtualBusStopStart)
@@ -74,16 +117,13 @@ class OrderHelper {
     } catch (error) {
       return error
     }
-
-    // Set van and the pickup time, which is the later of either the passenger and van arrival times
-
-    const van = { vanId: vanId, vanArrivalTime: ManagementSystem.vanTimes[vanId] }
+    const distance = route.vanRoute.routes[0].legs[0].distance.value / 1000
 
     let newOrder
     try {
       newOrder = new Order({
 
-        accountID: accountID,
+        accountId: accountID,
         orderTime: new Date(),
         active: true,
         canceled: false,
@@ -92,7 +132,11 @@ class OrderHelper {
         startTime: null,
         endTime: null,
         vanId: van.vanId,
-        vanArrivalTime: van.vanArrivalTime
+        route: routeId,
+        distance: distance,
+        vanArrivalTime: van.vanArrivalTime,
+        bonuspoints: distance * bonusMultiplierStandard,
+        bonusMultiplier: bonusMultiplierStandard
       })
     } catch (e) {
       console.log(e)
@@ -111,12 +155,15 @@ class OrderHelper {
     const order = await Order.findById(orderId)
     const virtualBusStop = await VirtualBusStop.findById(order.virtualBusStopStart)
     const vanTime = order.vanArrivalTime
+    const vanLocationBeforeArrival = ManagementSystem.vanPositions[order.vanId]
 
-    if (order.active === false) return { status: false, message: 'Order is not active' }
-    if (new Date() < new Date(vanTime)) return { status: false, message: 'Van has not arrived yet' }
-    if (geolib.getDistance(virtualBusStop.location, passengerLocation) > 10) return { status: false, message: 'Passenger is not close enough to the van' }
+    if (order.active === false) return { userAllowedToEnter: false, message: 'Order is not active', vanPosition: null }
+    console.log(virtualBusStop)
+    if (new Date() < new Date(vanTime)) return { userAllowedToEnter: false, message: 'Van has not arrived yet', vanPosition: vanLocationBeforeArrival }
 
-    return { status: true, message: 'Van is ready to be entered.' }
+    if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, passengerLocation) > 10) return { userAllowedToEnter: false, message: 'Van is ready, but passenger is not close enough to the van', vanPosition: { latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude } }
+
+    return { userAllowedToEnter: true, message: 'Van is ready to be entered.', vanPosition: { latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude } }
   }
 }
 

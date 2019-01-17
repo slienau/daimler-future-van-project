@@ -1,6 +1,7 @@
 const geolib = require('geolib')
 
 const VirtualBusStop = require('../models/VirtualBusStop.js')
+const Route = require('../models/Route.js')
 const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
 
 class VirtualBusStopHelper {
@@ -57,15 +58,14 @@ class VirtualBusStopHelper {
     await alex.save()
     await kotti.save()
   }
+
   // get Suggestions for Jouney
   static async getRouteSuggestions (start, destination, startTime, vanArrivalTime, vanID) {
-    let suggestions = []
-
     const startVB = await this.getClosestVB(start)
     const destinationVB = await this.getClosestVB(destination)
 
     // Abort if the two Virtual Busstops are the same
-    if (startVB._id === destinationVB._id) return { error: 'NoCarRouteError', message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' }
+    if (startVB._id === destinationVB._id) return { code: 404, message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' }
 
     // Get Google Responses
     const googleResponse = await GoogleMapsHelper.googleAPICall(start, destination, startVB, destinationVB, startTime, vanArrivalTime)
@@ -75,24 +75,31 @@ class VirtualBusStopHelper {
     const vanEndTime = new Date(vanStartTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[1]) * 1000)
     const destinationTime = new Date(vanEndTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[2]) * 1000)
 
-    // Right now give only one suggestion
-    suggestions.push({
+    const routeObject = {
       startLocation: start,
       destination: destination,
       startStation: startVB,
       endStation: destinationVB,
       journeyStartTime: startTime,
-      vanStartTime: vanStartTime.toISOString(),
-      vanEndTime: vanEndTime.toISOString(),
-      destinationTime: destinationTime.toISOString(),
+      vanStartTime: vanStartTime,
+      vanEndTime: vanEndTime,
+      destinationTime: destinationTime,
       toStartRoute: googleResponse[0],
       vanRoute: googleResponse[1],
       toDestinationRoute: googleResponse[2],
-      vanId: vanID
+      vanId: vanID,
+      validUntil: new Date(Date.now() + (1000 * 60))
+    }
 
-    })
+    // Right now give only one suggestion
+    const newRoute = new Route(routeObject)
+    const dbRoute = await newRoute.save()
 
-    return suggestions
+    routeObject.id = dbRoute._id
+
+    console.log('Created route with id: ' + dbRoute._id)
+
+    return routeObject
   }
 
   // Returns the Virtual Busstop that is closest to the reference
