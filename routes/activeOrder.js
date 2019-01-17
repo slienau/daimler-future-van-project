@@ -11,11 +11,11 @@ router.get('/status', async function (req, res) {
 
   res.setHeader('Content-Type', 'application/json')
 
-  if (!req.query.passengerLatitude || !req.query.passengerLongitude) res.json({ code: 400, message: 'Bad params, you need passengerLongitude and passengerLatitude' })
+  if (!req.query.passengerLatitude || !req.query.passengerLongitude) res.status(400).json({ code: 400, description: 'Bad params, you need passengerLongitude and passengerLatitude' })
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
 
-  if (!order) res.json({ code: 400, message: 'No active order' })
+  if (!order) res.status(400).json({ code: 400, description: 'No active order' })
 
   const result = await OrderHelper.checkOrderLocationStatus(order._id, { latitude: req.query.passengerLatitude, longitude: req.query.passengerLongitude })
 
@@ -35,10 +35,10 @@ router.get('/', async function (req, res) {
 router.put('/', async function (req, res) {
   console.log('Put activeOrder request zu user: ' + req.user._id + ' mit Action: ' + req.body.action)
 
-  if (!req.query.passengerLatitude || !req.query.passengerLongitude) res.json({ code: 400, message: 'Bad params, you need passengerLongitude and passengerLatitude' })
+  if (!req.query.passengerLatitude || !req.query.passengerLongitude) res.status(400).json({ code: 400, description: 'Bad params, you need passengerLongitude and passengerLatitude' })
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
-  if (!order) res.json({ code: 400, message: 'No active order' })
+  if (!order) return res.status(400).json({ code: 400, description: 'user has no active order' })
 
   const orderId = order._id
 
@@ -50,13 +50,13 @@ router.put('/', async function (req, res) {
     case 'startride':
 
       if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: req.query.passengerLatitude, longitude: req.query.passengerLongitude }) > 10) {
-        res.json({ code: 403, message: 'User is not close enough to the van.' })
+        res.status(403).json({ code: 403, description: 'User is not close enough to the van.' })
         break
       } else if (new Date() < order.vanArrivalTime) {
-        res.json({ code: 403, message: 'Van has not arrived at the virtual bus stop yet.' })
+        res.status(403).json({ code: 403, description: 'Van has not arrived at the virtual bus stop yet.' })
         break
       } else if (order.startTime) {
-        res.json({ code: 403, message: 'Ride has already been started.' })
+        res.status(403).json({ code: 403, description: 'Ride has already been started.' })
         break
       }
       await Order.updateOne({ _id: orderId }, { $set: { startTime: new Date() } })
@@ -65,10 +65,10 @@ router.put('/', async function (req, res) {
       break
     case 'endride':
       if (!order.startTime) {
-        res.json({ code: 403, message: 'The ride has not yet started.' })
+        res.status(403).json({ code: 403, description: 'The ride has not yet started.' })
         break
       } else if (new Date() < order.vanEndTime) {
-        res.json({ code: 403, message: 'Van has not arrived at its destination yet.' })
+        res.status(403).json({ code: 403, description: 'Van has not arrived at its destination yet.' })
         break
       }
       await Order.updateOne({ _id: orderId }, { $set: { endTime: new Date(), active: false } })
@@ -77,7 +77,7 @@ router.put('/', async function (req, res) {
       break
     case 'cancel':
       if (order.startTime) {
-        res.json({ code: 403, message: 'Cannot be canceled. Ride has already started.' })
+        res.status(403).json({ code: 403, description: 'Cannot be canceled. Ride has already started.' })
         break
       }
       await Order.updateOne({ _id: orderId }, { $set: { canceled: true, endTime: new Date(), active: false } })
@@ -85,7 +85,7 @@ router.put('/', async function (req, res) {
       res.json(orderNew)
       break
     default:
-      res.json({ code: 400, message: 'Bad action parameter' })
+      res.status(400).json({ code: 400, description: 'Bad action parameter' })
   }
 })
 

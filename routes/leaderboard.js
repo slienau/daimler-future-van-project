@@ -21,7 +21,7 @@ router.get('/', async function (req, res) {
       .limit(10) // return only the first ten in the leaderboard
     res.json(leaderboard)
   } catch (error) {
-    res.status(404).json({ error: error, msg: 'No items found' })
+    res.status(404).json({ error: error, description: 'No items found' })
   }
 })
 
