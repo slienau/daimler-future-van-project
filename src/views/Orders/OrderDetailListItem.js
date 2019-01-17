@@ -6,7 +6,7 @@ const OrderDetailListItem = props => {
   return (
     <ListItem icon>
       <Left>
-        <Icon active name={props.icon} />
+        <Icon active name={props.icon} type={props.iconType} />
       </Left>
       <Body>
         <Text>{props.body}</Text>
@@ -21,7 +21,8 @@ const OrderDetailListItem = props => {
 OrderDetailListItem.propTypes = {
   body: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
-  right: PropTypes.string,
+  iconType: PropTypes.string,
+  right: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default OrderDetailListItem
