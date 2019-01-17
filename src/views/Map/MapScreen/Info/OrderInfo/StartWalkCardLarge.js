@@ -53,7 +53,7 @@ class StartWalkCardLarge extends React.Component {
             </ViewCentered>
           </Body>
           <Right>
-            <Button rounded disabled>
+            <Button rounded onPress={() => this.props.toRideScreen()}>
               <Text>Hop on</Text>
             </Button>
           </Right>
@@ -66,6 +66,7 @@ class StartWalkCardLarge extends React.Component {
 StartWalkCardLarge.propTypes = {
   busStopStartName: PropTypes.string,
   departure: PropTypes.string,
+  toRideScreen: PropTypes.func,
   vanId: PropTypes.number,
   waitingTime: PropTypes.string,
   walkingDistance: PropTypes.string,
