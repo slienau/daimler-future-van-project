@@ -9,7 +9,7 @@ import OrderDetailListItem from './OrderDetailListItem'
 const OrderDetail = props => {
   const order = props.navigation.getParam('order')
   const {width, height} = Dimensions.get('window')
-  const mapHeight = 0.6 * height // 60% height
+  const mapHeight = 0.45 * height // 45% height
 
   const mapRegion = getRegionForCoordinates([
     order.virtualBusStopStart.location,
@@ -49,6 +49,22 @@ const OrderDetail = props => {
               icon="flag"
               body={order.virtualBusStopEnd.name}
               right={order.endTime.format('LT')}
+            />
+            <OrderDetailListItem
+              icon="bus"
+              body="Distance"
+              right={order.distance}
+            />
+            <OrderDetailListItem
+              icon="trees"
+              iconType="Foundation"
+              body="CO2 savings"
+              right={order.co2savings}
+            />
+            <OrderDetailListItem
+              icon="star"
+              body="Loyalty Points"
+              right={order.bonuspoints}
             />
           </List>
         </View>

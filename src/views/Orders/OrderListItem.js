@@ -4,18 +4,28 @@ import {Text, ListItem, Right, Icon, Body} from 'native-base'
 import {StyleSheet} from 'react-native'
 
 const OrderListItem = props => {
+  let bodyText = 'Order has been canceled'
+  if (!props.order.canceled) {
+    bodyText = (
+      <Text>
+        From: {props.order.virtualBusStopStart.name} {'\n'}
+        To: {props.order.virtualBusStopEnd.name}
+      </Text>
+    )
+  }
   return (
-    <ListItem button onPress={() => props.onItemPress()}>
+    <ListItem
+      button
+      onPress={() => {
+        if (!props.order.canceled) props.onItemPress()
+      }}>
       <Body>
         <Text>
           <Text style={styles.time}>
             {props.order.orderTime.format('L, LT')}
             {'\n'}
           </Text>
-          <Text>
-            From: {props.order.virtualBusStopStart.name} {'\n'}
-            To: {props.order.virtualBusStopEnd.name}
-          </Text>
+          {bodyText}
         </Text>
       </Body>
       <Right>
