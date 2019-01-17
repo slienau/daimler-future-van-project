@@ -8,8 +8,14 @@ import Routes from './Routes'
 import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
 import {Container} from 'native-base'
-import {setUserPosition, setJourneyStart} from '../../../ducks/map'
-import RouteInfo from './RouteInfo'
+import {Dimensions} from 'react-native'
+import _ from 'lodash'
+import {
+  setUserPosition,
+  setJourneyStart,
+  setVisibleCoordinates,
+} from '../../../ducks/map'
+import Info from './Info'
 import {defaultMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
 import CurrentLocationButton from './Buttons/CurrentLocationButton'
@@ -27,6 +33,24 @@ class MapScreen extends React.Component {
     this.getCurrentPosition()
   }
 
+  componentDidUpdate() {
+    if (this.props.visibleCoordinates.length === 1)
+      this.animateToRegion(this.props.visibleCoordinates[0])
+    else if (this.props.visibleCoordinates.length > 1) {
+      let edgePadding = {
+        top: Dimensions.get('window').height * this.props.edgePadding.top,
+        bottom: Dimensions.get('window').height * this.props.edgePadding.bottom,
+        left: Dimensions.get('window').width * this.props.edgePadding.left,
+        right: Dimensions.get('window').width * this.props.edgePadding.right,
+      }
+      edgePadding = _.mapValues(
+        edgePadding,
+        value => value * Dimensions.get('window').scale
+      )
+      this.fitToCoordinates(this.props.visibleCoordinates, edgePadding)
+    }
+  }
+
   mapRef = null
 
   animateToRegion = location => {
@@ -41,10 +65,7 @@ class MapScreen extends React.Component {
     )
   }
 
-  fitToCoordinates = (
-    coords,
-    edgePadding = {top: 400, right: 100, left: 100, bottom: 350}
-  ) => {
+  fitToCoordinates = (coords, edgePadding) => {
     this.mapRef.fitToCoordinates(coords, {
       edgePadding: edgePadding,
       animated: true,
@@ -60,7 +81,8 @@ class MapScreen extends React.Component {
           title: 'Current location',
           description: 'Current location',
         })
-        this.animateToRegion(position.coords)
+        // this.animateToRegion(position.coords)
+        this.props.setVisibleCoordinates([position.coords])
       },
       error => this.setState({error: error.message})
     )
@@ -69,8 +91,8 @@ class MapScreen extends React.Component {
   toSearchView = type => {
     this.props.navigation.navigate('Search', {
       type: type,
-      animateToRegion: this.animateToRegion.bind(this),
-      fitToCoordinates: this.fitToCoordinates.bind(this),
+      // animateToRegion: this.animateToRegion.bind(this),
+      // fitToCoordinates: this.fitToCoordinates.bind(this),
     })
   }
 
@@ -80,8 +102,8 @@ class MapScreen extends React.Component {
       mapRegion = {
         latitude: this.props.userPosition.latitude,
         longitude: this.props.userPosition.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
       }
     }
 
@@ -110,31 +132,35 @@ class MapScreen extends React.Component {
           onPress={() => this.getCurrentPosition()}
         />
 
-        <BottomButtons
-          toSearchView={this.toSearchView}
-          fitToCoordinates={this.fitToCoordinates}
-        />
+        <BottomButtons toSearchView={this.toSearchView} />
 
-        <RouteInfo fitToCoordinates={this.fitToCoordinates} />
+        <Info />
       </Container>
     )
   }
 }
 
 MapScreen.propTypes = {
+  edgePadding: PropTypes.object,
   mapState: PropTypes.string,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
+  setVisibleCoordinates: PropTypes.func,
   userPosition: PropTypes.object,
+  visibleCoordinates: PropTypes.array,
 }
 
 export default connect(
   state => ({
     mapState: state.map.mapState,
     userPosition: state.map.userPosition,
+    visibleCoordinates: state.map.visibleCoordinates,
+    edgePadding: state.map.edgePadding,
   }),
   dispatch => ({
     setUserPosition: payload => dispatch(setUserPosition(payload)),
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
+    setVisibleCoordinates: (coords, edgePadding) =>
+      dispatch(setVisibleCoordinates(coords, edgePadding)),
   })
 )(MapScreen)

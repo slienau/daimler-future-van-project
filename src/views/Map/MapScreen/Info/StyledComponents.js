@@ -6,6 +6,11 @@ export const StyledRouteInfo = styled(View)`
   height: 15%;
   margin-top: 560;
 `
+export const StyledOrderInfo = styled(View)`
+  height: 23%;
+  margin-top: 505;
+`
+
 export const StyledContainer = styled(Container)`
   flex: 1;
   justify-content: center;

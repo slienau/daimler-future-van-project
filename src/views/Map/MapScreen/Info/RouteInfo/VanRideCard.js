@@ -4,7 +4,7 @@ import {
   CardItemNoBorders,
   StyledContainer,
   IconCenterFlex,
-} from './StyledComponents'
+} from '../StyledComponents'
 import React from 'react'
 import PropTypes from 'prop-types'
 

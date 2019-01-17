@@ -5,19 +5,22 @@ import MapMarker from '../../../components/MapMarker'
 import {connect} from 'react-redux'
 
 const MapMarkers = props => {
-  if (!props.routes || !props.routes.length) return null
   return (
     <>
-      <MapMarker
-        location={_.get(props.routes[0], 'startStation.location')}
-        title={'Start station'}
-        image="vbs"
-      />
-      <MapMarker
-        location={_.get(props.routes[0], 'endStation.location')}
-        title={'End station'}
-        image="vbs"
-      />
+      {props.routes && props.routes.length && (
+        <>
+          <MapMarker
+            location={_.get(props.routes[0], 'startStation.location')}
+            title={'Start station'}
+            image="vbs"
+          />
+          <MapMarker
+            location={_.get(props.routes[0], 'endStation.location')}
+            title={'End station'}
+            image="vbs"
+          />
+        </>
+      )}
       {props.journeyStart && (
         <MapMarker
           location={props.journeyStart.location}
