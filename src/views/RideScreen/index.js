@@ -4,6 +4,7 @@ import {createStackNavigator} from 'react-navigation'
 import MainViewHeader from '../../components/ViewHeaders/MainViewHeader'
 import SubViewHeader from '../../components/ViewHeaders/SubViewHeader'
 import FunfactsScreen from './FunfactsScreen'
+import inRideMapScreen from './inRideMapScreen'
 
 const RideScreen = createStackNavigator(
   {
@@ -24,6 +25,17 @@ const RideScreen = createStackNavigator(
         header: (
           <SubViewHeader
             title="Fun Facts"
+            onArrowBackPress={() => navigation.goBack()}
+          />
+        ),
+      }),
+    },
+    inRideMapScreen: {
+      screen: inRideMapScreen,
+      navigationOptions: ({navigation}) => ({
+        header: (
+          <SubViewHeader
+            title="Map"
             onArrowBackPress={() => navigation.goBack()}
           />
         ),
