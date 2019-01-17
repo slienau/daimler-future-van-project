@@ -13,87 +13,87 @@ class OrderHelper {
 
     if (items !== null && items.length !== 0) return console.log('no setup needed')
 
-    let adminId, maexleId, vbs
+    let user, userId, vbs
     let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End
+    let accountnames = ['admin', 'maexle', 'christoph', 'sebastian', 'alex', 'domenic', 'marius', 'philipp', 'antonio']
 
-    try {
-      const admin = await Account.findOne({ 'username': 'admin' })
-      adminId = admin._id
-      const maexle = await Account.findOne({ 'username': 'maexle' })
-      maexleId = maexle._id
-    } catch (error) {
-      console.log(error)
+    for (let i = 0; i < accountnames.length; i++) {
+      try {
+        user = await Account.findOne({ 'username': accountnames[i] })
+        userId = user._id
+        try {
+          vbs = await VirtualBusStop.find({})
+        } catch (error) {
+          console.log(error)
+        }
+        orderTime1 = new Date('2018-12-10T12:30:00')
+        orderTime2 = new Date('2018-12-13T10:00:00')
+
+        time1Start = new Date('2018-12-10T13:00:00')
+        time1End = new Date('2018-12-10T13:30:00')
+        time2Start = new Date('2018-12-13T10:15:00')
+        time2End = new Date('2018-12-13T10:30:00')
+
+        const order1 = new Order({
+
+          accountId: userId,
+          orderTime: orderTime1,
+          active: false,
+          canceled: false,
+          virtualBusStopStart: vbs[0]._id,
+          virtualBusStopEnd: vbs[1]._id,
+          startTime: time1Start,
+          endTime: time1End,
+          vanId: 3,
+          distance: 6,
+          bonuspoints: 6 * bonusMultiplierStandard,
+          bonusMultiplier: bonusMultiplierStandard,
+          route: '273jsnsb9201',
+          vanArrivalTime: new Date(Date.now() - 837268)
+        })
+
+        const order2 = new Order({
+
+          accountId: userId,
+          orderTime: orderTime2,
+          active: false,
+          canceled: false,
+          virtualBusStopStart: vbs[1]._id,
+          virtualBusStopEnd: vbs[0]._id,
+          startTime: time2Start,
+          endTime: time2End,
+          vanId: 4,
+          distance: 7.65,
+          bonuspoints: 7.65 * bonusMultiplierStandard,
+          bonusMultiplier: bonusMultiplierStandard,
+          route: '273jsnsb9250',
+          vanArrivalTime: new Date(Date.now() - 587268)
+        })
+
+        const order3 = new Order({
+          accountId: userId,
+          orderTime: orderTime2,
+          active: false,
+          canceled: false,
+          virtualBusStopStart: vbs[1]._id,
+          virtualBusStopEnd: vbs[0]._id,
+          startTime: time2Start,
+          endTime: time2End,
+          vanId: 4,
+          distance: 18,
+          bonuspoints: 18 * bonusMultiplierStandard,
+          bonusMultiplier: bonusMultiplierStandard,
+          route: '273jsnsb9250',
+          vanArrivalTime: new Date(Date.now() - 587268)
+        })
+
+        await order1.save()
+        await order2.save()
+        await order3.save()
+      } catch (error) {
+        console.log(error)
+      }
     }
-
-    try {
-      vbs = await VirtualBusStop.find({})
-    } catch (error) {
-      console.log(error)
-    }
-    orderTime1 = new Date('2018-12-10T12:30:00')
-    orderTime2 = new Date('2018-12-13T10:00:00')
-
-    time1Start = new Date('2018-12-10T13:00:00')
-    time1End = new Date('2018-12-10T13:30:00')
-    time2Start = new Date('2018-12-13T10:15:00')
-    time2End = new Date('2018-12-13T10:30:00')
-
-    const order1 = new Order({
-
-      accountId: adminId,
-      orderTime: orderTime1,
-      active: false,
-      canceled: false,
-      virtualBusStopStart: vbs[0]._id,
-      virtualBusStopEnd: vbs[1]._id,
-      startTime: time1Start,
-      endTime: time1End,
-      vanId: 3,
-      distance: 6,
-      bonuspoints: 6 * bonusMultiplierStandard,
-      bonusMultiplier: bonusMultiplierStandard,
-      route: '273jsnsb9201',
-      vanArrivalTime: new Date(Date.now() - 837268)
-    })
-
-    const order2 = new Order({
-
-      accountId: adminId,
-      orderTime: orderTime2,
-      active: false,
-      canceled: false,
-      virtualBusStopStart: vbs[1]._id,
-      virtualBusStopEnd: vbs[0]._id,
-      startTime: time2Start,
-      endTime: time2End,
-      vanId: 4,
-      distance: 7.65,
-      bonuspoints: 7.65 * bonusMultiplierStandard,
-      bonusMultiplier: bonusMultiplierStandard,
-      route: '273jsnsb9250',
-      vanArrivalTime: new Date(Date.now() - 587268)
-    })
-
-    const order3 = new Order({
-      accountId: maexleId,
-      orderTime: orderTime2,
-      active: false,
-      canceled: false,
-      virtualBusStopStart: vbs[1]._id,
-      virtualBusStopEnd: vbs[0]._id,
-      startTime: time2Start,
-      endTime: time2End,
-      vanId: 4,
-      distance: 18,
-      bonuspoints: 18 * bonusMultiplierStandard,
-      bonusMultiplier: bonusMultiplierStandard,
-      route: '273jsnsb9250',
-      vanArrivalTime: new Date(Date.now() - 587268)
-    })
-
-    await order1.save()
-    await order2.save()
-    await order3.save()
   }
 
   // Creates an order Object and stores this in the db
