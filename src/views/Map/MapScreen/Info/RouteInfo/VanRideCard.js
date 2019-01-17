@@ -1,9 +1,9 @@
 import {Text, Body, Icon, Left, Right} from 'native-base'
 import {
-  StyledCard,
   CardItemNoBorders,
   StyledContainer,
   IconCenterFlex,
+  StyledCardFlex,
 } from '../StyledComponents'
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -11,7 +11,7 @@ import PropTypes from 'prop-types'
 const VanRideCard = props => {
   return (
     <StyledContainer>
-      <StyledCard>
+      <StyledCardFlex>
         <CardItemNoBorders>
           <Left>
             <Icon type="MaterialCommunityIcons" name="van-passenger" />
@@ -36,7 +36,7 @@ const VanRideCard = props => {
               </Body>
             </Right>
           </CardItemNoBorders> */}
-      </StyledCard>
+      </StyledCardFlex>
     </StyledContainer>
   )
 }

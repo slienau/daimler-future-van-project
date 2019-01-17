@@ -7,8 +7,14 @@ export const StyledRouteInfo = styled(View)`
   margin-top: 560;
 `
 export const StyledOrderInfo = styled(View)`
-  height: 23%;
-  margin-top: 505;
+  position: absolute;
+  bottom: 0%;
+  left: 1%;
+  right: -1%;
+`
+
+export const ViewCentered = styled(View)`
+  align-items: center;
 `
 
 export const StyledContainer = styled(Container)`
@@ -41,6 +47,9 @@ export const TextGreen = styled(Text)`
   color: green;
   font-weight: bold;
 `
+export const TextLarge = styled(Text)`
+  font-size: 35;
+`
 
 export const IconBlack = styled(Icon)`
   color: black;
@@ -50,9 +59,15 @@ export const IconBlack = styled(Icon)`
 export const StyledCard = styled(Card)`
   border-radius: 10;
   align-items: stretch;
+  width: 97%;
+`
+export const StyledCardFlex = styled(Card)`
+  border-radius: 10;
+  align-items: stretch;
   flex: 1;
   width: 97%;
 `
+
 export const CardItemBorderBottom = styled(CardItem)`
   border-radius: 10;
   border-bottom-width: 1;
