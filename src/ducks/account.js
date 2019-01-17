@@ -2,19 +2,17 @@ import api from '../lib/api'
 
 export const SET_ACCOUNT_DATA = 'account/SET_ACCOUNT_DATA'
 
+const initialState = {
+  address: {},
+}
+
 // reducers (pure functions, no side-effects!)
-export default function account(state = {}, action) {
+export default function account(state = initialState, action) {
   switch (action.type) {
     case SET_ACCOUNT_DATA:
-      const fullName = action.payload.firstName + ' ' + action.payload.lastName
       return {
-        ...state,
-        name: fullName,
-        username: action.payload.username,
-        email: action.payload.email,
-        street: action.payload.address.street,
-        city: action.payload.address.city,
-        zip: action.payload.address.zipcode,
+        ...action.payload,
+        name: action.payload.firstName + ' ' + action.payload.lastName,
       }
     default:
       return state
