@@ -139,7 +139,7 @@ const GamesScreen = props => {
         <Card>
           <CardItem>
             <Left>
-              <Thumbnail source={require('./assets/8ballpool.png')} />
+              <Thumbnail source={require('./assets/8ballpool.jpg')} />
               <Body>
                 <Text>8 Ball Pool</Text>
                 <Text note>Multiplayer Game</Text>
