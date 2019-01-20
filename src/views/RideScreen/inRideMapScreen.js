@@ -13,11 +13,8 @@ const StyledMapView = styled(MapView)`
 
 const inRideMapScreen = props => {
   const mapRegion = {
-    latitude: _.get(props.activeOrder, 'route.startStation.location.latitude'),
-    longitude: _.get(
-      props.activeOrder,
-      'route.startStation.location.longitude'
-    ),
+    latitude: _.get(props.route, 'startStation.location.latitude'),
+    longitude: _.get(props.route, 'startStation.location.longitude'),
     latitudeDelta: 0.02,
     longitudeDelta: 0.02,
   }
@@ -34,9 +31,10 @@ const inRideMapScreen = props => {
 }
 
 inRideMapScreen.propTypes = {
-  activeOrder: PropTypes.object,
+  route: PropTypes.object,
 }
 
 export default connect(state => ({
-  activeOrder: state.orders.activeOrder,
+  route:
+    _.get(state.map, 'routes.0') || _.get(state.orders, 'activeOrder.route'),
 }))(inRideMapScreen)
