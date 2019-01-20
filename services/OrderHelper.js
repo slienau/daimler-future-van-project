@@ -5,6 +5,7 @@ const Route = require('../models/Route.js')
 const ManagementSystem = require('./ManagementSystem.js')
 const geolib = require('geolib')
 const bonusMultiplierStandard = 10
+const co2savingsMultiplierStandard = 0.13 // EU limit for new cars = 0.13 kg/km
 
 class OrderHelper {
   // Check if any users are there and if not create two static users
@@ -14,7 +15,7 @@ class OrderHelper {
     if (items !== null && items.length !== 0) return console.log('no setup needed')
 
     let user, userId, vbs
-    let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End
+    let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End, distance1, distance2, distance3
     let accountnames = ['admin', 'maexle', 'christoph', 'sebastian', 'alex', 'domenic', 'marius', 'philipp', 'antonio']
 
     for (let i = 0; i < accountnames.length; i++) {
@@ -28,11 +29,13 @@ class OrderHelper {
         }
         orderTime1 = new Date('2018-12-10T12:30:00')
         orderTime2 = new Date('2018-12-13T10:00:00')
-
         time1Start = new Date('2018-12-10T13:00:00')
         time1End = new Date('2018-12-10T13:30:00')
         time2Start = new Date('2018-12-13T10:15:00')
         time2End = new Date('2018-12-13T10:30:00')
+        distance1 = 6
+        distance2 = 4
+        distance3 = 7.5
 
         const order1 = new Order({
 
@@ -45,8 +48,9 @@ class OrderHelper {
           startTime: time1Start,
           endTime: time1End,
           vanId: 3,
-          distance: 6,
-          bonuspoints: 6 * bonusMultiplierStandard,
+          distance: distance1,
+          bonuspoints: distance1 * bonusMultiplierStandard,
+          co2savings: distance1 * co2savingsMultiplierStandard,
           bonusMultiplier: bonusMultiplierStandard,
           route: '273jsnsb9201',
           vanArrivalTime: new Date(Date.now() - 837268)
@@ -63,9 +67,9 @@ class OrderHelper {
           startTime: time2Start,
           endTime: time2End,
           vanId: 4,
-          distance: 7.65,
-          bonuspoints: 7.65 * bonusMultiplierStandard,
-          bonusMultiplier: bonusMultiplierStandard,
+          distance: distance2,
+          bonuspoints: distance2 * bonusMultiplierStandard,
+          co2savings: distance2 * co2savingsMultiplierStandard,
           route: '273jsnsb9250',
           vanArrivalTime: new Date(Date.now() - 587268)
         })
@@ -80,9 +84,9 @@ class OrderHelper {
           startTime: time2Start,
           endTime: time2End,
           vanId: 4,
-          distance: 18,
-          bonuspoints: 18 * bonusMultiplierStandard,
-          bonusMultiplier: bonusMultiplierStandard,
+          distance: distance3,
+          bonuspoints: distance3 * bonusMultiplierStandard,
+          co2savings: distance3 * co2savingsMultiplierStandard,
           route: '273jsnsb9250',
           vanArrivalTime: new Date(Date.now() - 587268)
         })
@@ -136,6 +140,7 @@ class OrderHelper {
         distance: distance,
         vanArrivalTime: van.vanArrivalTime,
         bonuspoints: distance * bonusMultiplierStandard,
+        co2savings: distance * co2savingsMultiplierStandard,
         bonusMultiplier: bonusMultiplierStandard
       })
     } catch (e) {

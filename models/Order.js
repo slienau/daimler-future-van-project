@@ -60,6 +60,11 @@ const OrderSchema = new Schema({
     type: Number,
     default: 0,
     required: true
+  },
+  co2savings: {
+    type: Number,
+    default: 0,
+    required: true
   }
 }
 )
