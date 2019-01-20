@@ -12,7 +12,7 @@ const JourneyOverview = props => {
 
   const getVanArrivalTime = _.get(props.routes[0], 'vanEndTime')
   const vanArrivalTime = moment(getVanArrivalTime).format('HH:mm')
-  const bonusPoints = _.round(_.get(props.activeOrder, 'bonuspoints'), 2)
+  const bonusPoints = '' + _.round(_.get(props.activeOrder, 'bonuspoints'), 2)
 
   return (
     <View>
@@ -47,7 +47,7 @@ const JourneyOverview = props => {
 
 JourneyOverview.propTypes = {
   activeOrder: PropTypes.object,
-  routes: PropTypes.object,
+  routes: PropTypes.array,
 }
 
 const mapStateToProps = state => {
@@ -56,7 +56,7 @@ const mapStateToProps = state => {
     mapState: state.map.mapState,
     journeyStart: state.map.journeyStart,
     journeyDestination: state.map.journeyDestination,
-    routes: state.map.routes,
+    routes: [_.get(state.orders.activeOrder, 'route')],
   }
 }
 
