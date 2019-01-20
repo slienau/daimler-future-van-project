@@ -53,7 +53,10 @@ const MainRideScreen = props => {
             </Col>
           </Row>
         </Grid>
-        <Button disabled block iconRight>
+        <Button
+          block
+          iconRight
+          onPress={() => props.navigation.dangerouslyGetParent().goBack()}>
           <Text>Exit Van</Text>
           <Icon name="exit" />
         </Button>
