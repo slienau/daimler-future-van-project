@@ -39,7 +39,7 @@ router.get('/', async function (req, res) {
     responsebody = account.toObject()
     responsebody.bonuspoints = bonuspoints
     responsebody.co2savings = co2savings
-    responsebody.distance = distance
+    responsebody.distance = distance // total distance the user travelled
     res.json(responsebody)
   } catch (error) {
     res.status(404).json({ error: error, msg: 'No items found' })
