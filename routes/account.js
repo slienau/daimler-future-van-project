@@ -36,6 +36,7 @@ router.get('/', async function (req, res) {
     }
     bonuspoints = Number(bonuspoints.toFixed(0))
     co2savings = Number(co2savings.toFixed(2))
+    distance = Number(distance.toFixed(2))
     responsebody = account.toObject()
     responsebody.bonuspoints = bonuspoints
     responsebody.co2savings = co2savings
