@@ -10,16 +10,9 @@ const Info = props => {
     case MapState.ROUTE_SEARCHED:
       return <RouteInfo />
     case MapState.ROUTE_ORDERED:
-      console.log('Current Map State is ROUTE_ORDERED')
-      return (
-        <OrderInfo
-          mapState={props.mapState}
-          toRideScreen={props.toRideScreen}
-        />
-      )
+      return <OrderInfo toRideScreen={props.toRideScreen} />
     case MapState.EXIT_VAN:
-      console.log('Current Map State is EXIT_VAN')
-      return <OrderInfo mapState={props.mapState} />
+      return <OrderInfo />
 
     default:
       return null
