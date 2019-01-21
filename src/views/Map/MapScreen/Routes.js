@@ -5,10 +5,11 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 
 const Routes = props => {
-  if (!props.routes || !props.routes.length) return null
+  if (!props.route) return null
   const colors = ['red', 'green', 'blue']
-  return ['toStartRoute', 'vanRoute', 'toDestinationRoute']
-    .map(r => _.get(props.routes[0][r], 'routes.0.overview_polyline.points'))
+  const segments = ['toStartRoute', 'vanRoute', 'toDestinationRoute']
+  return (props.hideStart ? segments.slice(1) : segments)
+    .map(r => _.get(props.route[r], 'routes.0.overview_polyline.points'))
     .map((p, i) => (
       <MapEncodedPolyline
         key={i}
@@ -20,11 +21,10 @@ const Routes = props => {
 }
 
 Routes.propTypes = {
-  routes: PropTypes.array,
+  hideStart: PropTypes.bool,
+  route: PropTypes.object,
 }
 
-const mapStateToProps = state => {
-  return {routes: state.map.routes}
-}
-
-export default connect(mapStateToProps)(Routes)
+export default connect(state => ({
+  route: _.get(state.map, 'routes.0'),
+}))(Routes)

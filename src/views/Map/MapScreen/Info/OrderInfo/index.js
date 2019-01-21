@@ -64,6 +64,7 @@ const OrderInfo = props => {
   return (
     <StyledOrderInfo>
       <StartWalkCardLarge
+        toRideScreen={props.toRideScreen}
         walkingDuration={
           props.routes[0].toStartRoute.routes[0].legs[0].duration.text
         }
@@ -98,6 +99,7 @@ OrderInfo.propTypes = {
   activeOrder: PropTypes.object,
   routes: PropTypes.array,
   setVisibleCoordinates: PropTypes.func,
+  toRideScreen: PropTypes.func,
 }
 
 export default connect(
