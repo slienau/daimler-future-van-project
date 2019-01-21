@@ -9,9 +9,13 @@ import {
   Body,
   Right,
 } from 'native-base'
+import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
+import _ from 'lodash'
 import {StyleSheet} from 'react-native'
 
 const FunfactsScreen = props => {
+  const co2savings = _.get(props.activeOrder, 'co2savings')
   return (
     <Container>
       <Content>
@@ -26,8 +30,7 @@ const FunfactsScreen = props => {
             <Text>CO2 Savings</Text>
           </Body>
           <Right>
-            <Text>GeekyAnts</Text>
-            <Icon active name="arrow-forward" />
+            <Text>{co2savings}</Text>
           </Right>
         </ListItem>
         <ListItem icon>
@@ -39,7 +42,6 @@ const FunfactsScreen = props => {
           </Body>
           <Right>
             <Text>54 Kcal</Text>
-            <Icon active name="arrow-forward" />
           </Right>
         </ListItem>
         <ListItem itemHeader first>
@@ -83,10 +85,20 @@ const FunfactsScreen = props => {
   )
 }
 
+FunfactsScreen.propTypes = {
+  activeOrder: PropTypes.object,
+}
+
+const mapStateToProps = state => {
+  return {
+    activeOrder: state.orders.activeOrder,
+  }
+}
+
 const styles = StyleSheet.create({
   headerSize: {
     fontSize: 21,
   },
 })
 
-export default FunfactsScreen
+export default connect(mapStateToProps)(FunfactsScreen)

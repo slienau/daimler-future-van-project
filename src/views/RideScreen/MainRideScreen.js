@@ -21,10 +21,18 @@ const MainRideScreen = props => {
           </Row>
           <Row>
             <Col>
-              <VanCard header="Games" icon="game-controller-b" />
+              <VanCard
+                header="Games"
+                icon="game-controller-b"
+                onPress={() => props.navigation.navigate('GamesScreen')}
+              />
             </Col>
             <Col>
-              <VanCard header="Sights" icon="globe" />
+              <VanCard
+                header="Sights"
+                icon="globe"
+                onPress={() => props.navigation.navigate('SightsScreen')}
+              />
             </Col>
           </Row>
           <Row>
@@ -37,11 +45,18 @@ const MainRideScreen = props => {
               />
             </Col>
             <Col>
-              <VanCard header="Map" icon="map" />
+              <VanCard
+                header="Map"
+                icon="map"
+                onPress={() => props.navigation.navigate('inRideMapScreen')}
+              />
             </Col>
           </Row>
         </Grid>
-        <Button disabled block iconRight>
+        <Button
+          block
+          iconRight
+          onPress={() => props.navigation.dangerouslyGetParent().goBack()}>
           <Text>Exit Van</Text>
           <Icon name="exit" />
         </Button>

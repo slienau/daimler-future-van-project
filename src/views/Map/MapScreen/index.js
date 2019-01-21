@@ -134,7 +134,9 @@ class MapScreen extends React.Component {
 
         <BottomButtons toSearchView={this.toSearchView} />
 
-        <Info />
+        <Info
+          toRideScreen={() => this.props.navigation.navigate('RideScreen')}
+        />
       </Container>
     )
   }

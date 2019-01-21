@@ -7,11 +7,12 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 
 const JourneyOverview = props => {
-  const getdestinationTime = _.get(props.routes[0], 'destinationTime')
+  const getdestinationTime = _.get(props.route, 'destinationTime')
   const destinationTime = moment(getdestinationTime).format('HH:mm')
 
-  const getVanArrivalTime = _.get(props.routes[0], 'vanEndTime')
+  const getVanArrivalTime = _.get(props.route, 'vanEndTime')
   const vanArrivalTime = moment(getVanArrivalTime).format('HH:mm')
+  const bonusPoints = '' + _.round(_.get(props.activeOrder, 'bonuspoints'), 2)
 
   return (
     <View>
@@ -38,14 +39,15 @@ const JourneyOverview = props => {
         description="Bonus Points"
         iconColor="orange"
         iconName="star"
-        info="5 Points"
+        info={bonusPoints}
       />
     </View>
   )
 }
 
 JourneyOverview.propTypes = {
-  routes: PropTypes.object,
+  activeOrder: PropTypes.object,
+  route: PropTypes.object,
 }
 
 const mapStateToProps = state => {
@@ -54,7 +56,7 @@ const mapStateToProps = state => {
     mapState: state.map.mapState,
     journeyStart: state.map.journeyStart,
     journeyDestination: state.map.journeyDestination,
-    routes: state.map.routes,
+    route: _.get(state.map, 'routes.0'),
   }
 }
 
