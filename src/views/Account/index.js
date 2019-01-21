@@ -229,7 +229,7 @@ class Account extends React.Component {
                   <Text>Driven Kilometers</Text>
                 </Body>
                 <Right>
-                  <Text>{this.props.account.distance}</Text>
+                  <Text>{this.props.account.distance + ' km'}</Text>
                 </Right>
               </ListItem>
               <ListItem icon>
@@ -240,7 +240,7 @@ class Account extends React.Component {
                   <Text>CO2 savings</Text>
                 </Body>
                 <Right>
-                  <Text>{this.props.account.co2savings}</Text>
+                  <Text>{this.props.account.co2savings + ' kg'}</Text>
                 </Right>
               </ListItem>
               <ListItem icon button onPress={() => {}}>
