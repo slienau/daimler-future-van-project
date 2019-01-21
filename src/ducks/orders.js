@@ -32,9 +32,9 @@ export default function orders(state = initialState, action) {
         [].concat(state.pastOrders, action.payload.map(momentifyOrder)),
         'id'
       ).map(order => {
-        if (typeof order.co2savings === 'number')
+        if (_.isNumber(order.co2savings))
           order.co2savings = order.co2savings.toFixed(2)
-        if (typeof order.distance === 'number')
+        if (_.isNumber(order.distance))
           order.distance = order.distance.toFixed(2)
         return order
       })
