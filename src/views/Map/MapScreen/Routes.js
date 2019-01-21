@@ -26,6 +26,5 @@ Routes.propTypes = {
 }
 
 export default connect(state => ({
-  route:
-    _.get(state.map, 'routes.0') || _.get(state.orders, 'activeOrder.route'),
+  route: _.get(state.map, 'routes.0'),
 }))(Routes)
