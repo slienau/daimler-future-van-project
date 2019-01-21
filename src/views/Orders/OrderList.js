@@ -12,7 +12,9 @@ class OrderList extends Component {
   }
 
   componentDidMount() {
-    this.fetchOrderData()
+    this.props.navigation.addListener('didFocus', () => {
+      this.fetchOrderData()
+    })
   }
 
   async fetchOrderData() {
