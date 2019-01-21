@@ -1,6 +1,7 @@
 import api from '../lib/api'
 import moment from 'moment'
 import _ from 'lodash'
+import {changeMapState, setRoutes, resetMapState, MapState} from './map'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
 export const SET_ACTIVE_ORDER = 'orders/SET_ACTIVE_ORDER'
@@ -29,11 +30,11 @@ export default function orders(state = initialState, action) {
     case SET_ORDER_DATA:
       const orders = _.uniqBy(
         [].concat(state.pastOrders, action.payload.map(momentifyOrder)),
-        '_id'
+        'id'
       )
       return {
         ...state,
-        activeOrder: _.find(orders, 'active'),
+        activeOrder: _.find(orders, 'active') || null,
         pastOrders: _.filter(orders, ['active', false]),
       }
     case SET_ACTIVE_ORDER:
@@ -56,20 +57,21 @@ export function fetchOrders() {
 
 export function fetchActiveOrder() {
   return async dispatch => {
-    const {data} = await api.get('/activeorder')
-    dispatch(setActiveOrder(data))
+    const {data, status} = await api.get('/activeorder')
+    if (status === 200) {
+      // currently there is an active order, so set the state correctly
+      dispatch(setActiveOrder(data))
+      dispatch(setRoutes([data.route]))
+      dispatch(changeMapState(MapState.ROUTE_ORDERED))
+    }
   }
 }
 
 export function placeOrder(payload) {
   return async dispatch => {
-    try {
-      // TODO: remove cancelActiveOrder() as soon as cancel order button works. otherwise it's not possible to place a new order as long there is another active order
-      await cancelActiveOrder()(dispatch)
-    } catch (err) {}
-
     const {data} = await api.post('/orders', payload)
     dispatch(setActiveOrder(data))
+    dispatch(changeMapState(MapState.ROUTE_ORDERED))
   }
 }
 
@@ -83,6 +85,7 @@ export function cancelActiveOrder() {
       },
     })
     dispatch(setActiveOrder(null)) // won't be done if put response code is not 200 because .put() throws an error
+    dispatch(resetMapState())
   }
 }
 

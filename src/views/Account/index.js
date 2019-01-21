@@ -43,6 +43,9 @@ const UnlockIcon = styled(Icon)`
 const BusIcon = styled(Icon)`
   color: dodgerblue;
 `
+const TreesIcon = styled(Icon)`
+  color: darkgreen;
+`
 
 class Account extends React.Component {
   static propTypes = {
@@ -182,7 +185,7 @@ class Account extends React.Component {
                 </Left>
                 <Body />
                 <Right>
-                  <Text>{this.props.account.street}</Text>
+                  <Text>{this.props.account.address.street}</Text>
                 </Right>
               </ListItem>
               <ListItem icon>
@@ -191,7 +194,7 @@ class Account extends React.Component {
                 </Left>
                 <Body />
                 <Right>
-                  <Text>{this.props.account.zip}</Text>
+                  <Text>{this.props.account.address.zipcode}</Text>
                 </Right>
               </ListItem>
               <ListItem icon>
@@ -200,7 +203,7 @@ class Account extends React.Component {
                 </Left>
                 <Body />
                 <Right>
-                  <Text>{this.props.account.city}</Text>
+                  <Text>{this.props.account.address.city}</Text>
                 </Right>
               </ListItem>
 
@@ -215,7 +218,7 @@ class Account extends React.Component {
                   <Text>Loyalty Points</Text>
                 </Body>
                 <Right>
-                  <Text>{this.props.account.points}</Text>
+                  <Text>{this.props.account.bonuspoints}</Text>
                 </Right>
               </ListItem>
               <ListItem icon>
@@ -226,7 +229,18 @@ class Account extends React.Component {
                   <Text>Driven Kilometers</Text>
                 </Body>
                 <Right>
-                  <Text>{this.props.account.miles}</Text>
+                  <Text>{this.props.account.distance}</Text>
+                </Right>
+              </ListItem>
+              <ListItem icon>
+                <Left>
+                  <TreesIcon name="trees" type="Foundation" />
+                </Left>
+                <Body>
+                  <Text>CO2 savings</Text>
+                </Body>
+                <Right>
+                  <Text>{this.props.account.co2savings}</Text>
                 </Right>
               </ListItem>
               <ListItem icon button onPress={() => {}}>

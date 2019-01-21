@@ -16,7 +16,6 @@ import {
   setVisibleCoordinates,
 } from '../../../ducks/map'
 import {fetchActiveOrder} from '../../../ducks/orders'
-import {getStore} from '../../../init/store'
 import Info from './Info'
 import {defaultMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
@@ -33,7 +32,7 @@ const StyledMapView = styled(MapView)`
 class MapScreen extends React.Component {
   componentDidMount() {
     this.getCurrentPosition()
-    this.loadOrders()
+    this.props.fetchActiveOrder()
   }
 
   componentDidUpdate() {
@@ -55,15 +54,6 @@ class MapScreen extends React.Component {
   }
 
   mapRef = null
-
-  loadOrders = () => {
-    const reduxStore = getStore()
-    const unsubscribe = reduxStore.subscribe(() => {
-      console.log(reduxStore.getState().orders.activeOrder)
-      unsubscribe()
-    })
-    this.props.fetchActiveOrder()
-  }
 
   animateToRegion = location => {
     this.mapRef.animateToRegion(
@@ -103,8 +93,6 @@ class MapScreen extends React.Component {
   toSearchView = type => {
     this.props.navigation.navigate('Search', {
       type: type,
-      // animateToRegion: this.animateToRegion.bind(this),
-      // fitToCoordinates: this.fitToCoordinates.bind(this),
     })
   }
 
