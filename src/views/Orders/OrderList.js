@@ -61,7 +61,9 @@ class OrderList extends Component {
             <Text>PAST ORDERS</Text>
           </Separator>
           <List
-            dataArray={this.props.pastOrders}
+            dataArray={this.props.pastOrders.sort((order1, order2) =>
+              order1.orderTime < order2.orderTime ? 1 : -1
+            )}
             renderRow={item => (
               <OrderListItem
                 key={item.id}
