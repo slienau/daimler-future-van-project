@@ -12,7 +12,9 @@ class OrderList extends Component {
   }
 
   componentDidMount() {
-    this.fetchOrderData()
+    this.props.navigation.addListener('didFocus', () => {
+      this.fetchOrderData()
+    })
   }
 
   async fetchOrderData() {
@@ -59,7 +61,9 @@ class OrderList extends Component {
             <Text>PAST ORDERS</Text>
           </Separator>
           <List
-            dataArray={this.props.pastOrders}
+            dataArray={this.props.pastOrders.sort(
+              (order1, order2) => order2.orderTime - order1.orderTime
+            )}
             renderRow={item => (
               <OrderListItem
                 key={item.id}
