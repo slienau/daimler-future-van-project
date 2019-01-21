@@ -102,8 +102,6 @@ class OrderHelper {
 
   // Creates an order Object and stores this in the db
   static async createOrder (accountID, routeId) {
-
-
     const currentTime = new Date()
     const route = await Route.findById(routeId)
     const timePassed = currentTime - route.journeyStartTime
@@ -115,16 +113,16 @@ class OrderHelper {
     if (route.validUntil < new Date(Date.now() + 1000)) return { code: 404, message: 'your route is no longer valid, please get a new route' }
 
     const vanId = route.vanId
-    const vanArrivalTime = new Date(Date.now()+ ManagementSystem.vans[vanId-1].potentialRoute.routes[0].legs[0].duration.value*1000)
-    if(!vanArrivalTime) return res.json({code:400, message:'old van route is corrupted'})
+    const vanArrivalTime = new Date(Date.now() + ManagementSystem.vans[vanId - 1].potentialRoute.routes[0].legs[0].duration.value * 1000)
+    if (!vanArrivalTime) return { code: 400, message: 'old van route is corrupted' }
 
     await Route.updateOne({ _id: routeId }, { $set: {
       confirmed: true,
       journeyStartTime: currentTime,
       vanStartTime: route.vanStartTime + timePassed,
       vanEndTime: route.vanEndTime + timePassed,
-      destinationTime: route.destinationTime + timePassed,
-      }
+      destinationTime: route.destinationTime + timePassed
+    }
     })
 
     const vbs = []
@@ -177,7 +175,7 @@ class OrderHelper {
     const order = await Order.findById(orderId)
     const virtualBusStop = await VirtualBusStop.findById(order.virtualBusStopStart)
     const vanTime = order.vanArrivalTime
-    const vanLocationBeforeArrival = ManagementSystem.vans[order.vanId-1].location
+    const vanLocationBeforeArrival = ManagementSystem.vans[order.vanId - 1].location
 
     if (order.active === false) return { userAllowedToEnter: false, message: 'Order is not active', vanPosition: null }
 

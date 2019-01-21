@@ -4,7 +4,7 @@ const address = 'http://localhost:8080'
 const passengerLocationClose = { latitude: 52.52302, longitude: 13.411019 }
 const passengerLocationFar = { latitude: 52.52802, longitude: 13.420019 }
 
-function sleep(ms){
+function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
@@ -63,7 +63,7 @@ async function starttest () {
   console.log(orderStatusInfoFar)
   console.log('----------------------')
 
-  const vans2= await axiosInstance.get('vans')
+  const vans2 = await axiosInstance.get('vans')
   console.log(vans2.data)
   console.log('Vans worked')
   console.log('----------------------')
@@ -84,13 +84,12 @@ async function starttest () {
 
   let vans3
 
-  for(let i=0; i<7; i++){
-    await sleep(1000*10)
-    vans3= await axiosInstance.get('vans')
+  for (let i = 0; i < 7; i++) {
+    await sleep(1000 * 10)
+    vans3 = await axiosInstance.get('vans')
     console.log(vans3.data)
     console.log('Vans deine mutter worked')
     console.log('----------------------')
-
   }
 
   const orderPut1 = await axiosInstance.put('/activeorder', { action: 'cancel', userLocation: { latitude: passengerLocationClose.latitude, longitude: passengerLocationClose.longitude } })
@@ -99,8 +98,6 @@ async function starttest () {
   console.log('order status:')
   console.log(orderPut1Info)
   console.log('----------------------')
-
-
 }
 
 starttest().catch(e => {

@@ -48,7 +48,6 @@ router.post('/', async function (req, res) {
   }
   try {
     order = await Order.findById(orderId, '-bonusMultiplier').lean()
-
   } catch (error) {
     res.json(error)
   }

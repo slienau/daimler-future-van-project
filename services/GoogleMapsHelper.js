@@ -41,11 +41,11 @@ class GoogleMapsHelper {
     return responses
   }
 
-  static async simpleGoogleRoute(startLocation, destinationLocation) {
-
+  static async simpleGoogleRoute (startLocation, destinationLocation) {
     const key = EnvVariableService.apiKey()
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${startLocation.latitude},${startLocation.longitude}&destination=${destinationLocation.latitude},${destinationLocation.longitude}&key=${key}&mode=driving`
-    return await rpn({uri: url, json: true})
+    const answer = await rpn({ uri: url, json: true })
+    return answer
   }
 
   // Returns the route's traveltime in seconds
