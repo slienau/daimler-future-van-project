@@ -11,6 +11,7 @@ var AccountHelper = require('../services/AccountHelper');
 var VirtualBusStopHelper = require('../services/VirtualBusStopHelper');
 var OrderHelper = require('../services/OrderHelper');
 var mongoose = require('mongoose');
+var ManagementSystem = require('../services/ManagementSystem')
 
 mongoose
     .connect(
@@ -24,12 +25,16 @@ mongoose
  * Get port from environment and store in Express.
  */
 
+// Initialize Vans
+
 var port = normalizePort(process.env.PORT || '8080');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
+
+ManagementSystem.initializeVans()
 
 var server = http.createServer(app);
 
