@@ -31,7 +31,13 @@ export default function orders(state = initialState, action) {
       const orders = _.uniqBy(
         [].concat(state.pastOrders, action.payload.map(momentifyOrder)),
         'id'
-      )
+      ).map(order => {
+        if (typeof order.co2savings === 'number')
+          order.co2savings = order.co2savings.toFixed(2)
+        if (typeof order.distance === 'number')
+          order.distance = order.distance.toFixed(2)
+        return order
+      })
       return {
         ...state,
         activeOrder: _.find(orders, 'active') || null,
