@@ -2,11 +2,18 @@ import React from 'react'
 import {Col, Row, Grid} from 'react-native-easy-grid'
 import {Container, Content, ListItem, Text, Button, Icon} from 'native-base'
 import {StyleSheet} from 'react-native'
-
+import {changeMapState, MapState} from '../../ducks/map'
 import VanCard from './VanCard'
 import JourneyOverview from './JourneyOverview'
+import {connect} from 'react-redux'
+import PropTypes from 'prop-types'
 
 const MainRideScreen = props => {
+  const handleClick = () => {
+    props.changeMapState(MapState.EXIT_VAN)
+    props.navigation.dangerouslyGetParent().goBack()
+  }
+
   return (
     <Container>
       <Content>
@@ -53,10 +60,7 @@ const MainRideScreen = props => {
             </Col>
           </Row>
         </Grid>
-        <Button
-          block
-          iconRight
-          onPress={() => props.navigation.dangerouslyGetParent().goBack()}>
+        <Button block iconRight onPress={() => handleClick()}>
           <Text>Exit Van</Text>
           <Icon name="exit" />
         </Button>
@@ -71,4 +75,15 @@ const styles = StyleSheet.create({
   },
 })
 
-export default MainRideScreen
+MainRideScreen.propTypes = {
+  changeMapState: PropTypes.func,
+}
+
+export default connect(
+  state => ({
+    mapState: state.map.mapState,
+  }),
+  dispatch => ({
+    changeMapState: payload => dispatch(changeMapState(payload)),
+  })
+)(MainRideScreen)
