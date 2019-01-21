@@ -5,7 +5,9 @@ const VirtualBusStop = require('../models/VirtualBusStop.js')
 class ManagementSystem {
   // Returns the van that will execute the ride
   static async requestVan (start, fromVB, toVB, destination, time = new Date(), passengerCount = 1) {
-    for (let counter = 0; counter < 3; counter++) {
+    this.updateVanLocations()
+
+    for (let counter = 0; counter < this.numberOfVans; counter++) {
 
       // Test 1 Gibt es potentialRoute --> dann gesperrt, wenn nicht eigene Route
 
@@ -14,18 +16,18 @@ class ManagementSystem {
       // Test 3 noch keine route mit pooling
 
     }
-    const vanId = Math.floor(Math.random() * 3) + 1
+    const vanId = Math.floor(Math.random() * this.numberOfVans) + 1
 
-    // Route ZUM ersten Virtual BusStop
+    // Route TO first Virtual Bus Stop is saved in potential route and set lastStepTime
     const route = await GoogleMapsHelper.simpleGoogleRoute(start, fromVB.location)
-
     this.vans[vanId - 1].potentialRoute = route
-
+    this.vans[vanId - 1].lastStepTime = new Date()
     const timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(route)
 
     return { vanId: vanId, nextStopTime: new Date(Date.now() + (timeToVB * 1000)) }
   }
 
+  // This is called when the users confirms/ places an order
   static async confirmVan (fromVB, toVB, vanId, passengerCount = 1) {
     this.vans[vanId - 1].route = this.vans[vanId - 1].potentialRoute
     this.vans[vanId - 1].potentialRoute = null
@@ -84,7 +86,7 @@ class ManagementSystem {
   }
 
   static initializeVans () {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < this.numberOfVans; i++) {
       this.vans[i] = {
         vanId: i + 1,
         location: {
@@ -92,7 +94,7 @@ class ManagementSystem {
           longitude: 13.3900 + Math.random() * 3 / 100
         },
         route: null,
-        lastStepTime: new Date(),
+        lastStepTime: null,
         nextStopTime: null,
         nextStops: [],
         potentialRoute: null,
@@ -105,17 +107,22 @@ class ManagementSystem {
 
   static updateVanLocations () {
     const currentTime = new Date()
-    console.log('Update Van Locations called at ', currentTime)
 
     ManagementSystem.vans.forEach((van) => {
-      // If van does not have a route, stop.
-      if (!van.route) return
-
+      // If van does not have a route or is waiting, check if it has a potential route that is older than 60s. if yes delete.
+      if (!van.route) {
+        if (van.potentialRoute && van.lastStepTime.getTime() < currentTime.getTime() + 60 * 1000) {
+          van.potentialRoute = null
+          van.lastStepTime = null
+        }
+        return
+      }
       if (van.waiting) return
 
-      // This happens if van has not reached the next bus Stop yet
+      // This happens if van has aroute and has not reached the next bus Stop yet
       if (currentTime < van.nextStopTime) {
-        const timePassed = ((currentTime - van.lastStepTime) / 1000)
+        // timePassed is the the time that has passed since the lastStepTime
+        const timePassed = ((currentTime.getTime() - van.lastStepTime.getTime()) / 1000)
         let timeCounter = 0
 
         // Iterate through all steps ahead of current step & find the one that matches the time that has passed
@@ -127,12 +134,15 @@ class ManagementSystem {
               latitude: van.route.routes[0].legs[0].steps[step].start_location.lat,
               longitude: van.route.routes[0].legs[0].steps[step].start_location.lng
             }
-            if (step > van.currentStep) van.lastStepTime = currentTime
+            // if algorithm has advanced a step, save the current time as the time of the last step
+            if (step > van.currentStep) {
+              van.lastStepTime = new Date(van.lastStepTime.getTime() + van.route.routes[0].legs[0].steps[step - 1].duration.value * 1000)
+            }
             van.currentStep = step
-
             break
           }
         }
+      // This happens if van has reached the next virtual bus stop
       } else {
         van.route = null
         van.currentStep = 0
@@ -149,5 +159,5 @@ class ManagementSystem {
 }
 
 ManagementSystem.vans = []
-
+ManagementSystem.numberOfVans = 3
 module.exports = ManagementSystem

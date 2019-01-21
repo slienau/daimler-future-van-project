@@ -53,6 +53,7 @@ async function starttest () {
   console.log('----------------------')
 
   const activeOrder = await axiosInstance.get('/activeorder')
+  console.log('active order:')
   console.log(activeOrder.data)
   console.log('----------------')
 
@@ -64,6 +65,7 @@ async function starttest () {
   console.log('----------------------')
 
   const vans2 = await axiosInstance.get('vans')
+  console.log('all vans:')
   console.log(vans2.data)
   console.log('Vans worked')
   console.log('----------------------')
@@ -71,7 +73,7 @@ async function starttest () {
   const orderStatus = await axiosInstance.get('/activeorder')
   const orderStatusInfo = orderStatus.data
 
-  console.log('order status:')
+  console.log('active order:')
   console.log(orderStatusInfo)
   console.log('----------------------')
 
@@ -84,11 +86,11 @@ async function starttest () {
 
   let vans3
 
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 3; i++) {
     await sleep(1000 * 10)
     vans3 = await axiosInstance.get('vans')
     console.log(vans3.data)
-    console.log('Vans deine mutter worked')
+    console.log('New Vans update worked')
     console.log('----------------------')
   }
 

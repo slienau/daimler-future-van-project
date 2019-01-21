@@ -171,6 +171,8 @@ class OrderHelper {
       return error
     }
   }
+
+  // To-Do: Only rely on location instead of time
   static async checkOrderLocationStatus (orderId, passengerLocation) {
     const order = await Order.findById(orderId)
     const virtualBusStop = await VirtualBusStop.findById(order.virtualBusStopStart)

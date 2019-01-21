@@ -5,8 +5,10 @@ const ManagementSystem = require('../services/ManagementSystem')
 
 router.get('/', async function (req, res) {
   ManagementSystem.updateVanLocations()
-  const vans = ManagementSystem.vans
-
+  const vans = []
+  ManagementSystem.vans.forEach((van) => {
+    vans.push({ vanId: van.vanId, location: van.location })
+  })
   res.json(vans)
 })
 
