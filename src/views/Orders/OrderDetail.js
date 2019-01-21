@@ -53,13 +53,13 @@ const OrderDetail = props => {
             <OrderDetailListItem
               icon="bus"
               body="Distance"
-              right={order.distance}
+              right={order.distance + ' km'}
             />
             <OrderDetailListItem
               icon="trees"
               iconType="Foundation"
               body="CO2 savings"
-              right={order.co2savings}
+              right={order.co2savings + ' kg'}
             />
             <OrderDetailListItem
               icon="star"
