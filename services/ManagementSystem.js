@@ -1,21 +1,85 @@
 const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
 const Route = require('../models/Route.js')
 const VirtualBusStop = require('../models/VirtualBusStop.js')
+const _ = require('lodash')
 
 class ManagementSystem {
+
+  static async getPossibleVans(fromVB, toVB){
+    const possibleVans = []
+    for (let counter = 0; counter < this.numberOfVans; counter++) {
+      const tmpVan = this.vans[counter]
+      // Test 1 Gibt es potentialRoute --> dann gesperrt, wenn nicht eigene Route
+      if(tmpVan.potentialRoute != null){
+        continue
+      }
+
+      // test 2 van is not driving at all and ready to take the route
+      if (tmpVan.route == null && !tmpVan.waiting){
+        // calculate duration how long the van would need to the start vb
+        const toStartVBRoute = await GoogleMapsHelper.simpleGoogleRoute(tmpVan.location, fromVB)
+        possibleVans.push({
+          id: tmpVan.id,
+          toStartVBRoute: toStartVBRoute,
+          toStartVBDuration: GoogleMapsHelper.readDurationFromGoogleResponse(toStartVBRoute)
+        })
+      }
+
+      // Test 2 no pooled route yet and destination vb is equal  
+      if (!tmpVan.currentlyPooling && _.last(tmpVan.nextStops) === toVB){
+        // calculate duration of the new route
+        const referenceWayPoint = null // TODO first, get the reference way point, because the van may be driving atm
+        const toStartVBRoute = await GoogleMapsHelper.simpleGoogleRoute(referenceWayPoint, fromVB)
+        const toEndVBRoute = await GoogleMapsHelper.simpleGoogleRoute(fromVB, toVB)
+        const newDuration = GoogleMapsHelper.readDurationFromGoogleResponse(toStartVBRoute) + GoogleMapsHelper.readDurationFromGoogleResponse(toEndVBRoute)
+        // compare duration of new route to duration of current route
+        const threshold = 600 // in seconds
+        const currentDuration = GoogleMapsHelper.readDurationFromGoogleResponse(tmpVan.route) // TODO should be get from order, because van could have a null route when its currently in waiting state
+        if(newDuration - currentDuration > threshold){
+          // threshold exceeded, van cant be used
+          continue
+        }
+        possibleVans.push({
+          id: tmpVan.id,
+          toStartVBRoute: toStartVBRoute,
+          toStartVBDuration: GoogleMapsHelper.readDurationFromGoogleResponse(toStartVBRoute)
+        })
+      }
+
+      // Test 3 startVB oder destVB gleich
+      
+
+    }
+    return _.sortBy(possibleVans, ['toStartVBDuration'])
+  }
+
+  static getBestVan(possibleVans){
+    while(possibleVans.length > 0){
+      // get next best van
+      const tmpVan = possibleVans.shift()
+      // make sure the van is still available
+      if(this.vans[tmpVan.id-1].potentialRoute == null){
+        bestVan = this.vans[tmpVan.id-1]
+        bestVan.potentialRoute = tmpVan.toStartVBRoute
+        break
+      }
+    }
+  }
+
   // Returns the van that will execute the ride
   static async requestVan (start, fromVB, toVB, destination, time = new Date(), passengerCount = 1) {
     this.updateVanLocations()
 
-    for (let counter = 0; counter < this.numberOfVans; counter++) {
+    // get all possible vans for this order request, sorted ascending by their duration 
+    const possibleVans = await this.getPossibleVans(fromVB, toVB, destination, time)
 
-      // Test 1 Gibt es potentialRoute --> dann gesperrt, wenn nicht eigene Route
+    // now determine best from all possible vans (the one with the lowest duration)
+    const bestVan = this.getBestVan(possibleVans)
 
-      // Test 2 startVB oder destVB gleich
-
-      // Test 3 noch keine route mit pooling
-
+    if(bestVan == null){
+      // TODO error, no van found!
     }
+
     const vanId = Math.floor(Math.random() * this.numberOfVans) + 1
 
     // Route TO first Virtual Bus Stop is saved in potential route and set lastStepTime
