@@ -17,20 +17,20 @@ class ManagementSystem {
       // test 2 van is not driving at all and ready to take the route
       if (tmpVan.route == null && !tmpVan.waiting){
         // calculate duration how long the van would need to the start vb
-        const toStartVBRoute = await GoogleMapsHelper.simpleGoogleRoute(tmpVan.location, fromVB)
+        const toStartVBRoute = await GoogleMapsHelper.simpleGoogleRoute(tmpVan.location, fromVB.location)
         possibleVans.push({
-          id: tmpVan.id,
+          vanId: tmpVan.vanId,
           toStartVBRoute: toStartVBRoute,
           toStartVBDuration: GoogleMapsHelper.readDurationFromGoogleResponse(toStartVBRoute)
         })
       }
 
-      // Test 2 no pooled route yet and destination vb is equal  
-      if (!tmpVan.currentlyPooling && _.last(tmpVan.nextStops) === toVB){
+      // Test 2 van already has a route/order, but is not pooled yet and destination vb is equal  
+      if (!tmpVan.currentlyPooling && _.last(tmpVan.nextStops.id) === toVB.id){
         // calculate duration of the new route
-        const referenceWayPoint = null // TODO first, get the reference way point, because the van may be driving atm
-        const toStartVBRoute = await GoogleMapsHelper.simpleGoogleRoute(referenceWayPoint, fromVB)
-        const toEndVBRoute = await GoogleMapsHelper.simpleGoogleRoute(fromVB, toVB)
+        const referenceWayPoint = toVB.location // TODO first, get the reference way point, because the van may be driving atm
+        const toStartVBRoute = await GoogleMapsHelper.simpleGoogleRoute(referenceWayPoint, fromVB.location)
+        const toEndVBRoute = await GoogleMapsHelper.simpleGoogleRoute(fromVB.location, toVB.location)
         const newDuration = GoogleMapsHelper.readDurationFromGoogleResponse(toStartVBRoute) + GoogleMapsHelper.readDurationFromGoogleResponse(toEndVBRoute)
         // compare duration of new route to duration of current route
         const threshold = 600 // in seconds
@@ -40,7 +40,7 @@ class ManagementSystem {
           continue
         }
         possibleVans.push({
-          id: tmpVan.id,
+          vanId: tmpVan.vanId,
           toStartVBRoute: toStartVBRoute,
           toStartVBDuration: GoogleMapsHelper.readDurationFromGoogleResponse(toStartVBRoute)
         })
@@ -58,12 +58,12 @@ class ManagementSystem {
       // get next best van
       const tmpVan = possibleVans.shift()
       // make sure the van is still available
-      if(this.vans[tmpVan.id-1].potentialRoute == null){
-        bestVan = this.vans[tmpVan.id-1]
-        bestVan.potentialRoute = tmpVan.toStartVBRoute
-        break
+      console.log('tmpVan', tmpVan)
+      if(this.vans[tmpVan.vanId-1].potentialRoute == null){
+        return tmpVan
       }
     }
+    return null // no van found
   }
 
   // Returns the van that will execute the ride
@@ -72,13 +72,16 @@ class ManagementSystem {
 
     // get all possible vans for this order request, sorted ascending by their duration 
     const possibleVans = await this.getPossibleVans(fromVB, toVB, destination, time)
-
+    console.log('possibleVans', possibleVans)
     // now determine best from all possible vans (the one with the lowest duration)
     const bestVan = this.getBestVan(possibleVans)
-
+    console.log('bestVan', bestVan)
     if(bestVan == null){
       // TODO error, no van found!
     }
+    // set potential route (and thus lock the van)
+    // const vanId = bestVan.id
+    // this.vans[vanId - 1].potentialRoute = bestVan.toStartVBRoute  
 
     const vanId = Math.floor(Math.random() * this.numberOfVans) + 1
 
@@ -99,7 +102,12 @@ class ManagementSystem {
     const timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(this.vans[vanId - 1].route)
 
     this.vans[vanId - 1].nextStopTime = new Date(Date.now() + (timeToVB * 1000))
-    this.vans[vanId - 1].nextStops.push(fromVB)
+    
+    let nextStops = this.vans[vanId - 1].nextStops
+    let start = _.slice(nextStops,0,-1)
+    let end = _.slice(nextStops,-1)
+    this.vans[vanId - 1].nextStops = _.unionBy([start, [fromVB, toVB], end], 'id')
+
     this.vans[vanId - 1].currentStep = 0
     this.vans[vanId - 1].lastStepTime = new Date()
 
@@ -117,7 +125,7 @@ class ManagementSystem {
     const timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(this.vans[vanId - 1].route)
 
     this.vans[vanId - 1].nextStopTime = new Date(Date.now() + (timeToVB * 1000))
-    this.vans[vanId - 1].nextStops.push(toVB)
+    // this.vans[vanId - 1].nextStops.push(toVB)
     this.vans[vanId - 1].currentStep = 0
     this.vans[vanId - 1].lastStepTime = new Date()
     this.vans[vanId - 1].waiting = false
@@ -125,28 +133,12 @@ class ManagementSystem {
 
   static async endRide (order) {
     const vanId = order.vanId
-
-    this.vans[vanId - 1].route = null
-    this.vans[vanId - 1].lastStepTime = new Date()
-    this.vans[vanId - 1].nextStopTime = null
-    this.vans[vanId - 1].nextStops = []
-    this.vans[vanId - 1].potentialRoute = null
-    this.vans[vanId - 1].currentlyPooling = false
-    this.vans[vanId - 1].currentStep = 0
-    this.vans[vanId - 1].waiting = false
+    this.resetVan(vanId)
   }
 
   static async cancelRide (order) {
     const vanId = order.vanId
-
-    this.vans[vanId - 1].route = null
-    this.vans[vanId - 1].lastStepTime = new Date()
-    this.vans[vanId - 1].nextStopTime = null
-    this.vans[vanId - 1].nextStops = []
-    this.vans[vanId - 1].potentialRoute = null
-    this.vans[vanId - 1].currentlyPooling = false
-    this.vans[vanId - 1].currentStep = 0
-    this.vans[vanId - 1].waiting = false
+    this.resetVan(vanId)
   }
 
   static initializeVans () {
@@ -167,6 +159,17 @@ class ManagementSystem {
         waiting: false
       }
     }
+  }
+
+  static resetVan(vanId) {
+    this.vans[vanId - 1].route = null
+    this.vans[vanId - 1].lastStepTime = new Date()
+    this.vans[vanId - 1].nextStopTime = null
+    this.vans[vanId - 1].nextStops = []
+    this.vans[vanId - 1].potentialRoute = null
+    this.vans[vanId - 1].currentlyPooling = false
+    this.vans[vanId - 1].currentStep = 0
+    this.vans[vanId - 1].waiting = false
   }
 
   static updateVanLocations () {
