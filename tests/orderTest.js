@@ -4,6 +4,10 @@ const address = 'http://localhost:8080'
 const passengerLocationClose = { latitude: 52.52302, longitude: 13.411019 }
 const passengerLocationFar = { latitude: 52.52802, longitude: 13.420019 }
 
+function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 async function starttest () {
   const credentials = await axios.post(address + '/login', { username: 'admin', password: 'adminiscooler' })
   console.log('Login worked')
@@ -18,6 +22,11 @@ async function starttest () {
   const pastOrders = await axiosInstance.get('/orders')
   console.log(pastOrders.data)
   console.log('PastOrders worked')
+  console.log('----------------------')
+
+  const vans = await axiosInstance.get('vans')
+  console.log(vans.data)
+  console.log('Vans worked')
   console.log('----------------------')
 
   const route = await axiosInstance.post('/routes', {
@@ -44,6 +53,7 @@ async function starttest () {
   console.log('----------------------')
 
   const activeOrder = await axiosInstance.get('/activeorder')
+  console.log('active order:')
   console.log(activeOrder.data)
   console.log('----------------')
 
@@ -54,10 +64,16 @@ async function starttest () {
   console.log(orderStatusInfoFar)
   console.log('----------------------')
 
+  const vans2 = await axiosInstance.get('vans')
+  console.log('all vans:')
+  console.log(vans2.data)
+  console.log('Vans worked')
+  console.log('----------------------')
+
   const orderStatus = await axiosInstance.get('/activeorder')
   const orderStatusInfo = orderStatus.data
 
-  console.log('order status:')
+  console.log('active order:')
   console.log(orderStatusInfo)
   console.log('----------------------')
 
@@ -67,6 +83,16 @@ async function starttest () {
   console.log('order status:')
   console.log(orderStatusInfo2)
   console.log('----------------------')
+
+  let vans3
+
+  for (let i = 0; i < 3; i++) {
+    await sleep(1000 * 10)
+    vans3 = await axiosInstance.get('vans')
+    console.log(vans3.data)
+    console.log('New Vans update worked')
+    console.log('----------------------')
+  }
 
   const orderPut1 = await axiosInstance.put('/activeorder', { action: 'cancel', userLocation: { latitude: passengerLocationClose.latitude, longitude: passengerLocationClose.longitude } })
   const orderPut1Info = orderPut1.data

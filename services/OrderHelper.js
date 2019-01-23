@@ -102,17 +102,28 @@ class OrderHelper {
 
   // Creates an order Object and stores this in the db
   static async createOrder (accountID, routeId) {
-    await Route.updateOne({ _id: routeId }, { $set: { confirmed: true } })
+    const currentTime = new Date()
     const route = await Route.findById(routeId)
-
-    // Check if Route is still valid, if not return an error
-    if (route.validUntil < new Date(Date.now() + 1000)) return { code: 404, message: 'your route is no longer valid, please get a new route' }
+    const timePassed = currentTime - route.journeyStartTime
 
     const virtualBusStopStart = route.startStation
     const virtualBusStopEnd = route.endStation
 
+    // Check if Route is still valid, if not return an error
+    if (route.validUntil < new Date(Date.now() + 1000)) return { code: 404, message: 'your route is no longer valid, please get a new route' }
+
     const vanId = route.vanId
-    const van = { vanId: vanId, vanArrivalTime: ManagementSystem.vanTimes[vanId] }
+    const vanArrivalTime = new Date(Date.now() + ManagementSystem.vans[vanId - 1].potentialRoute.routes[0].legs[0].duration.value * 1000)
+    if (!vanArrivalTime) return { code: 400, message: 'old van route is corrupted' }
+
+    await Route.updateOne({ _id: routeId }, { $set: {
+      confirmed: true,
+      journeyStartTime: currentTime,
+      vanStartTime: route.vanStartTime + timePassed,
+      vanEndTime: route.vanEndTime + timePassed,
+      destinationTime: route.destinationTime + timePassed
+    }
+    })
 
     const vbs = []
     try {
@@ -121,6 +132,9 @@ class OrderHelper {
     } catch (error) {
       return error
     }
+
+    ManagementSystem.confirmVan(vbs[0], vbs[1], vanId)
+
     const distance = route.vanRoute.routes[0].legs[0].distance.value / 1000
 
     let newOrder
@@ -135,13 +149,14 @@ class OrderHelper {
         virtualBusStopEnd: vbs[1]._id,
         startTime: null,
         endTime: null,
-        vanId: van.vanId,
+        vanId: vanId,
         route: routeId,
         distance: distance,
-        vanArrivalTime: van.vanArrivalTime,
+        vanArrivalTime: vanArrivalTime,
         bonuspoints: distance * bonusMultiplierStandard,
         co2savings: distance * co2savingsMultiplierStandard,
         bonusMultiplier: bonusMultiplierStandard
+
       })
     } catch (e) {
       console.log(e)
@@ -156,11 +171,13 @@ class OrderHelper {
       return error
     }
   }
+
+  // To-Do: Only rely on location instead of time
   static async checkOrderLocationStatus (orderId, passengerLocation) {
     const order = await Order.findById(orderId)
     const virtualBusStop = await VirtualBusStop.findById(order.virtualBusStopStart)
     const vanTime = order.vanArrivalTime
-    const vanLocationBeforeArrival = ManagementSystem.vanPositions[order.vanId]
+    const vanLocationBeforeArrival = ManagementSystem.vans[order.vanId - 1].location
 
     if (order.active === false) return { userAllowedToEnter: false, message: 'Order is not active', vanPosition: null }
 

@@ -3,6 +3,7 @@ const router = express.Router()
 const Order = require('../models/Order.js')
 const VirtualBusStop = require('../models/VirtualBusStop.js')
 const OrderHelper = require('../services/OrderHelper')
+const ManagementSystem = require('../services/ManagementSystem.js')
 const Route = require('../models/Route.js')
 const geolib = require('geolib')
 
@@ -14,6 +15,7 @@ router.get('/status', async function (req, res) {
 
   if (!req.query.passengerLatitude || !req.query.passengerLongitude) res.status(400).json({ code: 400, description: 'Bad params, you need passengerLongitude and passengerLatitude' })
 
+  ManagementSystem.updateVanLocations()
   const order = await Order.findOne({ accountId: req.user._id, active: true })
 
   if (!order) res.status(404).json({ code: 404, description: 'No active order' })
@@ -51,6 +53,8 @@ router.put('/', async function (req, res) {
 
   let orderNew
 
+  ManagementSystem.updateVanLocations()
+
   switch (req.body.action) {
     case 'startride':
 
@@ -64,7 +68,11 @@ router.put('/', async function (req, res) {
         res.status(403).json({ code: 403, description: 'Ride has already been started.' })
         break
       }
+
       await Order.updateOne({ _id: orderId }, { $set: { startTime: new Date() } })
+
+      await ManagementSystem.startRide(order)
+
       orderNew = await Order.findById(orderId)
       res.json(orderNew)
       break
@@ -78,6 +86,9 @@ router.put('/', async function (req, res) {
         break
       }
       await Order.updateOne({ _id: orderId }, { $set: { endTime: new Date(), active: false } })
+
+      await ManagementSystem.endRide(order)
+
       orderNew = await Order.findById(orderId)
       res.json(orderNew)
       break
@@ -88,6 +99,9 @@ router.put('/', async function (req, res) {
         break
       }
       await Order.updateOne({ _id: orderId }, { $set: { canceled: true, endTime: new Date(), active: false } })
+
+      await ManagementSystem.cancelRide(order)
+
       orderNew = await Order.findById(orderId)
       res.json(orderNew)
       break
