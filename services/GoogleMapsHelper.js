@@ -1,5 +1,6 @@
 const rpn = require('request-promise-native')
 const EnvVariableService = require('./ConfigService.js')
+const _ = require('lodash')
 
 class GoogleMapsHelper {
   static async googleAPICall (start, destination, vb1, vb2, time, vanArrivalDuration) {
@@ -51,8 +52,7 @@ class GoogleMapsHelper {
 
   // Returns the route's traveltime in seconds
   static readDurationFromGoogleResponse (googleresponse) {
-    return googleresponse.routes[0].legs[0].duration.value
-    // safer: return _.get(_.first(_.get(_.first(_.get(googleresponse, 'routes')), 'legs')), 'duration.value')
+    return _.get(googleresponse, 'routes.0.legs.0.duration.value')
   }
 }
 
