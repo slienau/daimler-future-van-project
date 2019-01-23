@@ -11,15 +11,17 @@ import {Container} from 'native-base'
 import {Dimensions} from 'react-native'
 import _ from 'lodash'
 import {
+  MapState,
   setUserPosition,
   setJourneyStart,
   setVisibleCoordinates,
 } from '../../../ducks/map'
-import {fetchActiveOrder} from '../../../ducks/orders'
+import {fetchActiveOrder, setActiveOrderState} from '../../../ducks/orders'
 import Info from './Info'
 import {defaultMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
 import CurrentLocationButton from './Buttons/CurrentLocationButton'
+import api from '../../../lib/api'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -32,6 +34,8 @@ const StyledMapView = styled(MapView)`
 class MapScreen extends React.Component {
   componentDidMount() {
     this.getCurrentPosition()
+    this.watchPosition()
+    this.continuouslyUpdatePosition()
     this.props.fetchActiveOrder()
   }
 
@@ -53,7 +57,14 @@ class MapScreen extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.updatePositionTimerId)
+    navigator.geolocation.clearWatch(this.watchId)
+  }
+
   mapRef = null
+  updatePositionTimerId = null
+  watchId = null
 
   animateToRegion = location => {
     this.mapRef.animateToRegion(
@@ -72,6 +83,40 @@ class MapScreen extends React.Component {
       edgePadding: edgePadding,
       animated: true,
     })
+  }
+
+  continuouslyUpdatePosition = () => {
+    const fn = async () => {
+      if (
+        this.props.mapState === MapState.ROUTE_ORDERED &&
+        this.props.userPosition
+      ) {
+        try {
+          const resp = await api.get('/activeorder/status', {
+            params: {
+              passengerLatitude: this.props.userPosition.latitude,
+              passengerLongitude: this.props.userPosition.longitude,
+            },
+          })
+          this.props.setActiveOrderState(resp.data)
+        } catch (e) {
+          console.log(e)
+        }
+      }
+      this.updatePositionTimerId = setTimeout(fn, 5000)
+    }
+    fn()
+  }
+
+  watchPosition = () => {
+    this.watchId = navigator.geolocation.watchPosition(
+      position => this.props.setUserPosition(position.coords),
+      error => this.setState({error: error.message}),
+      {
+        distanceFilter: 3,
+        useSignificantChanges: true,
+      }
+    )
   }
 
   getCurrentPosition = () => {
@@ -146,6 +191,7 @@ MapScreen.propTypes = {
   edgePadding: PropTypes.object,
   fetchActiveOrder: PropTypes.func,
   mapState: PropTypes.string,
+  setActiveOrderState: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
@@ -166,5 +212,6 @@ export default connect(
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
+    setActiveOrderState: payload => dispatch(setActiveOrderState(payload)),
   })
 )(MapScreen)
