@@ -144,6 +144,11 @@ class MapScreen extends React.Component {
     })
   }
 
+  toRideScreen = () => {
+    this.props.changeMapState(MapState.VAN_RIDE)
+    this.props.navigation.navigate('RideScreen')
+  }
+
   enterVan = async () => {
     if (_.get(this.props.activeOrder, 'startTime')) return
     try {
@@ -154,8 +159,7 @@ class MapScreen extends React.Component {
           'longitude',
         ]),
       })
-      this.props.changeMapState(MapState.VAN_RIDE)
-      this.props.navigation.navigate('RideScreen')
+      this.toRideScreen()
     } catch (e) {
       console.log(e)
     }
@@ -171,6 +175,13 @@ class MapScreen extends React.Component {
         longitudeDelta: 0.02,
       }
     }
+
+    // check if we have to show the RideScreen
+    if (
+      this.props.mapState === MapState.ROUTE_ORDERED &&
+      _.get(this.props.activeOrder, 'startTime')
+    )
+      setImmediate(() => this.toRideScreen())
 
     return (
       <Container>
