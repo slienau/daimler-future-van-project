@@ -3,10 +3,10 @@ const router = express.Router()
 const Order = require('../models/Order.js')
 const VirtualBusStop = require('../models/VirtualBusStop.js')
 const OrderHelper = require('../services/OrderHelper')
+const Route = require('../models/Route.js')
 
 router.get('/', async function (req, res) {
   const orders = await Order.find({ 'accountId': req.user._id })
-  console.log(orders)
   const ordersObject = JSON.parse(JSON.stringify(orders))
   res.setHeader('Content-Type', 'application/json')
 
@@ -33,10 +33,10 @@ router.post('/', async function (req, res) {
 
   const potentialOrder = await Order.findOne({ accountId: accountId, active: true })
 
-  if (potentialOrder) res.status(403).json({ code: 403, description: 'user still has active order, which has to be stopped first' })
+  if (potentialOrder) return res.status(403).json({ code: 403, description: 'user still has active order, which has to be stopped first' })
 
   // test if parameters are there
-  if (!req.body.routeId) res.status(400).json({ code: 400, description: 'bad parameters, you need routeId (from route request)' })
+  if (!req.body.routeId) return res.status(400).json({ code: 400, description: 'bad parameters, you need routeId (from route request)' })
 
   let order, orderId
 
@@ -47,10 +47,12 @@ router.post('/', async function (req, res) {
     res.json(error)
   }
   try {
-    order = await Order.findById(orderId, '-bonusMultiplier -route')
+    order = await Order.findById(orderId, '-bonusMultiplier').lean()
   } catch (error) {
     res.json(error)
   }
+  order.id = orderId
+  order.route = await Route.findById(order.route)
   console.log('created active order for user ' + accountId + ' with orderId: ' + orderId)
   res.json(order)
 })

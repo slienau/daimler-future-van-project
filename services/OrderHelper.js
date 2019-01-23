@@ -5,6 +5,7 @@ const Route = require('../models/Route.js')
 const ManagementSystem = require('./ManagementSystem.js')
 const geolib = require('geolib')
 const bonusMultiplierStandard = 10
+const co2savingsMultiplierStandard = 0.13 // EU limit for new cars = 0.13 kg/km
 
 class OrderHelper {
   // Check if any users are there and if not create two static users
@@ -14,7 +15,7 @@ class OrderHelper {
     if (items !== null && items.length !== 0) return console.log('no setup needed')
 
     let user, userId, vbs
-    let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End
+    let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End, distance1, distance2, distance3
     let accountnames = ['admin', 'maexle', 'christoph', 'sebastian', 'alex', 'domenic', 'marius', 'philipp', 'antonio']
 
     for (let i = 0; i < accountnames.length; i++) {
@@ -28,11 +29,13 @@ class OrderHelper {
         }
         orderTime1 = new Date('2018-12-10T12:30:00')
         orderTime2 = new Date('2018-12-13T10:00:00')
-
         time1Start = new Date('2018-12-10T13:00:00')
         time1End = new Date('2018-12-10T13:30:00')
         time2Start = new Date('2018-12-13T10:15:00')
         time2End = new Date('2018-12-13T10:30:00')
+        distance1 = 6
+        distance2 = 4
+        distance3 = 7.5
 
         const order1 = new Order({
 
@@ -45,8 +48,9 @@ class OrderHelper {
           startTime: time1Start,
           endTime: time1End,
           vanId: 3,
-          distance: 6,
-          bonuspoints: 6 * bonusMultiplierStandard,
+          distance: distance1,
+          bonuspoints: distance1 * bonusMultiplierStandard,
+          co2savings: distance1 * co2savingsMultiplierStandard,
           bonusMultiplier: bonusMultiplierStandard,
           route: '273jsnsb9201',
           vanArrivalTime: new Date(Date.now() - 837268)
@@ -63,9 +67,9 @@ class OrderHelper {
           startTime: time2Start,
           endTime: time2End,
           vanId: 4,
-          distance: 7.65,
-          bonuspoints: 7.65 * bonusMultiplierStandard,
-          bonusMultiplier: bonusMultiplierStandard,
+          distance: distance2,
+          bonuspoints: distance2 * bonusMultiplierStandard,
+          co2savings: distance2 * co2savingsMultiplierStandard,
           route: '273jsnsb9250',
           vanArrivalTime: new Date(Date.now() - 587268)
         })
@@ -80,9 +84,9 @@ class OrderHelper {
           startTime: time2Start,
           endTime: time2End,
           vanId: 4,
-          distance: 18,
-          bonuspoints: 18 * bonusMultiplierStandard,
-          bonusMultiplier: bonusMultiplierStandard,
+          distance: distance3,
+          bonuspoints: distance3 * bonusMultiplierStandard,
+          co2savings: distance3 * co2savingsMultiplierStandard,
           route: '273jsnsb9250',
           vanArrivalTime: new Date(Date.now() - 587268)
         })
@@ -98,17 +102,28 @@ class OrderHelper {
 
   // Creates an order Object and stores this in the db
   static async createOrder (accountID, routeId) {
-    await Route.updateOne({ _id: routeId }, { $set: { confirmed: true } })
+    const currentTime = new Date()
     const route = await Route.findById(routeId)
-
-    // Check if Route is still valid, if not return an error
-    if (route.validUntil < new Date(Date.now() + 1000)) return { code: 404, message: 'your route is no longer valid, please get a new route' }
+    const timePassed = currentTime - route.journeyStartTime
 
     const virtualBusStopStart = route.startStation
     const virtualBusStopEnd = route.endStation
 
+    // Check if Route is still valid, if not return an error
+    if (route.validUntil < new Date(Date.now() + 1000)) return { code: 404, message: 'your route is no longer valid, please get a new route' }
+
     const vanId = route.vanId
-    const van = { vanId: vanId, vanArrivalTime: ManagementSystem.vanTimes[vanId] }
+    const vanArrivalTime = new Date(Date.now() + ManagementSystem.vans[vanId - 1].potentialRoute.routes[0].legs[0].duration.value * 1000)
+    if (!vanArrivalTime) return { code: 400, message: 'old van route is corrupted' }
+
+    await Route.updateOne({ _id: routeId }, { $set: {
+      confirmed: true,
+      journeyStartTime: currentTime,
+      vanStartTime: route.vanStartTime + timePassed,
+      vanEndTime: route.vanEndTime + timePassed,
+      destinationTime: route.destinationTime + timePassed
+    }
+    })
 
     const vbs = []
     try {
@@ -117,6 +132,9 @@ class OrderHelper {
     } catch (error) {
       return error
     }
+
+    ManagementSystem.confirmVan(vbs[0], vbs[1], vanId)
+
     const distance = route.vanRoute.routes[0].legs[0].distance.value / 1000
 
     let newOrder
@@ -131,12 +149,14 @@ class OrderHelper {
         virtualBusStopEnd: vbs[1]._id,
         startTime: null,
         endTime: null,
-        vanId: van.vanId,
+        vanId: vanId,
         route: routeId,
         distance: distance,
-        vanArrivalTime: van.vanArrivalTime,
+        vanArrivalTime: vanArrivalTime,
         bonuspoints: distance * bonusMultiplierStandard,
+        co2savings: distance * co2savingsMultiplierStandard,
         bonusMultiplier: bonusMultiplierStandard
+
       })
     } catch (e) {
       console.log(e)
@@ -151,11 +171,13 @@ class OrderHelper {
       return error
     }
   }
+
+  // To-Do: Only rely on location instead of time
   static async checkOrderLocationStatus (orderId, passengerLocation) {
     const order = await Order.findById(orderId)
     const virtualBusStop = await VirtualBusStop.findById(order.virtualBusStopStart)
     const vanTime = order.vanArrivalTime
-    const vanLocationBeforeArrival = ManagementSystem.vanPositions[order.vanId]
+    const vanLocationBeforeArrival = ManagementSystem.vans[order.vanId - 1].location
 
     if (order.active === false) return { userAllowedToEnter: false, message: 'Order is not active', vanPosition: null }
 

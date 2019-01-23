@@ -13,12 +13,19 @@ router.post('/', async function (req, res) {
 
   const time = req.body.startTime ? new Date(req.body.startTime) : new Date()
 
-  const van = ManagementSystem.requestVan(req.body.start, req.body.destination, time)
+  // Find the virtual bus stops that a closest to the passenger
+  const startVB = await VirtualBusStopHelper.getClosestVB(req.body.start)
+  const destinationVB = await VirtualBusStopHelper.getClosestVB(req.body.destination)
+
+  // request a Van a find out how long it takes to the VB
+  const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, time)
 
   let suggestions = []
   let route
+
+  // Get a route for the passenger consisting of three route legs
   try {
-    route = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, req.body.destination, time, van.timeToVB, van.vanID)
+    route = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, startVB, destinationVB, req.body.destination, time, van.nextStopTime, van.vanId)
   } catch (error) {
     res.json(error)
   }
