@@ -59,7 +59,7 @@ class StartWalkCardLarge extends React.Component {
               disabled={
                 !_.get(this.props.activeOrderState, 'userAllowedToEnter')
               }
-              onPress={() => this.props.toRideScreen()}>
+              onPress={() => this.props.onEnterVanPress()}>
               <Text>Hop on</Text>
             </Button>
           </Right>
@@ -73,7 +73,7 @@ StartWalkCardLarge.propTypes = {
   activeOrderState: PropTypes.object,
   busStopStartName: PropTypes.string,
   departure: PropTypes.string,
-  toRideScreen: PropTypes.func,
+  onEnterVanPress: PropTypes.func,
   vanId: PropTypes.number,
   waitingTime: PropTypes.string,
   walkingDistance: PropTypes.string,
