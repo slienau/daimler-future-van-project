@@ -15,6 +15,7 @@ import {
   setUserPosition,
   setJourneyStart,
   setVisibleCoordinates,
+  changeMapState,
 } from '../../../ducks/map'
 import {fetchActiveOrder, setActiveOrderState} from '../../../ducks/orders'
 import Info from './Info'
@@ -88,7 +89,9 @@ class MapScreen extends React.Component {
   continuouslyUpdatePosition = () => {
     const fn = async () => {
       if (
-        this.props.mapState === MapState.ROUTE_ORDERED &&
+        [MapState.ROUTE_ORDERED, MapState.VAN_RIDE].includes(
+          this.props.mapState
+        ) &&
         this.props.userPosition
       ) {
         try {
@@ -141,6 +144,23 @@ class MapScreen extends React.Component {
     })
   }
 
+  enterVan = async () => {
+    if (_.get(this.props.activeOrder, 'startTime')) return
+    try {
+      await api.put('/activeorder', {
+        action: 'startride',
+        userLocation: _.pick(this.props.userPosition, [
+          'latitude',
+          'longitude',
+        ]),
+      })
+      this.props.changeMapState(MapState.VAN_RIDE)
+      this.props.navigation.navigate('RideScreen')
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   render() {
     let mapRegion = defaultMapRegion
     if (this.props.userPosition !== null) {
@@ -179,15 +199,15 @@ class MapScreen extends React.Component {
 
         <BottomButtons toSearchView={this.toSearchView} />
 
-        <Info
-          toRideScreen={() => this.props.navigation.navigate('RideScreen')}
-        />
+        <Info onEnterVanPress={() => this.enterVan()} />
       </Container>
     )
   }
 }
 
 MapScreen.propTypes = {
+  activeOrder: PropTypes.object,
+  changeMapState: PropTypes.func,
   edgePadding: PropTypes.object,
   fetchActiveOrder: PropTypes.func,
   mapState: PropTypes.string,
@@ -205,6 +225,7 @@ export default connect(
     userPosition: state.map.userPosition,
     visibleCoordinates: state.map.visibleCoordinates,
     edgePadding: state.map.edgePadding,
+    activeOrder: state.orders.activeOrder,
   }),
   dispatch => ({
     fetchActiveOrder: payload => dispatch(fetchActiveOrder(payload)),
@@ -213,5 +234,6 @@ export default connect(
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
     setActiveOrderState: payload => dispatch(setActiveOrderState(payload)),
+    changeMapState: payload => dispatch(changeMapState(payload)),
   })
 )(MapScreen)
