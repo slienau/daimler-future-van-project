@@ -70,13 +70,14 @@ export function fetchOrders() {
 
 export function fetchActiveOrder() {
   return async dispatch => {
-    const {data, status} = await api.get('/activeorder')
-    if (status === 200) {
+    try {
+      const {data, status} = await api.get('/activeorder')
+      if (status !== 200) return
       // currently there is an active order, so set the state correctly
       dispatch(setActiveOrder(data))
       dispatch(setRoutes([data.route]))
       dispatch(changeMapState(MapState.ROUTE_ORDERED))
-    }
+    } catch (e) {}
   }
 }
 
