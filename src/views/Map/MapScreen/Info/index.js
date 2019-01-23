@@ -19,18 +19,11 @@ const Info = props => {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    mapState: state.map.mapState,
-  }
-}
-
 Info.propTypes = {
   mapState: PropTypes.string,
   onEnterVanPress: PropTypes.func,
 }
 
-export default connect(
-  mapStateToProps,
-  null
-)(Info)
+export default connect(state => ({
+  mapState: state.map.mapState,
+}))(Info)
