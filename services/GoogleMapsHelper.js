@@ -1,6 +1,5 @@
 const rpn = require('request-promise-native')
 const EnvVariableService = require('./ConfigService.js')
-const _ = require('lodash')
 
 class GoogleMapsHelper {
   static async googleAPICall (start, destination, vb1, vb2, time, vanArrivalDuration) {
