@@ -1,10 +1,15 @@
 import React from 'react'
-import {View} from 'native-base'
+import {ListItem, Text} from 'native-base'
 import JourneyListItem from './JourneyListItem'
 import {connect} from 'react-redux'
 import _ from 'lodash'
 import moment from 'moment'
 import PropTypes from 'prop-types'
+import styled from 'styled-components/native'
+
+const StyledText = styled(Text)`
+  font-size: 21;
+`
 
 const JourneyOverview = props => {
   const getdestinationTime = _.get(props.route, 'destinationTime')
@@ -15,7 +20,10 @@ const JourneyOverview = props => {
   const bonusPoints = '' + _.round(_.get(props.activeOrder, 'bonuspoints'), 2)
 
   return (
-    <View>
+    <>
+      <ListItem itemHeader first>
+        <StyledText>Journey overview</StyledText>
+      </ListItem>
       <JourneyListItem
         description="Time of arrival"
         iconColor="darkgreen"
@@ -41,7 +49,7 @@ const JourneyOverview = props => {
         iconName="star"
         info={bonusPoints}
       />
-    </View>
+    </>
   )
 }
 
