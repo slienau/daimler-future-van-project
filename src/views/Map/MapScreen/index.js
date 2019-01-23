@@ -16,6 +16,7 @@ import {
   setJourneyStart,
   setVisibleCoordinates,
   changeMapState,
+  setVans,
 } from '../../../ducks/map'
 import {fetchActiveOrder, setActiveOrderState} from '../../../ducks/orders'
 import Info from './Info'
@@ -37,6 +38,7 @@ class MapScreen extends React.Component {
     this.getCurrentPosition()
     this.watchPosition()
     this.continuouslyUpdatePosition()
+    this.getVans()
     this.props.fetchActiveOrder()
   }
 
@@ -61,11 +63,13 @@ class MapScreen extends React.Component {
   componentWillUnmount() {
     clearTimeout(this.updatePositionTimerId)
     navigator.geolocation.clearWatch(this.watchId)
+    clearTimeout(this.getVansTimerId)
   }
 
   mapRef = null
   updatePositionTimerId = null
   watchId = null
+  getVansTimerId = null
 
   animateToRegion = location => {
     this.mapRef.animateToRegion(
@@ -120,6 +124,23 @@ class MapScreen extends React.Component {
         useSignificantChanges: true,
       }
     )
+  }
+
+  getVans = () => {
+    const fn = async () => {
+      if (
+        [MapState.INIT, MapState.SEARCH_ROUTES].includes(this.props.mapState)
+      ) {
+        try {
+          const {data} = await api.get('/vans')
+          this.props.setVans(data)
+        } catch (e) {
+          console.log(e)
+        }
+      }
+      this.getVansTimerId = setTimeout(fn, 5000)
+    }
+    fn()
   }
 
   getCurrentPosition = () => {
@@ -225,6 +246,7 @@ MapScreen.propTypes = {
   setActiveOrderState: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
+  setVans: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
   userPosition: PropTypes.object,
   visibleCoordinates: PropTypes.array,
@@ -246,5 +268,6 @@ export default connect(
       dispatch(setVisibleCoordinates(coords, edgePadding)),
     setActiveOrderState: payload => dispatch(setActiveOrderState(payload)),
     changeMapState: payload => dispatch(changeMapState(payload)),
+    setVans: payload => dispatch(setVans(payload)),
   })
 )(MapScreen)
