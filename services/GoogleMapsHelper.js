@@ -52,8 +52,7 @@ class GoogleMapsHelper {
 
   // Returns the route's traveltime in seconds
   static readDurationFromGoogleResponse (googleresponse) {
-    return googleresponse.routes[0].legs[0].duration.value
-    // safer: return _.get(_.first(_.get(_.first(_.get(googleresponse, 'routes')), 'legs')), 'duration.value')
+    return _.get(googleresponse, 'routes.0.legs.0.duration.value')
   }
 }
 
