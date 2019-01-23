@@ -10,6 +10,7 @@ import {
   TextLarge,
   CardItemBorderBottom,
 } from '../StyledComponents'
+import _ from 'lodash'
 import React from 'react'
 
 class StartWalkCardLarge extends React.Component {
@@ -53,7 +54,12 @@ class StartWalkCardLarge extends React.Component {
             </ViewCentered>
           </Body>
           <Right>
-            <Button rounded onPress={() => this.props.toRideScreen()}>
+            <Button
+              rounded
+              disabled={
+                !_.get(this.props.activeOrderState, 'userAllowedToEnter')
+              }
+              onPress={() => this.props.toRideScreen()}>
               <Text>Hop on</Text>
             </Button>
           </Right>
@@ -64,6 +70,7 @@ class StartWalkCardLarge extends React.Component {
 }
 
 StartWalkCardLarge.propTypes = {
+  activeOrderState: PropTypes.object,
   busStopStartName: PropTypes.string,
   departure: PropTypes.string,
   toRideScreen: PropTypes.func,
