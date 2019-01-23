@@ -12,6 +12,7 @@ export const CHANGE_MAP_STATE = 'map/CHANGE_MAP_STATE'
 export const SWAP_JOURNEY_START_AND_DESTINATION =
   'map/SWAP_JOURNEY_START_AND_DESTINATION'
 export const SET_VISIBLE_COORDINATES = 'map/SET_VISIBLE_COORDINATES'
+export const SET_VANS = 'map/SET_VANS'
 
 export const MapState = {
   INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
@@ -37,6 +38,7 @@ const initialState = {
     initialMapSearchResults.BRANDENBURGER_TOR,
     initialMapSearchResults.SIDOS_HOOD,
   ],
+  vans: [],
 }
 
 const map = (state = initialState, action) => {
@@ -75,6 +77,9 @@ const map = (state = initialState, action) => {
     case SET_VISIBLE_COORDINATES:
       newState.visibleCoordinates = action.payload.visibleCoordinates
       newState.edgePadding = action.payload.edgePadding
+      return newState
+    case SET_VANS:
+      newState.vans = action.payload
       return newState
     default:
       return state
@@ -173,6 +178,13 @@ export const setVisibleCoordinates = (
 export const setRoutes = payload => {
   return {
     type: SET_ROUTES,
+    payload: payload,
+  }
+}
+
+export const setVans = payload => {
+  return {
+    type: SET_VANS,
     payload: payload,
   }
 }
