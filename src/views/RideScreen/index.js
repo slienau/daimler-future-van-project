@@ -1,7 +1,7 @@
 import React from 'react'
 import MainRideScreen from './MainRideScreen'
 import {createStackNavigator} from 'react-navigation'
-import MainViewHeader from '../../components/ViewHeaders/MainViewHeader'
+import BlankViewHeader from '../../components/ViewHeaders/BlankViewHeader'
 import SubViewHeader from '../../components/ViewHeaders/SubViewHeader'
 import FunfactsScreen from './FunfactsScreen'
 import inRideMapScreen from './inRideMapScreen'
@@ -13,12 +13,7 @@ const RideScreen = createStackNavigator(
     MainRideScreen: {
       screen: MainRideScreen,
       navigationOptions: ({navigation}) => ({
-        header: (
-          <MainViewHeader
-            title="Ride view"
-            onMenuPress={() => navigation.openDrawer()}
-          />
-        ),
+        header: <BlankViewHeader title="Ride view" />,
       }),
     },
     FunfactsScreen: {
