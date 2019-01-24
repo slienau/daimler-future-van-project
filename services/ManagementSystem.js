@@ -115,7 +115,7 @@ class ManagementSystem {
     const wholeRoute = Route.findById(order.route)
     const vanRoute = wholeRoute.vanRoute
     const vanId = order.vanId
-    // const toVB = await VirtualBusStop.findById(order.virtualBusStopEnd)
+    // const toVB = await VirtualBusStop.findById(order.vanEndVBS)
 
     this.vans[vanId - 1].route = vanRoute
 

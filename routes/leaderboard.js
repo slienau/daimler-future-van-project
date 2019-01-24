@@ -12,7 +12,7 @@ router.get('/', async function (req, res) {
           $group:
             {
               _id: '$accountId',
-              bonusPoints: { $sum: { $multiply: ['$distance', '$bonusMultiplier'] } },
+              loyaltyPoints: { $sum: { $multiply: ['$distance', '$bonusMultiplier'] } },
               co2savings: { $sum: '$co2savings' }
             }
         },
@@ -23,7 +23,7 @@ router.get('/', async function (req, res) {
         }
       ]
     )
-      .sort({ bonusPoints: -1 }) // sort the scoreboard by bonuspoints desc
+      .sort({ loyaltyPoints: -1 }) // sort the scoreboard by loyaltyPoints desc
       .limit(10) // return only the first ten in the leaderboard
     res.json(leaderboard)
   } catch (error) {

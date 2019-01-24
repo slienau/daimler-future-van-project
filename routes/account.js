@@ -23,14 +23,14 @@ router.get('/', async function (req, res) {
         $group:
           {
             _id: '$accountId',
-            bonuspoints: { $sum: { $multiply: ['$distance', '$bonusMultiplier'] } },
+            loyaltyPoints: { $sum: { $multiply: ['$distance', '$bonusMultiplier'] } },
             co2savings: { $sum: '$co2savings' },
             distance: { $sum: '$distance' }
           }
       }
     ])
     if (bonusitem.length > 0) {
-      bonuspoints = bonusitem[0].bonuspoints
+      bonuspoints = bonusitem[0].loyaltyPoints
       co2savings = bonusitem[0].co2savings
       distance = bonusitem[0].distance
     }
