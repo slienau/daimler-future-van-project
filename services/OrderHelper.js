@@ -7,8 +7,10 @@ const geolib = require('geolib')
 const bonusMultiplierStandard = 10
 const co2savingsMultiplierStandard = 0.13 // EU limit for new cars = 0.13 kg/km
 
+// range in meter how far the van and user can be from the vbs to still be able to start/end the ride
+const range = 25
+
 class OrderHelper {
-  // Check if any users are there and if not create two static users
   static async setupOrders () {
     const items = await Order.find({})
 
@@ -202,13 +204,13 @@ class OrderHelper {
     }
 
     if (!order.vanEnterTime) {
-      if (geolib.getDistance(vanLocation, virtualBusStopStart.location) > 10) return { ...res, message: 'Van has not arrived yet.' }
-      res.userAllowedToEnter = geolib.getDistance(virtualBusStopStart.location, passengerLocation) < 10
+      if (geolib.getDistance(vanLocation, virtualBusStopStart.location) > range) return { ...res, message: 'Van has not arrived yet.' }
+      res.userAllowedToEnter = geolib.getDistance(virtualBusStopStart.location, passengerLocation) < range
       res.userAllowedToExit = false
       res.message = res.userAllowedToEnter ? 'Van is ready to be entered.' : 'Van is ready, but passenger is not close enough to the van.'
     } else {
       res.userAllowedToEnter = false
-      res.userAllowedToExit = geolib.getDistance(virtualBusStopEnd.location, vanLocation) < 10
+      res.userAllowedToExit = geolib.getDistance(virtualBusStopEnd.location, vanLocation) < range
       res.message = res.userAllowedToExit ? 'Van is ready to be exited.' : 'You have not arrived at the destination virtual bus stop yet.'
     }
     return res

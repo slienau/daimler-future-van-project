@@ -13,8 +13,8 @@ class VirtualBusStopHelper {
 
     const zoo = new VirtualBusStop({
       location: {
-        latitude: 52.507304,
-        longitude: 13.330626
+        latitude: 52.507144,
+        longitude: 13.330612
       },
       name: 'Zoo - Hardenbergstraße 31',
       accessible: true
