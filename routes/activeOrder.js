@@ -35,6 +35,8 @@ router.get('/', async function (req, res) {
   orderLean.id = order._id
 
   orderLean.route = await Route.findById(order.route, '-confirmed -validUntil')
+  orderLean.vanStartVBS = await VirtualBusStop.findById(order.vanStartVBS).lean()
+  orderLean.vanEndVBS = await VirtualBusStop.findById(order.vanEndVBS).lean()
 
   res.json(orderLean)
 })

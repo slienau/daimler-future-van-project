@@ -77,8 +77,8 @@ class VirtualBusStopHelper {
     })
     const fried = new VirtualBusStop({
       location: {
-        latitude: 52.52559,
-        longitude: 13.388116
+        latitude: 52.519671,
+        longitude: 13.388097
       },
       name: 'Friedrichstraße - Friedrichstraße 147',
       accessible: true

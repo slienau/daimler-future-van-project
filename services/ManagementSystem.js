@@ -154,8 +154,8 @@ class ManagementSystem {
       this.vans[i] = {
         vanId: i + 1,
         location: {
-          latitude: 52.5150 + Math.random() * 3 / 100,
-          longitude: 13.3900 + Math.random() * 3 / 100
+          latitude: 52.513751,
+          longitude: 13.333312
         },
         route: null,
         lastStepTime: null,
