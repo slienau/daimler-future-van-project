@@ -1,10 +1,8 @@
 import React from 'react'
-import {Image} from 'react-native'
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete'
-import config from '../../../lib/config'
+import config, {initialMapSearchLocations} from '../../../lib/config'
 import {connect} from 'react-redux'
 import {
-  addSearchResultAction,
   changeMapState,
   MapState,
   setJourneyDestination,
@@ -15,73 +13,32 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 
 const SearchScreen = props => {
-  const predefinedPlaces = _.uniqBy(props.searchResults, 'id')
-
-  const onSearchResult = (data, details) => {
-    const type = props.navigation.getParam('type')
-    handleSearchResult(data, details, type)
-  }
-
-  const handleSearchResult = (data, details, type) => {
+  const handleSearchResult = (data, details) => {
     if (!details) return
 
     // extract needed data from the search result and distinguish between current location or not
     // if current location, we dont want to add it to the list of last searches
-    if (details.description === 'Current location') {
-      // name field is not set for current location, so set it
+    // name field is not set for current location, so set it
+    if (details.description === 'Current location')
       details.name = details.description
-    } else {
-      details.description = details.name
-      props.addSearchResult(details)
-    }
+    else details.description = details.name
+
     const location = {
       latitude: details.geometry.location.lat,
       longitude: details.geometry.location.lng,
     }
-    if (type === 'DESTINATION') {
-      handleDestinationSearchResult(details, location)
-    } else if (type === 'START') {
-      handleStartSearchResult(details, location)
-    }
-  }
-
-  const handleDestinationSearchResult = (details, location) => {
-    const journeyDestination = {
+    const type = ['start', 'destination'].indexOf(
+      _.lowerCase(props.navigation.getParam('type'))
+    )
+    props.setJourney(type === 0, {
       location: location,
       title: details.name,
       description: details.vicinity,
-    }
-    if (props.mapState === MapState.INIT)
-      props.changeMapState(MapState.SEARCH_ROUTES)
-    props.setJourneyDestination(journeyDestination)
-    // check whether start location is already set
-    if (props.journeyStart != null) {
-      // fit zoom to start and destination if so
-      const coords = [location, props.journeyStart.location]
-      props.setVisibleCoordinates(coords)
-    } else {
-      // otherwise, only zoom to destination
-      props.setVisibleCoordinates([location])
-    }
-  }
-
-  const handleStartSearchResult = (details, location) => {
-    const journeyStart = {
-      location: location,
-      title: details.name,
-      description: details.vicinity,
-    }
-    props.setJourneyStart(journeyStart)
+    })
     props.changeMapState(MapState.SEARCH_ROUTES)
-    // check if destination is set
-    if (props.journeyDestination != null) {
-      // fit zoom to start and destination if so
-      const coords = [location, props.journeyDestination.location]
-      props.setVisibleCoordinates(coords)
-    } else {
-      // otherwise, only zoom to start
-      props.setVisibleCoordinates([location])
-    }
+    props.setVisibleCoordinates(
+      _.compact([location, _.get(_.nth(props.journey, type - 1), 'location')])
+    )
   }
 
   return (
@@ -94,7 +51,7 @@ const SearchScreen = props => {
       fetchDetails
       renderDescription={row => row.description} // custom description render
       onPress={(data, details = null) => {
-        onSearchResult(data, details)
+        handleSearchResult(data, details)
         props.navigation.goBack()
       }}
       getDefaultValue={() => ''}
@@ -129,52 +86,29 @@ const SearchScreen = props => {
         }
       }
       // filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-      predefinedPlaces={predefinedPlaces}
+      predefinedPlaces={initialMapSearchLocations}
       debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
-      renderLeftButton={() => (
-        <Image
-          source={{
-            uri:
-              'https://cdn1.iconfinder.com/data/icons/hawcons/32/698627-icon-111-search-512.png',
-          }}
-        />
-      )}
-      renderRightButton={() => (
-        <Image
-          source={{
-            uri:
-              'https://cdn1.iconfinder.com/data/icons/hawcons/32/698627-icon-111-search-512.png',
-          }}
-        />
-      )}
     />
   )
 }
 
 SearchScreen.propTypes = {
-  addSearchResult: PropTypes.func,
   changeMapState: PropTypes.func,
-  journeyDestination: PropTypes.object,
-  journeyStart: PropTypes.object,
-  mapState: PropTypes.string,
-  searchResults: PropTypes.array,
-  setJourneyDestination: PropTypes.func,
-  setJourneyStart: PropTypes.func,
+  journey: PropTypes.array,
+  setJourney: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
 }
 
 export default connect(
   state => ({
-    mapState: state.map.mapState,
-    searchResults: state.map.searchResults,
-    journeyStart: state.map.journeyStart,
-    journeyDestination: state.map.journeyDestination,
+    journey: [state.map.journeyStart, state.map.journeyDestination],
   }),
   dispatch => ({
-    addSearchResult: result => dispatch(addSearchResultAction(result)),
     changeMapState: payload => dispatch(changeMapState(payload)),
-    setJourneyStart: payload => dispatch(setJourneyStart(payload)),
-    setJourneyDestination: payload => dispatch(setJourneyDestination(payload)),
+    setJourney: (isStart, payload) =>
+      dispatch(
+        isStart ? setJourneyStart(payload) : setJourneyDestination(payload)
+      ),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
   })

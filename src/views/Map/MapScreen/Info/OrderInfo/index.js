@@ -77,7 +77,7 @@ const OrderInfo = props => {
         <StartWalkCardLarge
           currentState={props.currentState}
           onEnterVanPress={props.onEnterVanPress}
-          activeOrderState={props.activeOrderState}
+          activeOrderStatus={props.activeOrderStatus}
           walkingDuration={
             props.routes[0].toStartRoute.routes[0].legs[0].duration.text
           }
@@ -121,7 +121,7 @@ const OrderInfo = props => {
 
 OrderInfo.propTypes = {
   activeOrder: PropTypes.object,
-  activeOrderState: PropTypes.object,
+  activeOrderStatus: PropTypes.object,
   currentState: PropTypes.string,
   mapState: PropTypes.string,
   onEnterVanPress: PropTypes.func,
@@ -135,7 +135,7 @@ export default connect(
     routes: state.map.routes,
     mapState: state.map.mapState,
     activeOrder: state.orders.activeOrder,
-    activeOrderState: state.orders.activeOrderState,
+    activeOrderStatus: state.orders.activeOrderStatus,
   }),
   dispatch => ({
     setVisibleCoordinates: (coords, edgePadding) =>

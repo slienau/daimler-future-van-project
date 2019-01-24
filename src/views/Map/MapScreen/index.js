@@ -19,7 +19,7 @@ import {
   setVans,
   resetMapState,
 } from '../../../ducks/map'
-import {fetchActiveOrder, setActiveOrderState} from '../../../ducks/orders'
+import {fetchActiveOrder, setActiveOrderStatus} from '../../../ducks/orders'
 import Info from './Info'
 import {defaultMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
@@ -44,6 +44,12 @@ class MapScreen extends React.Component {
   }
 
   componentDidUpdate() {
+    // check if we have to show the RideScreen
+    if (
+      this.props.mapState === MapState.ROUTE_ORDERED &&
+      _.get(this.props.activeOrder, 'startTime')
+    )
+      setImmediate(() => this.toRideScreen())
     if (this.props.visibleCoordinates.length === 1)
       this.animateToRegion(this.props.visibleCoordinates[0])
     else if (this.props.visibleCoordinates.length > 1) {
@@ -111,7 +117,7 @@ class MapScreen extends React.Component {
               passengerLongitude: this.props.userPosition.longitude,
             },
           })
-          this.props.setActiveOrderState(resp.data)
+          this.props.setActiveOrderStatus(resp.data)
         } catch (e) {
           console.log(e)
         }
@@ -203,13 +209,6 @@ class MapScreen extends React.Component {
       }
     }
 
-    // check if we have to show the RideScreen
-    if (
-      this.props.mapState === MapState.ROUTE_ORDERED &&
-      _.get(this.props.activeOrder, 'startTime')
-    )
-      setImmediate(() => this.toRideScreen())
-
     return (
       <Container>
         <StyledMapView
@@ -253,7 +252,7 @@ MapScreen.propTypes = {
   fetchActiveOrder: PropTypes.func,
   mapState: PropTypes.string,
   resetMapState: PropTypes.func,
-  setActiveOrderState: PropTypes.func,
+  setActiveOrderStatus: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
   setVans: PropTypes.func,
@@ -277,7 +276,7 @@ export default connect(
     resetMapState: () => dispatch(resetMapState()),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
-    setActiveOrderState: payload => dispatch(setActiveOrderState(payload)),
+    setActiveOrderStatus: payload => dispatch(setActiveOrderStatus(payload)),
     changeMapState: payload => dispatch(changeMapState(payload)),
     setVans: payload => dispatch(setVans(payload)),
   })
