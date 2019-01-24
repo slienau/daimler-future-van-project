@@ -80,7 +80,7 @@ async function starttest () {
   let vans3
 
   for (let i = 0; i < 3; i++) {
-    await sleep(1000 * 10)
+    await sleep(1000 * 5)
     vans3 = await axiosInstance.get('vans')
     console.log(vans3.data)
     console.log('New Vans update worked')
