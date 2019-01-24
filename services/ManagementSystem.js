@@ -205,7 +205,6 @@ class ManagementSystem {
 
       // This happens if van has aroute and has not reached the next bus Stop yet
       if (currentTime < van.nextStopTime) {
-        console.log('current time smaller than nextStopTime')
         // timePassed is the the time that has passed since the lastStepTime
         const timePassed = ((currentTime.getTime() - van.lastStepTime.getTime()) / 1000)
         let timeCounter = 0

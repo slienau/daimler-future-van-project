@@ -7,6 +7,8 @@ const ManagementSystem = require('../services/ManagementSystem.js')
 const Route = require('../models/Route.js')
 const geolib = require('geolib')
 
+const range = 25
+
 router.get('/status', async function (req, res) {
   console.log('Get activeOrder status request zu user: ' + req.user._id + ' with Query: ')
   console.log(req.query)
@@ -65,10 +67,10 @@ router.put('/', async function (req, res) {
   switch (req.body.action) {
     case 'startride':
 
-      if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: req.body.userLocation.latitude, longitude: req.body.userLocation.longitude }) > 10) {
+      if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: req.body.userLocation.latitude, longitude: req.body.userLocation.longitude }) > range) {
         res.status(403).json({ code: 403, description: 'User is not close enough to the van.' })
         break
-      } else if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > 10) {
+      } else if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > range) {
         res.status(403).json({ code: 403, description: 'Van has not arrived at the virtual bus stop yet.' })
         break
       } else if (order.vanEnterTime) {
@@ -88,7 +90,7 @@ router.put('/', async function (req, res) {
       if (!order.vanEnterTime) {
         res.status(403).json({ code: 403, description: 'The ride has not yet started.' })
         break
-      } else if (geolib.getDistance({ latitude: virtualBusStopEnd.location.latitude, longitude: virtualBusStopEnd.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > 10) {
+      } else if (geolib.getDistance({ latitude: virtualBusStopEnd.location.latitude, longitude: virtualBusStopEnd.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > range) {
         res.status(403).json({ code: 403, description: 'Van has not arrived at its destination yet.' })
         break
       }
