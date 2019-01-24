@@ -36,10 +36,10 @@ const MapMarkers = props => {
         props.vans &&
         props.vans.map((v, i) => <MapMarker key={i} image="van" {...v} />)}
       {[MapState.ROUTE_ORDERED].includes(props.mapState) &&
-        props.activeOrderState && (
+        props.activeOrderStatus && (
           <MapMarker
             image="van"
-            location={props.activeOrderState.vanPosition}
+            location={props.activeOrderStatus.vanPosition}
           />
         )}
     </>
@@ -47,7 +47,7 @@ const MapMarkers = props => {
 }
 
 MapMarkers.propTypes = {
-  activeOrderState: PropTypes.object,
+  activeOrderStatus: PropTypes.object,
   journeyDestination: PropTypes.object,
   journeyStart: PropTypes.object,
   mapState: PropTypes.string,
@@ -56,7 +56,7 @@ MapMarkers.propTypes = {
 }
 
 export default connect(state => ({
-  activeOrderState: state.orders.activeOrderState,
+  activeOrderStatus: state.orders.activeOrderStatus,
   journeyDestination: state.map.journeyDestination,
   journeyStart: state.map.journeyStart,
   mapState: state.map.mapState,

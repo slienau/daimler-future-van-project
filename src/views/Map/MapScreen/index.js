@@ -18,7 +18,7 @@ import {
   changeMapState,
   setVans,
 } from '../../../ducks/map'
-import {fetchActiveOrder, setActiveOrderState} from '../../../ducks/orders'
+import {fetchActiveOrder, setActiveOrderStatus} from '../../../ducks/orders'
 import Info from './Info'
 import {defaultMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
@@ -111,7 +111,7 @@ class MapScreen extends React.Component {
               passengerLongitude: this.props.userPosition.longitude,
             },
           })
-          this.props.setActiveOrderState(resp.data)
+          this.props.setActiveOrderStatus(resp.data)
         } catch (e) {
           console.log(e)
         }
@@ -242,7 +242,7 @@ MapScreen.propTypes = {
   edgePadding: PropTypes.object,
   fetchActiveOrder: PropTypes.func,
   mapState: PropTypes.string,
-  setActiveOrderState: PropTypes.func,
+  setActiveOrderStatus: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
   setVans: PropTypes.func,
@@ -265,7 +265,7 @@ export default connect(
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
-    setActiveOrderState: payload => dispatch(setActiveOrderState(payload)),
+    setActiveOrderStatus: payload => dispatch(setActiveOrderStatus(payload)),
     changeMapState: payload => dispatch(changeMapState(payload)),
     setVans: payload => dispatch(setVans(payload)),
   })
