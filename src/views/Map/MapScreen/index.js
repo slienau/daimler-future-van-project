@@ -43,6 +43,12 @@ class MapScreen extends React.Component {
   }
 
   componentDidUpdate() {
+    // check if we have to show the RideScreen
+    if (
+      this.props.mapState === MapState.ROUTE_ORDERED &&
+      _.get(this.props.activeOrder, 'startTime')
+    )
+      setImmediate(() => this.toRideScreen())
     if (this.props.visibleCoordinates.length === 1)
       this.animateToRegion(this.props.visibleCoordinates[0])
     else if (this.props.visibleCoordinates.length > 1) {
@@ -196,13 +202,6 @@ class MapScreen extends React.Component {
         longitudeDelta: 0.02,
       }
     }
-
-    // check if we have to show the RideScreen
-    if (
-      this.props.mapState === MapState.ROUTE_ORDERED &&
-      _.get(this.props.activeOrder, 'startTime')
-    )
-      setImmediate(() => this.toRideScreen())
 
     return (
       <Container>
