@@ -528,7 +528,7 @@ On `HTTP 200` the following object will be returned:
 | `vanETAatStartVBS` | `Datetime` | Esimated time of arrival of the van at the start location |
 | `vanETAatDestinationVBS` | `Datetime` | Esimated time of arrival of the van at the start location |
 | `otherPassengers` | `Array` | Array containing usernames (Strings) of other passengers |
-| `statusMessage` | `String` | |
+| `message` | `String` | |
 
 ```json
 {
@@ -545,7 +545,7 @@ On `HTTP 200` the following object will be returned:
     "Sarah",
     "Wilbert"
   ],
-  "statusMessage": "Van has not arrived yet"
+  "message": "Van has not arrived yet"
 }
 ```
 
