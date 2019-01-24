@@ -52,8 +52,7 @@ class OrderHelper {
           loyaltyPoints: distance1 * bonusMultiplierStandard,
           co2savings: distance1 * co2savingsMultiplierStandard,
           bonusMultiplier: bonusMultiplierStandard,
-          route: '273jsnsb9201',
-          vanArrivalTime: new Date(Date.now() - 837268)
+          route: '273jsnsb9201'
         })
 
         const order2 = new Order({
@@ -70,8 +69,7 @@ class OrderHelper {
           distance: distance2,
           loyaltyPoints: distance2 * bonusMultiplierStandard,
           co2savings: distance2 * co2savingsMultiplierStandard,
-          route: '273jsnsb9250',
-          vanArrivalTime: new Date(Date.now() - 587268)
+          route: '273jsnsb9250'
         })
 
         const order3 = new Order({
@@ -87,8 +85,7 @@ class OrderHelper {
           distance: distance3,
           loyaltyPoints: distance3 * bonusMultiplierStandard,
           co2savings: distance3 * co2savingsMultiplierStandard,
-          route: '273jsnsb9250',
-          vanArrivalTime: new Date(Date.now() - 587268)
+          route: '273jsnsb9250'
         })
 
         await order1.save()
@@ -164,7 +161,6 @@ class OrderHelper {
         vanId: vanId,
         route: routeId,
         distance: distance,
-        vanArrivalTime: vanArrivalTime,
         loyaltyPoints: distance * bonusMultiplierStandard,
         co2savings: distance * co2savingsMultiplierStandard,
         bonusMultiplier: bonusMultiplierStandard

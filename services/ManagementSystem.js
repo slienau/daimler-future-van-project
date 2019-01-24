@@ -80,7 +80,18 @@ class ManagementSystem {
     // const vanId = bestVan.id
     // this.vans[vanId - 1].potentialRoute = bestVan.toStartVBRoute
 
-    const vanId = Math.floor(Math.random() * this.numberOfVans) + 1
+    let vanId
+
+    // Temporary
+    ManagementSystem.vans.forEach((van) => {
+      if (van.potentialRoute || van.waiting || van.route) {
+      } else {
+        vanId = van.vanId
+      }
+    })
+    if (!vanId) {
+      return { code: 403, message: 'No van currently available please try later' }
+    }
 
     // Route TO first Virtual Bus Stop is saved in potential route and set lastStepTime
     const route = await GoogleMapsHelper.simpleGoogleRoute(start, fromVB.location)
@@ -112,7 +123,7 @@ class ManagementSystem {
   }
 
   static async startRide (order) {
-    const wholeRoute = Route.findById(order.route)
+    const wholeRoute = await Route.findById(order.route)
     const vanRoute = wholeRoute.vanRoute
     const vanId = order.vanId
     // const toVB = await VirtualBusStop.findById(order.vanEndVBS)
@@ -174,6 +185,12 @@ class ManagementSystem {
 
     ManagementSystem.vans.forEach((van) => {
       // If van does not have a route or is waiting, check if it has a potential route that is older than 60s. if yes delete.
+
+      if (van.route && van.waiting && van.lastStepTime.getTime() + 10 * 60 * 1000 < currentTime.getTime()) {
+        this.resetVan(van.vanId)
+        return
+      }
+
       if (!van.route) {
         if (van.potentialRoute && van.lastStepTime.getTime() + 60 * 1000 < currentTime.getTime()) {
           van.potentialRoute = null
