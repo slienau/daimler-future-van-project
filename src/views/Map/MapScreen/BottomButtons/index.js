@@ -18,10 +18,10 @@ import {Toast} from 'native-base'
 
 const BottomButtons = props => {
   const zoomToMarkers = () => {
-    if (!props.journeyStart || !props.journeyDestination) return
+    if (!props.userStartLocation || !props.userDestinationLocation) return
     const coords = [
-      props.journeyStart.location,
-      props.journeyDestination.location,
+      props.userStartLocation.location,
+      props.userDestinationLocation.location,
     ]
     props.setVisibleCoordinates(coords)
   }
@@ -127,8 +127,8 @@ const mapStateToProps = state => {
   return {
     activeOrder: state.orders.activeOrder,
     mapState: state.map.mapState,
-    journeyStart: state.map.journeyStart,
-    journeyDestination: state.map.journeyDestination,
+    userStartLocation: state.map.userStartLocation,
+    userDestinationLocation: state.map.userDestinationLocation,
     routes: state.map.routes,
   }
 }

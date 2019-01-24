@@ -12,7 +12,7 @@ const OrderInfo = props => {
   const parseDeparture = () => {
     if (!props.routes || !props.routes.length) return
 
-    const departure = _.get(props.routes[0], 'vanStartTime')
+    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
     const date = moment(departure)
     return date.format('HH:mm')
   }
@@ -20,7 +20,7 @@ const OrderInfo = props => {
   const parseVanArrival = () => {
     if (!props.routes || !props.routes.length) return
 
-    const arrival = _.get(props.routes[0], 'vanEndTime')
+    const arrival = _.get(props.routes[0], 'vanETAatEndVBS')
     const date = moment(arrival)
     return date.format('HH:mm')
   }
@@ -28,7 +28,7 @@ const OrderInfo = props => {
   // const parseArrival = () => {
   //   if (!props.routes || !props.routes.length) return
 
-  //   const arrival = _.get(props.routes[0], 'vanEndTime')
+  //   const arrival = _.get(props.routes[0], 'vanETAatEndVBS')
   //   const date = moment(arrival)
   //   return date.format('HH:mm')
   // }
@@ -36,7 +36,7 @@ const OrderInfo = props => {
   const calculateWaitingTime = () => {
     if (!props.routes || !props.routes.length) return
 
-    const departure = _.get(props.routes[0], 'vanStartTime')
+    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
     const start = moment()
     const end = moment(departure)
     return start.to(end)
@@ -45,8 +45,8 @@ const OrderInfo = props => {
   const zoomToStartWalk = () => {
     if (!props.routes || !props.routes.length) return
     const coords = [
-      props.routes[0].startLocation,
-      props.routes[0].startStation.location,
+      props.routes[0].userStartLocation,
+      props.routes[0].vanStartVBS.location,
     ]
     props.setVisibleCoordinates(coords, {
       top: 0.2,
@@ -59,8 +59,8 @@ const OrderInfo = props => {
   const zoomToDestinationWalk = () => {
     if (!props.routes || !props.routes.length) return
     const coords = [
-      props.routes[0].endStation.location,
-      props.routes[0].destination,
+      props.routes[0].vanEndVBS.location,
+      props.routes[0].userDestinationLocation,
     ]
     props.setVisibleCoordinates(coords, {
       top: 0.2,
@@ -86,7 +86,7 @@ const OrderInfo = props => {
           }
           departure={parseDeparture()}
           waitingTime={calculateWaitingTime()}
-          busStopStartName={_.get(props.routes[0], 'startStation.name')}
+          busStopStartName={_.get(props.routes[0], 'vanStartVBS.name')}
           vanId={_.get(props.activeOrder, 'vanId')}
           zoomToStartWalk={zoomToStartWalk}
           zoomToDestinationWalk={zoomToDestinationWalk}

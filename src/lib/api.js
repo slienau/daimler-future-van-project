@@ -14,8 +14,10 @@ const api = axios.create({
 
 api.interceptors.request.use(
   config => {
-    console.log(`🌍 ${_.toUpper(config.method)} ${config.url}`)
-    console.log('request body', config.data)
+    console.log(
+      `🌍 ${_.toUpper(config.method)} ${config.url}`,
+      config.data || ''
+    )
     return config
   },
   error => Promise.reject(error)

@@ -14,7 +14,7 @@ const RouteInfo = props => {
   const parseDeparture = () => {
     if (!props.routes || !props.routes.length) return
 
-    const departure = _.get(props.routes[0], 'vanStartTime')
+    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
     const date = moment(departure)
     return date.format('HH:mm')
   }
@@ -22,7 +22,7 @@ const RouteInfo = props => {
   const parseArrival = () => {
     if (!props.routes || !props.routes.length) return
 
-    const arrival = _.get(props.routes[0], 'vanEndTime')
+    const arrival = _.get(props.routes[0], 'vanETAatEndVBS')
     const date = moment(arrival)
     return date.format('HH:mm')
   }
@@ -30,7 +30,7 @@ const RouteInfo = props => {
   const parseDestinationTime = () => {
     if (!props.routes || !props.routes.length) return
 
-    const destTime = _.get(props.routes[0], 'destinationTime')
+    const destTime = _.get(props.routes[0], 'userETAatUserDestinationLocation')
     const date = moment(destTime)
     return date.format('HH:mm')
   }
@@ -38,7 +38,7 @@ const RouteInfo = props => {
   const calculateWaitingTime = () => {
     if (!props.routes || !props.routes.length) return
 
-    const departure = _.get(props.routes[0], 'vanStartTime')
+    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
     const start = moment()
     const end = moment(departure)
     return start.to(end)
@@ -54,8 +54,8 @@ const RouteInfo = props => {
   const zoomToStartWalk = () => {
     if (!props.routes || !props.routes.length) return
     const coords = [
-      props.routes[0].startLocation,
-      props.routes[0].startStation.location,
+      props.routes[0].userStartLocation,
+      props.routes[0].vanStartVBS.location,
     ]
     props.setVisibleCoordinates(coords, edgePadding)
   }
@@ -63,8 +63,8 @@ const RouteInfo = props => {
   const zoomToDestinationWalk = () => {
     if (!props.routes || !props.routes.length) return
     const coords = [
-      props.routes[0].endStation.location,
-      props.routes[0].destination,
+      props.routes[0].vanEndVBS.location,
+      props.routes[0].userDestinationLocation,
     ]
     props.setVisibleCoordinates(coords, edgePadding)
   }
@@ -72,8 +72,8 @@ const RouteInfo = props => {
   const zoomToVanRide = () => {
     if (!props.routes || !props.routes.length) return
     const coords = [
-      props.routes[0].startStation.location,
-      props.routes[0].endStation.location,
+      props.routes[0].vanStartVBS.location,
+      props.routes[0].vanEndVBS.location,
     ]
     props.setVisibleCoordinates(coords, edgePadding)
   }
@@ -110,7 +110,7 @@ const RouteInfo = props => {
           }
           departure={parseDeparture()}
           waitingTime={calculateWaitingTime()}
-          busStopStartName={_.get(props.routes[0], 'startStation.name')}
+          busStopStartName={_.get(props.routes[0], 'vanStartVBS.name')}
           zoomToStartWalk={zoomToStartWalk}
         />
         <VanRideCard
@@ -119,7 +119,7 @@ const RouteInfo = props => {
           departure={parseDeparture()}
           arrival={parseArrival()}
           waitingTime={calculateWaitingTime()}
-          busStopEndName={_.get(props.routes[0], 'endStation.name')}
+          busStopEndName={_.get(props.routes[0], 'vanEndVBS.name')}
         />
         <DestinationWalkCard
           destinationWalkingDuration={
@@ -129,7 +129,7 @@ const RouteInfo = props => {
             props.routes[0].toDestinationRoute.routes[0].legs[0].distance.text
           }
           destinationTime={parseDestinationTime()}
-          destinationName={props.map.journeyDestination.title}
+          destinationName={props.map.userDestinationLocation.title}
         />
       </Swiper>
     </StyledRouteInfo>

@@ -218,7 +218,7 @@ class Account extends React.Component {
                   <Text>Loyalty Points</Text>
                 </Body>
                 <Right>
-                  <Text>{this.props.account.bonuspoints}</Text>
+                  <Text>{this.props.account.loyaltyPoints}</Text>
                 </Right>
               </ListItem>
               <ListItem icon>
