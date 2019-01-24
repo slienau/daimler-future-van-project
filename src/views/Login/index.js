@@ -1,14 +1,11 @@
 import React from 'react'
 import {
-  Body,
   Container,
-  Header,
   Content,
   Form,
   Item,
   Input,
   Label,
-  Title,
   Button,
   Text,
 } from 'native-base'
@@ -16,6 +13,7 @@ import _ from 'lodash'
 import styled from 'styled-components/native'
 import {AsyncStorage} from 'react-native'
 
+import BlankViewHeader from '../../components/ViewHeaders/BlankViewHeader'
 import {login} from '../../lib/api'
 
 const StyledButton = styled(Button)`
@@ -55,11 +53,7 @@ export default class Login extends React.Component {
   render() {
     return (
       <Container>
-        <Header>
-          <Body>
-            <Title>Login</Title>
-          </Body>
-        </Header>
+        <BlankViewHeader title="Login" />
         <Content>
           <Form>
             <Item floatingLabel>
