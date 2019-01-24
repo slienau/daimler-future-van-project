@@ -88,7 +88,7 @@ router.put('/', async function (req, res) {
       if (!order.vanEnterTime) {
         res.status(403).json({ code: 403, description: 'The ride has not yet started.' })
         break
-      } else if (geolib.getDistance({ latitude: virtualBusStopEnd.location.latitude, longitude: virtualBusStopEnd.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude })) {
+      } else if (geolib.getDistance({ latitude: virtualBusStopEnd.location.latitude, longitude: virtualBusStopEnd.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > 10) {
         res.status(403).json({ code: 403, description: 'Van has not arrived at its destination yet.' })
         break
       }
