@@ -1,9 +1,8 @@
 import React from 'react'
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete'
-import config from '../../../lib/config'
+import config, {initialMapSearchLocations} from '../../../lib/config'
 import {connect} from 'react-redux'
 import {
-  addSearchResultAction,
   changeMapState,
   MapState,
   setJourneyDestination,
@@ -14,8 +13,6 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 
 const SearchScreen = props => {
-  const predefinedPlaces = _.uniqBy(props.searchResults, 'id')
-
   const handleSearchResult = (data, details) => {
     if (!details) return
 
@@ -91,7 +88,7 @@ const SearchScreen = props => {
         }
       }
       // filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
-      predefinedPlaces={predefinedPlaces}
+      predefinedPlaces={initialMapSearchLocations}
       debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
     />
   )
@@ -101,18 +98,15 @@ SearchScreen.propTypes = {
   addSearchResult: PropTypes.func,
   changeMapState: PropTypes.func,
   journey: PropTypes.array,
-  searchResults: PropTypes.array,
   setJourney: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
 }
 
 export default connect(
   state => ({
-    searchResults: state.map.searchResults,
     journey: [state.map.journeyStart, state.map.journeyDestination],
   }),
   dispatch => ({
-    addSearchResult: result => dispatch(addSearchResultAction(result)),
     changeMapState: payload => dispatch(changeMapState(payload)),
     setJourney: (isStart, payload) =>
       dispatch(
