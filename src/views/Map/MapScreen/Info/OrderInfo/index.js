@@ -96,6 +96,7 @@ const OrderInfo = props => {
       console.log(props.routes[0])
       visibleCard = (
         <DestinationWalkCardLarge
+          toMapScreen={props.toMapScreen}
           walkingDuration={
             props.routes[0].toDestinationRoute.routes[0].legs[0].duration.text
           }
@@ -138,6 +139,7 @@ OrderInfo.propTypes = {
   mapState: PropTypes.string,
   routes: PropTypes.array,
   setVisibleCoordinates: PropTypes.func,
+  toMapScreen: PropTypes.func,
   toRideScreen: PropTypes.func,
 }
 

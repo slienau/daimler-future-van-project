@@ -14,7 +14,9 @@ import {
   setUserPosition,
   setJourneyStart,
   setVisibleCoordinates,
+  resetMapState,
 } from '../../../ducks/map'
+
 import {fetchActiveOrder} from '../../../ducks/orders'
 import Info from './Info'
 import {defaultMapRegion} from '../../../lib/config'
@@ -72,6 +74,12 @@ class MapScreen extends React.Component {
       edgePadding: edgePadding,
       animated: true,
     })
+  }
+
+  toMapScreen = () => {
+    this.props.resetMapState()
+    //    this.props.navigation.dangerouslyGetParent().goBack()
+    this.props.navigation.navigate('Map')
   }
 
   getCurrentPosition = () => {
@@ -136,6 +144,7 @@ class MapScreen extends React.Component {
 
         <Info
           toRideScreen={() => this.props.navigation.navigate('RideScreen')}
+          toMapScreen={() => this.toMapScreen()}
         />
       </Container>
     )
@@ -146,6 +155,7 @@ MapScreen.propTypes = {
   edgePadding: PropTypes.object,
   fetchActiveOrder: PropTypes.func,
   mapState: PropTypes.string,
+  resetMapState: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
@@ -164,6 +174,7 @@ export default connect(
     fetchActiveOrder: payload => dispatch(fetchActiveOrder(payload)),
     setUserPosition: payload => dispatch(setUserPosition(payload)),
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
+    resetMapState: () => dispatch(resetMapState()),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
   })

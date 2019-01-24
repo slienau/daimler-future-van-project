@@ -12,7 +12,7 @@ const Info = props => {
     case MapState.ROUTE_ORDERED:
       return <OrderInfo toRideScreen={props.toRideScreen} />
     case MapState.EXIT_VAN:
-      return <OrderInfo />
+      return <OrderInfo toMapScreen={props.toMapScreen} />
 
     default:
       return null
@@ -27,6 +27,7 @@ const mapStateToProps = state => {
 
 Info.propTypes = {
   mapState: PropTypes.string,
+  toMapScreen: PropTypes.func,
   toRideScreen: PropTypes.func,
 }
 
