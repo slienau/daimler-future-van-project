@@ -68,14 +68,14 @@ class ManagementSystem {
     this.updateVanLocations()
 
     // get all possible vans for this order request, sorted ascending by their duration
-    const possibleVans = await this.getPossibleVans(fromVB, toVB, destination, time)
-    console.log('possibleVans', possibleVans)
+    // const possibleVans = await this.getPossibleVans(fromVB, toVB, destination, time)
+    // console.log('possibleVans', possibleVans)
     // now determine best from all possible vans (the one with the lowest duration)
-    const bestVan = this.getBestVan(possibleVans)
-    console.log('bestVan', bestVan)
-    if (bestVan == null) {
-      // TODO error, no van found!
-    }
+    // const bestVan = this.getBestVan(possibleVans)
+    // console.log('bestVan', bestVan)
+    // if (bestVan == null) {
+    // TODO error, no van found!
+    // }
     // set potential route (and thus lock the van)
     // const vanId = bestVan.id
     // this.vans[vanId - 1].potentialRoute = bestVan.toStartVBRoute
@@ -94,7 +94,7 @@ class ManagementSystem {
     }
 
     // Route TO first Virtual Bus Stop is saved in potential route and set lastStepTime
-    const route = await GoogleMapsHelper.simpleGoogleRoute(start, fromVB.location)
+    const route = await GoogleMapsHelper.simpleGoogleRoute(this.vans[vanId - 1].location, fromVB.location)
     this.vans[vanId - 1].potentialRoute = route
     this.vans[vanId - 1].lastStepTime = new Date()
     const timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(route)
@@ -123,7 +123,7 @@ class ManagementSystem {
   }
 
   static async startRide (order) {
-    const wholeRoute = await Route.findById(order.route)
+    const wholeRoute = await Route.findById(order.route).lean()
     const vanRoute = wholeRoute.vanRoute
     const vanId = order.vanId
     // const toVB = await VirtualBusStop.findById(order.vanEndVBS)
