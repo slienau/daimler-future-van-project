@@ -18,13 +18,11 @@ const SearchScreen = props => {
 
     // extract needed data from the search result and distinguish between current location or not
     // if current location, we dont want to add it to the list of last searches
-    if (details.description === 'Current location') {
-      // name field is not set for current location, so set it
+    // name field is not set for current location, so set it
+    if (details.description === 'Current location')
       details.name = details.description
-    } else {
-      details.description = details.name
-      props.addSearchResult(details)
-    }
+    else details.description = details.name
+
     const location = {
       latitude: details.geometry.location.lat,
       longitude: details.geometry.location.lng,
@@ -95,7 +93,6 @@ const SearchScreen = props => {
 }
 
 SearchScreen.propTypes = {
-  addSearchResult: PropTypes.func,
   changeMapState: PropTypes.func,
   journey: PropTypes.array,
   setJourney: PropTypes.func,
