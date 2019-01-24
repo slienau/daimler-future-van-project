@@ -16,7 +16,7 @@ const initialState = {
 function momentifyOrder(order) {
   if (!order) return order
   const moments = _.compact(
-    ['orderTime', 'startTime', 'endTime'].map(t => {
+    ['orderTime', 'vanEnterTime', 'vanExitTime'].map(t => {
       if (!order[t]) return null
       return {
         [t]: moment(order[t]),

@@ -13,7 +13,7 @@ const SearchForm = props => {
   const parseDeparture = () => {
     if (!props.routes || !props.routes.length) return
 
-    const departure = _.get(props.routes[0], 'vanStartTime')
+    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
     const date = moment(departure)
     return date.format('HH:mm')
   }
@@ -21,8 +21,8 @@ const SearchForm = props => {
   const calculateDuration = () => {
     if (!props.routes || !props.routes.length) return
 
-    const departure = _.get(props.routes[0], 'vanStartTime')
-    const arrival = _.get(props.routes[0], 'destinationTime')
+    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
+    const arrival = _.get(props.routes[0], 'userETAatUserDestinationLocation')
     const start = moment(departure)
     const end = moment(arrival)
     const diff = end.diff(start)
@@ -32,14 +32,14 @@ const SearchForm = props => {
   const calculateWaitingTime = () => {
     if (!props.routes || !props.routes.length) return
 
-    const departure = _.get(props.routes[0], 'vanStartTime')
+    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
     const start = moment()
     const end = moment(departure)
     return start.to(end)
   }
 
-  const destinationText = _.get(props.journeyDestination, 'title')
-  const startText = _.get(props.journeyStart, 'title')
+  const destinationText = _.get(props.userDestinationLocation, 'title')
+  const startText = _.get(props.userStartLocation, 'title')
 
   let content = null
   switch (props.mapState) {
@@ -79,20 +79,20 @@ const SearchForm = props => {
 }
 
 SearchForm.propTypes = {
-  journeyDestination: PropTypes.object,
-  journeyStart: PropTypes.object,
   mapState: PropTypes.string,
   routes: PropTypes.array,
   swapJourneyStartAndDestination: PropTypes.func,
   toSearchView: PropTypes.func,
+  userDestinationLocation: PropTypes.object,
+  userStartLocation: PropTypes.object,
 }
 
 const mapStateToProps = state => {
   return {
     mapState: state.map.mapState,
     routes: state.map.routes,
-    journeyStart: state.map.journeyStart,
-    journeyDestination: state.map.journeyDestination,
+    userStartLocation: state.map.userStartLocation,
+    userDestinationLocation: state.map.userDestinationLocation,
   }
 }
 

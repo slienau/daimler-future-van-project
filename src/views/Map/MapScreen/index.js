@@ -12,8 +12,8 @@ import {Dimensions} from 'react-native'
 import _ from 'lodash'
 import {
   MapState,
-  setUserPosition,
-  setJourneyStart,
+  setCurrentUserLocation,
+  setUserStartLocation,
   setVisibleCoordinates,
   changeMapState,
   setVans,
@@ -47,7 +47,7 @@ class MapScreen extends React.Component {
     // check if we have to show the RideScreen
     if (
       this.props.mapState === MapState.ROUTE_ORDERED &&
-      _.get(this.props.activeOrder, 'startTime')
+      _.get(this.props.activeOrder, 'vanEnterTime')
     )
       setImmediate(() => this.toRideScreen())
     if (this.props.visibleCoordinates.length === 1)
@@ -108,13 +108,13 @@ class MapScreen extends React.Component {
         [MapState.ROUTE_ORDERED, MapState.VAN_RIDE].includes(
           this.props.mapState
         ) &&
-        this.props.userPosition
+        this.props.currentUserLocation
       ) {
         try {
           const resp = await api.get('/activeorder/status', {
             params: {
-              passengerLatitude: this.props.userPosition.latitude,
-              passengerLongitude: this.props.userPosition.longitude,
+              passengerLatitude: this.props.currentUserLocation.latitude,
+              passengerLongitude: this.props.currentUserLocation.longitude,
             },
           })
           this.props.setActiveOrderStatus(resp.data)
@@ -129,7 +129,7 @@ class MapScreen extends React.Component {
 
   watchPosition = () => {
     this.watchId = navigator.geolocation.watchPosition(
-      position => this.props.setUserPosition(position.coords),
+      position => this.props.setCurrentUserLocation(position.coords),
       error => this.setState({error: error.message}),
       {
         distanceFilter: 3,
@@ -158,7 +158,7 @@ class MapScreen extends React.Component {
   getCurrentPosition = () => {
     navigator.geolocation.getCurrentPosition(
       position => {
-        this.props.setUserPosition(position.coords)
+        this.props.setCurrentUserLocation(position.coords)
         this.props.setJourneyStart({
           location: position.coords,
           title: 'Current location',
@@ -183,11 +183,11 @@ class MapScreen extends React.Component {
   }
 
   enterVan = async () => {
-    if (_.get(this.props.activeOrder, 'startTime')) return
+    if (_.get(this.props.activeOrder, 'vanEnterTime')) return
     try {
       await api.put('/activeorder', {
         action: 'startride',
-        userLocation: _.pick(this.props.userPosition, [
+        userLocation: _.pick(this.props.currentUserLocation, [
           'latitude',
           'longitude',
         ]),
@@ -200,10 +200,10 @@ class MapScreen extends React.Component {
 
   render() {
     let mapRegion = defaultMapRegion
-    if (this.props.userPosition !== null) {
+    if (this.props.currentUserLocation !== null) {
       mapRegion = {
-        latitude: this.props.userPosition.latitude,
-        longitude: this.props.userPosition.longitude,
+        latitude: this.props.currentUserLocation.latitude,
+        longitude: this.props.currentUserLocation.longitude,
         latitudeDelta: 0.02,
         longitudeDelta: 0.02,
       }
@@ -248,31 +248,32 @@ class MapScreen extends React.Component {
 MapScreen.propTypes = {
   activeOrder: PropTypes.object,
   changeMapState: PropTypes.func,
+  currentUserLocation: PropTypes.object,
   edgePadding: PropTypes.object,
   fetchActiveOrder: PropTypes.func,
   mapState: PropTypes.string,
   resetMapState: PropTypes.func,
   setActiveOrderStatus: PropTypes.func,
+  setCurrentUserLocation: PropTypes.func,
   setJourneyStart: PropTypes.func,
-  setUserPosition: PropTypes.func,
   setVans: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
-  userPosition: PropTypes.object,
   visibleCoordinates: PropTypes.array,
 }
 
 export default connect(
   state => ({
     mapState: state.map.mapState,
-    userPosition: state.map.userPosition,
+    currentUserLocation: state.map.currentUserLocation,
     visibleCoordinates: state.map.visibleCoordinates,
     edgePadding: state.map.edgePadding,
     activeOrder: state.orders.activeOrder,
   }),
   dispatch => ({
     fetchActiveOrder: payload => dispatch(fetchActiveOrder(payload)),
-    setUserPosition: payload => dispatch(setUserPosition(payload)),
-    setJourneyStart: payload => dispatch(setJourneyStart(payload)),
+    setCurrentUserLocation: payload =>
+      dispatch(setCurrentUserLocation(payload)),
+    setJourneyStart: payload => dispatch(setUserStartLocation(payload)),
     resetMapState: () => dispatch(resetMapState()),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),

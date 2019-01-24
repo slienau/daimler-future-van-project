@@ -5,8 +5,8 @@ import {connect} from 'react-redux'
 import {
   changeMapState,
   MapState,
-  setJourneyDestination,
-  setJourneyStart,
+  setUserDestinationLocation,
+  setUserStartLocation,
   setVisibleCoordinates,
 } from '../../../ducks/map'
 import _ from 'lodash'
@@ -101,13 +101,15 @@ SearchScreen.propTypes = {
 
 export default connect(
   state => ({
-    journey: [state.map.journeyStart, state.map.journeyDestination],
+    journey: [state.map.userStartLocation, state.map.userDestinationLocation],
   }),
   dispatch => ({
     changeMapState: payload => dispatch(changeMapState(payload)),
     setJourney: (isStart, payload) =>
       dispatch(
-        isStart ? setJourneyStart(payload) : setJourneyDestination(payload)
+        isStart
+          ? setUserStartLocation(payload)
+          : setUserDestinationLocation(payload)
       ),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
