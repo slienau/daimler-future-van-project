@@ -185,6 +185,12 @@ class ManagementSystem {
 
     ManagementSystem.vans.forEach((van) => {
       // If van does not have a route or is waiting, check if it has a potential route that is older than 60s. if yes delete.
+
+      if (van.route && van.waiting && van.lastStepTime.getTime() + 10 * 60 * 1000 < currentTime.getTime()) {
+        this.resetVan(van.vanId)
+        return
+      }
+
       if (!van.route) {
         if (van.potentialRoute && van.lastStepTime.getTime() + 60 * 1000 < currentTime.getTime()) {
           van.potentialRoute = null

@@ -39,10 +39,6 @@ const OrderSchema = new Schema({
     type: Number,
     required: true
   },
-  vanArrivalTime: {
-    type: Date,
-    required: true
-  },
   route: {
     type: String,
     required: true
