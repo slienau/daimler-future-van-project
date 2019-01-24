@@ -12,7 +12,7 @@ const Info = props => {
     case MapState.ROUTE_ORDERED:
       return <OrderInfo onEnterVanPress={props.onEnterVanPress} />
     case MapState.EXIT_VAN:
-      return <OrderInfo />
+      return <OrderInfo toMapScreen={props.toMapScreen} />
 
     default:
       return null
@@ -22,6 +22,7 @@ const Info = props => {
 Info.propTypes = {
   mapState: PropTypes.string,
   onEnterVanPress: PropTypes.func,
+  toMapScreen: PropTypes.func,
 }
 
 export default connect(state => ({
