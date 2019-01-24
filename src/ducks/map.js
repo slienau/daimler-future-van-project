@@ -1,13 +1,11 @@
 import api from '../lib/api'
 import _ from 'lodash'
-import {initialMapSearchResults} from '../lib/config'
 
 export const SET_JOURNEY_START = 'map/SET_JOURNEY_START'
 export const SET_JOURNEY_DESTINATION = 'map/SET_JOURNEY_DESTINATION'
 export const SET_USER_POSITION = 'map/SET_USER_POSITION'
 export const SET_VAN_POSITION = 'map/SET_VAN_POSITION'
 export const SET_ROUTES = 'map/SET_ROUTES'
-export const ADD_SEARCH_RESULT = 'map/ADD_SEARCH_RESULT'
 export const CHANGE_MAP_STATE = 'map/CHANGE_MAP_STATE'
 export const SWAP_JOURNEY_START_AND_DESTINATION =
   'map/SWAP_JOURNEY_START_AND_DESTINATION'
@@ -33,11 +31,6 @@ const initialState = {
   routes: null,
   visibleCoordinates: [],
   edgePadding: {top: 0.2, right: 0.1, left: 0.1, bottom: 0.2},
-  searchResults: [
-    initialMapSearchResults.TU_BERLIN,
-    initialMapSearchResults.BRANDENBURGER_TOR,
-    initialMapSearchResults.SIDOS_HOOD,
-  ],
   vans: [],
 }
 
@@ -59,14 +52,6 @@ const map = (state = initialState, action) => {
     case SET_VAN_POSITION:
       newState.vanPosition = action.payload
       return newState
-    case ADD_SEARCH_RESULT:
-      // set latitude and longitude attribute of the location as we use it regularly
-      action.payload.result.geometry.location.latitude =
-        action.payload.result.geometry.location.lat
-      action.payload.result.geometry.location.longitude =
-        action.payload.result.geometry.location.lng
-      newState.searchResults = state.searchResults.concat(action.payload.result)
-      return newState
     case CHANGE_MAP_STATE:
       newState.mapState = action.payload
       return newState
@@ -83,13 +68,6 @@ const map = (state = initialState, action) => {
       return newState
     default:
       return state
-  }
-}
-
-export const addSearchResultAction = result => {
-  return {
-    type: ADD_SEARCH_RESULT,
-    payload: {result},
   }
 }
 
