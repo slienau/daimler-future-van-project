@@ -3,6 +3,7 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 import MapMarker from '../../../components/MapMarker'
 import {connect} from 'react-redux'
+import {MapState} from '../../../ducks/map'
 
 const MapMarkers = props => {
   return (
@@ -31,20 +32,34 @@ const MapMarkers = props => {
       {props.journeyDestination && (
         <MapMarker image="destination" {...props.journeyDestination} />
       )}
+      {[MapState.INIT, MapState.SEARCH_ROUTES].includes(props.mapState) &&
+        props.vans &&
+        props.vans.map((v, i) => <MapMarker key={i} image="van" {...v} />)}
+      {[MapState.ROUTE_ORDERED].includes(props.mapState) &&
+        props.activeOrderState && (
+          <MapMarker
+            image="van"
+            location={props.activeOrderState.vanPosition}
+          />
+        )}
     </>
   )
 }
 
 MapMarkers.propTypes = {
+  activeOrderState: PropTypes.object,
+  journeyDestination: PropTypes.object,
+  journeyStart: PropTypes.object,
+  mapState: PropTypes.string,
   routes: PropTypes.array,
+  vans: PropTypes.array,
 }
 
-const mapStateToProps = state => {
-  return {
-    routes: state.map.routes,
-    journeyStart: state.map.journeyStart,
-    journeyDestination: state.map.journeyDestination,
-  }
-}
-
-export default connect(mapStateToProps)(MapMarkers)
+export default connect(state => ({
+  activeOrderState: state.orders.activeOrderState,
+  journeyDestination: state.map.journeyDestination,
+  journeyStart: state.map.journeyStart,
+  mapState: state.map.mapState,
+  routes: state.map.routes,
+  vans: state.map.vans,
+}))(MapMarkers)

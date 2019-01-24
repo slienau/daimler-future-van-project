@@ -10,7 +10,7 @@ const Info = props => {
     case MapState.ROUTE_SEARCHED:
       return <RouteInfo />
     case MapState.ROUTE_ORDERED:
-      return <OrderInfo toRideScreen={props.toRideScreen} />
+      return <OrderInfo onEnterVanPress={props.onEnterVanPress} />
     case MapState.EXIT_VAN:
       return <OrderInfo />
 
@@ -19,18 +19,11 @@ const Info = props => {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    mapState: state.map.mapState,
-  }
-}
-
 Info.propTypes = {
   mapState: PropTypes.string,
-  toRideScreen: PropTypes.func,
+  onEnterVanPress: PropTypes.func,
 }
 
-export default connect(
-  mapStateToProps,
-  null
-)(Info)
+export default connect(state => ({
+  mapState: state.map.mapState,
+}))(Info)

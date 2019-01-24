@@ -76,7 +76,8 @@ const OrderInfo = props => {
       visibleCard = (
         <StartWalkCardLarge
           currentState={props.currentState}
-          toRideScreen={props.toRideScreen}
+          onEnterVanPress={props.onEnterVanPress}
+          activeOrderState={props.activeOrderState}
           walkingDuration={
             props.routes[0].toStartRoute.routes[0].legs[0].duration.text
           }
@@ -117,31 +118,25 @@ const OrderInfo = props => {
   return <StyledOrderInfo>{visibleCard}</StyledOrderInfo>
 }
 
-const mapStateToProps = state => {
-  return {
-    routes: state.map.routes,
-    mapState: state.map.mapState,
-    activeOrder: state.orders.activeOrder,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    setVisibleCoordinates: (coords, edgePadding) =>
-      dispatch(setVisibleCoordinates(coords, edgePadding)),
-  }
-}
-
 OrderInfo.propTypes = {
   activeOrder: PropTypes.object,
+  activeOrderState: PropTypes.object,
   currentState: PropTypes.string,
   mapState: PropTypes.string,
+  onEnterVanPress: PropTypes.func,
   routes: PropTypes.array,
   setVisibleCoordinates: PropTypes.func,
-  toRideScreen: PropTypes.func,
 }
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  state => ({
+    routes: state.map.routes,
+    mapState: state.map.mapState,
+    activeOrder: state.orders.activeOrder,
+    activeOrderState: state.orders.activeOrderState,
+  }),
+  dispatch => ({
+    setVisibleCoordinates: (coords, edgePadding) =>
+      dispatch(setVisibleCoordinates(coords, edgePadding)),
+  })
 )(OrderInfo)

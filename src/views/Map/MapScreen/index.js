@@ -11,15 +11,19 @@ import {Container} from 'native-base'
 import {Dimensions} from 'react-native'
 import _ from 'lodash'
 import {
+  MapState,
   setUserPosition,
   setJourneyStart,
   setVisibleCoordinates,
+  changeMapState,
+  setVans,
 } from '../../../ducks/map'
-import {fetchActiveOrder} from '../../../ducks/orders'
+import {fetchActiveOrder, setActiveOrderState} from '../../../ducks/orders'
 import Info from './Info'
 import {defaultMapRegion} from '../../../lib/config'
 import MenuButton from './Buttons/MenuButton'
 import CurrentLocationButton from './Buttons/CurrentLocationButton'
+import api from '../../../lib/api'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -32,6 +36,9 @@ const StyledMapView = styled(MapView)`
 class MapScreen extends React.Component {
   componentDidMount() {
     this.getCurrentPosition()
+    this.watchPosition()
+    this.continuouslyUpdatePosition()
+    this.getVans()
     this.props.fetchActiveOrder()
   }
 
@@ -53,7 +60,16 @@ class MapScreen extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.updatePositionTimerId)
+    navigator.geolocation.clearWatch(this.watchId)
+    clearTimeout(this.getVansTimerId)
+  }
+
   mapRef = null
+  updatePositionTimerId = null
+  watchId = null
+  getVansTimerId = null
 
   animateToRegion = location => {
     this.mapRef.animateToRegion(
@@ -72,6 +88,59 @@ class MapScreen extends React.Component {
       edgePadding: edgePadding,
       animated: true,
     })
+  }
+
+  continuouslyUpdatePosition = () => {
+    const fn = async () => {
+      if (
+        [MapState.ROUTE_ORDERED, MapState.VAN_RIDE].includes(
+          this.props.mapState
+        ) &&
+        this.props.userPosition
+      ) {
+        try {
+          const resp = await api.get('/activeorder/status', {
+            params: {
+              passengerLatitude: this.props.userPosition.latitude,
+              passengerLongitude: this.props.userPosition.longitude,
+            },
+          })
+          this.props.setActiveOrderState(resp.data)
+        } catch (e) {
+          console.log(e)
+        }
+      }
+      this.updatePositionTimerId = setTimeout(fn, 5000)
+    }
+    fn()
+  }
+
+  watchPosition = () => {
+    this.watchId = navigator.geolocation.watchPosition(
+      position => this.props.setUserPosition(position.coords),
+      error => this.setState({error: error.message}),
+      {
+        distanceFilter: 3,
+        useSignificantChanges: true,
+      }
+    )
+  }
+
+  getVans = () => {
+    const fn = async () => {
+      if (
+        [MapState.INIT, MapState.SEARCH_ROUTES].includes(this.props.mapState)
+      ) {
+        try {
+          const {data} = await api.get('/vans')
+          this.props.setVans(data)
+        } catch (e) {
+          console.log(e)
+        }
+      }
+      this.getVansTimerId = setTimeout(fn, 5000)
+    }
+    fn()
   }
 
   getCurrentPosition = () => {
@@ -96,6 +165,27 @@ class MapScreen extends React.Component {
     })
   }
 
+  toRideScreen = () => {
+    this.props.changeMapState(MapState.VAN_RIDE)
+    this.props.navigation.navigate('RideScreen')
+  }
+
+  enterVan = async () => {
+    if (_.get(this.props.activeOrder, 'startTime')) return
+    try {
+      await api.put('/activeorder', {
+        action: 'startride',
+        userLocation: _.pick(this.props.userPosition, [
+          'latitude',
+          'longitude',
+        ]),
+      })
+      this.toRideScreen()
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   render() {
     let mapRegion = defaultMapRegion
     if (this.props.userPosition !== null) {
@@ -106,6 +196,13 @@ class MapScreen extends React.Component {
         longitudeDelta: 0.02,
       }
     }
+
+    // check if we have to show the RideScreen
+    if (
+      this.props.mapState === MapState.ROUTE_ORDERED &&
+      _.get(this.props.activeOrder, 'startTime')
+    )
+      setImmediate(() => this.toRideScreen())
 
     return (
       <Container>
@@ -134,20 +231,22 @@ class MapScreen extends React.Component {
 
         <BottomButtons toSearchView={this.toSearchView} />
 
-        <Info
-          toRideScreen={() => this.props.navigation.navigate('RideScreen')}
-        />
+        <Info onEnterVanPress={() => this.enterVan()} />
       </Container>
     )
   }
 }
 
 MapScreen.propTypes = {
+  activeOrder: PropTypes.object,
+  changeMapState: PropTypes.func,
   edgePadding: PropTypes.object,
   fetchActiveOrder: PropTypes.func,
   mapState: PropTypes.string,
+  setActiveOrderState: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
+  setVans: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
   userPosition: PropTypes.object,
   visibleCoordinates: PropTypes.array,
@@ -159,6 +258,7 @@ export default connect(
     userPosition: state.map.userPosition,
     visibleCoordinates: state.map.visibleCoordinates,
     edgePadding: state.map.edgePadding,
+    activeOrder: state.orders.activeOrder,
   }),
   dispatch => ({
     fetchActiveOrder: payload => dispatch(fetchActiveOrder(payload)),
@@ -166,5 +266,8 @@ export default connect(
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
+    setActiveOrderState: payload => dispatch(setActiveOrderState(payload)),
+    changeMapState: payload => dispatch(changeMapState(payload)),
+    setVans: payload => dispatch(setVans(payload)),
   })
 )(MapScreen)
