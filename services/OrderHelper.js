@@ -175,17 +175,25 @@ class OrderHelper {
   // To-Do: Only rely on location instead of time
   static async checkOrderLocationStatus (orderId, passengerLocation) {
     const order = await Order.findById(orderId)
-    const virtualBusStop = await VirtualBusStop.findById(order.virtualBusStopStart)
+    const virtualBusStopStart = await VirtualBusStop.findById(order.virtualBusStopStart)
+    const virtualBusStopEnd = await VirtualBusStop.findById(order.virtualBusStopEnd)
     const vanTime = order.vanArrivalTime
     const vanLocationBeforeArrival = ManagementSystem.vans[order.vanId - 1].location
 
-    if (order.active === false) return { userAllowedToEnter: false, message: 'Order is not active', vanPosition: null }
+    const res = {
+      userAllowedToEnter: false,
+      userAllowedToExit: false,
+      message: 'unknown state',
+      vanPosition: vanLocationBeforeArrival
+    }
 
-    if (new Date() < new Date(vanTime)) return { userAllowedToEnter: false, message: 'Van has not arrived yet', vanPosition: vanLocationBeforeArrival }
+    if (new Date() < new Date(vanTime)) return { ...res, message: 'Van has not arrived yet.' }
 
-    if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, passengerLocation) > 10) return { userAllowedToEnter: false, message: 'Van is ready, but passenger is not close enough to the van', vanPosition: { latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude } }
+    res.userAllowedToEnter = geolib.getDistance(virtualBusStopStart.location, passengerLocation) < 10
+    res.userAllowedToExit = geolib.getDistance(virtualBusStopEnd.location, passengerLocation) < 10
+    res.message = res.userAllowedToEnter ? 'Van is ready to be entered.' : 'Van is ready, but passenger is not close enough to the van.'
 
-    return { userAllowedToEnter: true, message: 'Van is ready to be entered.', vanPosition: { latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude } }
+    return res
   }
 }
 
