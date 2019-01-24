@@ -17,6 +17,7 @@ import {
   setVisibleCoordinates,
   changeMapState,
   setVans,
+  resetMapState,
 } from '../../../ducks/map'
 import {fetchActiveOrder, setActiveOrderState} from '../../../ducks/orders'
 import Info from './Info'
@@ -88,6 +89,11 @@ class MapScreen extends React.Component {
       edgePadding: edgePadding,
       animated: true,
     })
+  }
+
+  toMapScreen = () => {
+    this.props.resetMapState()
+    this.props.navigation.navigate('Map')
   }
 
   continuouslyUpdatePosition = () => {
@@ -231,7 +237,10 @@ class MapScreen extends React.Component {
 
         <BottomButtons toSearchView={this.toSearchView} />
 
-        <Info onEnterVanPress={() => this.enterVan()} />
+        <Info
+          onEnterVanPress={() => this.enterVan()}
+          toMapScreen={() => this.toMapScreen()}
+        />
       </Container>
     )
   }
@@ -243,6 +252,7 @@ MapScreen.propTypes = {
   edgePadding: PropTypes.object,
   fetchActiveOrder: PropTypes.func,
   mapState: PropTypes.string,
+  resetMapState: PropTypes.func,
   setActiveOrderState: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setUserPosition: PropTypes.func,
@@ -264,6 +274,7 @@ export default connect(
     fetchActiveOrder: payload => dispatch(fetchActiveOrder(payload)),
     setUserPosition: payload => dispatch(setUserPosition(payload)),
     setJourneyStart: payload => dispatch(setJourneyStart(payload)),
+    resetMapState: () => dispatch(resetMapState()),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
     setActiveOrderState: payload => dispatch(setActiveOrderState(payload)),

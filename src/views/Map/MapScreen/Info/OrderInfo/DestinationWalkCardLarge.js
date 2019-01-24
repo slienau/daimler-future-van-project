@@ -1,4 +1,4 @@
-import {Text, Body, Icon, Left, Right} from 'native-base'
+import {Text, Body, Icon, Left, Right, Button} from 'native-base'
 import PropTypes from 'prop-types'
 import {
   StyledCard,
@@ -10,6 +10,7 @@ import {
   CardItemBorderBottom,
 } from '../StyledComponents'
 import React from 'react'
+// import {resetMapState} from '../../../../../ducks/map'
 
 class DestinationWalkCardLarge extends React.Component {
   componentDidMount() {
@@ -48,6 +49,11 @@ class DestinationWalkCardLarge extends React.Component {
               <TextDarkGray>Van number</TextDarkGray>
             </ViewCentered>
           </Body>
+          <Right>
+            <Button rounded onPress={() => this.props.toMapScreen()}>
+              <Text>Stop Journey</Text>
+            </Button>
+          </Right>
         </CardItemNoBorders>
       </StyledCard>
     )
@@ -56,6 +62,7 @@ class DestinationWalkCardLarge extends React.Component {
 
 DestinationWalkCardLarge.propTypes = {
   endAddress: PropTypes.string,
+  toMapScreen: PropTypes.func,
   vanArrival: PropTypes.string,
   vanId: PropTypes.number,
   walkingDistance: PropTypes.string,
