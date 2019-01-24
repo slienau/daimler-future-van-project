@@ -133,8 +133,6 @@ class OrderHelper {
       return error
     }
 
-    ManagementSystem.confirmVan(vbs[0], vbs[1], vanId)
-
     const distance = route.vanRoute.routes[0].legs[0].distance.value / 1000
 
     let newOrder
@@ -163,9 +161,10 @@ class OrderHelper {
     }
 
     try {
-      const obj = await newOrder.save()
+      const order = await newOrder.save()
+      ManagementSystem.confirmVan(vbs[0], vbs[1], vanId, order)
 
-      return obj._id
+      return order._id
     } catch (error) {
       console.log(error)
       return error

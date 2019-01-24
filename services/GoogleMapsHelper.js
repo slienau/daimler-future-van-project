@@ -54,6 +54,13 @@ class GoogleMapsHelper {
   static readDurationFromGoogleResponse (googleresponse) {
     return _.get(googleresponse, 'routes.0.legs.0.duration.value')
   }
+
+  // Returns the route's traveltime in seconds starting at the given step
+  static readDurationFromGoogleResponseFromStep (googleresponse, step) {
+    let steps = _.get(googleresponse, 'routes.0.legs.0.steps')
+    let duration = steps.slice(step).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+    return duration
+  }
 }
 
 module.exports = GoogleMapsHelper
