@@ -19,7 +19,7 @@
   * [Order](#order)
     + [Example](#example-4)
   * [Route](#route)
-    + [Examples](#examples)
+    + [Example](#example-5)
 - [Resources](#resources)
   * [Authorization](#authorization)
     + [Authorization Header](#authorization-header)
@@ -140,7 +140,7 @@ This object represents a user account.
 | `lastName` | `String` | Yes | The users last name. | `Müller` |
 | `email` | `String` | Yes | The users email. | `maxmueller@tu-berlin.de` |
 | `username` | `String` | Yes | The username. | `maxiboy123` |
-| `bonuspoints` | `Number` | Yes | The users total bonuspoints. | `234` |
+| `loyaltyPoints` | `Number` | Yes | The users total loyalty points. | `234` |
 | `address` | `Object` | No | The users address. Contains `street`, `zipcode` and `city` | *See account example.* |
 | `distance` | `Number` | yes | Total amount of kilometres driven by the user. | `423.34` |
 | `co2savings` | `Number` | yes | Total amount of CO2 savings (in kilogram) for all van rides. | `70.4` |
@@ -154,7 +154,7 @@ This object represents a user account.
   "lastName": "Müller",
   "email": "maxmueller@tu-berlin.de",
   "username": "maxiboy123",
-  "bonuspoints": 234,
+  "loyaltyPoints": 234,
   "address": {
     "street": "Salzufer 1",
     "zipcode": "10587",
@@ -176,14 +176,13 @@ This object represents a van order which can be made by a user.
 | `orderTime` | `Datetime` | yes | Time at which the order was placed. | `2018-11-23T18:25:43.511Z` |
 | `active` | `Boolean` | yes | True if this order is active (user is still travelling to the ending virtual bus stop).<br>False if the user reached the ending virtual bus stop (finished the journey), or if the order was canceled. | `true` |
 | `canceled` | `Boolean` | yes | True if the user canceled the order. | `false` |
-| `virtualBusStopStart` | `Object` `(VirtualBusStop)` | yes | Starting Virtual Bus Stop |  |
-| `virtualBusStopEnd` | `Object` `(VirtualBusStop)` | yes | Ending Virtual Bus Stop |  |
-| `startTime` | `Datetime` | no | Time at which the user entered the van.<br> Null if the user canceled the order. | `2018-11-23T18:30:25.000Z` |
-| `endTime` | `Datetime` | no | Time at which the user left the van.<br> Null if the user canceled the order. | `2018-11-23T18:45:48.000Z` |
-| `vanId` | `Number` | yes | The van which will carry the user. | |
-| `vanArrivalTime` | `Datetime` | yes | The expected time at which the van will arrive at the `virtualBusStopStart` | `2018-11-23T18:30:25.000Z` |
-| `bonuspoints` | `Number` | yes | The amount of bonus points the user will earn for this order. | |
-| `distance` | `Number` | yes | Amount of kilometres the van has driven / will drive. | `12.4` |
+| `vanStartVBS` | `Object` `(VirtualBusStop)` | yes | Starting Virtual Bus Stop |  |
+| `vanEndVBS` | `Object` `(VirtualBusStop)` | yes | Ending Virtual Bus Stop |  |
+| `vanEnterTime` | `Datetime` | no | Time at which the user entered the van.<br> Null if the user canceled the order. | `2018-11-23T18:30:25.000Z` |
+| `vanExitTime` | `Datetime` | no | Time at which the user left the van.<br> Null if the user canceled the order. | `2018-11-23T18:45:48.000Z` |
+| `vanId` | `Number` | yes | The van which carried the user. | |
+| `loyaltyPoints` | `Number` | yes | The amount of loyalty points for this order. | |
+| `distance` | `Number` | yes | Amount of kilometres the van drove. | `12.4` |
 | `co2savings` | `Number` | yes | Amount of CO2 savings (in kilogram) for this ride . | `2.2` |
 | `route` | `Object` `(Route)` | only if `active` is `true` | The route object for this order. | See [Route](#route) |
 
@@ -196,7 +195,7 @@ This object represents a van order which can be made by a user.
   "orderTime": "2018-11-23T18:25:43.511Z",
   "active": true,
   "canceled": false,
-  "virtualBusStopStart": {
+  "vanStartVBS": {
     "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
     "name": "Straße des 17. Juni 135",
     "accessible": true,
@@ -205,7 +204,7 @@ This object represents a van order which can be made by a user.
       "longitude": 13.326860
     }
   },
-  "virtualBusStopEnd": {
+  "vanEndVBS": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
     "name": "Straße des 17. Juni 120",
     "accessible": true,
@@ -214,11 +213,10 @@ This object represents a van order which can be made by a user.
       "longitude": 13.329145
     }
   },
-  "startTime": "2018-11-23T18:30:25.000Z",
-  "endTime": "2018-11-23T18:45:48.000Z",
+  "vanEnterTime": "2018-11-23T18:30:25.000Z",
+  "vanExitTime": "2018-11-23T18:45:48.000Z",
   "vanId": 7,
-  "vanArrivalTime": "2018-11-23T18:30:24.000Z",
-  "bonuspoints": 3980,
+  "loyaltyPoints": 3980,
   "distance": 12.4,
   "co2savings": 2.2,
   "route": {}
@@ -232,29 +230,29 @@ This object represents a travel route from journey start to the final destinatio
 | Field | Type | Required | Description | Examples |
 |--- |--- |--- |--- |--- |
 | `id` | `String` | yes | The route ID. | `13cf81ee-8898-4b7a-a96e-8b5f675deb3c` |
-| `startLocation` | `Object` `(Location)` | yes | Location where the journey starts. |  |
-| `startStation` | `Object` `(VirtualBusStop)` | yes | Location (VirtualBusStop) where the user should enter the van. |  |
-| `endStation` | `Object` `(VirtualBusStop)` | yes | Location (VirtualBusStop) where the user should exit the van. |  |
-| `destination` | `Object` `(Location)` | yes | Final destination of the journey. |  |
-| `journeyStartTime` | `Datetime` | No | The start time of the journey. Current time if not given. | `2018-12-17T17:15:00.000Z` |
-| `vanStartTime` | `Datetime` | Yes | The time when the van will pick up the user at the `startStation` | `2018-12-17T17:20:00.000Z` |
-| `vanEndTime` | `Datetime` | Yes | The time when the van will arrive at the  `endStation` | `2018-12-17T17:35:00.000Z` |
-| `destinationTime` | `Datetime` | Yes | The time when the user will arrive at the `destination` | `2018-12-17T17:40:00.000Z` |
+| `userStartLocation` | `Object` `(Location)` | yes | Location where the journey starts. |  |
+| `vanStartVBS` | `Object` `(VirtualBusStop)` | yes | Location (VirtualBusStop) where the user should enter the van. |  |
+| `vanEndVBS` | `Object` `(VirtualBusStop)` | yes | Location (VirtualBusStop) where the user should exit the van. |  |
+| `userDestinationLocation` | `Object` `(Location)` | yes | Final destination of the journey. |  |
+| `vanETAatStartVBS` | `Datetime` | Yes | The expected time when the van will pick up the user at the `vanStartVBS` | `2018-12-17T17:20:00.000Z` |
+| `vanETAatEndVBS` | `Datetime` | Yes | The expected time when the van will arrive at the `vanEndVBS` | `2018-12-17T17:35:00.000Z` |
+| `userETAatUserDestinationLocation` | `Datetime` | Yes | The estimated time of arrival of the user at the `userDestinationLocation` | `2018-12-17T17:40:00.000Z` |
 | `toStartRoute` | `Object` | Yes | Route from `startLocation` to `startStation` |  |
 | `vanRoute` | `Object` | Yes | Van route from `startStation` to `endStation` |  |
 | `toDestinationRoute` | `Object` | Yes | Route from `endStation` to `destination` |  |
 | `vanId` | `Number` | yes | The van which will drive this route. | |
 | `validUntil` | `Datetime` | Yes | Time until the route can be confirmed (create an order from this route). After this time has elapsed, a new request must be sent, otherwise no order can be created. | `2018-12-17T17:10:00.000Z` |
 
-#### Examples
+#### Example
 
 ```json
 {
-  "startLocation": {
+  "id": "13cf81ee-8898-4b7a-a96e-8b5f675deb3c",
+  "userStartLocation": {
     "latitude": 52.516639,
     "longitude": 13.331985
   },
-  "startStation": {
+  "vanStartVBS": {
     "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
     "name": "Straße des 17. Juni 135",
     "accessible": true,
@@ -263,7 +261,7 @@ This object represents a travel route from journey start to the final destinatio
       "longitude": 13.326860
     }
   },
-  "endStation": {
+  "vanEndVBS": {
     "id": "76d7fb2f-c264-45a0-ad65-b21c5cf4b532",
     "name": "Straße des 17. Juni 120",
     "accessible": true,
@@ -272,14 +270,13 @@ This object represents a travel route from journey start to the final destinatio
       "longitude": 13.329145
     }
   },
-  "destination": {
+  "userDestinationLocation": {
     "latitude": 52.513245,
     "longitude": 13.332684
   },
-  "journeyStartTime": "2018-12-17T17:15:00.000Z",
-  "vanStartTime": "2018-12-17T17:20:00.000Z",
-  "vanEndTime": "2018-12-17T17:35:00.000Z",
-  "destinationTime": "2018-12-17T17:40:00.000Z",
+  "vanETAatStartVBS": "2018-12-17T17:20:00.000Z",
+  "vanETAatEndVBS": "2018-12-17T17:35:00.000Z",
+  "userETAatUserDestinationLocation": "2018-12-17T17:40:00.000Z",
   "toStartRoute": {},
   "vanRoute": {},
   "toDestinationRoute": {},
@@ -524,17 +521,30 @@ On `HTTP 200` the following object will be returned:
 
 | Property | Type | Description |
 |--- |--- |--- |
-|`userAllowedToEnter`| `Boolean` | `true` if user can enter the van (if the user is close enough to the van), `false` otherwise. |
-|`vanPosition`| `Object` | The current position of the van. |
-|`statusMessage`| `String` |  |
+| `vanId` | `Number` | |
+| `userAllowedToEnter` | `Boolean` | `true` if user can enter the van (if the user is close enough to the van), `false` otherwise. |
+| `userAllowedToExit` | `Boolean` | self explaining |
+| `vanLocation` | `Object` | The current position of the van. |
+| `vanETAatStartVBS` | `Datetime` | Esimated time of arrival of the van at the start location |
+| `vanETAatDestinationVBS` | `Datetime` | Esimated time of arrival of the van at the start location |
+| `otherPassengers` | `Array` | Array containing usernames (Strings) of other passengers |
+| `statusMessage` | `String` | |
 
 ```json
 {
+  "vanId": 7,
   "userAllowedToEnter": false,
-  "vanPosition": {
+  "userAllowedToExit": false,
+  "vanLocation": {
     "latitude": 52.515598,
-    "longitude": 13.326860
+    "longitude": 13.32686
   },
+  "vanETAatStartVBS": "2018-11-23T18:20:25.000Z",
+  "vanETAatDestinationVBS": "2018-11-23T18:30:25.000Z",
+  "otherPassengers": [
+    "Sarah",
+    "Wilbert"
+  ],
   "statusMessage": "Van has not arrived yet"
 }
 ```
@@ -668,6 +678,7 @@ Get nearby virtual bus stops.
       "longitude": 13.326860
     }
   }
+]
 ```
 
 ---
