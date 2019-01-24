@@ -5,9 +5,11 @@ import {changeMapState, setRoutes, resetMapState, MapState} from './map'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
 export const SET_ACTIVE_ORDER = 'orders/SET_ACTIVE_ORDER'
+export const SET_ACTIVE_ORDER_STATE = 'orders/SET_ACTIVE_ORDER_STATE'
 
 const initialState = {
   activeOrder: null,
+  activeOrderState: null,
   pastOrders: [],
 }
 
@@ -48,6 +50,11 @@ export default function orders(state = initialState, action) {
         ...state,
         activeOrder: momentifyOrder(action.payload),
       }
+    case SET_ACTIVE_ORDER_STATE:
+      return {
+        ...state,
+        activeOrderState: action.payload,
+      }
     default:
       return state
   }
@@ -63,13 +70,14 @@ export function fetchOrders() {
 
 export function fetchActiveOrder() {
   return async dispatch => {
-    const {data, status} = await api.get('/activeorder')
-    if (status === 200) {
+    try {
+      const {data, status} = await api.get('/activeorder')
+      if (status !== 200) return
       // currently there is an active order, so set the state correctly
       dispatch(setActiveOrder(data))
       dispatch(setRoutes([data.route]))
       dispatch(changeMapState(MapState.ROUTE_ORDERED))
-    }
+    } catch (e) {}
   }
 }
 
@@ -106,5 +114,12 @@ function setActiveOrder(orderData) {
   return {
     type: SET_ACTIVE_ORDER,
     payload: orderData,
+  }
+}
+
+export function setActiveOrderState(state) {
+  return {
+    type: SET_ACTIVE_ORDER_STATE,
+    payload: state,
   }
 }

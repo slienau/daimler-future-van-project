@@ -1,31 +1,33 @@
 import React from 'react'
+import _ from 'lodash'
 import {Col, Row, Grid} from 'react-native-easy-grid'
-import {Container, Content, ListItem, Text, Button, Icon} from 'native-base'
-import {StyleSheet} from 'react-native'
+import {Container, Content, Text, Button, Icon} from 'native-base'
 import {changeMapState, MapState} from '../../ducks/map'
 import VanCard from './VanCard'
 import JourneyOverview from './JourneyOverview'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
+import api from '../../lib/api'
 
 const MainRideScreen = props => {
-  const handleClick = () => {
-    props.changeMapState(MapState.EXIT_VAN)
-    props.navigation.dangerouslyGetParent().goBack()
+  const handleClick = async () => {
+    try {
+      await api.put('/activeorder', {
+        action: 'endride',
+        userLocation: _.pick(props.userPosition, ['latitude', 'longitude']),
+      })
+      props.changeMapState(MapState.EXIT_VAN)
+      props.navigation.dangerouslyGetParent().goBack()
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   return (
     <Container>
       <Content>
+        <JourneyOverview />
         <Grid>
-          <Row>
-            <Col>
-              <ListItem itemHeader first>
-                <Text style={styles.headerSize}>Journey overview</Text>
-              </ListItem>
-              <JourneyOverview />
-            </Col>
-          </Row>
           <Row>
             <Col>
               <VanCard
@@ -69,19 +71,15 @@ const MainRideScreen = props => {
   )
 }
 
-const styles = StyleSheet.create({
-  headerSize: {
-    fontSize: 21,
-  },
-})
-
 MainRideScreen.propTypes = {
   changeMapState: PropTypes.func,
+  userPosition: PropTypes.object,
 }
 
 export default connect(
   state => ({
     mapState: state.map.mapState,
+    userPosition: state.map.userPosition,
   }),
   dispatch => ({
     changeMapState: payload => dispatch(changeMapState(payload)),
