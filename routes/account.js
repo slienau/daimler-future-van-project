@@ -6,7 +6,7 @@ const Order = require('../models/Order.js')
 router.get('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
   let account, bonusitem, responsebody
-  let bonuspoints = 0
+  let loyaltyPoints = 0
   let co2savings = 0
   let distance = 0
   try {
@@ -23,22 +23,22 @@ router.get('/', async function (req, res) {
         $group:
           {
             _id: '$accountId',
-            bonuspoints: { $sum: { $multiply: ['$distance', '$bonusMultiplier'] } },
+            loyaltyPoints: { $sum: { $multiply: ['$distance', '$bonusMultiplier'] } },
             co2savings: { $sum: '$co2savings' },
             distance: { $sum: '$distance' }
           }
       }
     ])
     if (bonusitem.length > 0) {
-      bonuspoints = bonusitem[0].bonuspoints
+      loyaltyPoints = bonusitem[0].loyaltyPoints
       co2savings = bonusitem[0].co2savings
       distance = bonusitem[0].distance
     }
-    bonuspoints = Number(bonuspoints.toFixed(0))
+    loyaltyPoints = Number(loyaltyPoints.toFixed(0))
     co2savings = Number(co2savings.toFixed(2))
     distance = Number(distance.toFixed(2))
     responsebody = account.toObject()
-    responsebody.bonuspoints = bonuspoints
+    responsebody.loyaltyPoints = loyaltyPoints
     responsebody.co2savings = co2savings
     responsebody.distance = distance // total distance the user travelled
     res.json(responsebody)
