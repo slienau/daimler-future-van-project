@@ -19,19 +19,19 @@ const OrderSchema = new Schema({
     type: Boolean,
     required: true
   },
-  virtualBusStopStart: {
+  vanStartVBS: {
     type: String,
     required: true
   },
-  virtualBusStopEnd: {
+  vanEndVBS: {
     type: String,
     required: true
   },
-  startTime: {
+  vanEnterTime: {
     type: Date,
     required: false
   },
-  endTime: {
+  vanExitTime: {
     type: Date,
     required: false
   },
@@ -56,7 +56,7 @@ const OrderSchema = new Schema({
     default: 10,
     required: true
   },
-  bonuspoints: {
+  loyaltyPoints: {
     type: Number,
     default: 0,
     required: true

@@ -51,12 +51,147 @@ class VirtualBusStopHelper {
       name: 'Kottbusser Tor - Skalitzer Str. 139',
       accessible: true
     })
+    const erp = new VirtualBusStop({
+      location: {
+        latitude: 52.511632,
+        longitude: 13.322181
+      },
+      name: 'Ernst-Reuter-Platz - Hardenbergstraße 4',
+      accessible: true
+    })
+    const kufue = new VirtualBusStop({
+      location: {
+        latitude: 52.499960,
+        longitude: 13.363111
+      },
+      name: 'Kurfürstenstraße - Potsdamer Straße 109',
+      accessible: true
+    })
+    const tustra = new VirtualBusStop({
+      location: {
+        latitude: 52.519688,
+        longitude: 13.340634
+      },
+      name: 'Turmstraße - Alt Moabit 85',
+      accessible: true
+    })
+    const fried = new VirtualBusStop({
+      location: {
+        latitude: 52.52559,
+        longitude: 13.388116
+      },
+      name: 'Friedrichstraße - Friedrichstraße 147',
+      accessible: true
+    })
+    const ostb = new VirtualBusStop({
+      location: {
+        latitude: 52.510105,
+        longitude: 13.433079
+      },
+      name: 'Ostbahnhof - Am Ostbahnhof 5',
+      accessible: true
+    })
+    const rosi = new VirtualBusStop({
+      location: {
+        latitude: 52.529326,
+        longitude: 13.401422
+      },
+      name: 'Rosenthaler Platz - Rosenthaler Straße 1',
+      accessible: true
+    })
+    const natu = new VirtualBusStop({
+      location: {
+        latitude: 52.529967,
+        longitude: 13.380471
+      },
+      name: 'Naturkundemuseum - Invalidenstraße 40',
+      accessible: true
+    })
+    const herm = new VirtualBusStop({
+      location: {
+        latitude: 52.487297,
+        longitude: 13.424565
+      },
+      name: 'Hermannplatz - Hermannplatz 10',
+      accessible: true
+    })
+    const charl = new VirtualBusStop({
+      location: {
+        latitude: 52.505242,
+        longitude: 13.301897
+      },
+      name: 'Charlottenburg - Stuttgarter Platz 30',
+      accessible: true
+    })
+    const mehr = new VirtualBusStop({
+      location: {
+        latitude: 52.493413,
+        longitude: 13.387769
+      },
+      name: 'Mehringdamm - Mehringdamm 36',
+      accessible: true
+    })
+    const greif = new VirtualBusStop({
+      location: {
+        latitude: 52.536260,
+        longitude: 13.432289
+      },
+      name: 'Greifswalder Straße - Danziger Straße 116',
+      accessible: true
+    })
+    const ftor = new VirtualBusStop({
+      location: {
+        latitude: 52.516142,
+        longitude: 13.453484
+      },
+      name: 'Frankfurter Tor - Frankfurter Tor 1',
+      accessible: true
+    })
+    const check = new VirtualBusStop({
+      location: {
+        latitude: 52.507475,
+        longitude: 13.390161
+      },
+      name: 'Checkpoint Charlie - Friedrichstraße 206',
+      accessible: true
+    })
+    const ebers = new VirtualBusStop({
+      location: {
+        latitude: 52.540788,
+        longitude: 13.411868
+      },
+      name: 'Eberswalder Straße - Schönhauser Allee 145',
+      accessible: true
+    })
+    const berl = new VirtualBusStop({
+      location: {
+        latitude: 52.487768,
+        longitude: 13.331290
+      },
+      name: 'Berliner Straße - Bundesalleee 180',
+      accessible: true
+    })
 
+    await ebers.save()
+    await berl.save()
+    await greif.save()
+    await ftor.save()
+    await check.save()
+    await herm.save()
+    await charl.save()
+    await mehr.save()
+    await rosi.save()
+    await natu.save()
+    await ostb.save()
+    await fried.save()
+    await tustra.save()
     await zoo.save()
     await potsdamerPl.save()
     await hbf.save()
     await alex.save()
     await kotti.save()
+    await erp.save()
+    await kufue.save()
   }
 
   // get Suggestions for Journey
@@ -73,19 +208,18 @@ class VirtualBusStopHelper {
     const destinationTime = new Date(vanEndTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[2]) * 1000)
 
     const routeObject = {
-      startLocation: start,
-      destination: destination,
-      startStation: startVB,
-      endStation: destinationVB,
-      journeyStartTime: startTime,
-      vanStartTime: vanStartTime,
-      vanEndTime: vanEndTime,
-      destinationTime: destinationTime,
+      userStartLocation: start,
+      userDestinationLocation: destination,
+      vanStartVBS: startVB,
+      vanEndVBS: destinationVB,
+      vanETAatStartVBS: vanStartTime,
+      vanETAatEndVBS: vanEndTime,
+      userETAatUserDestinationLocation: destinationTime,
       toStartRoute: googleResponse[0],
       vanRoute: googleResponse[1],
       toDestinationRoute: googleResponse[2],
       vanId: vanID,
-      validUntil: new Date(Date.now() + (1000 * 60))
+      validUntil: new Date(startTime.getTime() + (1000 * 60))
     }
 
     // Right now give only one suggestion

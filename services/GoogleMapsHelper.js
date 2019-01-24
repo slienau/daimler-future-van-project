@@ -7,7 +7,7 @@ class GoogleMapsHelper {
     const responses = []
     const key = EnvVariableService.apiKey()
 
-    // This time will be added as a buffer
+    // This time will be added as a buffer in seconds
     const bufferTimeToEnterOrExitVan = 30
 
     // First API Call to get to Virtual Bus stop
@@ -20,11 +20,15 @@ class GoogleMapsHelper {
     responses.push(responseToVB1)
 
     // Second API Call to get to second Virtual Bus stop
+
+    // Calc times in seconds
     const userArrivalTime = parseInt(new Date(time).getTime() / 1000 + durationToVB1)
-    const vanArrivalTime = parseInt(new Date(time).getTime() / 1000 + vanArrivalDuration)
+    const vanArrivalTime = parseInt(vanArrivalDuration.getTime() / 1000)
     // rideStartTime is the later of the two arrival Times
     const rideStartTime = (userArrivalTime >= vanArrivalTime) ? userArrivalTime + bufferTimeToEnterOrExitVan : vanArrivalTime + bufferTimeToEnterOrExitVan
-
+    console.log('------------------------')
+    console.log('rideStartTime: (user + vanarrival+ 30s) ' + new Date(rideStartTime * 1000) + ' -- ' + new Date(userArrivalTime * 1000) + ' -- ' + new Date(vanArrivalTime * 1000) + ' -- ')
+    console.log('------------------------')
     const url2 = `https://maps.googleapis.com/maps/api/directions/json?origin=${vb1.location.latitude},${vb1.location.longitude}&destination=${vb2.location.latitude},${vb2.location.longitude}&key=${key}&mode=driving&departure_time=${rideStartTime}`
     console.log(url2)
 

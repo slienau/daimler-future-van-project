@@ -70,13 +70,6 @@ async function starttest () {
   console.log('Vans worked')
   console.log('----------------------')
 
-  const orderStatus = await axiosInstance.get('/activeorder')
-  const orderStatusInfo = orderStatus.data
-
-  console.log('active order:')
-  console.log(orderStatusInfo)
-  console.log('----------------------')
-
   const orderStatus2 = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude)
   const orderStatusInfo2 = orderStatus2.data
 

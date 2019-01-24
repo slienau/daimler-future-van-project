@@ -19,35 +19,31 @@ const RouteSchema = new Schema({
     default: false,
     required: true
   },
-  startLocation: {
+  userStartLocation: {
     type: LocationSchema,
     required: true
   },
-  destination: {
+  userDestinationLocation: {
     type: LocationSchema,
     required: true
   },
-  startStation: {
+  vanStartVBS: {
     type: Object,
     required: true
   },
-  endStation: {
+  vanEndVBS: {
     type: Object,
     required: true
   },
-  journeyStartTime: {
+  vanETAatStartVBS: {
     type: Date,
     required: false
   },
-  vanStartTime: {
+  vanETAatEndVBS: {
     type: Date,
     required: false
   },
-  vanEndTime: {
-    type: Date,
-    required: false
-  },
-  destinationTime: {
+  userETAatUserDestinationLocation: {
     type: Date,
     required: false
   },
