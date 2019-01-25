@@ -1,4 +1,5 @@
 import api from '../lib/api'
+import _ from 'lodash'
 
 export const SET_ACCOUNT_DATA = 'account/SET_ACCOUNT_DATA'
 export const GET_LEADERBOARD_DATA = 'account/GET_LEADERBOARD_DATA'
@@ -17,13 +18,10 @@ export default function account(state = initialState, action) {
         name: action.payload.firstName + ' ' + action.payload.lastName,
       }
     case GET_LEADERBOARD_DATA:
-      const getLeaders = []
-      for (var i = 0; i < action.payload.length; i++) {
-        getLeaders[i] = action.payload[i].loyaltyPoints
-      }
+      const leaderItems = _.concat([], action.payload)
       return {
         ...state,
-        leaders: getLeaders,
+        leaders: leaderItems,
       }
     default:
       return state

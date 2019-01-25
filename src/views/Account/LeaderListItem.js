@@ -4,7 +4,11 @@ import {Text, ListItem, Right, Body, Left, Thumbnail} from 'native-base'
 import {StyleSheet} from 'react-native'
 
 const LeaderListItem = props => {
-  const idx = parseInt(props.name) + 1
+  let userName = 'Max Mustermann'
+  if (props.username) {
+    userName = props.username
+  }
+  const idx = parseInt(props.place) + 1
   const uri =
     'https://www.thehindu.com/sci-tech/technology/internet/article17759222.ece/alternates/FREE_660/02th-egg-person'
   return (
@@ -15,7 +19,7 @@ const LeaderListItem = props => {
       <Body>
         <Text>
           <Text style={styles.time}>
-            Max Mustermann
+            {userName}
             {'\n'}
           </Text>
           {props.loyaltyPoints} Points
@@ -30,7 +34,8 @@ const LeaderListItem = props => {
 
 LeaderListItem.propTypes = {
   loyaltyPoints: PropTypes.number,
-  name: PropTypes.string,
+  place: PropTypes.string,
+  username: PropTypes.string,
 }
 
 const styles = StyleSheet.create({

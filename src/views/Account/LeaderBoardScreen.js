@@ -17,6 +17,8 @@ class Leaderboard extends Component {
   }
 
   render() {
+    console.log('Leaderboard')
+    console.log(this.props.leaders)
     return (
       <StyledView>
         <Container>
@@ -28,7 +30,11 @@ class Leaderboard extends Component {
               <List
                 dataArray={this.props.leaders}
                 renderRow={(item, _, index) => (
-                  <LeaderListItem name={index} loyaltyPoints={item} />
+                  <LeaderListItem
+                    place={index}
+                    loyaltyPoints={item.loyaltyPoints}
+                    username={item.username}
+                  />
                 )}
               />
             </List>
