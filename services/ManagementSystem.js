@@ -157,6 +157,10 @@ class ManagementSystem {
           latitude: 52.513751,
           longitude: 13.333312
         },
+        actualLocation: {
+          latitude: 52.513751,
+          longitude: 13.333312
+        },
         route: null,
         lastStepTime: null,
         nextStopTime: null,
@@ -170,7 +174,7 @@ class ManagementSystem {
   }
 
   static resetVan (vanId) {
-    console.log('resetting van')
+    console.log('resetting van', vanId)
     this.vans[vanId - 1].route = null
     this.vans[vanId - 1].lastStepTime = new Date()
     this.vans[vanId - 1].nextStopTime = null
@@ -183,16 +187,17 @@ class ManagementSystem {
 
   static updateVanLocations () {
     const currentTime = new Date()
+    let latDif, longDif, timeFraction
 
+    // Iterate through all vans
     ManagementSystem.vans.forEach((van) => {
-      // If van does not have a route or is waiting, check if it has a potential route that is older than 60s. if yes delete.
-
+      // Reset van if if waiting for more than 10 minutes
       if (van.waiting && van.lastStepTime.getTime() + 10 * 60 * 1000 < currentTime.getTime()) {
-        console.log('Deleting old route')
+        console.log('Deleting old route - van', van.vanId)
         this.resetVan(van.vanId)
         return
       }
-
+      // If van does not have a route or is waiting, check if it has a potential route that is older than 60s. if yes delete.
       if (!van.route) {
         if (van.potentialRoute && van.lastStepTime.getTime() + 60 * 1000 < currentTime.getTime()) {
           console.log('Deleting old potential route')
@@ -201,26 +206,46 @@ class ManagementSystem {
         }
         return
       }
+      // Do nothing if van is waiting (for less than 10 minutes)
       if (van.waiting) return
 
-      // This happens if van has aroute and has not reached the next bus Stop yet
+      // This happens if van has a route and has not reached the next bus Stop yet
+      // This updates the step location
       if (currentTime < van.nextStopTime) {
-        // timePassed is the the time that has passed since the lastStepTime
+        // timePassed is the the time that has passed since the lastStepTime in seconds
         const timePassed = ((currentTime.getTime() - van.lastStepTime.getTime()) / 1000)
         let timeCounter = 0
+
         // Iterate through all steps ahead of current step & find the one that matches the time that has passed
         for (let step = van.currentStep; step < van.route.routes[0].legs[0].steps.length; step++) {
           timeCounter += van.route.routes[0].legs[0].steps[step].duration.value
 
           if (timeCounter > timePassed) {
+            // Calculating the actual location in between the step locations only if there is a next step
+            if (typeof van.route.routes[0].legs[0].steps[step + 1] === 'undefined') {} else {
+              latDif = van.route.routes[0].legs[0].steps[step + 1].start_location.lat - van.location.latitude
+              longDif = van.route.routes[0].legs[0].steps[step + 1].start_location.lng - van.location.longitude
+              timeFraction = timePassed / van.route.routes[0].legs[0].steps[step].duration.value
+
+              // Updating the actual location
+              van.actualLocation = {
+                latitude: van.location.latitude + latDif * timeFraction,
+                longitude: van.location.longitude + longDif * timeFraction
+              }
+            }
+            // Updating step location (usually not changing it unless a step has passed)
             van.location = {
               latitude: van.route.routes[0].legs[0].steps[step].start_location.lat,
               longitude: van.route.routes[0].legs[0].steps[step].start_location.lng
             }
-            // if algorithm has advanced a step, save the current time as the time of the last step
+            // if algorithm has advanced a step, save the current time as the time of the last step and set the actual location to the step location
             if (step > van.currentStep) {
               van.lastStepTime = new Date(van.lastStepTime.getTime() + van.route.routes[0].legs[0].steps[step - 1].duration.value * 1000)
               console.log('setting new step')
+              van.actualLocation = {
+                latitude: van.route.routes[0].legs[0].steps[step].start_location.lat,
+                longitude: van.route.routes[0].legs[0].steps[step].start_location.lng
+              }
             }
             van.currentStep = step
             break
@@ -228,10 +253,14 @@ class ManagementSystem {
         }
       // This happens if van has reached the next virtual bus stop
       } else {
-        console.log('Went into waiting')
+        console.log('Van', van.vanId, ' went into waiting')
 
         van.currentStep = 0
         van.location = {
+          latitude: van.route.routes[0].legs[0].end_location.lat,
+          longitude: van.route.routes[0].legs[0].end_location.lng
+        }
+        van.actualLocation = {
           latitude: van.route.routes[0].legs[0].end_location.lat,
           longitude: van.route.routes[0].legs[0].end_location.lng
         }

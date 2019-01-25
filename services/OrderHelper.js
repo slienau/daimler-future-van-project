@@ -190,17 +190,13 @@ class OrderHelper {
 
     // TODO get vanArrival Time from VAN
     const vanLocation = ManagementSystem.vans[order.vanId - 1].location
-
-    console.log('Van location at status:')
-    console.log(vanLocation)
-    console.log(virtualBusStopStart.location)
-    console.log(virtualBusStopEnd.location)
+    const actualVanLocation = ManagementSystem.vans[order.vanId - 1].actualLocation
 
     const res = {
       userAllowedToEnter: false,
       userAllowedToExit: false,
       message: 'unknown state',
-      vanLocation: vanLocation
+      vanLocation: actualVanLocation
     }
 
     if (!order.vanEnterTime) {
