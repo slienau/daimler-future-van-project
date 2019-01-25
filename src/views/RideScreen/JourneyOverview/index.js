@@ -12,12 +12,15 @@ const StyledText = styled(Text)`
 `
 
 const JourneyOverview = props => {
-  const getdestinationTime = _.get(props.route, 'destinationTime')
-  const destinationTime = moment(getdestinationTime).format('HH:mm')
+  const userETAatUserDestinationLocation = moment(
+    _.get(props.route, 'userETAatUserDestinationLocation')
+  ).format('HH:mm')
 
-  const getVanArrivalTime = _.get(props.route, 'vanEndTime')
-  const vanArrivalTime = moment(getVanArrivalTime).format('HH:mm')
-  const bonusPoints = '' + _.round(_.get(props.activeOrder, 'bonuspoints'), 2)
+  const vanETAatEndVBS = moment(_.get(props.route, 'vanETAatEndVBS')).format(
+    'HH:mm'
+  )
+  const loyaltyPoints =
+    '' + _.round(_.get(props.activeOrder, 'loyaltyPoints'), 2)
 
   return (
     <>
@@ -28,26 +31,26 @@ const JourneyOverview = props => {
         description="Time of arrival"
         iconColor="darkgreen"
         iconName="flag"
-        info={destinationTime}
-        vanEndTime
+        info={userETAatUserDestinationLocation}
+        vanEndTime // TODO: kann weg?
       />
       <JourneyListItem
         description="Time of arrival of exit point"
         iconColor="darkblue"
         iconName="bus"
-        info={vanArrivalTime}
+        info={vanETAatEndVBS}
       />
       <JourneyListItem
         description="Overall Kilometers"
         iconColor="black"
         iconName="speedometer"
-        info="4.23 Km"
+        info="4.23 Km" // TODO: show kilometers from order / route?
       />
       <JourneyListItem
         description="Bonus Points"
         iconColor="orange"
         iconName="star"
-        info={bonusPoints}
+        info={loyaltyPoints}
       />
     </>
   )
@@ -62,8 +65,8 @@ const mapStateToProps = state => {
   return {
     activeOrder: state.orders.activeOrder,
     mapState: state.map.mapState,
-    journeyStart: state.map.journeyStart,
-    journeyDestination: state.map.journeyDestination,
+    userStartLocation: state.map.userStartLocation,
+    userDestinationLocation: state.map.userDestinationLocation,
     route: _.get(state.map, 'routes.0'),
   }
 }

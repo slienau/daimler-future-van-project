@@ -8,8 +8,8 @@ const OrderListItem = props => {
   if (!props.order.canceled) {
     bodyText = (
       <Text>
-        From: {props.order.virtualBusStopStart.name} {'\n'}
-        To: {props.order.virtualBusStopEnd.name}
+        From: {props.order.vanStartVBS.name} {'\n'}
+        To: {props.order.vanEndVBS.name}
       </Text>
     )
   }

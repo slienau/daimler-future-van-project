@@ -5,18 +5,18 @@ import {changeMapState, setRoutes, resetMapState, MapState} from './map'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
 export const SET_ACTIVE_ORDER = 'orders/SET_ACTIVE_ORDER'
-export const SET_ACTIVE_ORDER_STATE = 'orders/SET_ACTIVE_ORDER_STATE'
+export const SET_ACTIVE_ORDER_STATUS = 'orders/SET_ACTIVE_ORDER_STATUS'
 
 const initialState = {
   activeOrder: null,
-  activeOrderState: null,
+  activeOrderStatus: null,
   pastOrders: [],
 }
 
 function momentifyOrder(order) {
   if (!order) return order
   const moments = _.compact(
-    ['orderTime', 'startTime', 'endTime'].map(t => {
+    ['orderTime', 'vanEnterTime', 'vanExitTime'].map(t => {
       if (!order[t]) return null
       return {
         [t]: moment(order[t]),
@@ -50,10 +50,10 @@ export default function orders(state = initialState, action) {
         ...state,
         activeOrder: momentifyOrder(action.payload),
       }
-    case SET_ACTIVE_ORDER_STATE:
+    case SET_ACTIVE_ORDER_STATUS:
       return {
         ...state,
-        activeOrderState: action.payload,
+        activeOrderStatus: action.payload,
       }
     default:
       return state
@@ -117,9 +117,9 @@ function setActiveOrder(orderData) {
   }
 }
 
-export function setActiveOrderState(state) {
+export function setActiveOrderStatus(state) {
   return {
-    type: SET_ACTIVE_ORDER_STATE,
+    type: SET_ACTIVE_ORDER_STATUS,
     payload: state,
   }
 }

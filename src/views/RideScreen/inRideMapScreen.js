@@ -13,8 +13,8 @@ const StyledMapView = styled(MapView)`
 
 const inRideMapScreen = props => {
   const mapRegion = {
-    latitude: _.get(props.route, 'startStation.location.latitude'),
-    longitude: _.get(props.route, 'startStation.location.longitude'),
+    latitude: _.get(props.route, 'vanStartVBS.location.latitude'),
+    longitude: _.get(props.route, 'vanStartVBS.location.longitude'),
     latitudeDelta: 0.02,
     longitudeDelta: 0.02,
   }

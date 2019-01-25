@@ -79,7 +79,7 @@ MainRideScreen.propTypes = {
 export default connect(
   state => ({
     mapState: state.map.mapState,
-    userPosition: state.map.userPosition,
+    currentUserLocation: state.map.currentUserLocation,
   }),
   dispatch => ({
     changeMapState: payload => dispatch(changeMapState(payload)),

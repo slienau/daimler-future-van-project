@@ -12,8 +12,8 @@ const OrderDetail = props => {
   const mapHeight = 0.45 * height // 45% height
 
   const mapRegion = getRegionForCoordinates([
-    order.virtualBusStopStart.location,
-    order.virtualBusStopEnd.location,
+    order.vanStartVBS.location,
+    order.vanEndVBS.location,
   ])
 
   return (
@@ -26,14 +26,14 @@ const OrderDetail = props => {
             showsMyLocationButton={false}>
             <MapMarker
               title="Pickup point"
-              description={order.virtualBusStopStart.name}
-              location={order.virtualBusStopStart.location}
+              description={order.vanStartVBS.name}
+              location={order.vanStartVBS.location}
               image="person"
             />
             <MapMarker
               title="Dropoff point"
-              description={order.virtualBusStopEnd.name}
-              location={order.virtualBusStopEnd.location}
+              description={order.vanEndVBS.name}
+              location={order.vanEndVBS.location}
               image="destination"
             />
           </MapView>
@@ -42,13 +42,13 @@ const OrderDetail = props => {
           <List>
             <OrderDetailListItem
               icon="pin"
-              body={order.virtualBusStopStart.name}
-              right={order.startTime.format('LT')}
+              body={order.vanStartVBS.name}
+              right={order.vanEnterTime.format('LT')}
             />
             <OrderDetailListItem
               icon="flag"
-              body={order.virtualBusStopEnd.name}
-              right={order.endTime.format('LT')}
+              body={order.vanEndVBS.name}
+              right={order.vanExitTime.format('LT')}
             />
             <OrderDetailListItem
               icon="bus"
@@ -64,7 +64,7 @@ const OrderDetail = props => {
             <OrderDetailListItem
               icon="star"
               body="Loyalty Points"
-              right={order.bonuspoints}
+              right={order.loyaltyPoints}
             />
           </List>
         </View>
