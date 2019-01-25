@@ -1,8 +1,7 @@
 import api from '../lib/api'
-import _ from 'lodash'
 
 export const SET_ACCOUNT_DATA = 'account/SET_ACCOUNT_DATA'
-export const GET_LEADERBOARD_DATA = 'account/GET_LEADERBOARD_DATA'
+export const SET_LEADERBOARD_DATA = 'account/SET_LEADERBOARD_DATA'
 
 const initialState = {
   address: {},
@@ -17,21 +16,13 @@ export default function account(state = initialState, action) {
         ...action.payload,
         name: action.payload.firstName + ' ' + action.payload.lastName,
       }
-    case GET_LEADERBOARD_DATA:
-      const leaderItems = _.concat([], action.payload)
+    case SET_LEADERBOARD_DATA:
       return {
         ...state,
-        leaders: leaderItems,
+        leaders: action.payload,
       }
     default:
       return state
-  }
-}
-
-export function fetchLeaderBoardData() {
-  return async dispatch => {
-    const {data} = await api.get('/leaderboard')
-    dispatch(getLeaderBoardData(data))
   }
 }
 
@@ -50,9 +41,16 @@ function setAccountData(accountData) {
   }
 }
 
-function getLeaderBoardData(leaderBoardData) {
+export function fetchLeaderBoardData() {
+  return async dispatch => {
+    const {data} = await api.get('/leaderboard')
+    dispatch(setLeaderBoardData(data))
+  }
+}
+
+function setLeaderBoardData(leaderBoardData) {
   return {
-    type: GET_LEADERBOARD_DATA,
+    type: SET_LEADERBOARD_DATA,
     payload: leaderBoardData,
   }
 }
