@@ -187,38 +187,45 @@ class ManagementSystem {
   static async startRide (order) {
     const vanId = order.vanId
     const van = this.vans[vanId - 1]
-
+    console.log('### START RIDE ###')
     // if a passenger enters the van, remove the passengers start bus stop from the list of all next stops
     // if this list then contains no next stop that matches the current waiting stop, the van picked up all passengers and is ready to ride
     if (van.waiting) {
-      _.remove(van.nextStops, (nextStop) => {
+      let r = _.remove(van.nextStops, (nextStop) => {
         return nextStop.orderId.equals(order._id) && nextStop.vb._id.equals(van.waitingAt._id)
       })
-      if (_.find(van.nextStops, (nextStop) => nextStop.vb._id.equals(van.waitingAt._id)) === -1) {
+      console.log('removed', r.length, 'stops')
+      if (_.find(van.nextStops, (nextStop) => nextStop.vb._id.equals(van.waitingAt._id)) === undefined) {
         // van continues the ride
-        van.nextRoutes.shift()
         van.currentStep = 0
         van.lastStepTime = new Date()
         van.waiting = false
         van.waitingAt = null
         const timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0])
         van.nextStopTime = new Date(Date.now() + (timeToVB * 1000))
+        console.log('continue ride')
       }
+      return true
     }
+    return false
   }
 
   static async endRide (order) {
     const vanId = order.vanId
     const van = this.vans[vanId - 1]
-
+    console.log('### END RIDE ###')
     // if a passenger leaves the van, remove the passengers end bus stop from the list of all next stops
     // if this list then contains no next stop anymore, all passengers have left the van and its again ready to ride
     if (van.waiting) {
-      _.remove(van.nextStops, nextStop => nextStop.orderId.equals(order._id))
+      let r = _.remove(van.nextStops, nextStop => nextStop.orderId.equals(order._id))
+      console.log('removed', r.length, 'stops')
       if (van.nextStops.length === 0) {
         this.resetVan(vanId)
+        console.log('van reset')
       }
+      return true
     }
+    return false
   }
 
   static async cancelRide (order) {
@@ -315,6 +322,7 @@ class ManagementSystem {
       const currentRoute = van.nextRoutes[0]
       const steps = currentRoute.routes[0].legs[0].steps
       console.log('##### UPDATE LOCATIONS #####')
+      console.log('next stops:', van.nextStops.length)
       console.log('number steps:', steps.length)
       console.log('currentStep:', van.currentStep)
       console.log('van location:', van.location)
@@ -348,7 +356,14 @@ class ManagementSystem {
               longitude: steps[van.currentStep].end_location.lng
             }
             // if algorithm has advanced a step, save the current time as the time of the last step
-            van.lastStepTime = new Date(van.lastStepTime.getTime() + steps[van.currentStep].duration.value * 1000)
+            van.lastStepTime = currentTime
+            van.currentStep = 0
+            van.waiting = true
+            van.waitingAt = van.nextStops[0].vb
+            // remove the current driven route (and all succeeding ones with a duration of zero)
+            van.nextRoutes.shift()
+            van.nextRoutes = _.dropWhile(van.nextRoutes, nextRoute => nextRoute.routes[0].legs[0].duration.value === 0)
+            console.log('really waiting')
           }
         }
       // This happens if van has reached the next virtual bus stop

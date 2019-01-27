@@ -45,20 +45,37 @@ async function starttest () {
   const orderInfo1 = order1.data
   assert.strictEqual(true, orderInfo1 != null, 'order is null')
 
-  for (let i = 0; i < 80; i++) {
-    console.log('start at:', orderInfo1.route.vanStartTime)
-    console.log('current time:', new Date())
+  let started = false
+  while (true) {
     await sleep(1000 * 10)
     const vans = await axiosInstance1.get('vans')
     console.log('----------------------')
     console.log(vans.data[orderInfo1.vanId - 1])
+    if (!started) {
+      try {
+        let res = await axiosInstance1.put('/activeorder', {
+          action: 'startride',
+          userLocation: orderInfo1.route.startStation.location
+        })
+        started = true
+        console.log('start time:', res.data.startTime)
+      } catch (e) {
+        console.log('not entered')
+      }
+    } else {
+      try {
+        await axiosInstance1.put('/activeorder', {
+          action: 'endride',
+          userLocation: orderInfo1.route.endStation.location
+        })
+        console.log('ride ended')
+        break
+      } catch (e) {
+        console.log('still riding')
+      }
+    }
     console.log('----------------------')
   }
-
-//   console.log('cancelling first order')
-//   const orderPut1 = await axiosInstance1.put('/activeorder', { action: 'cancel', userLocation: start1 })
-//   const orderPutInfo1 = _.get(orderPut1, 'data')
-//   assert.strictEqual(true, orderPutInfo1.canceled, 'order null')
 }
 
 starttest().catch(e => {
