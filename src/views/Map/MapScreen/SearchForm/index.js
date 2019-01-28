@@ -56,8 +56,8 @@ const SearchForm = props => {
           startText={startText}
           destinationText={destinationText}
           onSwapPress={() => props.swapJourneyStartAndDestination()}
-          onAddPersonPress={p => props.setPersonCount(p)}
-          personvalue={personCount}
+          setPersonCount={p => props.setPersonCount(p)}
+          personCount={personCount}
         />
       )
       break

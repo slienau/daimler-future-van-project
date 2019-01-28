@@ -1,6 +1,7 @@
 import React from 'react'
 import {Icon, Right, Left} from 'native-base'
 import {StyleSheet} from 'react-native'
+import PropTypes from 'prop-types'
 import {
   CardItemBorderBottom,
   TextFlex,
@@ -38,14 +39,14 @@ const SearchRoutes = props => {
         </Left>
         <Right>
           <StyledNumericInput
-            onChange={value => props.onAddPersonPress(value)}
+            onChange={value => props.setPersonCount(value)}
             totalWidth={140}
             totalHeight={30}
             iconSize={25}
             minValue={1}
             maxValue={8}
-            initValue={props.personvalue}
-            value={props.personvalue}
+            initValue={props.personCount}
+            value={props.personCount}
             rounded
             textColor="#B0228C"
             iconStyle={styles.numericInputIconColor}
@@ -64,5 +65,15 @@ const styles = StyleSheet.create({
     color: $whiteColor,
   },
 })
+
+SearchRoutes.propTypes = {
+  destinationText: PropTypes.string,
+  onDestinationPress: PropTypes.func,
+  onStartPress: PropTypes.func,
+  onSwapPress: PropTypes.func,
+  personCount: PropTypes.number,
+  setPersonCount: PropTypes.func,
+  startText: PropTypes.string,
+}
 
 export default SearchRoutes
