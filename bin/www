@@ -13,9 +13,10 @@ var OrderHelper = require('../services/OrderHelper');
 var mongoose = require('mongoose');
 var ManagementSystem = require('../services/ManagementSystem')
 
+const mongoDbEndpoint = process.env.NODE_ENV === 'production' ? 'mongo' : 'localhost'
 mongoose
     .connect(
-        'mongodb://mongo:27017/PAS-Backend',
+        `mongodb://${mongoDbEndpoint}:27017/PAS-Backend`,
         { useNewUrlParser: true }
     )
     .then(() => console.log('MongoDB Connected'))

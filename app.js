@@ -23,6 +23,8 @@ const leaderboardRouter = require('./routes/leaderboard')
 const passport = require('passport')
 require('./services/passport')
 
+const mongoDbEndpoint = process.env.NODE_ENV === 'production' ? 'mongo' : 'localhost'
+
 const app = express()
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -51,12 +53,12 @@ app.use(cookieParser())
 app.use(expressWinston.logger({
   transports: [
     new (winston.transports.MongoDB)({
-      db: 'mongodb://mongo:27017/PAS-Backend',
+      db: `mongodb://${mongoDbEndpoint}:27017/PAS-Backend`,
       level: 'info',
       capped: true
     }),
     new (winston.transports.MongoDB)({
-      db: 'mongodb://mongo:27017/PAS-Backend',
+      db: `mongodb://${mongoDbEndpoint}:27017/PAS-Backend`,
       level: 'error',
       capped: true,
       collection: 'error'

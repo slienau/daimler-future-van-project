@@ -6,6 +6,8 @@
     "start": "node ./bin/www",
     "test": "standard && ./test.sh",
     "fix": "standard --fix",
+    "startMongo": "docker run -d --rm --name mongo -p 27017:27017 mongo",
+    "killMongo": "docker stop mongo || docker rm -f mongo",
     "test2": "node ./tests/orderTest",
     "integration-tests": "node ./tests/orderTest.js",
     "precommit": "lint-staged"
