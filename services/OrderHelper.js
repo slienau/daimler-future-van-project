@@ -136,15 +136,15 @@ class OrderHelper {
       return error
     }
 
-    const newVan = await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId)
+    // const newVan = await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId)
 
-    console.log('------------------------')
-    console.log('old van Arrival Time: ' + vanArrivalTime)
-    console.log('------------------------')
+    // console.log('------------------------')
+    // console.log('old van Arrival Time: ' + vanArrivalTime)
+    // console.log('------------------------')
 
-    console.log('------------------------')
-    console.log('new van Arrival Time: ' + newVan.nextStopTime)
-    console.log('------------------------')
+    // console.log('------------------------')
+    // console.log('new van Arrival Time: ' + newVan.nextStopTime)
+    // console.log('------------------------')
 
     const distance = route.vanRoute.routes[0].legs[0].distance.value / 1000
 
@@ -174,7 +174,7 @@ class OrderHelper {
 
     try {
       const order = await newOrder.save()
-      ManagementSystem.confirmVan(vbs[0], vbs[1], vanId, order)
+      await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId, order)
 
       return order._id
     } catch (error) {

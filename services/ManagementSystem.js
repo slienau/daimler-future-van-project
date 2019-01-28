@@ -20,7 +20,7 @@ class ManagementSystem {
       for (let step = van.currentStep; step < steps.length; steps++) {
         seconds += steps[step].duration.value
         if (seconds >= secondsAhead) {
-          return [steps[step].end_location, seconds] // equal to steps[step+1].start_location
+          return [steps[step].end_location, seconds, step] // equal to steps[step+1].start_location
         }
       }
     }
@@ -64,7 +64,7 @@ class ManagementSystem {
         let referenceWayPoint, referenceWayPointDuration
         if (van.nextStops.length === 1) {
           // first, get the reference way point, because the van may be driving atm
-          [referenceWayPoint, referenceWayPointDuration] = this.getStepAheadOnCurrentRoute(van.vanId)
+          [referenceWayPoint, referenceWayPointDuration, this.stepAhead] = this.getStepAheadOnCurrentRoute(van.vanId)
         } else if (van.nextStops.length > 1) {
           referenceWayPoint = _.nth(van.nextStops, -2).vb.location
           referenceWayPointDuration = this.getRemainingRouteDuration(van) - GoogleMapsHelper.readDurationFromGoogleResponse(_.last(van.nextRoutes)) // TODO
@@ -146,7 +146,7 @@ class ManagementSystem {
     van.potentialRoute = null
 
     // van already has a route
-    if(van.nextRoutes.length > 0) {
+    if (van.nextRoutes.length > 0) {
       van.currentlyPooling = true
     }
 
@@ -168,6 +168,12 @@ class ManagementSystem {
     // now add the new routes to the next routes and throw away the last route because thats the one thats changed
     van.nextRoutes.pop()
     van.nextRoutes.push(toVBRoute, vanRoute)
+
+    if (this.stepAhead) {
+      // cut off the current routes from where the stepAhead begins
+      van.nextRoutes[0].legs[0].steps.splice(this.stepAhead + 1)
+      this.stepAhead = null
+    }
 
     if (van.currentStep === 0 && !van.lastStepTime) {
       van.lastStepTime = new Date()
@@ -319,7 +325,7 @@ class ManagementSystem {
       if (van.waiting && van.lastStepTime.getTime() + 10 * 60 * 1000 < currentTime.getTime()) {
         console.log('Deleting old route - van', van.vanId)
         this.resetVan(van.vanId)
-        // TODO active order resetten, aber nur von denen die nicht eeingesteigen sind 
+        // TODO active order resetten, aber nur von denen die nicht eeingesteigen sind
         return
       }
       // If van does not have a route or is waiting, check if it has a potential route that is older than 60s. if yes delete.
@@ -408,4 +414,5 @@ class ManagementSystem {
 
 ManagementSystem.vans = []
 ManagementSystem.numberOfVans = 3
+ManagementSystem.stepAhead = null
 module.exports = ManagementSystem
