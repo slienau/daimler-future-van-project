@@ -333,7 +333,7 @@ class ManagementSystem {
       }
       // If van does not have a route or is waiting, check if it has a potential route that is older than 60s. if yes delete.
       if (van.nextRoutes.length === 0) {
-        if (van.potentialRoute && van.lastStepTime.getTime() + 60 * 1000 < currentTime.getTime()) {
+        if (van.potentialRoute && van.lastStepTime && van.lastStepTime.getTime() + 60 * 1000 < currentTime.getTime()) {
           console.log('Deleting old potential route')
           van.potentialRoute = null
           van.lastStepTime = null
