@@ -77,10 +77,15 @@ router.put('/', async function (req, res) {
         res.status(403).json({ code: 403, description: 'Ride has already been started.' })
         break
       }
+      let res2 = await ManagementSystem.startRide(order)
+      if (!res2) {
+        res.status(403).json({ code: 403, description: 'Van not yet waiting.' })
+        break
+      }
 
       await Order.updateOne({ _id: orderId }, { $set: { vanEnterTime: new Date() } })
 
-      await ManagementSystem.startRide(order)
+      // await ManagementSystem.startRide(order)
 
       orderNew = await Order.findById(orderId)
       res.json(orderNew)
@@ -94,9 +99,14 @@ router.put('/', async function (req, res) {
         res.status(403).json({ code: 403, description: 'Van has not arrived at its destination yet.' })
         break
       }
-      await Order.updateOne({ _id: orderId }, { $set: { vanExitTime: new Date(), active: false } })
+      let res3 = await ManagementSystem.endRide(order)
+      if (!res3) {
+        res.status(403).json({ code: 403, description: 'Van not yet waiting.' })
+        break
+      }
+      await Order.updateOne({ _id: orderId }, { $set: { endTime: new Date(), active: false } })
 
-      await ManagementSystem.endRide(order)
+      // await ManagementSystem.endRide(order)
 
       orderNew = await Order.findById(orderId)
       res.json(orderNew)

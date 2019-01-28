@@ -136,15 +136,15 @@ class OrderHelper {
       return error
     }
 
-    const newVan = await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId)
+    // const newVan = await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId)
 
-    console.log('------------------------')
-    console.log('old van Arrival Time: ' + vanArrivalTime)
-    console.log('------------------------')
+    // console.log('------------------------')
+    // console.log('old van Arrival Time: ' + vanArrivalTime)
+    // console.log('------------------------')
 
-    console.log('------------------------')
-    console.log('new van Arrival Time: ' + newVan.nextStopTime)
-    console.log('------------------------')
+    // console.log('------------------------')
+    // console.log('new van Arrival Time: ' + newVan.nextStopTime)
+    // console.log('------------------------')
 
     const distance = route.vanRoute.routes[0].legs[0].distance.value / 1000
 
@@ -173,9 +173,10 @@ class OrderHelper {
     }
 
     try {
-      const obj = await newOrder.save()
+      const order = await newOrder.save()
+      await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId, order)
 
-      return obj._id
+      return order._id
     } catch (error) {
       console.log(error)
       return error
@@ -189,8 +190,8 @@ class OrderHelper {
     const virtualBusStopEnd = await VirtualBusStop.findById(order.vanEndVBS).lean()
 
     // TODO get vanArrival Time from VAN
-    const vanLocation = ManagementSystem.vans[order.vanId - 1].location
-    const actualVanLocation = ManagementSystem.vans[order.vanId - 1].actualLocation
+    const vanLocation = ManagementSystem.vans[order.vanId - 1].lastStepLocation
+    const actualVanLocation = ManagementSystem.vans[order.vanId - 1].location
 
     const res = {
       userAllowedToEnter: false,
