@@ -14,7 +14,10 @@ const MainRideScreen = props => {
     try {
       await api.put('/activeorder', {
         action: 'endride',
-        userLocation: _.pick(props.userPosition, ['latitude', 'longitude']),
+        userLocation: _.pick(props.currentUserLocation, [
+          'latitude',
+          'longitude',
+        ]),
       })
       props.changeMapState(MapState.EXIT_VAN)
       props.navigation.dangerouslyGetParent().goBack()
@@ -62,7 +65,11 @@ const MainRideScreen = props => {
             </Col>
           </Row>
         </Grid>
-        <Button block iconRight onPress={() => handleClick()}>
+        <Button
+          block
+          disabled={!_.get(props.activeOrderStatus, 'userAllowedToExit')}
+          iconRight
+          onPress={() => handleClick()}>
           <Text>Exit Van</Text>
           <Icon name="exit" />
         </Button>
@@ -72,13 +79,15 @@ const MainRideScreen = props => {
 }
 
 MainRideScreen.propTypes = {
+  activeOrderStatus: PropTypes.object,
   changeMapState: PropTypes.func,
-  userPosition: PropTypes.object,
+  currentUserLocation: PropTypes.object,
 }
 
 export default connect(
   state => ({
     mapState: state.map.mapState,
+    activeOrderStatus: state.orders.activeOrderStatus,
     currentUserLocation: state.map.currentUserLocation,
   }),
   dispatch => ({

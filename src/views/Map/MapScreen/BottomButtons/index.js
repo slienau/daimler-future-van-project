@@ -15,6 +15,7 @@ import CancelOrderButton from './CancelOrderButton'
 import {cancelActiveOrder, placeOrder} from '../../../../ducks/orders'
 import {Alert} from 'react-native'
 import {Toast} from 'native-base'
+import _ from 'lodash'
 
 const BottomButtons = props => {
   const zoomToMarkers = () => {
@@ -54,6 +55,16 @@ const BottomButtons = props => {
   }
 
   const placeOrder = async () => {
+    const validUntil =
+      new Date().getTime() -
+      new Date(_.get(props.routes, '0.validUntil')).getTime()
+    if (validUntil > 0) {
+      Alert.alert(
+        'Route expired',
+        'The route has expired and will be recalculate now...'
+      )
+      return props.fetchRoutes()
+    }
     Alert.alert(
       'Confirm your order',
       'Do you want to order this route?',

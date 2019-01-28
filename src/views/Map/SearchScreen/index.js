@@ -99,10 +99,15 @@ SearchScreen.propTypes = {
   setVisibleCoordinates: PropTypes.func,
 }
 
+const journey = []
 export default connect(
-  state => ({
-    journey: [state.map.userStartLocation, state.map.userDestinationLocation],
-  }),
+  state => {
+    journey[0] = state.map.userStartLocation
+    journey[1] = state.map.userDestinationLocation
+    return {
+      journey,
+    }
+  },
   dispatch => ({
     changeMapState: payload => dispatch(changeMapState(payload)),
     setJourney: (isStart, payload) =>
