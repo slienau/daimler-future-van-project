@@ -20,7 +20,7 @@ router.get('/status', async function (req, res) {
   ManagementSystem.updateVanLocations()
   const order = await Order.findOne({ accountId: req.user._id, active: true })
 
-  if (!order) res.status(404).json({ code: 404, description: 'No active order' })
+  if (!order) return res.status(404).json({ code: 404, description: 'No active order' })
 
   const result = await OrderHelper.checkOrderLocationStatus(order._id, { latitude: req.query.passengerLatitude, longitude: req.query.passengerLongitude })
 
@@ -68,19 +68,15 @@ router.put('/', async function (req, res) {
     case 'startride':
 
       if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: req.body.userLocation.latitude, longitude: req.body.userLocation.longitude }) > range) {
-        res.status(403).json({ code: 403, description: 'User is not close enough to the van.' })
-        break
+        return res.status(403).json({ code: 403, description: 'User is not close enough to the van.' })
       } else if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > range) {
-        res.status(403).json({ code: 403, description: 'Van has not arrived at the virtual bus stop yet.' })
-        break
+        return res.status(403).json({ code: 403, description: 'Van has not arrived at the virtual bus stop yet.' })
       } else if (order.vanEnterTime) {
-        res.status(403).json({ code: 403, description: 'Ride has already been started.' })
-        break
+        return res.status(403).json({ code: 403, description: 'Ride has already been started.' })
       }
       let res2 = await ManagementSystem.startRide(order)
       if (!res2) {
-        res.status(403).json({ code: 403, description: 'Van not yet waiting.' })
-        break
+        return res.status(403).json({ code: 403, description: 'Van not yet waiting.' })
       }
 
       await Order.updateOne({ _id: orderId }, { $set: { vanEnterTime: new Date() } })
@@ -93,16 +89,13 @@ router.put('/', async function (req, res) {
 
     case 'endride':
       if (!order.vanEnterTime) {
-        res.status(403).json({ code: 403, description: 'The ride has not yet started.' })
-        break
+        return res.status(403).json({ code: 403, description: 'The ride has not yet started.' })
       } else if (geolib.getDistance({ latitude: virtualBusStopEnd.location.latitude, longitude: virtualBusStopEnd.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > range) {
-        res.status(403).json({ code: 403, description: 'Van has not arrived at its destination yet.' })
-        break
+        return res.status(403).json({ code: 403, description: 'Van has not arrived at its destination yet.' })
       }
       let res3 = await ManagementSystem.endRide(order)
       if (!res3) {
-        res.status(403).json({ code: 403, description: 'Van not yet waiting.' })
-        break
+        return res.status(403).json({ code: 403, description: 'Van not yet waiting.' })
       }
       await Order.updateOne({ _id: orderId }, { $set: { endTime: new Date(), active: false } })
 
@@ -114,8 +107,7 @@ router.put('/', async function (req, res) {
 
     case 'cancel':
       if (order.vanEnterTime) {
-        res.status(403).json({ code: 403, description: 'Cannot be canceled. Ride has already started.' })
-        break
+        return res.status(403).json({ code: 403, description: 'Cannot be canceled. Ride has already started.' })
       }
       await Order.updateOne({ _id: orderId }, { $set: { canceled: true, vanExitTime: new Date(), active: false } })
 

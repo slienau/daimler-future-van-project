@@ -1,4 +1,5 @@
 const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
+const OrderHelper = require('../services/OrderHelper.js')
 const Route = require('../models/Route.js')
 // const VirtualBusStop = require('../models/VirtualBusStop.js')
 const _ = require('lodash')
@@ -315,17 +316,19 @@ class ManagementSystem {
     this.vans[vanId - 1].nextRoutes = []
   }
 
-  static updateVanLocations () {
+  static async updateVanLocations () {
     const currentTime = new Date()
     let latDif, longDif, timeFraction
-
     // Iterate through all vans
     ManagementSystem.vans.forEach((van) => {
       // Reset van if if waiting for more than 10 minutes
       if (van.waiting && van.lastStepTime.getTime() + 10 * 60 * 1000 < currentTime.getTime()) {
         console.log('Deleting old route - van', van.vanId)
+
+        van.nextStops.forEach((nextStop) => {
+          OrderHelper.deactivateOrder(nextStop.orderId)
+        })
         this.resetVan(van.vanId)
-        // TODO active order resetten, aber nur von denen die nicht eeingesteigen sind
         return
       }
       // If van does not have a route or is waiting, check if it has a potential route that is older than 60s. if yes delete.
