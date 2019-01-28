@@ -10,6 +10,7 @@ export const SWAP_JOURNEY_START_AND_DESTINATION =
   'map/SWAP_JOURNEY_START_AND_DESTINATION'
 export const SET_VISIBLE_COORDINATES = 'map/SET_VISIBLE_COORDINATES'
 export const SET_VANS = 'map/SET_VANS'
+export const SET_PERSON_COUNT = 'map/SET_PERSON_COUNT'
 
 export const MapState = {
   INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
@@ -29,6 +30,7 @@ const initialState = {
   visibleCoordinates: [],
   edgePadding: {top: 0.2, right: 0.1, left: 0.1, bottom: 0.2},
   vans: [],
+  personCount: 1,
 }
 
 const map = (state = initialState, action) => {
@@ -59,6 +61,9 @@ const map = (state = initialState, action) => {
       return newState
     case SET_VANS:
       newState.vans = action.payload
+      return newState
+    case SET_PERSON_COUNT:
+      newState.personCount = action.payload
       return newState
     default:
       return state
@@ -150,6 +155,13 @@ export const setRoutes = payload => {
 export const setVans = payload => {
   return {
     type: SET_VANS,
+    payload: payload,
+  }
+}
+
+export const setPersonCount = payload => {
+  return {
+    type: SET_PERSON_COUNT,
     payload: payload,
   }
 }

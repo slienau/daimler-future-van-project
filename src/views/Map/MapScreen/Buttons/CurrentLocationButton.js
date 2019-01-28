@@ -14,7 +14,7 @@ const CurrentLocationButton = props => {
   let top = 22
   switch (props.mapState) {
     case MapState.SEARCH_ROUTES:
-      top = 200
+      top = 290
       break
     case MapState.ROUTE_SEARCHED:
       top = 300

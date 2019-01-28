@@ -1,6 +1,7 @@
 import styled from 'styled-components/native/dist/styled-components.native.esm'
 import {TouchableOpacity, View} from 'react-native'
 import {Card, CardItem, Icon, Text} from 'native-base'
+import NumericInput from 'react-native-numeric-input'
 
 export const StyledSearchForm = styled(View)`
   position: absolute;
@@ -10,6 +11,10 @@ export const StyledSearchForm = styled(View)`
 `
 export const StyledTouchableOpacity = styled(TouchableOpacity)`
   align-self: flex-end;
+`
+
+export const StyledNumericInput = styled(NumericInput)`
+  align-items: flex-end;
 `
 
 export const TextFlex = styled(Text)`

@@ -2,7 +2,11 @@ import React from 'react'
 import {Content} from 'native-base'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import {MapState, swapJourneyStartAndDestination} from '../../../../ducks/map'
+import {
+  MapState,
+  swapJourneyStartAndDestination,
+  setPersonCount,
+} from '../../../../ducks/map'
 import {StyledSearchForm, StyledCard} from './StyledComponents'
 import RouteSearched from './RouteSearched'
 import SearchRoutes from './SearchRoutes'
@@ -40,6 +44,7 @@ const SearchForm = props => {
 
   const destinationText = _.get(props.userDestinationLocation, 'title')
   const startText = _.get(props.userStartLocation, 'title')
+  const personCount = props.personCount
 
   let content = null
   switch (props.mapState) {
@@ -51,6 +56,8 @@ const SearchForm = props => {
           startText={startText}
           destinationText={destinationText}
           onSwapPress={() => props.swapJourneyStartAndDestination()}
+          onAddPersonPress={p => props.setPersonCount(p)}
+          personvalue={personCount}
         />
       )
       break
@@ -80,7 +87,9 @@ const SearchForm = props => {
 
 SearchForm.propTypes = {
   mapState: PropTypes.string,
+  personCount: PropTypes.number,
   routes: PropTypes.array,
+  setPersonCount: PropTypes.func,
   swapJourneyStartAndDestination: PropTypes.func,
   toSearchView: PropTypes.func,
   userDestinationLocation: PropTypes.object,
@@ -89,6 +98,7 @@ SearchForm.propTypes = {
 
 const mapStateToProps = state => {
   return {
+    personCount: state.map.personCount,
     mapState: state.map.mapState,
     routes: state.map.routes,
     userStartLocation: state.map.userStartLocation,
@@ -100,6 +110,7 @@ const mapDispatchToProps = dispatch => {
   return {
     swapJourneyStartAndDestination: () =>
       dispatch(swapJourneyStartAndDestination()),
+    setPersonCount: persons => dispatch(setPersonCount(persons)),
   }
 }
 
