@@ -182,6 +182,9 @@ class OrderHelper {
       return error
     }
   }
+  static async deactivateOrder (orderId) {
+    await Order.updateOne({ _id: orderId }, { $set: { active: false } })
+  }
 
   // To-Do: Only rely on location instead of time
   static async checkOrderLocationStatus (orderId, passengerLocation) {

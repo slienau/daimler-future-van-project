@@ -42,16 +42,19 @@ router.post('/', async function (req, res) {
 
   try {
     orderId = await OrderHelper.createOrder(accountId, req.body.routeId)
+    if (orderId.code) {
+      return res.json(orderId)
+    }
   } catch (error) {
     console.log(error)
-    res.json(error)
+    return res.json(error)
   }
 
   // Get lean object so that you can edit properties without changing database
   try {
     order = await Order.findById(orderId, '-bonusMultiplier').lean()
   } catch (error) {
-    res.json(error)
+    return res.json(error)
   }
   order.id = orderId
   order.route = await Route.findById(order.route)
