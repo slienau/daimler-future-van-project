@@ -35,7 +35,7 @@ const MapMarkers = props => {
       {[MapState.INIT, MapState.SEARCH_ROUTES].includes(props.mapState) &&
         props.vans &&
         props.vans.map((v, i) => <MapMarker key={i} image="van" {...v} />)}
-      {[MapState.ROUTE_ORDERED].includes(props.mapState) &&
+      {[MapState.ROUTE_ORDERED, MapState.VAN_RIDE].includes(props.mapState) &&
         props.activeOrderStatus && (
           <MapMarker
             image="van"

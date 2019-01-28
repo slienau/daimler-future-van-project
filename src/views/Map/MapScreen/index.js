@@ -15,6 +15,7 @@ import {
   setCurrentUserLocation,
   setUserStartLocation,
   setVisibleCoordinates,
+  visibleCoordinatesUpdated,
   changeMapState,
   setVans,
   resetMapState,
@@ -50,21 +51,26 @@ class MapScreen extends React.Component {
       _.get(this.props.activeOrder, 'vanEnterTime')
     )
       setImmediate(() => this.toRideScreen())
+    if (!this.props.hasVisibleCoordinatesUpdate) return
     if (this.props.visibleCoordinates.length === 1)
       this.animateToRegion(this.props.visibleCoordinates[0])
     else if (this.props.visibleCoordinates.length > 1) {
-      let edgePadding = {
-        top: Dimensions.get('window').height * this.props.edgePadding.top,
-        bottom: Dimensions.get('window').height * this.props.edgePadding.bottom,
-        left: Dimensions.get('window').width * this.props.edgePadding.left,
-        right: Dimensions.get('window').width * this.props.edgePadding.right,
-      }
-      edgePadding = _.mapValues(
-        edgePadding,
-        value => value * Dimensions.get('window').scale
+      this.fitToCoordinates(
+        this.props.visibleCoordinates,
+        _.mapValues(
+          {
+            top: Dimensions.get('window').height * this.props.edgePadding.top,
+            bottom:
+              Dimensions.get('window').height * this.props.edgePadding.bottom,
+            left: Dimensions.get('window').width * this.props.edgePadding.left,
+            right:
+              Dimensions.get('window').width * this.props.edgePadding.right,
+          },
+          value => value * Dimensions.get('window').scale
+        )
       )
-      this.fitToCoordinates(this.props.visibleCoordinates, edgePadding)
     }
+    this.props.visibleCoordinatesUpdated()
   }
 
   componentWillUnmount() {
@@ -251,6 +257,7 @@ MapScreen.propTypes = {
   currentUserLocation: PropTypes.object,
   edgePadding: PropTypes.object,
   fetchActiveOrder: PropTypes.func,
+  hasVisibleCoordinatesUpdate: PropTypes.bool,
   mapState: PropTypes.string,
   resetMapState: PropTypes.func,
   setActiveOrderStatus: PropTypes.func,
@@ -259,6 +266,7 @@ MapScreen.propTypes = {
   setVans: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
   visibleCoordinates: PropTypes.array,
+  visibleCoordinatesUpdated: PropTypes.func,
 }
 
 export default connect(
@@ -266,6 +274,7 @@ export default connect(
     mapState: state.map.mapState,
     currentUserLocation: state.map.currentUserLocation,
     visibleCoordinates: state.map.visibleCoordinates,
+    hasVisibleCoordinatesUpdate: state.map.hasVisibleCoordinatesUpdate,
     edgePadding: state.map.edgePadding,
     activeOrder: state.orders.activeOrder,
   }),
@@ -277,6 +286,7 @@ export default connect(
     resetMapState: () => dispatch(resetMapState()),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
+    visibleCoordinatesUpdated: () => dispatch(visibleCoordinatesUpdated()),
     setActiveOrderStatus: payload => dispatch(setActiveOrderStatus(payload)),
     changeMapState: payload => dispatch(changeMapState(payload)),
     setVans: payload => dispatch(setVans(payload)),
