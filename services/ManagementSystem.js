@@ -222,7 +222,7 @@ class ManagementSystem {
 
           if (timeCounter > timePassed) {
             // Calculating the actual location in between the step locations only if there is a next step
-            if (typeof van.route.routes[0].legs[0].steps[step + 1] === 'undefined') {} else {
+            if (typeof van.route.routes[0].legs[0].steps[step + 1] !== 'undefined') {
               latDif = van.route.routes[0].legs[0].steps[step + 1].start_location.lat - van.location.latitude
               longDif = van.route.routes[0].legs[0].steps[step + 1].start_location.lng - van.location.longitude
               timeFraction = timePassed / van.route.routes[0].legs[0].steps[step].duration.value
