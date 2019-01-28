@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 const images = {
   destination: require('./assets/destination.png'),
   person: require('./assets/person.png'),
-  van: require('./assets/van.png'),
+  van: require('./assets/van1.png'),
   vbs: require('./assets/vbs.png'),
 }
 
