@@ -4,6 +4,7 @@ import MapView from 'react-native-maps'
 import PropTypes from 'prop-types'
 import {Container} from 'native-base'
 import Routes from '../Map/MapScreen/Routes'
+import MapMarkers from '../Map/MapScreen/MapMarkers'
 import styled from 'styled-components/native'
 import {connect} from 'react-redux'
 
@@ -25,6 +26,7 @@ const inRideMapScreen = props => {
         showsMyLocationButton={false}
         initialRegion={mapRegion}>
         <Routes hideStart />
+        <MapMarkers />
       </StyledMapView>
     </Container>
   )
