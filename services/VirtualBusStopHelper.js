@@ -197,7 +197,7 @@ class VirtualBusStopHelper {
   // get Suggestions for Journey
   static async getRouteSuggestions (start, startVB, destinationVB, destination, startTime, vanArrivalTime, vanID) {
     // Abort if the two Virtual Busstops are the same
-    if (startVB._id === destinationVB._id) return { code: 404, message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' }
+    if (startVB._id.equals(destinationVB._id)) return { code: 404, message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' }
 
     // Get Google Responses
     const googleResponse = await GoogleMapsHelper.googleAPICall(start, destination, startVB, destinationVB, startTime, vanArrivalTime)
