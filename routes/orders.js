@@ -12,10 +12,10 @@ router.get('/', async function (req, res) {
 
   try {
     for (const ord in ordersObject) {
-      const vb1 = await VirtualBusStop.findById(ordersObject[ord].virtualBusStopStart)
-      const vb2 = await VirtualBusStop.findById(ordersObject[ord].virtualBusStopEnd)
-      ordersObject[ord].virtualBusStopStart = vb1
-      ordersObject[ord].virtualBusStopEnd = vb2
+      const vb1 = await VirtualBusStop.findById(ordersObject[ord].vanStartVBS)
+      const vb2 = await VirtualBusStop.findById(ordersObject[ord].vanEndVBS)
+      ordersObject[ord].vanStartVBS = vb1
+      ordersObject[ord].vanEndVBS = vb2
     }
   } catch (error) {
     console.log(error)
@@ -46,6 +46,8 @@ router.post('/', async function (req, res) {
     console.log(error)
     res.json(error)
   }
+
+  // Get lean object so that you can edit properties without changing database
   try {
     order = await Order.findById(orderId, '-bonusMultiplier').lean()
   } catch (error) {
@@ -66,10 +68,10 @@ router.put('/:orderId', async function (req, res) {
   if (!req.query.orderId && !req.params.orderId) res.status(400).json({ code: 400, description: 'No orderId as been sent as param.', reasonPhrase: 'Bad Request' })
 
   if (req.body.canceled === false || req.body.canceled === 'false') {
-    await Order.updateOne({ _id: orderId }, { $set: { canceled: true, endTime: new Date(), active: false } })
+    await Order.updateOne({ _id: orderId }, { $set: { canceled: true, vanExitTime: new Date(), active: false } })
   }
   if (req.body.active === false || req.body.active === 'false') {
-    await Order.updateOne({ _id: orderId }, { $set: { active: false, endTime: new Date() } })
+    await Order.updateOne({ _id: orderId }, { $set: { active: false, vanExitTime: new Date() } })
   }
   const order = await Order.findById(orderId)
   res.json(order)

@@ -1,7 +1,7 @@
 const axios = require('axios')
 
 const address = 'http://localhost:8080'
-const passengerLocationClose = { latitude: 52.52302, longitude: 13.411019 }
+const passengerLocationClose = { latitude: 52.511632, longitude: 13.322181 }
 const passengerLocationFar = { latitude: 52.52802, longitude: 13.420019 }
 
 function sleep (ms) {
@@ -31,8 +31,8 @@ async function starttest () {
 
   const route = await axiosInstance.post('/routes', {
     'start': {
-      'latitude': 52.524722,
-      'longitude': 13.407217
+      'latitude': 52.511632,
+      'longitude': 13.322181
     },
     'destination': {
       'latitude': 52.510144,
@@ -70,13 +70,6 @@ async function starttest () {
   console.log('Vans worked')
   console.log('----------------------')
 
-  const orderStatus = await axiosInstance.get('/activeorder')
-  const orderStatusInfo = orderStatus.data
-
-  console.log('active order:')
-  console.log(orderStatusInfo)
-  console.log('----------------------')
-
   const orderStatus2 = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude)
   const orderStatusInfo2 = orderStatus2.data
 
@@ -86,11 +79,18 @@ async function starttest () {
 
   let vans3
 
-  for (let i = 0; i < 3; i++) {
-    await sleep(1000 * 10)
+  for (let i = 0; i < 10; i++) {
+    await sleep(1000 * 5)
     vans3 = await axiosInstance.get('vans')
     console.log(vans3.data)
     console.log('New Vans update worked')
+    console.log('----------------------')
+
+    const orderStatus2 = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude)
+    const orderStatusInfo2 = orderStatus2.data
+
+    console.log('order status:')
+    console.log(orderStatusInfo2)
     console.log('----------------------')
   }
 

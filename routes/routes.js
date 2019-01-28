@@ -11,7 +11,7 @@ router.post('/', async function (req, res) {
 
   if (!req.body.start.latitude || !req.body.destination.longitude || !req.body.start.longitude || !req.body.destination.latitude) res.status(400).json({ code: 400, description: 'Bad body params' })
 
-  const time = req.body.startTime ? new Date(req.body.startTime) : new Date()
+  const time = new Date()
 
   // Find the virtual bus stops that a closest to the passenger
   const startVB = await VirtualBusStopHelper.getClosestVB(req.body.start)
@@ -19,6 +19,9 @@ router.post('/', async function (req, res) {
 
   // request a Van a find out how long it takes to the VB
   const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, time)
+
+  // If there is an error send error message
+  if (van.code) res.json(van)
 
   let suggestions = []
   let route

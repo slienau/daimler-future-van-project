@@ -7,8 +7,10 @@ const geolib = require('geolib')
 const bonusMultiplierStandard = 10
 const co2savingsMultiplierStandard = 0.13 // EU limit for new cars = 0.13 kg/km
 
+// range in meter how far the van and user can be from the vbs to still be able to start/end the ride
+const range = 25
+
 class OrderHelper {
-  // Check if any users are there and if not create two static users
   static async setupOrders () {
     const items = await Order.find({})
 
@@ -43,17 +45,16 @@ class OrderHelper {
           orderTime: orderTime1,
           active: false,
           canceled: false,
-          virtualBusStopStart: vbs[0]._id,
-          virtualBusStopEnd: vbs[1]._id,
-          startTime: time1Start,
-          endTime: time1End,
+          vanStartVBS: vbs[0]._id,
+          vanEndVBS: vbs[1]._id,
+          vanEnterTime: time1Start,
+          vanExitTime: time1End,
           vanId: 3,
           distance: distance1,
-          bonuspoints: distance1 * bonusMultiplierStandard,
+          loyaltyPoints: distance1 * bonusMultiplierStandard,
           co2savings: distance1 * co2savingsMultiplierStandard,
           bonusMultiplier: bonusMultiplierStandard,
-          route: '273jsnsb9201',
-          vanArrivalTime: new Date(Date.now() - 837268)
+          route: '273jsnsb9201'
         })
 
         const order2 = new Order({
@@ -62,16 +63,15 @@ class OrderHelper {
           orderTime: orderTime2,
           active: false,
           canceled: false,
-          virtualBusStopStart: vbs[1]._id,
-          virtualBusStopEnd: vbs[0]._id,
-          startTime: time2Start,
-          endTime: time2End,
+          vanStartVBS: vbs[1]._id,
+          vanEndVBS: vbs[0]._id,
+          vanEnterTime: time2Start,
+          vanExitTime: time2End,
           vanId: 4,
           distance: distance2,
-          bonuspoints: distance2 * bonusMultiplierStandard,
+          loyaltyPoints: distance2 * bonusMultiplierStandard,
           co2savings: distance2 * co2savingsMultiplierStandard,
-          route: '273jsnsb9250',
-          vanArrivalTime: new Date(Date.now() - 587268)
+          route: '273jsnsb9250'
         })
 
         const order3 = new Order({
@@ -79,16 +79,15 @@ class OrderHelper {
           orderTime: orderTime2,
           active: false,
           canceled: false,
-          virtualBusStopStart: vbs[1]._id,
-          virtualBusStopEnd: vbs[0]._id,
-          startTime: time2Start,
-          endTime: time2End,
+          vanStartVBS: vbs[1]._id,
+          vanEndVBS: vbs[0]._id,
+          vanEnterTime: time2Start,
+          vanExitTime: time2End,
           vanId: 4,
           distance: distance3,
-          bonuspoints: distance3 * bonusMultiplierStandard,
+          loyaltyPoints: distance3 * bonusMultiplierStandard,
           co2savings: distance3 * co2savingsMultiplierStandard,
-          route: '273jsnsb9250',
-          vanArrivalTime: new Date(Date.now() - 587268)
+          route: '273jsnsb9250'
         })
 
         await order1.save()
@@ -101,13 +100,17 @@ class OrderHelper {
   }
 
   // Creates an order Object and stores this in the db
-  static async createOrder (accountID, routeId) {
+  static async createOrder (accountId, routeId) {
     const currentTime = new Date()
     const route = await Route.findById(routeId)
-    const timePassed = currentTime - route.journeyStartTime
+    const timePassed = currentTime.getTime() - (route.validUntil.getTime() - 60 * 1000)
 
-    const virtualBusStopStart = route.startStation
-    const virtualBusStopEnd = route.endStation
+    console.log('------------------------')
+    console.log('timepassed: ' + timePassed)
+    console.log('------------------------')
+
+    const virtualBusStopStart = route.vanStartVBS
+    const virtualBusStopEnd = route.vanEndVBS
 
     // Check if Route is still valid, if not return an error
     if (route.validUntil < new Date(Date.now() + 1000)) return { code: 404, message: 'your route is no longer valid, please get a new route' }
@@ -119,9 +122,9 @@ class OrderHelper {
     await Route.updateOne({ _id: routeId }, { $set: {
       confirmed: true,
       journeyStartTime: currentTime,
-      vanStartTime: route.vanStartTime + timePassed,
-      vanEndTime: route.vanEndTime + timePassed,
-      destinationTime: route.destinationTime + timePassed
+      vanETAatStartVBS: route.vanETAatStartVBS + timePassed,
+      vanETAatEndVBS: route.vanETAatEndVBS + timePassed,
+      userETAatUserDestinationLocation: route.userETAatUserDestinationLocation + timePassed
     }
     })
 
@@ -133,25 +136,34 @@ class OrderHelper {
       return error
     }
 
+    const newVan = await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId)
+
+    console.log('------------------------')
+    console.log('old van Arrival Time: ' + vanArrivalTime)
+    console.log('------------------------')
+
+    console.log('------------------------')
+    console.log('new van Arrival Time: ' + newVan.nextStopTime)
+    console.log('------------------------')
+
     const distance = route.vanRoute.routes[0].legs[0].distance.value / 1000
 
     let newOrder
     try {
       newOrder = new Order({
 
-        accountId: accountID,
+        accountId: accountId,
         orderTime: new Date(),
         active: true,
         canceled: false,
-        virtualBusStopStart: vbs[0]._id,
-        virtualBusStopEnd: vbs[1]._id,
-        startTime: null,
-        endTime: null,
+        vanStartVBS: vbs[0]._id,
+        vanEndVBS: vbs[1]._id,
+        vanEnterTime: null,
+        vanExitTime: null,
         vanId: vanId,
         route: routeId,
         distance: distance,
-        vanArrivalTime: vanArrivalTime,
-        bonuspoints: distance * bonusMultiplierStandard,
+        loyaltyPoints: distance * bonusMultiplierStandard,
         co2savings: distance * co2savingsMultiplierStandard,
         bonusMultiplier: bonusMultiplierStandard
 
@@ -173,18 +185,32 @@ class OrderHelper {
 
   // To-Do: Only rely on location instead of time
   static async checkOrderLocationStatus (orderId, passengerLocation) {
-    const order = await Order.findById(orderId)
-    const virtualBusStop = await VirtualBusStop.findById(order.virtualBusStopStart)
-    const vanTime = order.vanArrivalTime
-    const vanLocationBeforeArrival = ManagementSystem.vans[order.vanId - 1].location
+    const order = await Order.findById(orderId).lean()
+    const virtualBusStopStart = await VirtualBusStop.findById(order.vanStartVBS).lean()
+    const virtualBusStopEnd = await VirtualBusStop.findById(order.vanEndVBS).lean()
 
-    if (order.active === false) return { userAllowedToEnter: false, message: 'Order is not active', vanPosition: null }
+    // TODO get vanArrival Time from VAN
+    const vanLocation = ManagementSystem.vans[order.vanId - 1].lastStepLocation
+    const actualVanLocation = ManagementSystem.vans[order.vanId - 1].location
 
-    if (new Date() < new Date(vanTime)) return { userAllowedToEnter: false, message: 'Van has not arrived yet', vanPosition: vanLocationBeforeArrival }
+    const res = {
+      userAllowedToEnter: false,
+      userAllowedToExit: false,
+      message: 'unknown state',
+      vanLocation: actualVanLocation
+    }
 
-    if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, passengerLocation) > 10) return { userAllowedToEnter: false, message: 'Van is ready, but passenger is not close enough to the van', vanPosition: { latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude } }
-
-    return { userAllowedToEnter: true, message: 'Van is ready to be entered.', vanPosition: { latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude } }
+    if (!order.vanEnterTime) {
+      if (geolib.getDistance(vanLocation, virtualBusStopStart.location) > range) return { ...res, message: 'Van has not arrived yet.' }
+      res.userAllowedToEnter = geolib.getDistance(virtualBusStopStart.location, passengerLocation) < range
+      res.userAllowedToExit = false
+      res.message = res.userAllowedToEnter ? 'Van is ready to be entered.' : 'Van is ready, but passenger is not close enough to the van.'
+    } else {
+      res.userAllowedToEnter = false
+      res.userAllowedToExit = geolib.getDistance(virtualBusStopEnd.location, vanLocation) < range
+      res.message = res.userAllowedToExit ? 'Van is ready to be exited.' : 'You have not arrived at the destination virtual bus stop yet.'
+    }
+    return res
   }
 }
 

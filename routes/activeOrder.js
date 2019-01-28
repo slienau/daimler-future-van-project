@@ -7,6 +7,8 @@ const ManagementSystem = require('../services/ManagementSystem.js')
 const Route = require('../models/Route.js')
 const geolib = require('geolib')
 
+const range = 25
+
 router.get('/status', async function (req, res) {
   console.log('Get activeOrder status request zu user: ' + req.user._id + ' with Query: ')
   console.log(req.query)
@@ -35,10 +37,13 @@ router.get('/', async function (req, res) {
   orderLean.id = order._id
 
   orderLean.route = await Route.findById(order.route, '-confirmed -validUntil')
+  orderLean.vanStartVBS = await VirtualBusStop.findById(order.vanStartVBS).lean()
+  orderLean.vanEndVBS = await VirtualBusStop.findById(order.vanEndVBS).lean()
 
   res.json(orderLean)
 })
 
+// TODO chekc for van location instead of time
 router.put('/', async function (req, res) {
   console.log('Put activeOrder request zu user: ' + req.user._id + ' mit Action: ' + req.body.action)
 
@@ -49,22 +54,26 @@ router.put('/', async function (req, res) {
 
   const orderId = order._id
 
-  const virtualBusStop = await VirtualBusStop.findById(order.virtualBusStopStart)
+  const virtualBusStop = await VirtualBusStop.findById(order.vanStartVBS)
+  const virtualBusStopEnd = await VirtualBusStop.findById(order.vanEndVBS)
 
   let orderNew
 
   ManagementSystem.updateVanLocations()
 
+  const vanId = order.vanId
+  const vanLocation = ManagementSystem.vans[vanId - 1].location
+
   switch (req.body.action) {
     case 'startride':
 
-      if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: req.body.userLocation.latitude, longitude: req.body.userLocation.longitude }) > 10) {
+      if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: req.body.userLocation.latitude, longitude: req.body.userLocation.longitude }) > range) {
         res.status(403).json({ code: 403, description: 'User is not close enough to the van.' })
         break
-      } else if (new Date() < order.vanArrivalTime) {
+      } else if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > range) {
         res.status(403).json({ code: 403, description: 'Van has not arrived at the virtual bus stop yet.' })
         break
-      } else if (order.startTime) {
+      } else if (order.vanEnterTime) {
         res.status(403).json({ code: 403, description: 'Ride has already been started.' })
         break
       }
@@ -74,7 +83,7 @@ router.put('/', async function (req, res) {
         break
       }
 
-      await Order.updateOne({ _id: orderId }, { $set: { startTime: new Date() } })
+      await Order.updateOne({ _id: orderId }, { $set: { vanEnterTime: new Date() } })
 
       // await ManagementSystem.startRide(order)
 
@@ -83,10 +92,10 @@ router.put('/', async function (req, res) {
       break
 
     case 'endride':
-      if (!order.startTime) {
+      if (!order.vanEnterTime) {
         res.status(403).json({ code: 403, description: 'The ride has not yet started.' })
         break
-      } else if (new Date() < order.vanEndTime) {
+      } else if (geolib.getDistance({ latitude: virtualBusStopEnd.location.latitude, longitude: virtualBusStopEnd.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > range) {
         res.status(403).json({ code: 403, description: 'Van has not arrived at its destination yet.' })
         break
       }
@@ -104,11 +113,11 @@ router.put('/', async function (req, res) {
       break
 
     case 'cancel':
-      if (order.startTime) {
+      if (order.vanEnterTime) {
         res.status(403).json({ code: 403, description: 'Cannot be canceled. Ride has already started.' })
         break
       }
-      await Order.updateOne({ _id: orderId }, { $set: { canceled: true, endTime: new Date(), active: false } })
+      await Order.updateOne({ _id: orderId }, { $set: { canceled: true, vanExitTime: new Date(), active: false } })
 
       await ManagementSystem.cancelRide(order)
 
