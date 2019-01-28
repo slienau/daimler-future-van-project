@@ -15,7 +15,7 @@ router.get('/status', async function (req, res) {
 
   res.setHeader('Content-Type', 'application/json')
 
-  if (!req.query.passengerLatitude || !req.query.passengerLongitude) res.status(400).json({ code: 400, description: 'Bad params, you need passengerLongitude and passengerLatitude' })
+  if (!req.query.passengerLatitude || !req.query.passengerLongitude) return res.status(400).json({ code: 400, description: 'Bad params, you need passengerLongitude and passengerLatitude' })
 
   ManagementSystem.updateVanLocations()
   const order = await Order.findOne({ accountId: req.user._id, active: true })
