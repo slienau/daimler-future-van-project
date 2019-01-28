@@ -9,6 +9,7 @@ export const CHANGE_MAP_STATE = 'map/CHANGE_MAP_STATE'
 export const SWAP_JOURNEY_START_AND_DESTINATION =
   'map/SWAP_JOURNEY_START_AND_DESTINATION'
 export const SET_VISIBLE_COORDINATES = 'map/SET_VISIBLE_COORDINATES'
+export const VISIBLE_COORDINATES_UPDATED = 'map/VISIBLE_COORDINATES_UPDATED'
 export const SET_VANS = 'map/SET_VANS'
 
 export const MapState = {
@@ -28,6 +29,7 @@ const initialState = {
   routes: null,
   visibleCoordinates: [],
   edgePadding: {top: 0.2, right: 0.1, left: 0.1, bottom: 0.2},
+  hasVisibleCoordinatesUpdate: false,
   vans: [],
 }
 
@@ -56,6 +58,10 @@ const map = (state = initialState, action) => {
     case SET_VISIBLE_COORDINATES:
       newState.visibleCoordinates = action.payload.visibleCoordinates
       newState.edgePadding = action.payload.edgePadding
+      newState.hasVisibleCoordinatesUpdate = true
+      return newState
+    case VISIBLE_COORDINATES_UPDATED:
+      newState.hasVisibleCoordinatesUpdate = false
       return newState
     case SET_VANS:
       newState.vans = action.payload
@@ -115,6 +121,12 @@ export const setCurrentUserLocation = currentUserLocation => {
 export const swapJourneyStartAndDestination = () => {
   return {
     type: SWAP_JOURNEY_START_AND_DESTINATION,
+  }
+}
+
+export const visibleCoordinatesUpdated = () => {
+  return {
+    type: VISIBLE_COORDINATES_UPDATED,
   }
 }
 
