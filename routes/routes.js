@@ -24,7 +24,7 @@ router.post('/', async function (req, res) {
   const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, time)
 
   // If there is an error send error message
-  if (van.code) res.json(van)
+  if (van.code) return res.status(403).json(van)
 
   let suggestions = []
   let route
