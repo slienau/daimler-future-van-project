@@ -113,7 +113,7 @@ class OrderHelper {
     const virtualBusStopEnd = route.vanEndVBS
 
     // Check if Route is still valid, if not return an error
-    if (route.validUntil < new Date(Date.now() + 1000)) return { code: 404, message: 'your route is no longer valid, please get a new route' }
+    if (route.validUntil < new Date(Date.now() + 1000)) return { code: 400, message: 'your route is no longer valid, please get a new route' }
 
     const vanId = route.vanId
     const vanArrivalTime = new Date(Date.now() + ManagementSystem.vans[vanId - 1].potentialRoute.routes[0].legs[0].duration.value * 1000)
