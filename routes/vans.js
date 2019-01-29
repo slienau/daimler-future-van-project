@@ -5,7 +5,7 @@ const router = express.Router()
 const ManagementSystem = require('../services/ManagementSystem')
 
 router.get('/', async function (req, res) {
-  ManagementSystem.updateVanLocations()
+  await ManagementSystem.updateVanLocations()
   res.json(ManagementSystem.vans)
 })
 
