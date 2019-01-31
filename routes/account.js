@@ -16,7 +16,8 @@ router.get('/', async function (req, res) {
       {
         $match:
           {
-            'accountId': String(req.user._id)
+            'accountId': String(req.user._id),
+            'canceled': false
           }
       },
       {

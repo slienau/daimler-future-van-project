@@ -10,6 +10,12 @@ router.get('/', async function (req, res) {
     leaderboard = await Order.aggregate(
       [
         {
+          $match:
+            {
+              'canceled': false
+            }
+        },
+        {
           $group:
             {
               _id: '$accountId',
@@ -30,6 +36,13 @@ router.get('/', async function (req, res) {
         delete leaderboardWithUsernames[i]._id
         leaderboardWithUsernames[i].username = account.username
         leaderboardWithUsernames[i].co2savings = Number(leaderboardWithUsernames[i].co2savings.toFixed(2))
+        if (leaderboard[i].loyaltyPoints > 150) {
+          leaderboardWithUsernames[i].status = 'platin'
+        } else if (leaderboard[i].loyaltyPoints > 100) {
+          leaderboardWithUsernames[i].status = 'gold'
+        } else if (leaderboard[i].loyaltyPoints > 50) {
+          leaderboardWithUsernames[i].status = 'silver'
+        }
       }
     }
     res.json(leaderboardWithUsernames)
