@@ -45,11 +45,7 @@ const OrderSchema = new Schema({
   },
   distance: {
     type: Number,
-    required: true
-  },
-  bonusMultiplier: {
-    type: Number,
-    default: 10,
+    default: 0,
     required: true
   },
   loyaltyPoints: {

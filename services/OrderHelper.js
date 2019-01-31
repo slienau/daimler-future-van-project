@@ -4,11 +4,9 @@ const Account = require('../models/Account.js')
 const Route = require('../models/Route.js')
 const ManagementSystem = require('./ManagementSystem.js')
 const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
+const Loyalty = require('./Loyalty.js')
 const geolib = require('geolib')
 const Logger = require('./WinstonLogger').logger
-
-const bonusMultiplierStandard = 10
-const co2savingsMultiplierStandard = 0.13 // EU limit for new cars = 0.13 kg/km
 
 // range in meter how far the van and user can be from the vbs to still be able to start/end the ride
 const range = 25
@@ -54,9 +52,8 @@ class OrderHelper {
           vanExitTime: time1End,
           vanId: 3,
           distance: distance1,
-          loyaltyPoints: distance1 * bonusMultiplierStandard,
-          co2savings: distance1 * co2savingsMultiplierStandard,
-          bonusMultiplier: bonusMultiplierStandard,
+          loyaltyPoints: distance1 * 10,
+          co2savings: distance1 * 0.13,
           route: '273jsnsb9201'
         })
 
@@ -72,8 +69,8 @@ class OrderHelper {
           vanExitTime: time2End,
           vanId: 4,
           distance: distance2,
-          loyaltyPoints: distance2 * bonusMultiplierStandard,
-          co2savings: distance2 * co2savingsMultiplierStandard,
+          loyaltyPoints: distance2 * 10,
+          co2savings: distance2 * 0.13,
           route: '273jsnsb9250'
         })
 
@@ -88,8 +85,8 @@ class OrderHelper {
           vanExitTime: time2End,
           vanId: 4,
           distance: distance3,
-          loyaltyPoints: distance3 * bonusMultiplierStandard,
-          co2savings: distance3 * co2savingsMultiplierStandard,
+          loyaltyPoints: distance3 * 10,
+          co2savings: distance3 * 0.13,
           route: '273jsnsb9250'
         })
 
@@ -134,10 +131,7 @@ class OrderHelper {
     } catch (error) {
       return error
     }
-
-    // const newVan = await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId)
-
-    const distance = route.vanRoute.routes[0].legs[0].distance.value / 1000
+    let loyalty = Loyalty.loyaltyPoints(route)
 
     let newOrder
     try {
@@ -153,10 +147,9 @@ class OrderHelper {
         vanExitTime: null,
         vanId: vanId,
         route: routeId,
-        distance: distance,
-        loyaltyPoints: distance * bonusMultiplierStandard,
-        co2savings: distance * co2savingsMultiplierStandard,
-        bonusMultiplier: bonusMultiplierStandard
+        distance: loyalty.distance,
+        loyaltyPoints: loyalty.loyaltyPoints,
+        co2savings: loyalty.co2savings
 
       })
     } catch (e) {

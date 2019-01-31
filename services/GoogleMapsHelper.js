@@ -43,9 +43,9 @@ class GoogleMapsHelper {
     return responses
   }
 
-  static async simpleGoogleRoute (startLocation, destinationLocation) {
+  static async simpleGoogleRoute (startLocation, destinationLocation, mode = 'driving') {
     const key = EnvVariableService.apiKey()
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${startLocation.latitude},${startLocation.longitude}&destination=${destinationLocation.latitude},${destinationLocation.longitude}&key=${key}&mode=driving`
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${startLocation.latitude},${startLocation.longitude}&destination=${destinationLocation.latitude},${destinationLocation.longitude}&key=${key}&mode=${mode}`
     const answer = await rpn({ uri: url, json: true })
     return answer
   }

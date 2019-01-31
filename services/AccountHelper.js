@@ -1,6 +1,21 @@
 const Account = require('../models/Account.js')
 
 class AccountHelper {
+  // Calculate the status of an account based on the loyalty points
+  static status (loyaltyPoints) {
+    if (!loyaltyPoints && typeof i !== 'number') {
+      return null
+    }
+    let status
+    if (loyaltyPoints > 150) {
+      status = 'platin'
+    } else if (loyaltyPoints > 100) {
+      status = 'gold'
+    } else if (loyaltyPoints > 50) {
+      status = 'silver'
+    }
+    return status
+  }
   // Check if any users are there and if not create two static users
   static async setUpAccounts () {
     const accs = await Account.find({ 'username': 'admin' })
