@@ -13,6 +13,7 @@ router.get('/', async function (req, res) {
   let distance = 0
   try {
     account = await Account.findById(req.user._id, '-password')
+
     Logger.info('Requested Account with id ' + account._id)
     loyaltyItem = await Order.aggregate([
       {

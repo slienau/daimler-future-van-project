@@ -7,6 +7,8 @@ const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
 const Loyalty = require('./Loyalty.js')
 const geolib = require('geolib')
 const Logger = require('./WinstonLogger').logger
+const Loyalty = require('./Loyalty.js')
+const geolib = require('geolib')
 
 // range in meter how far the van and user can be from the vbs to still be able to start/end the ride
 const range = 25
@@ -132,7 +134,7 @@ class OrderHelper {
       return error
     }
     let loyalty = Loyalty.loyaltyPoints(route)
-
+    
     let newOrder
     try {
       newOrder = new Order({
