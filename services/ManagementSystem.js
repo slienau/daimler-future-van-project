@@ -1,6 +1,6 @@
 const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
-const OrderHelper = require('../services/OrderHelper.js')
 const Route = require('../models/Route.js')
+const Order = require('../models/Order.js')
 const geolib = require('geolib')
 // const VirtualBusStop = require('../models/VirtualBusStop.js')
 const _ = require('lodash')
@@ -95,7 +95,7 @@ class ManagementSystem {
         console.log('newDuration:', newDuration)
 
         // compare duration of new route to duration of current route
-        const threshold = 1200 // in seconds
+        const threshold = 600 // in seconds
         const currentDuration = this.getRemainingRouteDuration(van)
         console.log(currentDuration, newDuration)
         if (newDuration - currentDuration > threshold) {
@@ -345,29 +345,25 @@ class ManagementSystem {
     const currentTime = new Date()
     let latDif, longDif, timeFraction
     // Iterate through all vans
-    ManagementSystem.vans.forEach((van) => {
-      // Reset van if if waiting for more than 10 minutes
-      if (van.waiting && van.lastStepTime.getTime() + 10 * 60 * 1000 < currentTime.getTime()) {
-        console.log('Deleting old route - van', van.vanId)
+    for (let van of ManagementSystem.vans) {
+      // check if potential is older than 10 minutes
+      if (van.potentialRoute && van.potentialRouteTime.getTime() + 60 * 1000 < currentTime.getTime()) {
+        console.log('Deleting old potential route')
+        van.potentialRoute = null
+        van.potentialCutOffStep = null
+        van.potentialRouteTime = null
+      }
 
-        van.nextStops.forEach((nextStop) => {
-          OrderHelper.deactivateOrder(nextStop.orderId)
-        })
-        this.resetVan(van.vanId)
-        return
+      // Reset van if if waiting for more than 10 minutes
+      if (van.waiting && van.lastStepTime.getTime() + 1 * 60 * 1000 < currentTime.getTime()) {
+        await this.checkForInactiveOrders(van.vanId)
+        continue
       }
-      // If van does not have a route or is waiting, check if it has a potential route that is older than 60s. if yes delete.
-      if (van.nextRoutes.length === 0) {
-        if (van.potentialRoute && van.potentialRouteTime.getTime() + 60 * 1000 < currentTime.getTime()) {
-          console.log('Deleting old potential route')
-          van.potentialRoute = null
-          van.potentialCutOffStep = null
-          van.potentialRouteTime = null
-        }
-        return
+
+      // If van does not have a route or is waiting just contiunue with next van
+      if (van.nextRoutes.length === 0 || van.waiting) {
+        continue
       }
-      // Do nothing if van is waiting (for less than 10 minutes)
-      if (van.waiting) return
 
       // This happens if van has aroute and has not reached the next bus Stop yet
       // This updates the step location
@@ -437,7 +433,7 @@ class ManagementSystem {
           }
         }
       }
-    })
+    }
   }
 
   static wait (vanId) {
@@ -453,6 +449,26 @@ class ManagementSystem {
       console.log('waiting confirmed')
       van.waiting = true
       van.waitingAt = nextVB
+    }
+  }
+
+  static async checkForInactiveOrders (vanId) {
+    const van = this.vans[vanId - 1]
+    let orderIds = van.nextStops.filter(stop => stop.vb._id.equals(van.waitingAt._id)).map(stop => stop.orderId)
+    const currentTime = new Date()
+    const tenMinutes = 1 * 60 * 1000
+    let counter = orderIds.length
+    for (let oid of orderIds) {
+      const order = await Order.findById(oid)
+      const route = await Route.findById(order.route).lean()
+      if (route.vanETAatStartVBS.getTime() + tenMinutes < currentTime.getTime()) {
+        await Order.updateOne({ _id: oid }, { $set: { active: false } })
+        await this.cancelRide(order)
+        counter--
+      }
+    }
+    if (!counter) {
+      this.resetVan(van.vanId)
     }
   }
 }
