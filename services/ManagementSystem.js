@@ -47,7 +47,7 @@ class ManagementSystem {
     return duration
   }
 
-  static async getPossibleVans (fromVB, toVB) {
+  static async getPossibleVans (fromVB, toVB, walkingTimeToStartVB) {
     const possibleVans = []
     for (let counter = 0; counter < this.numberOfVans; counter++) {
       const van = this.vans[counter]
@@ -72,6 +72,13 @@ class ManagementSystem {
       // currently only allow pooling for vans that are not waiting
       if (!van.currentlyPooling && _.last(van.nextStops).vb.equals(toVB) && !van.waiting) {
         let referenceWayPoint, referenceWayPointDuration, potentialCutOffStep
+        const threshold = 570 // in seconds, 10mins minus 30s for hopping on
+
+        if (walkingTimeToStartVB > threshold) {
+          // the passenger needs more than 10mins to the start vb, van is not possible
+          continue
+        }
+
         if (van.nextStops.length === 1) {
           // first, get the reference way point, because the van may be driving atm
           [referenceWayPoint, referenceWayPointDuration, potentialCutOffStep] = this.getStepAheadOnCurrentRoute(van.vanId)
@@ -97,7 +104,6 @@ class ManagementSystem {
         console.log('newDuration:', newDuration)
 
         // compare duration of new route to duration of current route
-        const threshold = 600 // in seconds
         const currentDuration = this.getRemainingRouteDuration(van)
         console.log(currentDuration, newDuration)
         if (newDuration - currentDuration > threshold) {
@@ -135,7 +141,10 @@ class ManagementSystem {
     await this.updateVanLocations()
 
     // get all possible vans for this order request, sorted ascending by their duration
-    const possibleVans = await this.getPossibleVans(fromVB, toVB, destination, time)
+    const walkingRoutToStartVB = await GoogleMapsHelper.simpleGoogleRoute(start, fromVB.location, 'walking')
+    const walkingTimeToStartVB = GoogleMapsHelper.readDurationFromGoogleResponse(walkingRoutToStartVB)
+
+    const possibleVans = await this.getPossibleVans(fromVB, toVB, walkingTimeToStartVB)
     if (possibleVans.length === 0) {
       // error, no van found!
       return { code: 403, message: 'No van currently available please try later' }
