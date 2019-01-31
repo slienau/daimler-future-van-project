@@ -44,11 +44,9 @@ async function starttest () {
   console.log(routeInfo)
   console.log('Route is ok')
   console.log('----------------------')
+  await axiosInstance.post('/orders', { routeId: routeInfo.id })
 
-  const order = await axiosInstance.post('/orders', { routeId: routeInfo.id })
-  const orderInfo = order.data
-
-  console.log(orderInfo)
+  // console.log(orderInfo)
   console.log('Order is ok')
   console.log('----------------------')
 
@@ -57,48 +55,43 @@ async function starttest () {
   // console.log(activeOrder.data)
   console.log('----------------')
 
-  const orderStatusFar = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationFar.latitude + '&passengerLongitude=' + passengerLocationFar.longitude)
-  const orderStatusInfoFar = orderStatusFar.data
+  await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationFar.latitude + '&passengerLongitude=' + passengerLocationFar.longitude)
 
   console.log('order status:')
-  console.log(orderStatusInfoFar)
+  // console.log(orderStatusInfoFar)
   console.log('----------------------')
 
-  const vans2 = await axiosInstance.get('vans')
+  await axiosInstance.get('vans')
   console.log('all vans:')
-  console.log(vans2.data)
+  // console.log(vans2.data)
   console.log('Vans worked')
   console.log('----------------------')
 
-  const orderStatus2 = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude)
-  const orderStatusInfo2 = orderStatus2.data
+  await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude)
 
   console.log('order status:')
-  console.log(orderStatusInfo2)
+  // console.log(orderStatusInfo2)
   console.log('----------------------')
 
-  let vans3
+  // let vans3
 
   for (let i = 0; i < 10; i++) {
     await sleep(1000 * 5)
-    vans3 = await axiosInstance.get('vans')
-    console.log(vans3.data)
+    await axiosInstance.get('vans')
+    // console.log(vans3.data)
     console.log('New Vans update worked')
     console.log('----------------------')
 
-    const orderStatus2 = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude)
-    const orderStatusInfo2 = orderStatus2.data
+    await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationClose.latitude + '&passengerLongitude=' + passengerLocationClose.longitude)
 
     console.log('order status:')
-    console.log(orderStatusInfo2)
+    // console.log(orderStatusInfo2)
     console.log('----------------------')
   }
 
-  const orderPut1 = await axiosInstance.put('/activeorder', { action: 'cancel', userLocation: { latitude: passengerLocationClose.latitude, longitude: passengerLocationClose.longitude } })
-  const orderPut1Info = orderPut1.data
+  await axiosInstance.put('/activeorder', { action: 'cancel', userLocation: { latitude: passengerLocationClose.latitude, longitude: passengerLocationClose.longitude } })
 
   console.log('order status:')
-  console.log(orderPut1Info)
   console.log('----------------------')
 }
 
