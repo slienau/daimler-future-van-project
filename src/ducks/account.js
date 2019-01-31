@@ -1,5 +1,5 @@
 import api from '../lib/api'
-
+import _ from 'lodash'
 export const SET_ACCOUNT_DATA = 'account/SET_ACCOUNT_DATA'
 export const SET_LEADERBOARD_DATA = 'account/SET_LEADERBOARD_DATA'
 
@@ -19,7 +19,7 @@ export default function account(state = initialState, action) {
     case SET_LEADERBOARD_DATA:
       return {
         ...state,
-        leaders: action.payload,
+        leaders: _.concat([], action.payload),
       }
     default:
       return state
