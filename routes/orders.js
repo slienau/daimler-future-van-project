@@ -43,7 +43,7 @@ router.post('/', async function (req, res) {
   try {
     orderId = await OrderHelper.createOrder(accountId, req.body.routeId)
     if (orderId.code) {
-      return res.json(orderId)
+      return res.status(400).json(orderId)
     }
   } catch (error) {
     console.log(error)

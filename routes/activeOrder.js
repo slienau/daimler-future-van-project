@@ -33,6 +33,7 @@ router.get('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
+  if (!order) return res.status(404).json({ message: 'no order active' })
   const orderLean = await Order.findById(order._id).lean()
   orderLean.id = order._id
 

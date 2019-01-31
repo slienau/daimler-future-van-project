@@ -130,18 +130,20 @@ class ManagementSystem {
 
   // Returns the van that will execute the ride
   static async requestVan (start, fromVB, toVB, destination, time = new Date(), passengerCount = 1) {
-    this.updateVanLocations()
+    await this.updateVanLocations()
 
     // get all possible vans for this order request, sorted ascending by their duration
     const possibleVans = await this.getPossibleVans(fromVB, toVB, destination, time)
-    console.log('possibleVans', possibleVans.map(v => [v.vanId, v.toStartVBDuration]))
-    // now determine best from all possible vans (the one with the lowest duration)
-    const bestVan = this.getBestVan(possibleVans)
-    console.log('bestVan', bestVan.vanId)
-    if (bestVan == null) {
+    if (possibleVans.length === 0) {
       // error, no van found!
       return { code: 403, message: 'No van currently available please try later' }
     }
+    console.log('possibleVans', possibleVans.map(v => [v.vanId, v.toStartVBDuration]))
+    // now determine best from all possible vans (the one with the lowest duration)
+    const bestVan = this.getBestVan(possibleVans)
+
+    console.log('bestVan', bestVan.vanId)
+
     // set potential route (and thus lock the van)
     const vanId = bestVan.vanId
     this.vans[vanId - 1].potentialRoute = bestVan.toStartVBRoute
