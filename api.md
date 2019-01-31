@@ -689,13 +689,13 @@ Get nearby virtual bus stops.
 
 #### GET /leaderboard
 
-Get the top 10 users with the most bonus points.
+Get the top 10 users with the most loyalty points.
 
 ##### Response
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | Array of `Objects` | Containing the bonus points (for schema see example). Sorted by property `bonuspoints` |
+| `200` | Array of `Objects` | Containing the loyalty points (for schema see example). Sorted by property `loyalty points` |
 | `400` | `Error` | |
 
 ###### Example
@@ -703,13 +703,19 @@ Get the top 10 users with the most bonus points.
 ```json
 [
     {
-        "bonuspoints": 3980
+        "loyaltyPoints": 175,
+        "username": "antonio",
+        "status": "platin"
     },
     {
-        "bonuspoints": 2120
+        "loyaltyPoints": 125,
+        "username": "philipp",
+        "status": "gold"
     },
     {
-        "bonuspoints": 1400
+        "loyaltyPoints": 75,
+        "username": "alex",
+        "status": "silver"
     }
 ]
 ```
