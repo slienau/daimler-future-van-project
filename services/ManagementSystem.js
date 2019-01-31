@@ -4,6 +4,7 @@ const Order = require('../models/Order.js')
 const geolib = require('geolib')
 // const VirtualBusStop = require('../models/VirtualBusStop.js')
 const _ = require('lodash')
+const Logger = require('./WinstonLogger').logger
 
 const tenMinutes = 10 * 60 * 1000
 
@@ -11,8 +12,6 @@ class ManagementSystem {
   /*
       gets the next step (waypoint) on the route of the van that is at least 120 seconds ahead or the next way point and the duration
       it takes to get there
-      TODO what if the van is currently waiting -> currently not allowed
-      TODO what if the van has reached its destination (nextStops will be empty and route too) -> should not happen
       if the van has only one next bus stop left, its meaning that the van is directly riding to the destionation, so in this case we can just
       take the step that is at least secondsAhead seconds ahead on the route
     */
@@ -80,26 +79,22 @@ class ManagementSystem {
           referenceWayPointDuration = this.getRemainingRouteDuration(van) - GoogleMapsHelper.readDurationFromGoogleResponse(_.last(van.nextRoutes)) // TODO
         }
         if (!referenceWayPoint || !referenceWayPointDuration) continue
-        console.log('referenceWayPoint:', referenceWayPoint)
-        console.log('referenceWayPointDuration:', referenceWayPointDuration)
-        console.log('potentialCutOffStep:', potentialCutOffStep)
+        Logger.info('referenceWayPoint: ' + referenceWayPoint)
+        Logger.info('referenceWayPointDuration: ' + referenceWayPointDuration)
+        Logger.info('potentialCutOffStep: ' + potentialCutOffStep)
 
         // calculate duration of the new route
         const toStartVBRoute = await GoogleMapsHelper.simpleGoogleRoute(referenceWayPoint, fromVB.location)
         const toEndVBRoute = await GoogleMapsHelper.simpleGoogleRoute(fromVB.location, toVB.location)
         let toStartVBDuration = GoogleMapsHelper.readDurationFromGoogleResponse(toStartVBRoute)
-        console.log('toStartVBDuration:', toStartVBDuration)
         toStartVBDuration += referenceWayPointDuration // add duration of how long the van needs to the reference way point
         const toEndVBDuration = GoogleMapsHelper.readDurationFromGoogleResponse(toEndVBRoute)
-        console.log('toStartVBDuration:', toStartVBDuration)
-        console.log('toEndVBDuration:', toEndVBDuration)
         const newDuration = toStartVBDuration + toEndVBDuration
-        console.log('newDuration:', newDuration)
 
         // compare duration of new route to duration of current route
         const threshold = 600 // in seconds
         const currentDuration = this.getRemainingRouteDuration(van)
-        console.log(currentDuration, newDuration)
+        Logger.info(currentDuration, newDuration)
         if (newDuration - currentDuration > threshold) {
           // threshold exceeded, van cant be used
           continue
@@ -140,11 +135,11 @@ class ManagementSystem {
       // error, no van found!
       return { code: 403, message: 'No van currently available please try later' }
     }
-    console.log('possibleVans', possibleVans.map(v => [v.vanId, v.toStartVBDuration]))
+    Logger.info('possibleVans ' + possibleVans.map(v => [v.vanId, v.toStartVBDuration]))
     // now determine best from all possible vans (the one with the lowest duration)
     const bestVan = this.getBestVan(possibleVans)
 
-    console.log('bestVan', bestVan.vanId)
+    Logger.info('bestVan ' + bestVan.vanId)
 
     // set potential route (and thus lock the van)
     const vanId = bestVan.vanId
@@ -172,7 +167,12 @@ class ManagementSystem {
       van.currentlyPooling = true
     }
 
-    const timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(toVBRoute)
+    let timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(toVBRoute)
+    if (!timeToVB && van.nextRoutes.length !== 0) {
+      timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0])
+      Logger.info('Took time from different route: ' + timeToVB)
+    }
+    Logger.info('Seconds to next VB: ' + timeToVB)
     van.nextStopTime = new Date(Date.now() + (timeToVB * 1000))
 
     // link the added next stops with the order they came from so that we can delete them if one cancels its order
@@ -203,28 +203,22 @@ class ManagementSystem {
       van.lastStepTime = new Date()
     }
 
-    console.log('##### CONFIRM #####')
-    console.log('### NEXT STOPS ###')
-    console.log(van.nextStops)
-    console.log('### NEXT ROUTES ###')
-    console.log(van.nextRoutes)
-    console.log('### VAN ###')
-    console.log(van)
-
+    Logger.info('##### CONFIRM #####')
+    Logger.info(van.nextStops)
+    Logger.info(van.nextRoutes)
     return van
   }
 
   static async startRide (order) {
     const vanId = order.vanId
     const van = this.vans[vanId - 1]
-    console.log('### START RIDE ###')
     // if a passenger enters the van, remove the passengers start bus stop from the list of all next stops
     // if this list then contains no next stop that matches the current waiting stop, the van picked up all passengers and is ready to ride
     if (van.waiting) {
       let r = _.remove(van.nextStops, (nextStop) => {
         return nextStop.orderId.equals(order._id) && nextStop.vb._id.equals(van.waitingAt._id)
       })
-      console.log('removed', r.length, 'stops')
+      Logger.info('removed ' + r.length + ' stops')
       if (_.find(van.nextStops, (nextStop) => nextStop.vb._id.equals(van.waitingAt._id)) === undefined) {
         // van continues the ride
         van.currentStep = 0
@@ -233,7 +227,7 @@ class ManagementSystem {
         van.waitingAt = null
         const timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0])
         van.nextStopTime = new Date(Date.now() + (timeToVB * 1000))
-        console.log('continue ride')
+        Logger.info('continue ride')
       }
       return true
     }
@@ -243,15 +237,14 @@ class ManagementSystem {
   static async endRide (order) {
     const vanId = order.vanId
     const van = this.vans[vanId - 1]
-    console.log('### END RIDE ###')
     // if a passenger leaves the van, remove the passengers end bus stop from the list of all next stops
     // if this list then contains no next stop anymore, all passengers have left the van and its again ready to ride
     if (van.waiting) {
       let r = _.remove(van.nextStops, nextStop => nextStop.orderId.equals(order._id))
-      console.log('removed', r.length, 'stops')
+      Logger.info('removed ' + r.length + ' stops')
       if (van.nextStops.length === 0) {
         this.resetVan(vanId)
-        console.log('van reset')
+        Logger.info('van reset')
       }
       return true
     }
@@ -264,7 +257,6 @@ class ManagementSystem {
 
     // if a passenger cancels its ride, remove all next stops of the passenger
     // van.nextRoutes needs to be updated
-    console.log('numberStops', _.uniqWith(van.nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).length)
     _.remove(van.nextStops, nextStop => nextStop.orderId.equals(order._id))
     const numberStops = _.uniqWith(van.nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).length
     if (van.nextStops.length === 0) {
@@ -291,14 +283,9 @@ class ManagementSystem {
       van.nextRoutes.pop()
       van.nextRoutes.push(newRoute)
     }
-    console.log('##### CANCEL #####')
-    console.log('numberStops', numberStops)
-    console.log('### NEXT STOPS ###')
-    console.log(van.nextStops)
-    console.log('### NEXT ROUTES ###')
-    console.log(van.nextRoutes)
-    console.log('### VAN ###')
-    console.log(van)
+    Logger.info('Cancel')
+    Logger.info(van.nextStops)
+    Logger.info(van.nextRoutes)
   }
 
   static initializeVans () {
@@ -329,7 +316,7 @@ class ManagementSystem {
   }
 
   static resetVan (vanId) {
-    console.log('resetting van', vanId)
+    Logger.info('resetting van', vanId)
     this.vans[vanId - 1].lastStepTime = null
     this.vans[vanId - 1].nextStopTime = null
     this.vans[vanId - 1].nextStops = []
@@ -350,7 +337,7 @@ class ManagementSystem {
     for (let van of ManagementSystem.vans) {
       // check if potential is older than 10 minutes
       if (van.potentialRoute && van.potentialRouteTime.getTime() + 60 * 1000 < currentTime.getTime()) {
-        console.log('Deleting old potential route')
+        Logger.info('Deleting old potential route')
         van.potentialRoute = null
         van.potentialCutOffStep = null
         van.potentialRouteTime = null
@@ -371,17 +358,16 @@ class ManagementSystem {
       // This updates the step location
       const currentRoute = van.nextRoutes[0]
       const steps = currentRoute.routes[0].legs[0].steps
-      console.log('##### UPDATE LOCATIONS #####')
-      console.log('next stops:', van.nextStops.length)
-      console.log('number steps:', steps.length)
-      console.log('currentStep:', van.currentStep)
-      console.log('van lastStepLocation:', van.lastStepLocation)
+      Logger.info('##### UPDATE LOCATIONS #####')
+      Logger.info('next stops: ' + van.nextStops.length)
+      Logger.info('number steps: ' + steps.length)
+      Logger.info('currentStep: ' + van.currentStep)
 
       // timePassed is the the time that has passed since the lastStepTime
       const timePassed = ((currentTime.getTime() - van.lastStepTime.getTime()) / 1000)
       let timeCounter = 0
-      console.log('time passed:', timePassed)
-      console.log('curren step duration:', steps[van.currentStep].duration.value)
+      Logger.info('time passed: ' + timePassed)
+      Logger.info('curren step duration: ' + steps[van.currentStep].duration.value)
 
       // Iterate through all steps ahead of current step & find the one that matches the time that has passed
       for (let step = van.currentStep; step < steps.length; step++) {
@@ -407,7 +393,7 @@ class ManagementSystem {
           // if algorithm has advanced a step, save the current time as the time of the last step and set the actual location to the step location
           if (step > van.currentStep) {
             van.lastStepTime = new Date(van.lastStepTime.getTime() + steps[step - 1].duration.value * 1000)
-            console.log('setting new step')
+            Logger.info('setting new step')
             van.location = {
               latitude: steps[step].start_location.lat,
               longitude: steps[step].start_location.lng
@@ -417,7 +403,7 @@ class ManagementSystem {
           break
         } else if (van.currentStep === steps.length - 1) {
           // van reached last step
-          console.log('last step reached')
+          Logger.info('last step reached')
           van.lastStepLocation = {
             latitude: steps[van.currentStep].end_location.lat,
             longitude: steps[van.currentStep].end_location.lng
@@ -431,7 +417,6 @@ class ManagementSystem {
           // remove the current driven route (and all succeeding ones with a duration of zero)
           van.nextRoutes.shift()
           van.nextRoutes = _.dropWhile(van.nextRoutes, nextRoute => nextRoute.routes[0].legs[0].duration.value === 0)
-          console.log('really waiting')
         }
       }
     }
@@ -445,9 +430,9 @@ class ManagementSystem {
     let from = { latitude: van.lastStepLocation.latitude, longitude: van.lastStepLocation.longitude }
     let to = { latitude: nextVB.location.latitude, longitude: nextVB.location.longitude }
     let dist = geolib.getDistance(from, to)
-    console.log('check waiting', from, to, dist)
+    Logger.info('check waiting from ' + from + ' to ' + to + ' dist ' + dist)
     if (dist < range) {
-      console.log('waiting confirmed')
+      Logger.info('waiting confirmed')
       van.waiting = true
       van.waitingAt = nextVB
     }
@@ -462,6 +447,7 @@ class ManagementSystem {
       const order = await Order.findById(oid)
       const route = await Route.findById(order.route).lean()
       if (route.vanETAatStartVBS.getTime() + tenMinutes < currentTime.getTime()) {
+        Logger.info('deactivated Order ' + oid)
         await Order.updateOne({ _id: oid }, { $set: { active: false } })
         await this.cancelRide(order)
         counter--

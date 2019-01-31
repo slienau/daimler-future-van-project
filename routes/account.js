@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Account = require('../models/Account.js')
 const Order = require('../models/Order.js')
+const Logger = require('../services/WinstonLogger').logger
 
 router.get('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
@@ -11,7 +12,7 @@ router.get('/', async function (req, res) {
   let distance = 0
   try {
     account = await Account.findById(req.user._id, '-password')
-    console.log('Requested Account with id ' + account._id)
+    Logger.info('Requested Account with id ' + account._id)
     bonusitem = await Order.aggregate([
       {
         $match:
@@ -43,6 +44,7 @@ router.get('/', async function (req, res) {
     responsebody.distance = distance // total distance the user travelled
     res.json(responsebody)
   } catch (error) {
+    Logger.error(error)
     res.status(404).json({ error: error, msg: 'No items found' })
   }
 })

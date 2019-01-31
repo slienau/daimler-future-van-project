@@ -3,7 +3,10 @@ const Order = require('../models/Order.js')
 const Account = require('../models/Account.js')
 const Route = require('../models/Route.js')
 const ManagementSystem = require('./ManagementSystem.js')
+const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
 const geolib = require('geolib')
+const Logger = require('./WinstonLogger').logger
+
 const bonusMultiplierStandard = 10
 const co2savingsMultiplierStandard = 0.13 // EU limit for new cars = 0.13 kg/km
 
@@ -14,7 +17,7 @@ class OrderHelper {
   static async setupOrders () {
     const items = await Order.find({})
 
-    if (items !== null && items.length !== 0) return console.log('no setup needed')
+    if (items !== null && items.length !== 0) return Logger.info('no setup needed')
 
     let user, userId, vbs
     let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End, distance1, distance2, distance3
@@ -27,7 +30,7 @@ class OrderHelper {
         try {
           vbs = await VirtualBusStop.find({})
         } catch (error) {
-          console.log(error)
+          Logger.error(error)
         }
         orderTime1 = new Date('2018-12-10T12:30:00')
         orderTime2 = new Date('2018-12-13T10:00:00')
@@ -94,7 +97,7 @@ class OrderHelper {
         await order2.save()
         await order3.save()
       } catch (error) {
-        console.log(error)
+        Logger.error(error)
       }
     }
   }
@@ -104,10 +107,6 @@ class OrderHelper {
     const currentTime = new Date()
     const route = await Route.findById(routeId)
     const timePassed = currentTime.getTime() - (route.validUntil.getTime() - 60 * 1000)
-
-    console.log('------------------------')
-    console.log('timepassed: ' + timePassed)
-    console.log('------------------------')
 
     const virtualBusStopStart = route.vanStartVBS
     const virtualBusStopEnd = route.vanEndVBS
@@ -138,14 +137,6 @@ class OrderHelper {
 
     // const newVan = await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId)
 
-    // console.log('------------------------')
-    // console.log('old van Arrival Time: ' + vanArrivalTime)
-    // console.log('------------------------')
-
-    // console.log('------------------------')
-    // console.log('new van Arrival Time: ' + newVan.nextStopTime)
-    // console.log('------------------------')
-
     const distance = route.vanRoute.routes[0].legs[0].distance.value / 1000
 
     let newOrder
@@ -169,7 +160,7 @@ class OrderHelper {
 
       })
     } catch (e) {
-      console.log(e)
+      Logger.error(e)
     }
 
     try {
@@ -178,17 +169,15 @@ class OrderHelper {
 
       return order._id
     } catch (error) {
-      console.log(error)
+      Logger.error(error)
       return error
     }
-  }
-  static async deactivateOrder (orderId) {
-    await Order.updateOne({ _id: orderId }, { $set: { active: false } })
   }
 
   // To-Do: Only rely on location instead of time
   static async checkOrderLocationStatus (orderId, passengerLocation) {
     const order = await Order.findById(orderId).lean()
+    const route = await Route.findById(order.route).lean()
     const virtualBusStopStart = await VirtualBusStop.findById(order.vanStartVBS).lean()
     const virtualBusStopEnd = await VirtualBusStop.findById(order.vanEndVBS).lean()
 
@@ -196,10 +185,51 @@ class OrderHelper {
     const vanLocation = ManagementSystem.vans[order.vanId - 1].lastStepLocation
     const actualVanLocation = ManagementSystem.vans[order.vanId - 1].location
 
+    const nextStops = ManagementSystem.vans[order.vanId - 1].nextStops
+    const nextRoutes = ManagementSystem.vans[order.vanId - 1].nextRoutes
+
+    let counter = 0
+    let myStops = []
+    let arrivalTimes = []
+    let otherOrder, otherUser, arrivalTime
+    let otherPassengers = []
+    // iterate through next stops to get potential other passengers and find out what stops we get on and off
+
+    for (let stop of nextStops) {
+      Logger.info('Status stops counter: ' + counter)
+      // fill the arrival time
+      if (counter === 0) {
+        arrivalTimes.push(ManagementSystem.vans[order.vanId - 1].nextStopTime)
+      } else {
+        arrivalTime = new Date(arrivalTimes[counter - 1].getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(nextRoutes[counter]) * 1000 + 30 * 1000)
+        arrivalTimes.push(arrivalTime)
+      }
+      // check if stop belongs to me
+      Logger.info(orderId.equals(stop.orderId))
+      if (orderId.equals(stop.orderId)) {
+        Logger.info(arrivalTimes[counter])
+        myStops.push({ stop: stop, index: counter, arrivalTime: arrivalTimes[counter] })
+      } else {
+        otherOrder = await Order.findById(stop.orderId).lean()
+        otherUser = await Account.findById(otherOrder.accountId).lean()
+        otherPassengers.push(otherUser.username)
+      }
+      counter++
+    }
+    Logger.info(myStops)
+
+    const startVBSTime = order.vanEnterTime ? order.vanEnterTime : myStops[0].arrivalTime
+    const endVBSTime = order.vanEnterTime ? myStops[0].arrivalTime : myStops[1].arrivalTime
+
     const res = {
+      vanId: order.vanId,
       userAllowedToEnter: false,
       userAllowedToExit: false,
       message: 'unknown state',
+      guaranteedArrivalTime: new Date(route.vanETAatEndVBS.getTime() + 10 * 60 * 1000),
+      vanETAatStartVBS: startVBSTime,
+      vanETAatDestinationVBS: endVBSTime,
+      otherPassengers: otherPassengers,
       vanLocation: actualVanLocation
     }
 

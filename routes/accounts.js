@@ -4,9 +4,6 @@ const Account = require('../models/Account.js')
 
 router.get('/:accountId', function (req, res) {
   res.setHeader('Content-Type', 'application/json')
-  console.log(req.params.accountId)
-
-  // Set to admin if "me" --> later connect with session
 
   Account.find({ '_id': req.params.accountId }, '-password')
     .then(item => {

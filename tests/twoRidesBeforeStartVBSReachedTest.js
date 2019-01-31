@@ -80,11 +80,13 @@ async function starttest () {
       try {
         let res = await axiosInstance1.put('/activeorder', {
           action: 'startride',
-          userLocation: orderInfo1.route.startStation.location
+          userLocation: orderInfo1.route.vanStartVBS.location
         })
         started1 = true
+
         console.log('start time (1):', res.data.startTime)
       } catch (e) {
+        console.log(e)
         console.log('not entered (1)')
       }
     }
@@ -92,11 +94,12 @@ async function starttest () {
       try {
         let res = await axiosInstance2.put('/activeorder', {
           action: 'startride',
-          userLocation: orderInfo2.route.startStation.location
+          userLocation: orderInfo2.route.vanStartVBS.location
         })
         started2 = true
         console.log('start time (2):', res.data.startTime)
       } catch (e) {
+        console.log(e)
         console.log('not entered (2)')
       }
     }
@@ -106,7 +109,7 @@ async function starttest () {
         try {
           await axiosInstance1.put('/activeorder', {
             action: 'endride',
-            userLocation: orderInfo1.route.endStation.location
+            userLocation: orderInfo1.route.vanEndVBS.location
           })
           console.log('ride ended (1)')
           ended1 = true
@@ -118,7 +121,7 @@ async function starttest () {
         try {
           await axiosInstance2.put('/activeorder', {
             action: 'endride',
-            userLocation: orderInfo2.route.endStation.location
+            userLocation: orderInfo2.route.vanEndVBS.location
           })
           console.log('ride ended (2)')
           ended2 = true
