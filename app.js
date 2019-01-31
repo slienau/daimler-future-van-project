@@ -10,7 +10,6 @@ const MongoDB = require('winston-mongodb').MongoDB
 const mung = require('express-mung')
 
 const indexRouter = require('./routes/index')
-const accountsRouter = require('./routes/accounts')
 const accountRouter = require('./routes/account')
 const vbRouter = require('./routes/virtualBusStops')
 const orderRouter = require('./routes/orders')
@@ -71,7 +70,6 @@ console.log(MongoDB)
 
 app.use('/login', auth)
 app.use('/', jwtlogin, indexRouter)
-app.use('/accounts', jwtlogin, accountsRouter)
 app.use('/account', jwtlogin, accountRouter)
 app.use('/virtualbusstops', jwtlogin, vbRouter)
 app.use('/orders', jwtlogin, orderRouter)

@@ -2,17 +2,18 @@ const express = require('express')
 const router = express.Router()
 const Account = require('../models/Account.js')
 const Order = require('../models/Order.js')
+const AccountHelper = require('../services/AccountHelper.js')
 
 router.get('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
-  let account, bonusitem, responsebody
+  let account, loyaltyItem, responsebody
   let loyaltyPoints = 0
   let co2savings = 0
   let distance = 0
   try {
     account = await Account.findById(req.user._id, '-password')
     console.log('Requested Account with id ' + account._id)
-    bonusitem = await Order.aggregate([
+    loyaltyItem = await Order.aggregate([
       {
         $match:
           {
@@ -30,10 +31,10 @@ router.get('/', async function (req, res) {
           }
       }
     ])
-    if (bonusitem.length > 0) {
-      loyaltyPoints = bonusitem[0].loyaltyPoints
-      co2savings = bonusitem[0].co2savings
-      distance = bonusitem[0].distance
+    if (loyaltyItem.length > 0) {
+      loyaltyPoints = loyaltyItem[0].loyaltyPoints
+      co2savings = loyaltyItem[0].co2savings
+      distance = loyaltyItem[0].distance
     }
     loyaltyPoints = Number(loyaltyPoints.toFixed(0))
     co2savings = Number(co2savings.toFixed(2))
@@ -42,6 +43,8 @@ router.get('/', async function (req, res) {
     responsebody.loyaltyPoints = loyaltyPoints
     responsebody.co2savings = co2savings
     responsebody.distance = distance // total distance the user travelled
+    // Calculate the status of an account based on the loyalty points
+    responsebody.status = AccountHelper.status(loyaltyPoints)
     res.json(responsebody)
   } catch (error) {
     res.status(404).json({ error: error, msg: 'No items found' })

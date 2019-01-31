@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Order = require('../models/Order.js')
 const Account = require('../models/Account.js')
+const AccountHelper = require('../services/AccountHelper.js')
 
 router.get('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
@@ -19,7 +20,7 @@ router.get('/', async function (req, res) {
           $group:
             {
               _id: '$accountId',
-              loyaltyPoints: { $sum: { $multiply: ['$distance', '$bonusMultiplier'] } },
+              loyaltyPoints: { $sum: '$loyaltyPoints' },
               co2savings: { $sum: '$co2savings' }
             }
         }
@@ -36,13 +37,8 @@ router.get('/', async function (req, res) {
         delete leaderboardWithUsernames[i]._id
         leaderboardWithUsernames[i].username = account.username
         leaderboardWithUsernames[i].co2savings = Number(leaderboardWithUsernames[i].co2savings.toFixed(2))
-        if (leaderboard[i].loyaltyPoints > 150) {
-          leaderboardWithUsernames[i].status = 'platin'
-        } else if (leaderboard[i].loyaltyPoints > 100) {
-          leaderboardWithUsernames[i].status = 'gold'
-        } else if (leaderboard[i].loyaltyPoints > 50) {
-          leaderboardWithUsernames[i].status = 'silver'
-        }
+        // Calculate the status of an account based on the loyalty points
+        leaderboardWithUsernames[i].status = AccountHelper.status(leaderboard[i].loyaltyPoints)
       }
     }
     res.json(leaderboardWithUsernames)

@@ -19,13 +19,13 @@ async function starttest () {
     headers: { 'Authorization': 'Bearer ' + credentials.data.token }
   })
 
-  const pastOrders = await axiosInstance.get('/orders')
-  console.log(pastOrders.data)
+  await axiosInstance.get('/orders')
+  // console.log(pastOrders.data)
   console.log('PastOrders worked')
   console.log('----------------------')
 
-  const vans = await axiosInstance.get('vans')
-  console.log(vans.data)
+  await axiosInstance.get('vans')
+  // console.log(vans.data)
   console.log('Vans worked')
   console.log('----------------------')
 
@@ -52,9 +52,9 @@ async function starttest () {
   console.log('Order is ok')
   console.log('----------------------')
 
-  const activeOrder = await axiosInstance.get('/activeorder')
+  await axiosInstance.get('/activeorder')
   console.log('active order:')
-  console.log(activeOrder.data)
+  // console.log(activeOrder.data)
   console.log('----------------')
 
   const orderStatusFar = await axiosInstance.get('/activeorder/status?passengerLatitude=' + passengerLocationFar.latitude + '&passengerLongitude=' + passengerLocationFar.longitude)
