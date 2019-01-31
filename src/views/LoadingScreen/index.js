@@ -14,7 +14,7 @@ const CenterView = styled.View`
 export default class LoadingScreen extends React.Component {
   async componentDidMount() {
     if (!(await isTokenValid())) return this.props.navigation.navigate('Login')
-    this.props.navigation.navigate('MainView')
+    this.props.navigation.navigate('MainAppStack')
   }
 
   render() {
