@@ -11,15 +11,10 @@ const StyledFab = styled(Fab)`
 `
 
 const CurrentLocationButton = props => {
+  if (![MapState.INIT, MapState.SEARCH_ROUTES].includes(props.mapState))
+    return null
   let top = 22
-  switch (props.mapState) {
-    case MapState.SEARCH_ROUTES:
-      top = 290
-      break
-    case MapState.ROUTE_SEARCHED:
-      top = 300
-      break
-  }
+  if (props.mapState === MapState.SEARCH_ROUTES) top = 290
   return (
     <StyledFab top={top + '%'} position="topRight" onPress={props.onPress}>
       <Icon name="locate" />
