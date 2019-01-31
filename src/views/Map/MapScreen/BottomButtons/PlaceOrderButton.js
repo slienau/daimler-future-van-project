@@ -1,23 +1,23 @@
-import BottomButton from './BottomButton'
 import React from 'react'
 import PropTypes from 'prop-types'
+import {ProgressButton} from 'react-native-progress-button'
 
 const PlaceOrderButton = props => {
   return (
-    <BottomButton
-      iconRight
+    <ProgressButton
+      buttonState="progress"
+      smoothly
+      progress={props.routeExipreProgress.toFixed(0)}
+      progressColor="green"
       onPress={props.onPress}
-      text="Order"
-      iconName="arrow-forward"
-      left="65%"
-      right="3%"
-      bottom="15%"
+      text="Place Order"
     />
   )
 }
 
 PlaceOrderButton.propTypes = {
   onPress: PropTypes.func,
+  routeExipreProgress: PropTypes.number,
 }
 
 export default PlaceOrderButton
