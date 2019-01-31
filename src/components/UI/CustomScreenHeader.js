@@ -1,6 +1,8 @@
 import {Body, Button, Header, Icon, Left, Title} from 'native-base'
 import React from 'react'
+import {StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
+import {DARK_COLOR, LIGHT_COLOR} from './colors'
 
 const CustomScreenHeader = props => {
   let leftContent = null
@@ -14,14 +16,24 @@ const CustomScreenHeader = props => {
     )
   }
   return (
-    <Header>
+    <Header style={styles.header}>
       {leftContent}
       <Body>
-        <Title>{props.title}</Title>
+        <Title style={styles.title}>{props.title}</Title>
       </Body>
     </Header>
   )
 }
+
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: DARK_COLOR,
+  },
+  title: {
+    color: LIGHT_COLOR,
+    fontWeight: 'bold',
+  },
+})
 
 CustomScreenHeader.propTypes = {
   icon: PropTypes.string,

@@ -1,20 +1,28 @@
-import styled from 'styled-components/native/dist/styled-components.native.esm'
+import {StyleSheet} from 'react-native'
 import {Fab, Icon} from 'native-base'
 import React from 'react'
 import PropTypes from 'prop-types'
-
-const StyledFab = styled(Fab)`
-  position: absolute;
-  background-color: gray;
-`
+import {DARK_COLOR, LIGHT_COLOR} from './colors'
 
 const CustomFabWithIcon = props => {
   return (
-    <StyledFab onPress={props.onPress} position={props.position}>
-      <Icon name={props.icon} />
-    </StyledFab>
+    <Fab onPress={props.onPress} position={props.position} style={styles.fab}>
+      <Icon name={props.icon} style={styles.icon} />
+    </Fab>
   )
 }
+
+// Icon style didn't work with styled-components
+const styles = StyleSheet.create({
+  fab: {
+    position: 'absolute',
+    backgroundColor: DARK_COLOR,
+  },
+  icon: {
+    color: LIGHT_COLOR,
+    fontSize: 34,
+  },
+})
 
 CustomFabWithIcon.propTypes = {
   icon: PropTypes.string.isRequired,
