@@ -1,7 +1,13 @@
 import React from 'react'
 import {Container, Content, Form, Item, Input, Label} from 'native-base'
 import _ from 'lodash'
-import {View, AsyncStorage, StyleSheet, ImageBackground} from 'react-native'
+import {
+  View,
+  AsyncStorage,
+  StyleSheet,
+  ImageBackground,
+  Animated,
+} from 'react-native'
 import {login} from '../../lib/api'
 import CustomButton from '../../components/UI/CustomButton'
 import HeadingText from '../../components/UI/HeadingText'
@@ -12,6 +18,7 @@ export default class LoginScreen extends React.Component {
   state = {
     username: '',
     password: '',
+    loginAnimation: new Animated.Value(1), // start value
   }
 
   async componentDidMount() {
@@ -23,7 +30,13 @@ export default class LoginScreen extends React.Component {
   login = async () => {
     try {
       await login(this.state)
-      this.props.navigation.navigate('MainAppStack')
+      Animated.timing(this.state.loginAnimation, {
+        toValue: 0,
+        duration: 500, // milliseconds
+        useNativeDriver: true, // for better performance
+      }).start(() => {
+        this.props.navigation.navigate('MainAppStack')
+      })
     } catch (err) {
       if (_.get(err, 'response.status') !== 400) throw err
       alert('Invalid username or password!')
@@ -45,8 +58,25 @@ export default class LoginScreen extends React.Component {
           source={backgroundImage}
           style={styles.backgroundImageContainer}
           imageStyle={styles.backgroundImage}>
-          <Content contentContainerStyle={styles.contentContainer}>
-            <HeadingText>Please Log In</HeadingText>
+          <Content
+            contentContainerStyle={[
+              styles.contentContainer,
+              // styles.transformTest,
+            ]}>
+            <Animated.View
+              style={{
+                opacity: this.state.loginAnimation,
+                transform: [
+                  {
+                    scale: this.state.loginAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [12, 1],
+                    }),
+                  },
+                ],
+              }}>
+              <HeadingText>Please Log In</HeadingText>
+            </Animated.View>
             <Form style={styles.form}>
               <View style={styles.itemContainer}>
                 <Item floatingLabel>
@@ -72,9 +102,22 @@ export default class LoginScreen extends React.Component {
                 </Item>
               </View>
             </Form>
-            <View style={styles.buttonContainer}>
-              <CustomButton text="Login" onPress={this.login} />
-            </View>
+            <Animated.View
+              style={{
+                opacity: this.state.loginAnimation,
+                transform: [
+                  {
+                    scale: this.state.loginAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [12, 1],
+                    }),
+                  },
+                ],
+              }}>
+              <View style={styles.buttonContainer}>
+                <CustomButton text="Login" onPress={this.login} />
+              </View>
+            </Animated.View>
           </Content>
         </ImageBackground>
       </Container>
@@ -82,7 +125,7 @@ export default class LoginScreen extends React.Component {
   }
 }
 
-const TRANSPARENT_WHITE_BACKGROUND = 'rgba(255, 255, 255, 0.8)'
+const TRANSPARENT_WHITE_BACKGROUND = 'rgba(255, 255, 255, 0.7)'
 
 const styles = StyleSheet.create({
   backgroundImageContainer: {
@@ -105,7 +148,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 30,
+    marginTop: 20,
   },
   label: {
     color: DARK_COLOR,
@@ -113,8 +156,9 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     backgroundColor: TRANSPARENT_WHITE_BACKGROUND,
+    borderRadius: 20,
     marginTop: 5,
-    marginBottom: 5,
+    marginBottom: 20,
     paddingBottom: 10,
     borderWidth: 1,
     borderColor: GREY_COLOR,
