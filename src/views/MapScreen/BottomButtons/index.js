@@ -155,9 +155,9 @@ const styles = StyleSheet.create({
   placeOrderButton: {
     display: 'flex',
     position: 'absolute',
-    left: '45%',
-    right: '45%',
-    bottom: '15%',
+    left: '40%',
+    right: '65%',
+    bottom: '16%',
   },
 })
 

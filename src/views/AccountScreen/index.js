@@ -1,5 +1,4 @@
 import React from 'react'
-import {TouchableWithoutFeedback, Image} from 'react-native'
 import {connect} from 'react-redux'
 import styled from 'styled-components/native'
 import {
@@ -10,12 +9,13 @@ import {
   Icon,
   Left,
   List,
+  Card,
+  CardItem,
   ListItem,
   Right,
   Text,
   Thumbnail,
 } from 'native-base'
-import Dialog, {DialogContent, ScaleAnimation} from 'react-native-popup-dialog'
 import PropTypes from 'prop-types'
 import {fetchAccountData, fetchLeaderBoardData} from '../../ducks/account'
 import {logout} from '../../lib/api'
@@ -28,6 +28,9 @@ const UnlockIcon = styled(Icon)`
 `
 const BusIcon = styled(Icon)`
   color: dodgerblue;
+`
+const PlanetIcon = styled(Icon)`
+  color: gray;
 `
 
 const LeaderBoardIcon = styled(Icon)`
@@ -108,37 +111,96 @@ class Account extends React.Component {
     return (
       <Container>
         <Content>
-          <Dialog
-            height={0.5}
-            visible={this.state.avatarVisible}
-            onTouchOutside={() => {
-              this.setState({
-                avatarVisible: false,
-              })
-            }}
-            dialogAnimation={new ScaleAnimation({})}>
-            <DialogContent>
-              <Image source={{uri: uri}} />
-            </DialogContent>
-          </Dialog>
-
-          <List>
-            <ListItem>
+          <Card>
+            <CardItem>
               <Left>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    this.setState({
-                      avatarVisible: true,
-                    })
-                  }}>
-                  <Thumbnail large source={{uri: uri}} />
-                </TouchableWithoutFeedback>
+                <Thumbnail large source={{uri: uri}} />
+                <Body>
+                  <Text>{this.props.account.username}</Text>
+                  <Text note>{this.props.account.email}</Text>
+                </Body>
               </Left>
+            </CardItem>
+          </Card>
+          <List>
+            <ListItem itemDivider>
+              <Text>Loyalty Program</Text>
+            </ListItem>
+            <ListItem icon>
+              <Left>
+                <StarIcon active name="star" />
+              </Left>
+              <Body>
+                <Text>Loyalty Points</Text>
+              </Body>
               <Right>
-                <Text>{this.props.account.username}</Text>
+                <Text>{this.props.account.loyaltyPoints}</Text>
               </Right>
             </ListItem>
-
+            <ListItem icon button onPress={() => {}}>
+              <Left>
+                <UnlockIcon name="unlock" />
+              </Left>
+              <Body>
+                <Text>Rewards</Text>
+              </Body>
+              <Right>
+                <Icon name="arrow-forward" />
+              </Right>
+            </ListItem>
+            <ListItem
+              icon
+              button
+              onPress={() => this.props.navigation.push('Leaderboard')}>
+              <Left>
+                <LeaderBoardIcon name="people" />
+              </Left>
+              <Body>
+                <Text>Leaderboard</Text>
+              </Body>
+              <Right>
+                <Icon name="arrow-forward" />
+              </Right>
+            </ListItem>
+            <ListItem itemDivider>
+              <Text>Overall Overview</Text>
+            </ListItem>
+            <ListItem
+              icon
+              button
+              onPress={() => this.props.navigation.push('PastOrders')}>
+              <Left>
+                <BusIcon name="bus" />
+              </Left>
+              <Body>
+                <Text>Order History</Text>
+              </Body>
+              <Right>
+                <Icon name="arrow-forward" />
+              </Right>
+            </ListItem>
+            <ListItem icon>
+              <Left>
+                <PlanetIcon name="planet" />
+              </Left>
+              <Body>
+                <Text>Driven Kilometers</Text>
+              </Body>
+              <Right>
+                <Text>{this.props.account.distance + ' km'}</Text>
+              </Right>
+            </ListItem>
+            <ListItem icon>
+              <Left>
+                <TreesIcon name="trees" type="Foundation" />
+              </Left>
+              <Body>
+                <Text>CO2 savings</Text>
+              </Body>
+              <Right>
+                <Text>{this.props.account.co2savings + ' kg'}</Text>
+              </Right>
+            </ListItem>
             <ListItem itemDivider>
               <Text>Details</Text>
             </ListItem>
@@ -204,71 +266,6 @@ class Account extends React.Component {
               <Body />
               <Right>
                 <Text>{this.props.account.address.city}</Text>
-              </Right>
-            </ListItem>
-
-            <ListItem itemDivider>
-              <Text>Loyalty Program</Text>
-            </ListItem>
-            <ListItem icon>
-              <Left>
-                <StarIcon active name="star" />
-              </Left>
-              <Body>
-                <Text>Loyalty Points</Text>
-              </Body>
-              <Right>
-                <Text>{this.props.account.loyaltyPoints}</Text>
-              </Right>
-            </ListItem>
-            <ListItem icon button onPress={() => {}}>
-              <Left>
-                <UnlockIcon name="unlock" />
-              </Left>
-              <Body>
-                <Text>Rewards</Text>
-              </Body>
-              <Right>
-                <Icon name="arrow-forward" />
-              </Right>
-            </ListItem>
-            <ListItem
-              icon
-              button
-              onPress={() => this.props.navigation.push('Leaderboard')}>
-              <Left>
-                <LeaderBoardIcon name="people" />
-              </Left>
-              <Body>
-                <Text>Leaderboard</Text>
-              </Body>
-              <Right>
-                <Icon name="arrow-forward" />
-              </Right>
-            </ListItem>
-            <ListItem itemDivider>
-              <Text>Overall Overview</Text>
-            </ListItem>
-            <ListItem icon>
-              <Left>
-                <BusIcon name="bus" />
-              </Left>
-              <Body>
-                <Text>Driven Kilometers</Text>
-              </Body>
-              <Right>
-                <Text>{this.props.account.distance + ' km'}</Text>
-              </Right>
-            </ListItem>
-            <ListItem icon>
-              <Left>
-                <TreesIcon name="trees" type="Foundation" />
-              </Left>
-              <Body>
-                <Text>CO2 savings</Text>
-              </Body>
-              <Right>
-                <Text>{this.props.account.co2savings + ' kg'}</Text>
               </Right>
             </ListItem>
             <ListItem>
