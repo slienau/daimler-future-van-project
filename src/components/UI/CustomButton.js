@@ -9,6 +9,7 @@ const CustomButton = props => {
     button: {
       justifyContent: 'center',
       backgroundColor: !props.disabled ? DARK_COLOR : GREY_COLOR,
+      width: props.fullWidth ? '100%' : undefined,
     },
     icon: {
       color: LIGHT_COLOR,
@@ -24,34 +25,35 @@ const CustomButton = props => {
   let text = null
   if (props.text) text = <Text style={styles.text}>{props.text}</Text>
 
-  let leftIcon = null
-  if (props.leftIcon)
-    leftIcon = <Icon name={props.leftIcon} style={styles.icon} />
+  let iconLeft = null
+  if (props.iconLeft)
+    iconLeft = <Icon name={props.iconLeft} style={styles.icon} />
 
-  let rightIcon = null
-  if (props.rightIcon)
-    rightIcon = <Icon name={props.rightIcon} style={styles.icon} />
+  let iconRight = null
+  if (props.iconRight)
+    iconRight = <Icon name={props.iconRight} style={styles.icon} />
 
   return (
     <Button
       rounded
-      iconLeft={!!props.leftIcon}
-      iconRight={!!props.rightIcon}
+      iconLeft={!!props.iconLeft}
+      iconRight={!!props.iconRight}
       {...props}
       style={[styles.button, props.style]}
       onPress={!props.disabled ? props.onPress : null}>
-      {leftIcon}
+      {iconLeft}
       {text}
-      {rightIcon}
+      {iconRight}
     </Button>
   )
 }
 
 CustomButton.propTypes = {
   disabled: PropTypes.bool,
-  leftIcon: PropTypes.string,
+  fullWidth: PropTypes.bool,
+  iconLeft: PropTypes.string,
+  iconRight: PropTypes.string,
   onPress: PropTypes.func.isRequired,
-  rightIcon: PropTypes.string,
   text: PropTypes.string,
 }
 

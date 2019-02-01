@@ -3,7 +3,6 @@ import {connect} from 'react-redux'
 import styled from 'styled-components/native'
 import {
   Body,
-  Button,
   Container,
   Content,
   Icon,
@@ -19,6 +18,7 @@ import {
 import PropTypes from 'prop-types'
 import {fetchAccountData, fetchLeaderBoardData} from '../../ducks/account'
 import {logout} from '../../lib/api'
+import CustomButton from '../../components/UI/CustomButton'
 
 const StarIcon = styled(Icon)`
   color: gold;
@@ -270,9 +270,7 @@ class Account extends React.Component {
             </ListItem>
             <ListItem>
               <Body>
-                <Button block onPress={this.logout}>
-                  <Text>Log out</Text>
-                </Button>
+                <CustomButton text="Log out" onPress={this.logout} fullWidth />
               </Body>
             </ListItem>
           </List>

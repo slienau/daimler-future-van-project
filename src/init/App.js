@@ -64,7 +64,7 @@ const MainAppStack = createStackNavigator(
       navigationOptions: ({navigation}) => ({
         header: (
           <CustomScreenHeader
-            title="Past Orders"
+            title="Order History"
             onPress={() => navigation.goBack()}
           />
         ),
