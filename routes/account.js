@@ -27,7 +27,7 @@ router.get('/', async function (req, res) {
         $group:
           {
             _id: '$accountId',
-            loyaltyPoints: { $sum: { $multiply: ['$distance', '$bonusMultiplier'] } },
+            loyaltyPoints: { $sum: '$loyaltyPoints' },
             co2savings: { $sum: '$co2savings' },
             distance: { $sum: '$distance' }
           }
