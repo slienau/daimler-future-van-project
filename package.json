@@ -30,6 +30,7 @@
     "react-native-maps-directions": "^1.6.0",
     "react-native-numeric-input": "^1.6.5",
     "react-native-popup-dialog": "^0.16.4",
+    "react-native-progress-button": "^1.0.3",
     "react-native-swiper": "^1.5.14",
     "react-native-vector-icons": "^4.6.0",
     "react-navigation": "^3.0.2",
