@@ -1,8 +1,66 @@
 const GoogleMapsHelper = require('../GoogleMapsHelper')
+const Route = require('../models/Route.js')
 const _ = require('lodash')
 const Logger = require('./WinstonLogger').logger
 
 class VanHandlerService {
+  static async confirmVan (fromVB, toVB, van, order, passengerCount) {
+    const orderId = order._id
+    const wholeRoute = await Route.findById(order.route)
+    const vanRoute = wholeRoute.vanRoute
+    const toVBRoute = van.potentialRoute
+    van.potentialRoute = null
+
+    // van already has a route
+    if (van.nextRoutes.length > 0) {
+      van.currentlyPooling = true
+    }
+
+    let timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(toVBRoute)
+    if (!timeToVB && van.nextRoutes.length !== 0) {
+      timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0])
+      Logger.info('Took time from different route: ' + timeToVB)
+    }
+    Logger.info('Seconds to next VB: ' + timeToVB)
+    van.nextStopTime = new Date(Date.now() + (timeToVB * 1000))
+
+    // link the added next stops with the order they came from so that we can delete them if one cancels its order
+    let fromStop = {
+      vb: fromVB,
+      orderId: orderId
+    }
+    let toStop = {
+      vb: toVB,
+      orderId: orderId
+    }
+
+    // insert the two new stops at the second last position of the next stops
+    van.nextStops.splice(-1, 0, fromStop, toStop)
+
+    if (van.potentialCutOffStep != null) {
+      // cut off the current route from where the stepAhead begins
+      van.nextRoutes[0].routes[0].legs[0].steps.splice(van.potentialCutOffStep + 1)
+      van.potentialCutOffStep = null
+    } else {
+      // throw away the last route because thats the one thats changed
+      van.nextRoutes.pop()
+    }
+    // add the new two routes
+    van.nextRoutes.push(toVBRoute, vanRoute)
+
+    // add the new passengers to the list of all passengers
+    van.passengers.push({ orderId: orderId, passengerCount: passengerCount })
+
+    if (van.currentStep === 0 && !van.lastStepTime) {
+      van.lastStepTime = new Date()
+    }
+
+    Logger.info('##### CONFIRM #####')
+    Logger.info(van.nextStops)
+    Logger.info(van.nextRoutes)
+    return van
+  }
+
   static async startRide (van, orderId) {
     // if a passenger enters the van, remove the passengers start bus stop from the list of all next stops
     // if this list then contains no next stop that matches the current waiting stop, the van picked up all passengers and is ready to ride

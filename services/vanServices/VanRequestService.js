@@ -127,7 +127,11 @@ class VanRequestService {
     return null // no van found
   }
 
-  static async requestBestVan (fromVB, toVB, walkingTimeToStartVB, passengerCount, vans) {
+  static async requestBestVan (start, fromVB, toVB, passengerCount, vans) {
+    // get walking time
+    const walkingRoutToStartVB = await GoogleMapsHelper.simpleGoogleRoute(start, fromVB.location, 'walking')
+    const walkingTimeToStartVB = GoogleMapsHelper.readDurationFromGoogleResponse(walkingRoutToStartVB)
+
     let possibleVans = this.getPossibleVans(fromVB, toVB, walkingTimeToStartVB, passengerCount, vans)
     let bestVan = this.getBestVan(possibleVans, vans)
 
