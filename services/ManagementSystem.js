@@ -46,7 +46,7 @@ class ManagementSystem {
     return duration
   }
 
-  static async getPossibleVans (fromVB, toVB, walkingTimeToStartVB) {
+  static async getPossibleVans (fromVB, toVB, walkingTimeToStartVB, passengerCount) {
     const possibleVans = []
     for (let counter = 0; counter < this.numberOfVans; counter++) {
       const van = this.vans[counter]
@@ -54,6 +54,10 @@ class ManagementSystem {
       if (van.potentialRoute != null) {
         continue
       }
+
+      // check if the van has enough seats left
+      const currentPassengerCount = van.passengers.reduce((prev, curr) => prev + curr.passengerCount, 0)
+      if (currentPassengerCount + passengerCount > van.numberSeats) continue
 
       // test 2 van is not driving at all and ready to take the route
       if (van.nextRoutes.length === 0 && !van.waiting) {
@@ -139,7 +143,7 @@ class ManagementSystem {
     const walkingRoutToStartVB = await GoogleMapsHelper.simpleGoogleRoute(start, fromVB.location, 'walking')
     const walkingTimeToStartVB = GoogleMapsHelper.readDurationFromGoogleResponse(walkingRoutToStartVB)
 
-    const possibleVans = await this.getPossibleVans(fromVB, toVB, walkingTimeToStartVB)
+    const possibleVans = await this.getPossibleVans(fromVB, toVB, walkingTimeToStartVB, passengerCount)
     if (possibleVans.length === 0) {
       // error, no van found!
       return { code: 403, message: 'No van currently available please try later' }
@@ -208,6 +212,9 @@ class ManagementSystem {
     // add the new two routes
     van.nextRoutes.push(toVBRoute, vanRoute)
 
+    // add the new passengers to the list of all passengers
+    van.passengers.push({ orderId: orderId, passengerCount: passengerCount })
+
     if (van.currentStep === 0 && !van.lastStepTime) {
       van.lastStepTime = new Date()
     }
@@ -250,6 +257,7 @@ class ManagementSystem {
     // if this list then contains no next stop anymore, all passengers have left the van and its again ready to ride
     if (van.waiting) {
       let r = _.remove(van.nextStops, nextStop => nextStop.orderId.equals(order._id))
+      _.remove(van.passengers, p => p.orderId.equals(order._id))
       Logger.info('removed ' + r.length + ' stops')
       if (van.nextStops.length === 0) {
         this.resetVan(vanId)
@@ -264,9 +272,10 @@ class ManagementSystem {
     const vanId = order.vanId
     const van = this.vans[vanId - 1]
 
-    // if a passenger cancels its ride, remove all next stops of the passenger
+    // if a passenger cancels its ride, remove all next stops of the passenger and the passengers
     // van.nextRoutes needs to be updated
     _.remove(van.nextStops, nextStop => nextStop.orderId.equals(order._id))
+    _.remove(van.passengers, p => p.orderId.equals(order._id))
     const numberStops = _.uniqWith(van.nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).length
     if (van.nextStops.length === 0) {
       // if the list of next stops then is empty, the van has no order anymore and can be reset
@@ -319,7 +328,9 @@ class ManagementSystem {
         currentlyPooling: false,
         currentStep: 0,
         waiting: false,
-        waitingAt: null
+        waitingAt: null,
+        passengers: [],
+        numberSeats: 8
       }
     }
   }
@@ -337,6 +348,7 @@ class ManagementSystem {
     this.vans[vanId - 1].waiting = false
     this.vans[vanId - 1].waitingAt = null
     this.vans[vanId - 1].nextRoutes = []
+    this.vans[vanId - 1].passengers = []
   }
 
   static async updateVanLocations () {
