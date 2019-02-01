@@ -5,13 +5,14 @@ const VirtualBusStop = require('../models/VirtualBusStop.js')
 const OrderHelper = require('../services/OrderHelper')
 const ManagementSystem = require('../services/ManagementSystem.js')
 const Route = require('../models/Route.js')
+const Logger = require('../services/WinstonLogger').logger
 const geolib = require('geolib')
 
 const range = 25
 
 router.get('/status', async function (req, res) {
-  console.log('Get activeOrder status request zu user: ' + req.user._id + ' with Query: ')
-  console.log(req.query)
+  Logger.info('Get activeOrder status request zu user: ' + req.user._id + ' with Query: ')
+  Logger.info(req.query)
 
   res.setHeader('Content-Type', 'application/json')
 
@@ -28,7 +29,7 @@ router.get('/status', async function (req, res) {
 })
 
 router.get('/', async function (req, res) {
-  console.log('Get activeOrder request zu user: ' + req.user._id)
+  Logger.info('Get activeOrder request zu user: ' + req.user._id)
 
   res.setHeader('Content-Type', 'application/json')
 
@@ -46,7 +47,7 @@ router.get('/', async function (req, res) {
 
 // TODO chekc for van location instead of time
 router.put('/', async function (req, res) {
-  console.log('Put activeOrder request zu user: ' + req.user._id + ' mit Action: ' + req.body.action)
+  Logger.info('Put activeOrder request zu user: ' + req.user._id + ' mit Action: ' + req.body.action)
 
   if (!req.body.userLocation.latitude || !req.body.userLocation.longitude) res.status(400).json({ code: 400, description: 'Bad params, you need userLocation' })
 

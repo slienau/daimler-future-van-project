@@ -4,6 +4,7 @@ const Order = require('../models/Order.js')
 const VirtualBusStop = require('../models/VirtualBusStop.js')
 const OrderHelper = require('../services/OrderHelper')
 const Route = require('../models/Route.js')
+const Logger = require('../services/WinstonLogger').logger
 
 router.get('/', async function (req, res) {
   const orders = await Order.find({ 'accountId': req.user._id })
@@ -18,14 +19,14 @@ router.get('/', async function (req, res) {
       ordersObject[ord].vanEndVBS = vb2
     }
   } catch (error) {
-    console.log(error)
+    Logger.error(error)
   }
   res.json(ordersObject)
 })
 
 router.post('/', async function (req, res) {
-  console.log('Request to Post Orders with body: ')
-  console.log(req.body)
+  Logger.info('Request to Post Orders with body: ')
+  Logger.info(req.body)
 
   res.setHeader('Content-Type', 'application/json')
 
@@ -43,10 +44,11 @@ router.post('/', async function (req, res) {
   try {
     orderId = await OrderHelper.createOrder(accountId, req.body.routeId)
     if (orderId.code) {
+      Logger.info('sent' + orderId)
       return res.status(400).json(orderId)
     }
   } catch (error) {
-    console.log(error)
+    Logger.error(error)
     return res.json(error)
   }
 
@@ -58,13 +60,13 @@ router.post('/', async function (req, res) {
   }
   order.id = orderId
   order.route = await Route.findById(order.route)
-  console.log('created active order for user ' + accountId + ' with orderId: ' + orderId)
+  Logger.info('created active order for user ' + accountId + ' with orderId: ' + orderId)
   res.json(order)
 })
 
 router.put('/:orderId', async function (req, res) {
-  console.log('Put Request to Order : ' + req.query.orderId)
-  console.log('Put Request to Order : ' + req.params.orderId)
+  Logger.info('Put Request to Order with param orderId: ' + req.query.orderId)
+  Logger.info('and body' + req.params.orderId)
 
   const orderId = req.params.orderId || req.query.orderId
 

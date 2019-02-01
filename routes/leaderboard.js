@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Order = require('../models/Order.js')
 const Account = require('../models/Account.js')
+const Logger = require('../services/WinstonLogger').logger
 const AccountHelper = require('../services/AccountHelper.js')
 
 router.get('/', async function (req, res) {
@@ -43,7 +44,7 @@ router.get('/', async function (req, res) {
     }
     res.json(leaderboardWithUsernames)
   } catch (error) {
-    console.log(error)
+    Logger.error(error)
     res.status(404).json({ error: error, description: 'No items found' })
   }
 })

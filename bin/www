@@ -3,6 +3,16 @@
 /**
  * Module dependencies.
  */
+var mongoose = require('mongoose');
+const mongoDbEndpoint = process.env.NODE_ENV === 'production' ? 'mongo' : 'localhost'
+console.log(mongoDbEndpoint)
+mongoose
+  .connect(
+    `mongodb://${mongoDbEndpoint}:27017/PAS-Backend`,
+    { useNewUrlParser: true }
+  )
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => console.log(err));
 
 var app = require('../app');
 var debug = require('debug')('testproject:server');
@@ -10,17 +20,9 @@ var http = require('http');
 var AccountHelper = require('../services/AccountHelper');
 var VirtualBusStopHelper = require('../services/VirtualBusStopHelper');
 var OrderHelper = require('../services/OrderHelper');
-var mongoose = require('mongoose');
+
 var ManagementSystem = require('../services/ManagementSystem')
 
-const mongoDbEndpoint = process.env.NODE_ENV === 'production' ? 'mongo' : 'localhost'
-mongoose
-    .connect(
-        `mongodb://${mongoDbEndpoint}:27017/PAS-Backend`,
-        { useNewUrlParser: true }
-    )
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log(err));
 
 /**
  * Get port from environment and store in Express.

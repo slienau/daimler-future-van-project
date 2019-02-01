@@ -3,6 +3,7 @@ const geolib = require('geolib')
 const VirtualBusStop = require('../models/VirtualBusStop.js')
 const Route = require('../models/Route.js')
 const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
+const Logger = require('./WinstonLogger').logger
 
 class VirtualBusStopHelper {
   // Check if any users are there and if not create two static users
@@ -225,19 +226,17 @@ class VirtualBusStopHelper {
 
     routeObject.id = dbRoute._id
 
-    console.log('Created route with id: ' + dbRoute._id)
+    Logger.info('Created route with id: ' + dbRoute._id)
 
     return routeObject
   }
 
   // Returns the Virtual Busstop that is closest to the reference
   static async getClosestVB (reference) {
-    if (!reference.latitude || !reference.longitude) throw new Error('Cannot calculate distances - bad location parameters')
-
     let vbs = []
     try {
       vbs = await VirtualBusStop.find({})
-    } catch (error) { return error }
+    } catch (error) { Logger.error(error) }
 
     // Calculate distances of all Virtual Busstops from the reference
     const distances = []
@@ -247,7 +246,7 @@ class VirtualBusStopHelper {
         const distance = geolib.getDistance({ latitude: vbs[i].location.latitude, longitude: vbs[i].location.longitude }, reference)
         distances.push(distance)
       }
-    } catch (err) { console.log(err) }
+    } catch (error) { Logger.error(error) }
 
     // Get the virtual busstop that is closest
     const min = Math.min(...distances)

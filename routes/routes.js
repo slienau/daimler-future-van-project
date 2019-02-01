@@ -1,13 +1,14 @@
 const express = require('express')
 const router = express.Router()
+const Logger = require('../services/WinstonLogger').logger
 
 const ManagementSystem = require('../services/ManagementSystem')
 const VirtualBusStopHelper = require('../services/VirtualBusStopHelper')
 
 // To-do filter for parameters
 router.post('/', async function (req, res) {
-  console.log('Request to Routes with body: ')
-  console.log(req.body)
+  Logger.info('Request to Routes with body: ')
+  Logger.info(req.body)
 
   if (!req.body.start.latitude || !req.body.destination.longitude || !req.body.start.longitude || !req.body.destination.latitude) res.status(400).json({ code: 400, description: 'Bad body params' })
 
@@ -33,6 +34,7 @@ router.post('/', async function (req, res) {
   try {
     route = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, startVB, destinationVB, req.body.destination, time, van.nextStopTime, van.vanId)
   } catch (error) {
+    Logger.error(error)
     res.json(error)
   }
   if (route.code) res.status(400).json(route)

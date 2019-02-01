@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
+const Logger = require('../services/WinstonLogger').logger
 const EnvVariableService = require('../services/ConfigService.js')
 /* POST login. */
 router.get('/', function (req, res) {
@@ -17,12 +18,13 @@ router.post('/', function (req, res) {
     }
     req.login(user, { session: false }, (err) => {
       if (err) {
+        Logger.error(err)
         res.send(err)
       }
       const secret = EnvVariableService.jwtSecret()
       // generate a signed son web token with the contents of user object and return it in the response
       const token = jwt.sign({ id: user._id, username: user.username }, secret, { expiresIn: '14d' })
-      console.log('User ' + user.username + ' just logged in.')
+      Logger.info('User ' + user.username + ' just logged in.')
       return res.json({ userId: user._id, token: token })
     })
   })(req, res)
