@@ -7,6 +7,7 @@ const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
 const Loyalty = require('./Loyalty.js')
 const geolib = require('geolib')
 const Logger = require('./WinstonLogger').logger
+const _ = require('lodash')
 
 // range in meter how far the van and user can be from the vbs to still be able to start/end the ride
 const range = 25
@@ -214,6 +215,7 @@ class OrderHelper {
     const startVBSTime = order.vanEnterTime ? order.vanEnterTime : myStops[0].arrivalTime
     const endVBSTime = order.vanEnterTime ? myStops[0].arrivalTime : myStops[1].arrivalTime
 
+    const uniqueStops = _.uniqWith(nextStops, (stop1, stop2) => stop1.vb._id.equals(stop2.vb._id)).map(stop => stop.vb)
     const res = {
       vanId: order.vanId,
       userAllowedToEnter: false,
@@ -223,7 +225,9 @@ class OrderHelper {
       vanETAatStartVBS: startVBSTime,
       vanETAatDestinationVBS: endVBSTime,
       otherPassengers: otherPassengers,
-      vanLocation: actualVanLocation
+      vanLocation: actualVanLocation,
+      nextStops: uniqueStops,
+      nextRoutes: nextRoutes
     }
 
     if (!order.vanEnterTime) {
