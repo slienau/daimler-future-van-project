@@ -1,29 +1,26 @@
 import React from 'react'
-import {Button, Text, Icon} from 'native-base'
+import {StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
-import styled from 'styled-components/native'
-
-const StyledButton = styled(Button)`
-  position: absolute;
-  left: ${props => props.left || '30%'};
-  right: ${props => props.right || '30%'};
-  bottom: ${props => props.bottom || '0%'};
-  display: flex;
-  justify-content: center;
-`
+import CustomButton from '../../../components/UI/CustomButton'
 
 const BottomButton = props => {
+  const styles = StyleSheet.create({
+    button: {
+      position: 'absolute', // TODO: no absolute positioning
+      left: props.left || '30%',
+      bottom: props.bottom || '0%',
+      right: props.right || '30%',
+      display: 'flex',
+      justifyContent: 'center',
+    },
+  })
   return (
-    <StyledButton
-      left={props.left}
-      right={props.right}
-      bottom={props.bottom}
-      rounded
-      light
-      onPress={props.onPress}>
-      {props.text != null && <Text>{props.text} </Text>}
-      <Icon name={props.iconName} />
-    </StyledButton>
+    <CustomButton
+      onPress={props.onPress}
+      style={styles.button}
+      text={props.text}
+      iconRight={props.iconName}
+    />
   )
 }
 
