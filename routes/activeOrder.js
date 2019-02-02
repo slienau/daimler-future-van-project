@@ -54,14 +54,14 @@ router.put('/', async function (req, res) {
   const order = await Order.findOne({ accountId: req.user._id, active: true })
   if (!order) return res.status(404).json({ code: 404, description: 'user has no active order' })
 
+  await ManagementSystem.updateVanLocations()
+
   const orderId = order._id
 
   const virtualBusStop = await VirtualBusStop.findById(order.vanStartVBS)
   const virtualBusStopEnd = await VirtualBusStop.findById(order.vanEndVBS)
 
   let orderNew
-
-  ManagementSystem.updateVanLocations()
 
   const vanId = order.vanId
   const vanLocation = ManagementSystem.vans[vanId - 1].location
@@ -111,9 +111,9 @@ router.put('/', async function (req, res) {
       if (order.vanEnterTime) {
         return res.status(403).json({ code: 403, description: 'Cannot be canceled. Ride has already started.' })
       }
-      await Order.updateOne({ _id: orderId }, { $set: { canceled: true, vanExitTime: new Date(), active: false } })
-
       await ManagementSystem.cancelRide(order)
+
+      await Order.updateOne({ _id: orderId }, { $set: { canceled: true, vanExitTime: new Date(), active: false } })
 
       orderNew = await Order.findById(orderId)
       res.json(orderNew)
