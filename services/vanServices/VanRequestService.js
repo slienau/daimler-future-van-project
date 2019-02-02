@@ -1,6 +1,6 @@
 const GoogleMapsHelper = require('../GoogleMapsHelper')
 const _ = require('lodash')
-const Logger = require('./WinstonLogger').logger
+const Logger = require('../WinstonLogger').logger
 
 class VanRequestService {
   /*
@@ -132,7 +132,7 @@ class VanRequestService {
     const walkingRoutToStartVB = await GoogleMapsHelper.simpleGoogleRoute(start, fromVB.location, 'walking')
     const walkingTimeToStartVB = GoogleMapsHelper.readDurationFromGoogleResponse(walkingRoutToStartVB)
 
-    let possibleVans = this.getPossibleVans(fromVB, toVB, walkingTimeToStartVB, passengerCount, vans)
+    let possibleVans = await this.getPossibleVans(fromVB, toVB, walkingTimeToStartVB, passengerCount, vans)
     let bestVan = this.getBestVan(possibleVans, vans)
 
     return bestVan

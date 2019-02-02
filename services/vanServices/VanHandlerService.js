@@ -1,7 +1,7 @@
 const GoogleMapsHelper = require('../GoogleMapsHelper')
-const Route = require('../models/Route.js')
+const Route = require('../../models/Route.js')
 const _ = require('lodash')
-const Logger = require('./WinstonLogger').logger
+const Logger = require('../WinstonLogger').logger
 
 class VanHandlerService {
   static async confirmVan (fromVB, toVB, van, order, passengerCount) {

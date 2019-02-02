@@ -1,9 +1,9 @@
 const VanHandlerService = require('./VanHandlerService')
-const Route = require('../models/Route.js')
-const Order = require('../models/Order.js')
+const Route = require('../../models/Route.js')
+const Order = require('../../models/Order.js')
 const geolib = require('geolib')
 const _ = require('lodash')
-const Logger = require('./WinstonLogger').logger
+const Logger = require('../WinstonLogger').logger
 
 const tenMinutes = 10 * 60 * 1000
 
