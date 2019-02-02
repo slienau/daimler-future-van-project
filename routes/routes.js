@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Logger = require('../services/WinstonLogger').logger
+const GoogleMapsHelper = require('../services/GoogleMapsHelper')
 
 const ManagementSystem = require('../services/ManagementSystem')
 const VirtualBusStopHelper = require('../services/VirtualBusStopHelper')
@@ -21,8 +22,11 @@ router.post('/', async function (req, res) {
   // Abort if the two Virtual Busstops are the same
   if (startVB._id.equals(destinationVB._id)) return res.status(403).json({ code: 403, message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' })
 
+  const walkingRoutToStartVB = await GoogleMapsHelper.simpleGoogleRoute(req.body.start, startVB.location, 'walking')
+  const walkingTimeToStartVB = GoogleMapsHelper.readDurationFromGoogleResponse(walkingRoutToStartVB)
+
   // request a Van a find out how long it takes to the VB
-  const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, time)
+  const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, walkingTimeToStartVB)
 
   // If there is an error send error message
   if (van.code) return res.status(403).json(van)

@@ -5,11 +5,11 @@ const Logger = require('./WinstonLogger').logger
 
 class ManagementSystem {
   // Returns the van that will execute the ride
-  static async requestVan (start, fromVB, toVB, destination, time = new Date(), passengerCount = 1) {
+  static async requestVan (start, fromVB, toVB, destination, walkingTime, passengerCount = 1) {
     await this.updateVanLocations()
 
     // determine best van from all possible vans (the one with the lowest duration)
-    const bestVan = await VanRequestService.requestBestVan(start, fromVB, toVB, passengerCount, this.vans)
+    const bestVan = await VanRequestService.requestBestVan(start, fromVB, toVB, walkingTime, passengerCount, this.vans)
     if (!bestVan) {
       // error, no van found!
       return { code: 403, message: 'No van currently available please try later' }
