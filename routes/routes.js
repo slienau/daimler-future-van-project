@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Logger = require('../services/WinstonLogger').logger
 const GoogleMapsHelper = require('../services/GoogleMapsHelper')
+const Route = require('../models/Route.js')
 
 const ManagementSystem = require('../services/ManagementSystem')
 const VirtualBusStopHelper = require('../services/VirtualBusStopHelper')
@@ -11,9 +12,7 @@ router.post('/', async function (req, res) {
   Logger.info('Request to Routes with body: ')
   Logger.info(req.body)
 
-  if (!req.body.start.latitude || !req.body.destination.longitude || !req.body.start.longitude || !req.body.destination.latitude) res.status(400).json({ code: 400, description: 'Bad body params' })
-
-  const time = new Date()
+  if (!req.body.start.latitude || !req.body.destination.longitude || !req.body.start.longitude || !req.body.destination.latitude) return res.status(400).json({ code: 400, description: 'Bad body params' })
 
   // Find the virtual bus stops that a closest to the passenger
   const startVB = await VirtualBusStopHelper.getClosestVB(req.body.start)
@@ -22,19 +21,50 @@ router.post('/', async function (req, res) {
   // Abort if the two Virtual Busstops are the same
   if (startVB._id.equals(destinationVB._id)) return res.status(403).json({ code: 403, message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' })
 
-  const walkingRoutToStartVB = await GoogleMapsHelper.simpleGoogleRoute(req.body.start, startVB.location, 'walking')
-  const walkingTimeToStartVB = GoogleMapsHelper.readDurationFromGoogleResponse(walkingRoutToStartVB)
+  // Walking Route from the users location to the first VBS, duration is in seconds
+  const walkingRouteToStartVB = await GoogleMapsHelper.simpleGoogleRoute(req.body.start, startVB.location, 'walking')
+  const walkingTimeToStartVB = GoogleMapsHelper.readDurationFromGoogleResponse(walkingRouteToStartVB)
 
   // request a Van a find out how long it takes to the VB
   const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, walkingTimeToStartVB)
 
+  // Frontend cannot handle vanRoute Arrays yet so if there is multiple routes due to pooling just give the frontend the simple route connection instead
+  const vanRoute = (van.userVanRoute.length > 1) ? await GoogleMapsHelper.simpleGoogleRoute(startVB.location, destinationVB.location) : van.userVanRoute[0]
+
   // If there is an error send error message
-  if (van.code) return res.status(403).json(van)
+  if (van.code) {
+    Logger.error(van)
+    return res.status(403).json(van)
+  }
+
+  // Route from second VBS to the users destination, duration is in seconds
+  const fromVB2ToDestRoute = await GoogleMapsHelper.simpleGoogleRoute(destinationVB.location, req.body.destination, 'walking')
+  const fromVB2ToDestRouteDur = GoogleMapsHelper.readDurationFromGoogleResponse(fromVB2ToDestRoute)
 
   let suggestions = []
-  let route
 
   // Get a route for the passenger consisting of three route legs
+
+  const routeObject = {
+    userStartLocation: req.body.start,
+    userDestinationLocation: req.body.destination,
+    vanStartVBS: startVB,
+    vanEndVBS: destinationVB,
+    vanETAatStartVBS: van.rideStartTime,
+    vanETAatEndVBS: van.userArrivalAtDestVBS,
+    userETAatUserDestinationLocation: new Date(van.userArrivalAtDestVBS.getTime() + 30 * 1000 + fromVB2ToDestRouteDur * 1000),
+    toStartRoute: walkingRouteToStartVB,
+    vanRoute: vanRoute,
+    toDestinationRoute: fromVB2ToDestRoute,
+    vanId: van.vanId,
+    validUntil: new Date(Date.now() + (1000 * 60))
+  }
+
+  // Right now give only one suggestion
+  const newRoute = new Route(routeObject)
+  const dbRoute = await newRoute.save()
+  /*
+
   try {
     route = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, startVB, destinationVB, req.body.destination, time, van.nextStopTime, van.vanId)
   } catch (error) {
@@ -42,8 +72,8 @@ router.post('/', async function (req, res) {
     res.json(error)
   }
   if (route.code) res.status(400).json(route)
-
-  suggestions.push(route)
+  */
+  suggestions.push(dbRoute)
   res.json(suggestions)
 })
 
