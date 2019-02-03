@@ -120,6 +120,7 @@ class VanHandlerService {
       van.nextRoutes.push(newRoute)
       van.currentStep = 0
       van.lastStepTime = new Date()
+      van.nextStopTime = new Date(Date.now() + GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0]) * 1000)
     } else {
       // recalculate route bewteen the last two stops
       const startVB = _.nth(van.nextStops, -2).vb
@@ -129,6 +130,7 @@ class VanHandlerService {
       van.nextRoutes.pop()
       van.nextRoutes.pop()
       van.nextRoutes.push(newRoute)
+      van.nextStopTime = new Date(Date.now() + GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0]) * 1000)
     }
     Logger.info('Cancel')
     Logger.info(van.nextStops)
