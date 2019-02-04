@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "geolib": "^2.0.24",
     "lodash": "^4.17.11",
     "moment": "^2.23.0",
     "native-base": "^2.8.1",
