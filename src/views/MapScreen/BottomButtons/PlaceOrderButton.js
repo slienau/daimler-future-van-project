@@ -7,7 +7,7 @@ const PlaceOrderButton = props => {
     <ProgressButton
       buttonState="progress"
       smoothly
-      progress={props.routeExipreProgress.toFixed(0)}
+      progress={props.routeExipreProgress}
       progressColor="green"
       onPress={props.onPress}
       text="Place Order"

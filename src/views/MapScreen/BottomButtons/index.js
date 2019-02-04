@@ -20,10 +20,11 @@ import _ from 'lodash'
 
 class BottomButtons extends React.Component {
   state = {
-    routeExipreProgress: 0,
+    routeExipreProgress: 100,
+    validUntil: null,
   }
   componentDidMount() {
-    setInterval(() => this.checkRouteExpireProgress(), 1000)
+    setInterval(() => this.checkRouteExpireProgress(), 1200)
   }
 
   zoomToMarkers = () => {
@@ -61,14 +62,28 @@ class BottomButtons extends React.Component {
 
   fetchRoutes = async () => {
     await this.props.fetchRoutes()
+    const validUntil =
+      new Date(_.get(this.props.routes, '0.validUntil')).getTime() -
+      new Date().getTime()
+    this.setState({validUntil: validUntil})
   }
 
   checkRouteExpireProgress = () => {
     if (!_.get(this.props.routes, '0.validUntil')) return
-    const validUntil =
+    let currentDiff =
       new Date(_.get(this.props.routes, '0.validUntil')).getTime() -
       new Date().getTime()
-    this.setState({routeExipreProgress: (60000 - validUntil) / 600})
+    if (currentDiff <= 0) {
+      currentDiff = 0
+    }
+
+    const prog = parseInt(
+      ((currentDiff / this.state.validUntil) * 100).toFixed(0)
+    )
+    console.log('Progress: ' + prog)
+    this.setState({
+      routeExipreProgress: prog,
+    })
   }
 
   placeOrder = async () => {
