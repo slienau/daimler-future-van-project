@@ -97,7 +97,12 @@ class VanRequestService {
           [referenceWayPoint, referenceWayPointDuration, potentialCutOffStep] = this.getStepAheadOnCurrentRoute(van.vanId)
         } else if (van.nextStops.length > 1) {
           referenceWayPoint = _.nth(van.nextStops, -2).vb.location
-          referenceWayPointDuration = this.getRemainingRouteDuration(van) - GoogleMapsHelper.readDurationFromGoogleResponse(_.last(van.nextRoutes)) // TODO
+          const orderId = _.nth(van.nextStops, -2).orderId
+          // get route from orderId
+          const order = await Order.findyById(orderId)
+          const route = await Route.findyById(order.route).lean()
+          referenceWayPointDuration = route.vanETAatStartVBS
+          // referenceWayPointDuration = this.getRemainingRouteDuration(van) - GoogleMapsHelper.readDurationFromGoogleResponse(_.last(van.nextRoutes)) // TODO
         }
         if (!referenceWayPoint || !referenceWayPointDuration) continue
         Logger.info('referenceWayPoint: ' + referenceWayPoint)
@@ -112,7 +117,10 @@ class VanRequestService {
         const toEndVBDuration = GoogleMapsHelper.readDurationFromGoogleResponse(toEndVBRoute)
         const newDuration = toStartVBDuration + toEndVBDuration
 
-        // TODO check passenger walking time against timeToStartVB+vanETAAtStartVBD
+        // check passenger walking time against timeToStartVB
+        if (walkingTimeToStartVB - toStartVBDuration > threshold) {
+          continue
+        }
 
         // compare duration of new route to duration of current route
         const currentDuration = this.getRemainingRouteDuration(van)
