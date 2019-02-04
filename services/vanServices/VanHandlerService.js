@@ -122,13 +122,10 @@ class VanHandlerService {
       // if the list of next stops then is empty, the van has no order anymore and can be reset
       this.resetVan(van)
     } else if (numberStops === 1) {
-      // first remove all old/cancelled routes but the first one (which the van is currently driving)
-      van.nextRoutes.splice(1)
+      // calculatae the routes to the next stops
+      const nextStopTime = await this.recalculateRoutes(van, van.currentStep)
 
-      // now calculatae the routes two the next stops
-      await this.recalculateRoutes(van, van.currentStep)
-
-      van.nextStopTime = new Date(Date.now() + GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0]) * 1000)
+      van.nextStopTime = new Date(Date.now() + nextStopTime * 1000)
     }
     van.currentlyPooling = false
     Logger.info('Cancel')
@@ -136,14 +133,24 @@ class VanHandlerService {
     Logger.info(van.nextRoutes)
   }
 
+  // returns time to next vb in seconds
+  // TODO add waiting time to nextStopTime
   static async recalculateRoutes (van, cutOffStep) {
     let startLocation
+    let toCutOffStepDuration = 0
+    if (van.waiting) {
+      van.nextRoutes.splice(0)
+    } else {
+      van.nextRoutes.splice(1)
+    }
     if (van.nextRoutes.length > 0) {
       // if next routes left, set start location to the given current routes cutOff step
-      let endLocation = van.nextRoutes[0].routes[0].legs[0].steps[cutOffStep].end_location
+      let steps = van.nextRoutes[0].routes[0].legs[0].steps
+      let endLocation = steps[cutOffStep].end_location
       startLocation = { latitude: endLocation.lat, longitude: endLocation.lng }
       // and remove all steps after the cutOff step
-      van.nextRoutes[0].routes[0].legs[0].steps.splice(cutOffStep + 1)
+      steps.splice(cutOffStep + 1)
+      toCutOffStepDuration = steps.reduce((prev, curr) => prev + curr.duration.value, 0)
     } else {
       // if not calculate the route from the current van location
       startLocation = van.location
@@ -156,6 +163,9 @@ class VanHandlerService {
       van.nextRoutes.push(route)
       startLocation = vb.location
     }
+
+    const i = van.waiting ? 0 : 1
+    return toCutOffStepDuration + GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[i])
   }
 
   static resetVan (van) {
