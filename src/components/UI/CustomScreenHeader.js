@@ -5,6 +5,19 @@ import PropTypes from 'prop-types'
 import {DARK_COLOR, LIGHT_COLOR} from './colors'
 
 const CustomScreenHeader = props => {
+  const styles = StyleSheet.create({
+    header: {
+      backgroundColor: DARK_COLOR,
+    },
+    title: {
+      color: LIGHT_COLOR,
+      fontWeight: 'bold',
+    },
+    body: {
+      alignItems: props.onPress ? 'flex-start' : 'center',
+    },
+  })
+
   let leftContent = null
   if (props.onPress) {
     leftContent = (
@@ -19,6 +32,7 @@ const CustomScreenHeader = props => {
       </Left>
     )
   }
+
   return (
     <Header style={styles.header}>
       <StatusBar
@@ -28,22 +42,12 @@ const CustomScreenHeader = props => {
         backgroundColor="#000000"
       />
       {leftContent}
-      <Body>
+      <Body style={styles.body}>
         <Title style={styles.title}>{props.title}</Title>
       </Body>
     </Header>
   )
 }
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: DARK_COLOR,
-  },
-  title: {
-    color: LIGHT_COLOR,
-    fontWeight: 'bold',
-  },
-})
 
 CustomScreenHeader.propTypes = {
   icon: PropTypes.string,
