@@ -182,19 +182,33 @@ class OrderHelper {
     const nextStops = ManagementSystem.vans[order.vanId - 1].nextStops
     const nextRoutes = ManagementSystem.vans[order.vanId - 1].nextRoutes
 
+    // counter counts through the Virtual bus stops, while routesCouter counts through the routes
     let counter = 0
+    let routesCounter = 0
     let myStops = []
     let arrivalTimes = []
     let otherOrder, otherUser, arrivalTime
     let otherPassengers = []
+
+    // the routeCushion is necessary for the case that the first route has been cut in two at a cut-off step
+    const uniqueStopCount = _.uniqWith(nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).length
+    const routeCushion = uniqueStopCount < nextRoutes.length ? 1 : 0
 
     // iterate through next stops to get potential other passengers and find out what stops we get on and off
     for (let stop of nextStops) {
       // fill the arrival time
       if (counter === 0) {
         arrivalTimes.push(ManagementSystem.vans[order.vanId - 1].nextStopTime)
+        routesCounter++
       } else {
-        arrivalTime = new Date(arrivalTimes[counter - 1].getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(nextRoutes[counter]) * 1000 + 30 * 1000)
+        // arrivalTime is same as before if the vbs are equal
+        if (nextStops[counter].vb.equals(nextStops[counter - 1].vb)) {
+          arrivalTime = arrivalTimes[counter - 1]
+        } else {
+          // arrivalTime is freshly calculated because vbs is different than its predecessor --> new route; update routesCounter
+          arrivalTime = new Date(arrivalTimes[counter - 1].getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(nextRoutes[routesCounter + routeCushion]) * 1000 + 30 * 1000)
+          routesCounter++
+        }
         arrivalTimes.push(arrivalTime)
       }
       // check if stop belongs to me. if yes store arrivalTimes if not store userName

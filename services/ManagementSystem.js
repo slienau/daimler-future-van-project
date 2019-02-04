@@ -21,7 +21,7 @@ class ManagementSystem {
     const vanId = bestVan.vanId
     this.vans[vanId - 1].potentialRoute = bestVan.potentialNewRoute
     this.vans[vanId - 1].potentialCutOffStep = bestVan.potentialCutOffStep
-    this.vans[vanId - 1].potentialNextStops = bestVan.potentialStops
+    this.vans[vanId - 1].potentialStops = bestVan.potentialStops
 
     this.vans[vanId - 1].potentialRouteTime = new Date()
     // const timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(route)
