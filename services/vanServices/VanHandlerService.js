@@ -33,7 +33,7 @@ class VanHandlerService {
       vb: toVB,
       orderId: orderId
     }
-
+    // Check in what order route sohuld be build
     if (potentialStops.length <= 2) {
       van.nextStops.splice(-1, 0, fromStop, toStop)
       // Check at what position the two stops have to be inserted in nextStops

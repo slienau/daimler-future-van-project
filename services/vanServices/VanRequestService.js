@@ -132,7 +132,7 @@ class VanRequestService {
           vanId: van.vanId,
           potentialNewRoute: newRoutes,
           toStartVBRoute: toStartVBRoute,
-          userVanRoute: [toStartVBRoute, toEndVBRoute],
+          userVanRoute: [toEndVBRoute],
           potentialStops: potentialStops,
           rideStartTime: new Date(currentTime.getTime() + secondsToRideStart * 1000 + 30 * 1000),
           userArrivalAtDestVBS: new Date(currentTime.getTime() + secondsToRideStart * 1000 + 30 * 1000 + toEndVBDuration * 1000),
