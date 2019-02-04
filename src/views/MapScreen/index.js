@@ -128,7 +128,7 @@ class MapScreen extends React.Component {
           console.log(e)
         }
       }
-      this.updatePositionTimerId = setTimeout(fn, 5000)
+      this.updatePositionTimerId = setTimeout(fn, 1000)
     }
     fn()
   }
