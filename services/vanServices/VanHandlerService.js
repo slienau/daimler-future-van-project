@@ -1,22 +1,22 @@
 const GoogleMapsHelper = require('../GoogleMapsHelper')
-const Route = require('../../models/Route.js')
+// const Route = require('../../models/Route.js')
 const _ = require('lodash')
 const Logger = require('../WinstonLogger').logger
 
 class VanHandlerService {
   static async confirmVan (fromVB, toVB, van, order, passengerCount) {
     const orderId = order._id
-    const wholeRoute = await Route.findById(order.route)
-    const vanRoute = wholeRoute.vanRoute
-    const toVBRoute = van.potentialRoute
-    van.potentialRoute = null
+    const potentialRoutes = van.potentialRoute
+    const potentialStops = van.potentialStops
+    van.potentialRoute = []
+    van.potentialStops = []
 
     // van already has a route
     if (van.nextRoutes.length > 0) {
       van.currentlyPooling = true
     }
 
-    let timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(toVBRoute)
+    let timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(potentialRoutes[0])
     if (!timeToVB && van.nextRoutes.length !== 0) {
       timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0])
       Logger.info('Took time from different route: ' + timeToVB)
@@ -34,8 +34,18 @@ class VanHandlerService {
       orderId: orderId
     }
 
-    // insert the two new stops at the second last position of the next stops
-    van.nextStops.splice(-1, 0, fromStop, toStop)
+    if (potentialStops.length <= 2) {
+      van.nextStops.splice(-1, 0, fromStop, toStop)
+      // Check at what position the two stops have to be inserted in nextStops
+    } else if (potentialStops[potentialStops.length - 1].equals(potentialStops[potentialStops.length - 2]) || potentialStops.length <= 2) {
+      // insert the two new stops at the second last position of the next stops
+      van.nextStops.splice(-1, 0, fromStop, toStop)
+    } else if ([potentialStops.length - 1].equals(van.nextStops[van.nextStops.length - 1].vb)) {
+      van.nextStops.splice(-1, 0, fromStop, toStop)
+    } else {
+      van.nextStops.splice(-1, 0, fromStop)
+      van.nextStops.push(toStop)
+    }
 
     if (van.potentialCutOffStep != null) {
       // cut off the current route from where the stepAhead begins
@@ -46,7 +56,9 @@ class VanHandlerService {
       van.nextRoutes.pop()
     }
     // add the new two routes
-    van.nextRoutes.push(toVBRoute, vanRoute)
+    for (let index = 1; index < potentialRoutes.length; index++) {
+      van.nextRoutes.push(potentialRoutes[index])
+    }
 
     // add the new passengers to the list of all passengers
     van.passengers.push({ orderId: orderId, passengerCount: passengerCount })
@@ -83,7 +95,7 @@ class VanHandlerService {
     }
     return false
   }
-
+  // TODO van weiterfahren lassen wenn nicht letzter stop
   static async endRide (van, orderId) {
     // if a passenger leaves the van, remove the passengers end bus stop from the list of all next stops
     // if this list then contains no next stop anymore, all passengers have left the van and its again ready to ride
@@ -140,9 +152,10 @@ class VanHandlerService {
     van.lastStepTime = null
     van.nextStopTime = null
     van.nextStops = []
-    van.potentialRoute = null
+    van.potentialRoute = []
     van.potentialCutOffStep = null
     van.potentialRouteTime = null
+    van.potentialStops = []
     van.currentlyPooling = false
     van.currentStep = 0
     van.waiting = false

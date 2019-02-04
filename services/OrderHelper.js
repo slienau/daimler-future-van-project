@@ -113,7 +113,7 @@ class OrderHelper {
     if (route.validUntil < new Date(Date.now() + 1000)) return { code: 400, message: 'your route is no longer valid, please get a new route' }
 
     const vanId = route.vanId
-    const vanArrivalTime = new Date(Date.now() + ManagementSystem.vans[vanId - 1].potentialRoute.routes[0].legs[0].duration.value * 1000)
+    const vanArrivalTime = new Date(Date.now() + ManagementSystem.vans[vanId - 1].potentialRoute[0].routes[0].legs[0].duration.value * 1000)
     if (!vanArrivalTime) return { code: 400, message: 'old van route is corrupted' }
 
     await Route.updateOne({ _id: routeId }, { $set: {

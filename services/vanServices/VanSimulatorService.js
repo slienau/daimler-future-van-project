@@ -14,9 +14,10 @@ class VanSimulatorService {
     // Iterate through all vans
     for (let van of vans) {
       // check if potential is older than 10 minutes
-      if (van.potentialRoute && van.potentialRouteTime.getTime() + 60 * 1000 < currentTime.getTime()) {
+      if (van.potentialRoute.length > 0 && van.potentialRouteTime.getTime() + 60 * 1000 < currentTime.getTime()) {
         Logger.info('Deleting old potential route')
-        van.potentialRoute = null
+        van.potentialRoute = []
+        van.potentialStops = []
         van.potentialCutOffStep = null
         van.potentialRouteTime = null
       }

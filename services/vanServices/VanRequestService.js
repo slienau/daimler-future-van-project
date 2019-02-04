@@ -46,8 +46,8 @@ class VanRequestService {
     const currentTime = new Date()
 
     for (let van of vans) {
-      // Test 1 Gibt es potentialRoute --> dann gesperrt, wenn nicht eigene Route
-      if (van.potentialRoute != null) {
+      // Gibt es potentialRoute --> dann gesperrt, wenn nicht eigene Route
+      if (van.potentialRoute.length !== 0) {
         continue
       }
 
@@ -57,7 +57,7 @@ class VanRequestService {
       const currentPassengerCount = van.passengers.reduce((prev, curr) => prev + curr.passengerCount, 0)
       if (currentPassengerCount + passengerCount > van.numberSeats) continue
 
-      // test 2 van is not driving at all and ready to take the route
+      // Case: van is not driving at all and ready to take the route
       if (van.nextRoutes.length === 0) {
         // calculate duration how long the van would need to the start vb
         const toStartVBRoute = await GoogleMapsHelper.simpleGoogleRoute(van.location, fromVB.location)
@@ -72,17 +72,18 @@ class VanRequestService {
           vanId: van.vanId,
           potentialNewRoute: [toStartVBRoute, toDestVBRoute],
           userVanRoute: [toDestVBRoute],
+          potentialStops: [fromVB, toVB],
           rideStartTime: new Date(currentTime.getTime() + secondsToRideStart * 1000 + 30 * 1000),
           userArrivalAtDestVBS: new Date(currentTime.getTime() + secondsToRideStart * 1000 + 30 * 1000 + toDestVBRouteDur * 1000),
           toStartVBRoute: toStartVBRoute,
-          toStartVBDuration: GoogleMapsHelper.readDurationFromGoogleResponse(toStartVBRoute)
+          toStartVBDuration: toStartVBRouteDur
         })
         continue
       }
 
       // now checking potential pooling
 
-      const otherPasOrder = await Order.findById(van.nextStops.orderId)
+      const otherPasOrder = await Order.findById(van.nextStops[0].orderId)
       const otherPasRoute = await Route.findById(otherPasOrder.route)
 
       let referenceWayPoint, referenceWayPointDuration, potentialCutOffStep
@@ -125,12 +126,14 @@ class VanRequestService {
         }
         const newRoutes = van.nextStops.length === 1 ? [toStartVBRoute, toEndVBRoute] : [van.nextRoutes[0], toStartVBRoute, toEndVBRoute]
         const secondsToRideStart = toStartVBDuration > walkingTimeToStartVB ? toStartVBDuration : walkingTimeToStartVB
+        const potentialStops = van.nextStops.length === 1 ? [fromVB, toVB, toVB] : [van.nextStops[0].vb, fromVB, toVB, toVB]
 
         possibleVans.push({
           vanId: van.vanId,
           potentialNewRoute: newRoutes,
           toStartVBRoute: toStartVBRoute,
           userVanRoute: [toStartVBRoute, toEndVBRoute],
+          potentialStops: potentialStops,
           rideStartTime: new Date(currentTime.getTime() + secondsToRideStart * 1000 + 30 * 1000),
           userArrivalAtDestVBS: new Date(currentTime.getTime() + secondsToRideStart * 1000 + 30 * 1000 + toEndVBDuration * 1000),
           toStartVBDuration: toStartVBDuration,
@@ -164,12 +167,13 @@ class VanRequestService {
         const fromA2ToB2 = await GoogleMapsHelper.simpleGoogleRoute(van.nextStops[1].vb.location, toVB.location)
         const fromA2ToB2Dur = GoogleMapsHelper.readDurationFromGoogleResponse(fromA2ToB2)
 
-        // Check first: First delivering origPass and then newPass
+        // Check first: First delivering origPass and then newPass - check if newPass experiences max 10 min delay
         if (walkingTimeToStartVB < threshold && fromA1ToB2Dur + threshold < fromA1ToA2Dur + fromA2ToB2Dur + 30) {
           possibleVans.push({
             vanId: van.vanId,
             potentialNewRoute: [van.nextRoutes[0], van.nextRoutes[1], fromA2ToB2],
             rideStartTime: newVanStartTime,
+            potentialStops: [fromVB, fromVB, van.nextStops[1].vb, toVB],
             userArrivalAtDestVBS: new Date(newVanStartTime.getTime() + fromA1ToA2Dur * 1000 + 30 * 1000 + fromA2ToB2Dur * 1000),
             userVanRoute: [van.nextRoutes[1], fromA2ToB2],
             toStartVBDuration: (currentTime.getTime() - van.nextStopTime.getTime()) * 1000,
@@ -189,6 +193,7 @@ class VanRequestService {
             vanId: van.vanId,
             potentialNewRoute: [van.nextRoutes[0], fromA1ToB2, fromB2ToA2],
             userVanRoute: [fromA1ToB2],
+            potentialStops: [fromVB, fromVB, toVB, van.nextStops[1].vb],
             rideStartTime: newVanStartTime,
             userArrivalAtDestVBS: new Date(newVanStartTime.getTime() + fromA1ToB2Dur * 1000 + 30 * 1000 + fromB2ToA2Dur * 1000),
             toStartVBDuration: (currentTime.getTime() - van.nextStopTime.getTime()) * 1000,
@@ -207,7 +212,7 @@ class VanRequestService {
       // get next best van
       const tmpVan = possibleVans.shift()
       // make sure the van is still available
-      if (vans[tmpVan.vanId - 1].potentialRoute == null) {
+      if (vans[tmpVan.vanId - 1].potentialRoute.length === 0) {
         return tmpVan
       }
     }
