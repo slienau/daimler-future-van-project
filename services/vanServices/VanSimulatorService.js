@@ -5,7 +5,7 @@ const geolib = require('geolib')
 const _ = require('lodash')
 const Logger = require('../WinstonLogger').logger
 
-const tenMinutes = 10 * 60 * 1000
+const tenMinutes = 1 * 60 * 1000
 
 class VanSimulatorService {
   static async updateVanLocations (vans) {
@@ -146,10 +146,10 @@ class VanSimulatorService {
       const route = await Route.findById(order.route).lean()
       // set reference time based on whether passenger has started ride or not
       const referenceTime = order.vanEnterTime ? route.vanETAatEndVBS.getTime() + tenMinutes : route.vanETAatStartVBS.getTime() + tenMinutes
-      if (referenceTime.getTime() < currentTime.getTime()) {
+      if (referenceTime < currentTime.getTime()) {
         Logger.info('deactivated Order ' + oid)
         await Order.updateOne({ _id: oid }, { $set: { active: false } })
-        await VanHandlerService.cancelRide(order)
+        await VanHandlerService.cancelRide(van, oid)
         counter--
       }
     }
