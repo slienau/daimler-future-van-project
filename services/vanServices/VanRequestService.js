@@ -85,30 +85,25 @@ class VanRequestService {
 
       const otherPasOrder = await Order.findById(van.nextStops[0].orderId)
       const otherPasRoute = await Route.findById(otherPasOrder.route)
-
-      let referenceWayPoint, referenceWayPointDuration, potentialCutOffStep
       const threshold = 570 // in seconds, 10mins minus 30s for hopping on
-
-      if (walkingTimeToStartVB > threshold) {
-        // the passenger needs more than 10mins to the start vb, van is not possible
-        continue
-      }
-
-      if (van.nextStops.length === 1) {
-        // first, get the reference way point, because the van may be driving atm
-        [referenceWayPoint, referenceWayPointDuration, potentialCutOffStep] = this.getStepAheadOnCurrentRoute(van.vanId)
-      } else if (van.nextStops.length > 1) {
-        referenceWayPoint = _.nth(van.nextStops, -2).vb.location
-        referenceWayPointDuration = this.getRemainingRouteDuration(van) - GoogleMapsHelper.readDurationFromGoogleResponse(_.last(van.nextRoutes)) // TODO
-      }
-      if (!referenceWayPoint || !referenceWayPointDuration) continue
-      Logger.info('referenceWayPoint: ' + referenceWayPoint)
-      Logger.info('referenceWayPointDuration: ' + referenceWayPointDuration)
-      Logger.info('potentialCutOffStep: ' + potentialCutOffStep)
 
       // Test 2 van already has a route/order, but is not pooled yet and destination vb is equal
       // currently only allow pooling for vans that are not waiting
       if (_.last(van.nextStops).vb.equals(toVB)) {
+        let referenceWayPoint, referenceWayPointDuration, potentialCutOffStep
+
+        if (van.nextStops.length === 1) {
+        // first, get the reference way point, because the van may be driving atm
+          [referenceWayPoint, referenceWayPointDuration, potentialCutOffStep] = this.getStepAheadOnCurrentRoute(van.vanId)
+        } else if (van.nextStops.length > 1) {
+          referenceWayPoint = _.nth(van.nextStops, -2).vb.location
+          referenceWayPointDuration = this.getRemainingRouteDuration(van) - GoogleMapsHelper.readDurationFromGoogleResponse(_.last(van.nextRoutes)) // TODO
+        }
+        if (!referenceWayPoint || !referenceWayPointDuration) continue
+        Logger.info('referenceWayPoint: ' + referenceWayPoint)
+        Logger.info('referenceWayPointDuration: ' + referenceWayPointDuration)
+        Logger.info('potentialCutOffStep: ' + potentialCutOffStep)
+
         // calculate duration of the new route
         const toStartVBRoute = await GoogleMapsHelper.simpleGoogleRoute(referenceWayPoint, fromVB.location)
         const toEndVBRoute = await GoogleMapsHelper.simpleGoogleRoute(fromVB.location, toVB.location)
@@ -116,6 +111,8 @@ class VanRequestService {
         toStartVBDuration += referenceWayPointDuration // add duration of how long the van needs to the reference way point
         const toEndVBDuration = GoogleMapsHelper.readDurationFromGoogleResponse(toEndVBRoute)
         const newDuration = toStartVBDuration + toEndVBDuration
+
+        // TODO check passenger walking time against timeToStartVB+vanETAAtStartVBD
 
         // compare duration of new route to duration of current route
         const currentDuration = this.getRemainingRouteDuration(van)
@@ -132,7 +129,7 @@ class VanRequestService {
           vanId: van.vanId,
           potentialNewRoute: newRoutes,
           toStartVBRoute: toStartVBRoute,
-          userVanRoute: [toStartVBRoute, toEndVBRoute],
+          userVanRoute: [toEndVBRoute],
           potentialStops: potentialStops,
           rideStartTime: new Date(currentTime.getTime() + secondsToRideStart * 1000 + 30 * 1000),
           userArrivalAtDestVBS: new Date(currentTime.getTime() + secondsToRideStart * 1000 + 30 * 1000 + toEndVBDuration * 1000),
@@ -151,18 +148,18 @@ class VanRequestService {
         // Calculate the new Time for the van to leave at the the VBS where both passengers enter
         const origPassWalkingArrivalTime = otherPasRoute.vanETAatStartVBS
         const newPassWalkingArrivalTime = new Date(currentTime.getTime() + walkingTimeToStartVB * 1000)
-        const newVanStartTime = newPassWalkingArrivalTime > origPassWalkingArrivalTime ? newPassWalkingArrivalTime : origPassWalkingArrivalTime
+        const newVanStartTime = Math.max(newPassWalkingArrivalTime, origPassWalkingArrivalTime)
 
         const extraWaitingTimeAtVBS = Math.max(0, newPassWalkingArrivalTime.getTime() - (origPassWalkingArrivalTime.getTime() - 30 * 1000))
 
         // Route Naming Logic:
-        // origPass & newPass start VBS: A1, origPass end VBS: A2, newPass start VBS: B2,
+        // origPass & newPass start VBS: A1, origPass end VBS: A2, newPass end VBS: B2,
         const fromA1ToB2 = await GoogleMapsHelper.simpleGoogleRoute(van.nextStops[0].vb.location, toVB.location)
         const fromA1ToB2Dur = GoogleMapsHelper.readDurationFromGoogleResponse(fromA1ToB2)
 
         const fromA1ToA2Dur = GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[1])
 
-        // origPass & newPass start VBS: A1, origPass end VBS: A2, newPass start VBS: B2,
+        // origPass & newPass start VBS: A1, origPass end VBS: A2, newPass end VBS: B2,
 
         const fromA2ToB2 = await GoogleMapsHelper.simpleGoogleRoute(van.nextStops[1].vb.location, toVB.location)
         const fromA2ToB2Dur = GoogleMapsHelper.readDurationFromGoogleResponse(fromA2ToB2)
