@@ -20,7 +20,7 @@ import _ from 'lodash'
 
 class BottomButtons extends React.Component {
   state = {
-    checkRouteExpireProgress: 100,
+    expireProgress: 100,
     validUntil: null,
   }
   componentDidMount() {
@@ -80,9 +80,8 @@ class BottomButtons extends React.Component {
     const prog = parseInt(
       ((currentDiff / this.state.validUntil) * 100).toFixed(0)
     )
-    console.log('Progress: ' + prog)
     this.setState({
-      checkRouteExpireProgress: prog,
+      expireProgress: prog,
     })
   }
 
@@ -141,7 +140,7 @@ class BottomButtons extends React.Component {
           <>
             <View style={styles.placeOrderButton}>
               <PlaceOrderButton
-                routeExpireProgress={this.state.checkRouteExpireProgress}
+                routeExpireProgress={this.state.expireProgress}
                 onPress={() => this.placeOrder()}
               />
             </View>
