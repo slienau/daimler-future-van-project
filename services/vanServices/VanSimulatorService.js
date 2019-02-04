@@ -71,7 +71,8 @@ class VanSimulatorService {
           }
           // if algorithm has advanced a step, save the current time as the time of the last step and set the actual location to the step location
           if (step > van.currentStep) {
-            van.lastStepTime = new Date(van.lastStepTime.getTime() + steps[step - 1].duration.value * 1000)
+            const lastStepDurations = steps.slice(van.currentStep, step).reduce((prev, curr) => prev + curr.duration.value, 0)
+            van.lastStepTime = new Date(van.lastStepTime.getTime() + lastStepDurations * 1000)
             Logger.info('setting new step')
             van.location = {
               latitude: steps[step].start_location.lat,

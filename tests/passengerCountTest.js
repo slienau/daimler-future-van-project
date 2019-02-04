@@ -27,12 +27,12 @@ async function starttest () {
 
   const axiosInstance1 = axios.create({
     baseURL: address,
-    timeout: 60000,
+    timeout: 5000,
     headers: { 'Authorization': 'Bearer ' + credentials1.data.token }
   })
   const axiosInstance2 = axios.create({
     baseURL: address,
-    timeout: 60000,
+    timeout: 5000,
     headers: { 'Authorization': 'Bearer ' + credentials2.data.token }
   })
 

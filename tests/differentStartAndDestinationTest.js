@@ -1,21 +1,9 @@
 const axios = require('axios')
 var assert = require('assert')
 var _ = require('lodash')
+const VBS = require('./allVBS')
 
 const address = 'http://localhost:8080'
-
-const start = {
-  'latitude': 52.524722,
-  'longitude': 13.407217
-}
-const destination1 = {
-  'latitude': 52.510144,
-  'longitude': 13.387231
-}
-const destination2 = {
-  'latitude': 52.524108,
-  'longitude': 13.369007
-}
 
 // test if the vans assigned to the routes are locked and not available anymore
 async function starttest () {
@@ -25,13 +13,13 @@ async function starttest () {
 
   const axiosInstance = axios.create({
     baseURL: address,
-    timeout: 5000,
+    timeout: 60000,
     headers: { 'Authorization': 'Bearer ' + credentials.data.token }
   })
 
   const route1 = await axiosInstance.post('/routes', {
-    'start': start,
-    'destination': destination1
+    'start': VBS.kufue,
+    'destination': VBS.erp
   })
   const routeInfo1 = _.first(route1.data)
 
@@ -45,15 +33,15 @@ async function starttest () {
 
   console.log('testing second route request with different destination')
   const route2 = await axiosInstance.post('/routes', {
-    'start': start,
-    'destination': destination2
+    'start': VBS.potsdamerPl,
+    'destination': VBS.fried
   })
   const routeInfo2 = _.first(route2.data)
   assert.strictEqual(true, routeInfo2 != null, 'route null')
-  assert.strictEqual(true, routeInfo2.vanId !== routeInfo1.vanId, 'vanIds should not be equal since the two routes have a different destination')
+  assert.notStrictEqual(routeInfo2.vanId, routeInfo1.vanId, 'vanIds should not be equal since the two routes have a different destination')
 
   console.log('cancelling order')
-  const orderPut = await axiosInstance.put('/activeorder', { action: 'cancel', userLocation: start })
+  const orderPut = await axiosInstance.put('/activeorder', { action: 'cancel', userLocation: VBS.kufue })
   const orderPutInfo = _.get(orderPut, 'data')
   assert.strictEqual(true, orderPutInfo.canceled, 'order null')
 }
