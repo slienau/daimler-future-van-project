@@ -7,7 +7,7 @@ const PlaceOrderButton = props => {
     <ProgressButton
       buttonState="progress"
       smoothly
-      progress={props.routeExipreProgress}
+      progress={props.routeExpireProgress}
       progressColor="green"
       onPress={props.onPress}
       text="Place Order"
@@ -17,7 +17,7 @@ const PlaceOrderButton = props => {
 
 PlaceOrderButton.propTypes = {
   onPress: PropTypes.func,
-  routeExipreProgress: PropTypes.number,
+  routeExpireProgress: PropTypes.number,
 }
 
 export default PlaceOrderButton
