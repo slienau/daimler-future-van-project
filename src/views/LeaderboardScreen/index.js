@@ -17,8 +17,6 @@ class LeaderboardScreen extends Component {
   }
 
   render() {
-    console.log('Leaderboard')
-    console.log(this.props.leaders)
     return (
       <StyledView>
         <Container>
@@ -34,6 +32,7 @@ class LeaderboardScreen extends Component {
                     place={index}
                     loyaltyPoints={item.loyaltyPoints}
                     username={item.username}
+                    leaderStatus={item.status}
                   />
                 )}
               />
