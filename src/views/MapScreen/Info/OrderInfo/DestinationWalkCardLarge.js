@@ -11,11 +11,27 @@ import {
 } from '../StyledComponents'
 import React from 'react'
 // import {resetMapState} from '../../../../../ducks/map'
+import geolib from 'geolib'
 
 class DestinationWalkCardLarge extends React.Component {
   componentDidMount() {
     this.props.zoomToDestinationWalk()
+    const checkDestination = async () => {
+      const distance = geolib.getDistance(
+        this.props.currentUserLocation,
+        this.props.destinationLocation
+      )
+      if (distance < 10) return this.props.toMapScreen()
+      setTimeout(checkDestination, 3000)
+    }
+    checkDestination()
   }
+
+  componentWillUnmount() {
+    clearTimeout(this.exitTimerId)
+  }
+
+  exitTimerId = null
 
   render() {
     return (
@@ -61,6 +77,8 @@ class DestinationWalkCardLarge extends React.Component {
 }
 
 DestinationWalkCardLarge.propTypes = {
+  currentUserLocation: PropTypes.object,
+  destinationLocation: PropTypes.object,
   endAddress: PropTypes.string,
   toMapScreen: PropTypes.func,
   vanArrival: PropTypes.string,
