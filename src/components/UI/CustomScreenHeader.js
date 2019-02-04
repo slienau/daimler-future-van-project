@@ -1,6 +1,6 @@
 import {Body, Button, Header, Icon, Left, Title} from 'native-base'
 import React from 'react'
-import {StyleSheet} from 'react-native'
+import {StyleSheet, StatusBar} from 'react-native'
 import PropTypes from 'prop-types'
 import {DARK_COLOR, LIGHT_COLOR} from './colors'
 
@@ -10,13 +10,23 @@ const CustomScreenHeader = props => {
     leftContent = (
       <Left>
         <Button transparent>
-          <Icon name={props.icon || 'arrow-back'} onPress={props.onPress} />
+          <Icon
+            style={styles.icon}
+            name={props.icon || 'arrow-back'}
+            onPress={props.onPress}
+          />
         </Button>
       </Left>
     )
   }
   return (
     <Header style={styles.header}>
+      <StatusBar
+        style={styles.StatusBar}
+        barStyle="light-content"
+        hidden={false}
+        backgroundColor="#000000"
+      />
       {leftContent}
       <Body>
         <Title style={styles.title}>{props.title}</Title>
