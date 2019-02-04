@@ -17,6 +17,7 @@ import {Alert, StyleSheet, View} from 'react-native'
 import {Toast} from 'native-base'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
+import CustomFabWithIcon from '../../../components/UI/CustomFabWithIcon'
 
 class BottomButtons extends React.Component {
   state = {
@@ -154,10 +155,10 @@ class BottomButtons extends React.Component {
         )
       case MapState.ROUTE_ORDERED:
         return (
-          <CancelOrderButton
-            bottom="88%"
-            iconName="close"
+          <CustomFabWithIcon
+            icon="md-close"
             onPress={() => this.cancelActiveOrder()}
+            position="topLeft"
           />
         )
     }

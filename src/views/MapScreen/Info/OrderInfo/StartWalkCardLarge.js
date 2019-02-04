@@ -1,4 +1,4 @@
-import {Text, Body, Icon, Left, Right, Button} from 'native-base'
+import {Text, Body, Icon, Left, Right} from 'native-base'
 import PropTypes from 'prop-types'
 import {
   StyledCard,
@@ -9,9 +9,11 @@ import {
   ViewCentered,
   TextLarge,
   CardItemBorderBottom,
+  TextItalic,
 } from '../StyledComponents'
 import _ from 'lodash'
 import React from 'react'
+import CustomButton from '../../../../components/UI/CustomButton'
 
 class StartWalkCardLarge extends React.Component {
   componentDidMount() {
@@ -38,9 +40,14 @@ class StartWalkCardLarge extends React.Component {
           <Left>
             <Icon name="bus" />
             {/* <Body> */}
-            <Text>Van departure: {this.props.departure}</Text>
+            <Text>
+              Van departure: {this.props.departure}
+              {'\n'}
+              <TextItalic>{this.props.activeOrderStatus.message}</TextItalic>
+            </Text>
             {/* <TextGreen note>{this.props.waitingTime}</TextGreen> */}
             {/* </Body> */}
+            <Text />
           </Left>
           <Right>
             <TextGreen note>{this.props.waitingTime}</TextGreen>
@@ -54,14 +61,13 @@ class StartWalkCardLarge extends React.Component {
             </ViewCentered>
           </Body>
           <Right>
-            <Button
-              rounded
+            <CustomButton
+              text="Hop On"
+              onPress={() => this.props.onEnterVanPress()}
               disabled={
                 !_.get(this.props.activeOrderStatus, 'userAllowedToEnter')
               }
-              onPress={() => this.props.onEnterVanPress()}>
-              <Text>Hop on</Text>
-            </Button>
+            />
           </Right>
         </CardItemNoBorders>
       </StyledCard>
