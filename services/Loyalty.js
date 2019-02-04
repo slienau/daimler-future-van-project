@@ -18,6 +18,9 @@ class Loyalty {
       // Calculate the difference between van ETA at Start VBS and now in minutes
       // Subtract the walking time of the user to the Start VBS because he isn't waiting while walking to Start VBS
       waitingTime = Math.abs(Math.round((((route.vanETAatStartVBS - new Date()) % 86400000) % 3600000) / 60000) - route.toStartRoute.routes[0].legs[0].duration.value)
+      if (waitingTime > 20) {
+        waitingTime = 20
+      }
       if (waitingTime > 10) {
         longWaitingMultiplier = 1.25
       }
