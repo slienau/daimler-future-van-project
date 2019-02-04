@@ -139,9 +139,10 @@ class VanHandlerService {
   static async recalculateRoutes (van, cutOffStep) {
     let startLocation
     if (van.nextRoutes.length > 0) {
-      // if so, set start location to the current routes last step
+      // if next routes left, set start location to the given current routes cutOff step
       let endLocation = van.nextRoutes[0].routes[0].legs[0].steps[cutOffStep].end_location
       startLocation = { latitude: endLocation.lat, longitude: endLocation.lng }
+      // and remove all steps after the cutOff step
       van.nextRoutes[0].routes[0].legs[0].steps.splice(cutOffStep + 1)
     } else {
       // if not calculate the route from the current van location
