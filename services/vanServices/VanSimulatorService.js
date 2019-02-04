@@ -5,7 +5,7 @@ const geolib = require('geolib')
 const _ = require('lodash')
 const Logger = require('../WinstonLogger').logger
 
-const tenMinutes = 10 * 60 * 1000
+const tenMinutes = 1 * 60 * 1000
 
 class VanSimulatorService {
   static async updateVanLocations (vans) {
@@ -24,7 +24,7 @@ class VanSimulatorService {
 
       // Reset van if if waiting for more than 10 minutes
       if (van.waiting && van.lastStepTime.getTime() + tenMinutes < currentTime.getTime()) {
-        await this.checkForInactiveOrders(van.vanId)
+        await this.checkForInactiveOrders(van)
         continue
       }
 
@@ -100,6 +100,24 @@ class VanSimulatorService {
           // remove the current driven route (and all succeeding ones with a duration of zero)
           van.nextRoutes.shift()
           van.nextRoutes = _.dropWhile(van.nextRoutes, nextRoute => nextRoute.routes[0].legs[0].duration.value === 0)
+        } else if (currentTime.getTime() > van.nextStopTime.getTime() + 10 * 1000) {
+          Logger.info('Route time was overdue - set to waiting')
+          van.lastStepLocation = {
+            latitude: steps[steps.length - 1].end_location.lat,
+            longitude: steps[steps.length - 1].end_location.lng
+          }
+          van.location = {
+            latitude: steps[steps.length - 1].end_location.lat,
+            longitude: steps[steps.length - 1].end_location.lng
+          }
+          // if algorithm has advanced a step, save the current time as the time of the last step
+          van.lastStepTime = currentTime
+          van.currentStep = 0
+          this.wait(van)
+
+          // remove the current driven route (and all succeeding ones with a duration of zero)
+          van.nextRoutes.shift()
+          van.nextRoutes = _.dropWhile(van.nextRoutes, nextRoute => nextRoute.routes[0].legs[0].duration.value === 0)
         }
       }
     }
@@ -128,16 +146,16 @@ class VanSimulatorService {
       const order = await Order.findById(oid)
       const route = await Route.findById(order.route).lean()
       // set reference time based on whether passenger has started ride or not
-      const referenceTime = order.vanEnterTime ? route.vanETAatDestinationVBS.getTime() + tenMinutes : route.vanETAatStartVBS.getTime() + tenMinutes
+      const referenceTime = order.vanEnterTime ? route.vanETAatEndVBS.getTime() + tenMinutes : route.vanETAatStartVBS.getTime() + tenMinutes
       if (referenceTime < currentTime.getTime()) {
         Logger.info('deactivated Order ' + oid)
         await Order.updateOne({ _id: oid }, { $set: { active: false } })
-        await VanHandlerService.cancelRide(order)
+        await VanHandlerService.cancelRide(van, oid)
         counter--
       }
     }
     if (!counter) {
-      VanHandlerService.resetVan(van.vanId)
+      VanHandlerService.resetVan(van)
     }
   }
 }

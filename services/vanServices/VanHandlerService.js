@@ -122,16 +122,30 @@ class VanHandlerService {
       // if the list of next stops then is empty, the van has no order anymore and can be reset
       this.resetVan(van)
     } else if (numberStops === 1) {
-      // TODO something with steps ahead?
-      const startLocation = van.location
+      // first remove the two old/cancelled routes
+      van.nextRoutes.pop()
+      van.nextRoutes.pop()
+
+      // now check if the route has a next route left or not
+      let startLocation
+      if (van.nextRoutes.length > 0) {
+        // if so, set start location to the current routes next step
+        let endLocation = van.nextRoutes[0].routes[0].legs[0].steps[van.currentStep].end_location
+        startLocation = { latitude: endLocation.lat, longitude: endLocation.lng }
+        // and remove the rest of the steps of the current route
+        van.nextRoutes[0].routes[0].legs[0].steps.splice(van.currentStep + 1)
+      } else {
+        // if not calculate the route from the current van location
+        startLocation = van.location
+        van.currentStep = 0
+        van.lastStepTime = new Date()
+      }
       const endVB = van.nextStops[0].vb
       const newRoute = await GoogleMapsHelper.simpleGoogleRoute(startLocation, endVB.location)
-      // remove the two old/cancelled routes and add the new one
-      van.nextRoutes.pop()
-      van.nextRoutes.pop()
+
       van.nextRoutes.push(newRoute)
-      van.currentStep = 0
-      van.lastStepTime = new Date()
+
+      van.nextStopTime = new Date(Date.now() + GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0]) * 1000)
     } else {
       // recalculate route bewteen the last two stops
       const startVB = _.nth(van.nextStops, -2).vb
@@ -141,7 +155,9 @@ class VanHandlerService {
       van.nextRoutes.pop()
       van.nextRoutes.pop()
       van.nextRoutes.push(newRoute)
+      van.nextStopTime = new Date(Date.now() + GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0]) * 1000)
     }
+    van.currentlyPooling = false
     Logger.info('Cancel')
     Logger.info(van.nextStops)
     Logger.info(van.nextRoutes)
