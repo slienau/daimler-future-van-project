@@ -143,6 +143,7 @@ class Account extends React.Component {
                 </Body>
                 <Right>
                   <Thumbnail source={statusIcon} medium />
+                  <Text note>Status: Gold</Text>
                 </Right>
               </Left>
             </CardItem>
