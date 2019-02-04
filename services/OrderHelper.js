@@ -187,10 +187,9 @@ class OrderHelper {
     let arrivalTimes = []
     let otherOrder, otherUser, arrivalTime
     let otherPassengers = []
-    // iterate through next stops to get potential other passengers and find out what stops we get on and off
 
+    // iterate through next stops to get potential other passengers and find out what stops we get on and off
     for (let stop of nextStops) {
-      Logger.info('Status stops counter: ' + counter)
       // fill the arrival time
       if (counter === 0) {
         arrivalTimes.push(ManagementSystem.vans[order.vanId - 1].nextStopTime)
@@ -198,15 +197,17 @@ class OrderHelper {
         arrivalTime = new Date(arrivalTimes[counter - 1].getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(nextRoutes[counter]) * 1000 + 30 * 1000)
         arrivalTimes.push(arrivalTime)
       }
-      // check if stop belongs to me
+      // check if stop belongs to me. if yes store arrivalTimes if not store userName
       Logger.info(orderId.equals(stop.orderId))
       if (orderId.equals(stop.orderId)) {
         Logger.info(arrivalTimes[counter])
-        myStops.push({ stop: stop, index: counter, arrivalTime: arrivalTimes[counter] })
+        myStops.push({ index: counter, arrivalTime: arrivalTimes[counter] })
       } else {
         otherOrder = await Order.findById(stop.orderId).lean()
         otherUser = await Account.findById(otherOrder.accountId).lean()
-        otherPassengers.push(otherUser.username)
+        if (!_.includes(otherPassengers, otherUser.username)) {
+          otherPassengers.push(otherUser.username)
+        }
       }
       counter++
     }

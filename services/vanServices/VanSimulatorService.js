@@ -99,6 +99,24 @@ class VanSimulatorService {
           // remove the current driven route (and all succeeding ones with a duration of zero)
           van.nextRoutes.shift()
           van.nextRoutes = _.dropWhile(van.nextRoutes, nextRoute => nextRoute.routes[0].legs[0].duration.value === 0)
+        } else if (currentTime.getTime() > van.nextStopTime.getTime() + 10 * 1000) {
+          Logger.info('Route time was overdue - set to waiting')
+          van.lastStepLocation = {
+            latitude: steps[steps.length - 1].end_location.lat,
+            longitude: steps[steps.length - 1].end_location.lng
+          }
+          van.location = {
+            latitude: steps[steps.length - 1].end_location.lat,
+            longitude: steps[steps.length - 1].end_location.lng
+          }
+          // if algorithm has advanced a step, save the current time as the time of the last step
+          van.lastStepTime = currentTime
+          van.currentStep = 0
+          this.wait(van)
+
+          // remove the current driven route (and all succeeding ones with a duration of zero)
+          van.nextRoutes.shift()
+          van.nextRoutes = _.dropWhile(van.nextRoutes, nextRoute => nextRoute.routes[0].legs[0].duration.value === 0)
         }
       }
     }
@@ -126,7 +144,9 @@ class VanSimulatorService {
     for (let oid of orderIds) {
       const order = await Order.findById(oid)
       const route = await Route.findById(order.route).lean()
-      if (route.vanETAatStartVBS.getTime() + tenMinutes < currentTime.getTime()) {
+      // set reference time based on whether passenger has started ride or not
+      const referenceTime = order.vanEnterTime ? route.vanETAatEndVBS.getTime() + tenMinutes : route.vanETAatStartVBS.getTime() + tenMinutes
+      if (referenceTime.getTime() < currentTime.getTime()) {
         Logger.info('deactivated Order ' + oid)
         await Order.updateOne({ _id: oid }, { $set: { active: false } })
         await VanHandlerService.cancelRide(order)
