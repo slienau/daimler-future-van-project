@@ -168,7 +168,7 @@ BottomButtons.propTypes = {
   mapState: PropTypes.string,
   placeOrder: PropTypes.func,
   resetMapState: PropTypes.func,
-  routes: PropTypes.object,
+  routes: PropTypes.array,
   setVisibleCoordinates: PropTypes.func,
   toSearchView: PropTypes.func,
   userDestinationLocation: PropTypes.object,
