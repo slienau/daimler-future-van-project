@@ -12,6 +12,7 @@ router.post('/', async function (req, res) {
 
   if (!req.body.start.latitude || !req.body.destination.longitude || !req.body.start.longitude || !req.body.destination.latitude) res.status(400).json({ code: 400, description: 'Bad body params' })
 
+  const passengerCount = req.body.passengers || 1
   const time = new Date()
 
   // Find the virtual bus stops that a closest to the passenger
@@ -22,17 +23,17 @@ router.post('/', async function (req, res) {
   if (startVB._id.equals(destinationVB._id)) return res.status(403).json({ code: 403, message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' })
 
   // request a Van a find out how long it takes to the VB
-  const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, time)
+  const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, time, passengerCount)
 
   // If there is an error send error message
   if (van.code) return res.status(403).json(van)
 
   let suggestions = []
   let route
-
+  // TODO passengerCount in new routes version in DB saven
   // Get a route for the passenger consisting of three route legs
   try {
-    route = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, startVB, destinationVB, req.body.destination, time, van.nextStopTime, van.vanId)
+    route = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, startVB, destinationVB, req.body.destination, time, van.nextStopTime, van.vanId, passengerCount)
   } catch (error) {
     Logger.error(error)
     res.json(error)

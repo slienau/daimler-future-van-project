@@ -66,6 +66,10 @@ const RouteSchema = new Schema({
   validUntil: {
     type: Date,
     required: true
+  },
+  passengerCount: {
+    type: Number,
+    required: false
   }
 }
 )
