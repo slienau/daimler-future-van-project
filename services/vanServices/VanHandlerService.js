@@ -37,10 +37,10 @@ class VanHandlerService {
     if (potentialStops.length <= 2) {
       van.nextStops.splice(-1, 0, fromStop, toStop)
       // Check at what position the two stops have to be inserted in nextStops
-    } else if (potentialStops[potentialStops.length - 1].equals(potentialStops[potentialStops.length - 2]) || potentialStops.length <= 2) {
+    } else if (_.nth(potentialStops, -1).equals(_.nth(potentialStops, -2))) {
       // insert the two new stops at the second last position of the next stops
       van.nextStops.splice(-1, 0, fromStop, toStop)
-    } else if ([potentialStops.length - 1].equals(van.nextStops[van.nextStops.length - 1].vb)) {
+    } else if (_.last(potentialStops).equals(_.last(van.nextStops).vb)) {
       van.nextStops.splice(-1, 0, fromStop, toStop)
     } else {
       van.nextStops.splice(-1, 0, fromStop)
@@ -122,45 +122,40 @@ class VanHandlerService {
       // if the list of next stops then is empty, the van has no order anymore and can be reset
       this.resetVan(van)
     } else if (numberStops === 1) {
-      // first remove the two old/cancelled routes
-      van.nextRoutes.pop()
-      van.nextRoutes.pop()
+      // first remove all old/cancelled routes but the first one (which the van is currently driving)
+      van.nextRoutes.splice(1)
+      // and remove the rest of the steps of the current route
+      van.nextRoutes[0].routes[0].legs[0].steps.splice(van.currentStep + 1)
 
-      // now check if the route has a next route left or not
-      let startLocation
-      if (van.nextRoutes.length > 0) {
-        // if so, set start location to the current routes next step
-        let endLocation = van.nextRoutes[0].routes[0].legs[0].steps[van.currentStep].end_location
-        startLocation = { latitude: endLocation.lat, longitude: endLocation.lng }
-        // and remove the rest of the steps of the current route
-        van.nextRoutes[0].routes[0].legs[0].steps.splice(van.currentStep + 1)
-      } else {
-        // if not calculate the route from the current van location
-        startLocation = van.location
-        van.currentStep = 0
-        van.lastStepTime = new Date()
-      }
-      const endVB = van.nextStops[0].vb
-      const newRoute = await GoogleMapsHelper.simpleGoogleRoute(startLocation, endVB.location)
+      // now calculatae the routes two the next stops
+      await this.recalculateRoutes(van)
 
-      van.nextRoutes.push(newRoute)
-
-      van.nextStopTime = new Date(Date.now() + GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0]) * 1000)
-    } else {
-      // recalculate route bewteen the last two stops
-      const startVB = _.nth(van.nextStops, -2).vb
-      const endVB = _.nth(van.nextStops, -1).vb
-      const newRoute = await GoogleMapsHelper.simpleGoogleRoute(startVB.location, endVB.location)
-      // remove the two old/cancelled routes and add the new one
-      van.nextRoutes.pop()
-      van.nextRoutes.pop()
-      van.nextRoutes.push(newRoute)
       van.nextStopTime = new Date(Date.now() + GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0]) * 1000)
     }
     van.currentlyPooling = false
     Logger.info('Cancel')
     Logger.info(van.nextStops)
     Logger.info(van.nextRoutes)
+  }
+
+  static async recalculateRoutes (van) {
+    let startLocation
+    if (van.nextRoutes.length > 0) {
+      // if so, set start location to the current routes last step
+      let endLocation = _.last(van.nextRoutes[0].routes[0].legs[0].steps).end_location
+      startLocation = { latitude: endLocation.lat, longitude: endLocation.lng }
+    } else {
+      // if not calculate the route from the current van location
+      startLocation = van.location
+      van.currentStep = 0
+      van.lastStepTime = new Date()
+    }
+    let nextVBs = _.uniqWith(van.nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).map(stop => stop.vb)
+    for (let vb of nextVBs) {
+      const route = await GoogleMapsHelper.simpleGoogleRoute(startLocation, vb.location)
+      van.nextRoutes.push(route)
+      startLocation = vb.location
+    }
   }
 
   static resetVan (van) {
