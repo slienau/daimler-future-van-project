@@ -1,6 +1,11 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import styled from 'styled-components/native'
+import goldStatus from '../LeaderboardScreen/assets/gold.png'
+import silverStatus from '../LeaderboardScreen/assets/silver.png'
+import bronzeStatus from '../LeaderboardScreen/assets/bronze.png'
+import _ from 'lodash'
+
 import {
   Body,
   Container,
@@ -51,6 +56,7 @@ class Account extends React.Component {
     avatarVisible: false,
     loading: false,
     error: false,
+    status: 'bronze',
   }
 
   componentDidMount() {
@@ -87,6 +93,13 @@ class Account extends React.Component {
 
     try {
       await this.props.onFetchLeaderBoardData()
+      const userLeader = _.filter(this.props.account.leaders, [
+        'username',
+        this.props.account.username,
+      ])
+      this.setState({
+        status: userLeader[0].status,
+      })
     } catch (error) {
       alert('Something went wrong while fetching LeaderBoard Data')
       console.log(error)
@@ -108,6 +121,15 @@ class Account extends React.Component {
   render() {
     const uri =
       'https://www.thehindu.com/sci-tech/technology/internet/article17759222.ece/alternates/FREE_660/02th-egg-person'
+
+    let statusIcon = null
+    if (this.state.status === 'gold') {
+      statusIcon = goldStatus
+    } else if (this.state.status === 'silver') {
+      statusIcon = silverStatus
+    } else {
+      statusIcon = bronzeStatus
+    }
     return (
       <Container>
         <Content>
@@ -119,6 +141,9 @@ class Account extends React.Component {
                   <Text>{this.props.account.username}</Text>
                   <Text note>{this.props.account.email}</Text>
                 </Body>
+                <Right>
+                  <Thumbnail source={statusIcon} medium />
+                </Right>
               </Left>
             </CardItem>
           </Card>
