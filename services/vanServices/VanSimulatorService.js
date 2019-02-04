@@ -23,7 +23,7 @@ class VanSimulatorService {
 
       // Reset van if if waiting for more than 10 minutes
       if (van.waiting && van.lastStepTime.getTime() + tenMinutes < currentTime.getTime()) {
-        await this.checkForInactiveOrders(van.vanId)
+        await this.checkForInactiveOrders(van)
         continue
       }
 
@@ -154,7 +154,7 @@ class VanSimulatorService {
       }
     }
     if (!counter) {
-      VanHandlerService.resetVan(van.vanId)
+      VanHandlerService.resetVan(van)
     }
   }
 }

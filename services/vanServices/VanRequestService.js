@@ -76,7 +76,7 @@ class VanRequestService {
 
         if (van.nextStops.length === 1) {
           // first, get the reference way point, because the van may be driving atm
-          [referenceWayPoint, referenceWayPointDuration, potentialCutOffStep] = this.getStepAheadOnCurrentRoute(van.vanId)
+          [referenceWayPoint, referenceWayPointDuration, potentialCutOffStep] = this.getStepAheadOnCurrentRoute(van)
         } else if (van.nextStops.length > 1) {
           referenceWayPoint = _.nth(van.nextStops, -2).vb.location
           referenceWayPointDuration = this.getRemainingRouteDuration(van) - GoogleMapsHelper.readDurationFromGoogleResponse(_.last(van.nextRoutes)) // TODO
