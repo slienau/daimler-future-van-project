@@ -12,7 +12,7 @@ const OrderInfo = props => {
   const parseDeparture = () => {
     if (!props.routes || !props.routes.length) return
 
-    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
+    const departure = _.get(props.routes, '0.vanETAatStartVBS')
     const date = moment(departure)
     return date.format('HH:mm')
   }
@@ -20,7 +20,7 @@ const OrderInfo = props => {
   const parseVanArrival = () => {
     if (!props.routes || !props.routes.length) return
 
-    const arrival = _.get(props.routes[0], 'vanETAatEndVBS')
+    const arrival = _.get(props.routes, '0.vanETAatEndVBS')
     const date = moment(arrival)
     return date.format('HH:mm')
   }
@@ -98,18 +98,25 @@ const OrderInfo = props => {
       visibleCard = (
         <DestinationWalkCardLarge
           toMapScreen={props.toMapScreen}
-          walkingDuration={
-            props.routes[0].toDestinationRoute.routes[0].legs[0].duration.text
-          }
-          walkingDistance={
-            props.routes[0].toDestinationRoute.routes[0].legs[0].distance.text
-          }
+          walkingDuration={_.get(
+            props.routes,
+            '0.toDestinationRoute.routes.0.legs.0.duration.text'
+          )}
+          walkingDistance={_.get(
+            props.routes,
+            '0.toDestinationRoute.routes.0.legs.0.distance.text'
+          )}
           vanArrival={parseVanArrival()}
           endAddress={_.get(
-            props.routes[0].toDestinationRoute.routes[0].legs[0],
-            'end_address'
+            props.routes,
+            '0.toDestinationRoute.routes.0.legs.0.end_address'
           )}
           vanId={_.get(props.activeOrder, 'vanId')}
+          currentUserLocation={props.currentUserLocation}
+          destinationLocation={_.get(
+            props.routes,
+            '0.toDestinationRoute.routes.0.legs.0.end_location'
+          )}
           zoomToDestinationWalk={zoomToDestinationWalk}
         />
       )
@@ -123,6 +130,7 @@ OrderInfo.propTypes = {
   activeOrder: PropTypes.object,
   activeOrderStatus: PropTypes.object,
   currentState: PropTypes.string,
+  currentUserLocation: PropTypes.object,
   mapState: PropTypes.string,
   onEnterVanPress: PropTypes.func,
   routes: PropTypes.array,
@@ -133,6 +141,7 @@ OrderInfo.propTypes = {
 export default connect(
   state => ({
     routes: state.map.routes,
+    currentUserLocation: state.map.currentUserLocation,
     mapState: state.map.mapState,
     activeOrder: state.orders.activeOrder,
     activeOrderStatus: state.orders.activeOrderStatus,
