@@ -46,16 +46,17 @@ class VanHandlerService {
       van.nextStops.splice(-1, 0, fromStop)
       van.nextStops.push(toStop)
     }
-    van.nextRoutes.splice(1)
+    let timeToNextStop
 
     if (van.potentialCutOffStep != null) {
       // cut off the current route from where the stepAhead begins
-      await this.recalculateRoutes(van, van.potentialCutOffStep)
+      timeToNextStop = await this.recalculateRoutes(van, van.potentialCutOffStep)
       van.potentialCutOffStep = null
     } else {
       // throw away the last route because thats the one thats changed
-      await this.recalculateRoutes(van, van.currentStep)
+      timeToNextStop = await this.recalculateRoutes(van, van.currentStep)
     }
+    van.nextStopTime = new Date(Date.now() + timeToNextStop * 1000)
     // add the new two routes
     for (let index = 1; index < potentialRoutes.length; index++) {
       van.nextRoutes.push(potentialRoutes[index])
