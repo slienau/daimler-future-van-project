@@ -16,8 +16,8 @@ const stopVB1 = {
   'longitude': 13.332151
 }
 const stopVB2 = {
-  'latitude': 52.510144,
-  'longitude': 13.387231
+  'latitude': 52.511135,
+  'longitude': 13.320412
 }
 
 // test if the vans assigned to the routes are locked and not available anymore
@@ -30,18 +30,18 @@ async function starttest () {
 
   const axiosInstance1 = axios.create({
     baseURL: address,
-    timeout: 30000,
+    timeout: 500000,
     headers: { 'Authorization': 'Bearer ' + credentials1.data.token }
   })
   const axiosInstance2 = axios.create({
     baseURL: address,
-    timeout: 5000,
+    timeout: 500000,
     headers: { 'Authorization': 'Bearer ' + credentials2.data.token }
   })
 
   const route1 = await axiosInstance1.post('/routes', {
     'start': startVB,
-    'destination': stopVB1
+    'destination': stopVB2
   })
   const routeInfo1 = _.first(route1.data)
 
@@ -60,7 +60,7 @@ async function starttest () {
   console.log('testing second route request with same destination')
   const route2 = await axiosInstance2.post('/routes', {
     'start': startVB,
-    'destination': stopVB2
+    'destination': stopVB1
   })
   const routeInfo2 = _.first(route2.data)
   assert.strictEqual(true, routeInfo2 != null, 'route2 null')
@@ -73,52 +73,63 @@ async function starttest () {
   assert.strictEqual(orderInfo2.vanStartVBS, orderInfo1.vanStartVBS, 'order vbs not equal')
   console.log(orderInfo2)
 
-  /*
-  let started = false
+  let started1 = false
+  let started2 = false
   let ended = false
-  while (!ended) {
+  while (!started1 && !started2) {
     await sleep(1000 * 10)
 
-    let status1 = await axiosInstance1.get('/activeorderstatus')
-    let status2 = await axiosInstance2.get('/activeorderstatus')
+    let status1 = await axiosInstance1.get(`/activeorder/status?passengerLatitude=${routeInfo1.vanStartVBS.location.latitude}&passengerLongitude=${routeInfo1.vanStartVBS.location.longitude}`)
+    let status2 = await axiosInstance2.get(`/activeorder/status?passengerLatitude=${routeInfo2.vanStartVBS.location.latitude}&passengerLongitude=${routeInfo1.vanStartVBS.location.longitude}`)
 
     console.log(status1.data)
     console.log(status2.data)
     console.log('----------------------------')
-
+    let res
     if (status1.data.userAllowedToEnter) {
-      let res = await axiosInstance1.put('/activeorder', {
+      res = await axiosInstance1.put('/activeorder', {
         action: 'startride',
-        userLocation: orderInfo1.route.vanStartVBS.location
+        userLocation: routeInfo1.vanStartVBS.location
       })
+      if (res.data.vanEnterTime) started1 = true
       console.log('start time (1):', res.data.startTime)
     }
     if (status2.data.userAllowedToEnter) {
       res = await axiosInstance2.put('/activeorder', {
         action: 'startride',
-        userLocation: orderInfo2.route.vanStartVBS.location
+        userLocation: routeInfo2.vanStartVBS.location
       })
-      started = true
+      if (res.data.vanEnterTime) started2 = true
       console.log('start time (2):', res.data.startTime)
     }
+  }
+  while (!ended) {
+    await sleep(1000 * 10)
+
+    let status1 = await axiosInstance1.get(`/activeorder/status?passengerLatitude=${routeInfo1.vanEndVBS.location.latitude}&passengerLongitude=${routeInfo1.vanEndVBS.location.longitude}`)
+    let status2 = await axiosInstance2.get(`/activeorder/status?passengerLatitude=${routeInfo2.vanEndVBS.location.latitude}&passengerLongitude=${routeInfo1.vanEndVBS.location.longitude}`)
+
+    console.log(status1.data)
+    console.log(status2.data)
+    console.log('----------------------------')
     if (status1.data.userAllowedToExit) {
       await axiosInstance1.put('/activeorder', {
         action: 'endride',
-        userLocation: orderInfo1.route.vanEndVBS.location
+        userLocation: routeInfo1.vanEndVBS.location
       })
       console.log('ride ended (1)')
     }
     if (status2.data.userAllowedToExit) {
       await axiosInstance2.put('/activeorder', {
         action: 'endride',
-        userLocation: orderInfo2.route.vanEndVBS.location
+        userLocation: routeInfo2.vanEndVBS.location
       })
       console.log('ride ended (1)')
+      ended = true
     }
 
     console.log('rides ended')
   }
-  */
 }
 
 starttest().catch(e => {

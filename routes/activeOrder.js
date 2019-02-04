@@ -18,7 +18,7 @@ router.get('/status', async function (req, res) {
 
   if (!req.query.passengerLatitude || !req.query.passengerLongitude) return res.status(400).json({ code: 400, description: 'Bad params, you need passengerLongitude and passengerLatitude' })
 
-  ManagementSystem.updateVanLocations()
+  await ManagementSystem.updateVanLocations()
   const order = await Order.findOne({ accountId: req.user._id, active: true })
 
   if (!order) return res.status(404).json({ code: 404, description: 'No active order' })
@@ -51,10 +51,10 @@ router.put('/', async function (req, res) {
 
   if (!req.body.userLocation.latitude || !req.body.userLocation.longitude) res.status(400).json({ code: 400, description: 'Bad params, you need userLocation' })
 
+  await ManagementSystem.updateVanLocations()
+
   const order = await Order.findOne({ accountId: req.user._id, active: true })
   if (!order) return res.status(404).json({ code: 404, description: 'user has no active order' })
-
-  await ManagementSystem.updateVanLocations()
 
   const orderId = order._id
 

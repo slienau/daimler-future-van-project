@@ -57,10 +57,6 @@ class VanHandlerService {
       timeToNextStop = await this.recalculateRoutes(van, van.currentStep)
     }
     van.nextStopTime = new Date(Date.now() + timeToNextStop * 1000)
-    // add the new two routes
-    for (let index = 1; index < potentialRoutes.length; index++) {
-      van.nextRoutes.push(potentialRoutes[index])
-    }
 
     // add the new passengers to the list of all passengers
     van.passengers.push({ orderId: orderId, passengerCount: passengerCount })

@@ -99,8 +99,8 @@ class VanRequestService {
           referenceWayPoint = _.nth(van.nextStops, -2).vb.location
           const orderId = _.nth(van.nextStops, -2).orderId
           // get route from orderId
-          const order = await Order.findyById(orderId)
-          const route = await Route.findyById(order.route).lean()
+          const order = await Order.findById(orderId)
+          const route = await Route.findById(order.route).lean()
           referenceWayPointDuration = route.vanETAatStartVBS
           // referenceWayPointDuration = this.getRemainingRouteDuration(van) - GoogleMapsHelper.readDurationFromGoogleResponse(_.last(van.nextRoutes)) // TODO
         }
@@ -156,7 +156,8 @@ class VanRequestService {
         // Calculate the new Time for the van to leave at the the VBS where both passengers enter
         const origPassWalkingArrivalTime = otherPasRoute.vanETAatStartVBS
         const newPassWalkingArrivalTime = new Date(currentTime.getTime() + walkingTimeToStartVB * 1000)
-        const newVanStartTime = Math.max(newPassWalkingArrivalTime, origPassWalkingArrivalTime)
+
+        const newVanStartTime = newPassWalkingArrivalTime > origPassWalkingArrivalTime ? newPassWalkingArrivalTime : origPassWalkingArrivalTime
 
         const extraWaitingTimeAtVBS = Math.max(0, newPassWalkingArrivalTime.getTime() - (origPassWalkingArrivalTime.getTime() - 30 * 1000))
 
