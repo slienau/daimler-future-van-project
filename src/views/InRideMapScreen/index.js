@@ -24,7 +24,7 @@ const InRideMapScreen = props => {
         showsUserLocation
         showsMyLocationButton={false}
         initialRegion={mapRegion}>
-        <Routes hideStart />
+        <Routes />
         <MapMarkers />
       </StyledMapView>
     </Container>
