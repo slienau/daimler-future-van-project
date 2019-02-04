@@ -124,11 +124,9 @@ class VanHandlerService {
     } else if (numberStops === 1) {
       // first remove all old/cancelled routes but the first one (which the van is currently driving)
       van.nextRoutes.splice(1)
-      // and remove the rest of the steps of the current route
-      van.nextRoutes[0].routes[0].legs[0].steps.splice(van.currentStep + 1)
 
       // now calculatae the routes two the next stops
-      await this.recalculateRoutes(van)
+      await this.recalculateRoutes(van, van.currentStep)
 
       van.nextStopTime = new Date(Date.now() + GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0]) * 1000)
     }
@@ -138,12 +136,13 @@ class VanHandlerService {
     Logger.info(van.nextRoutes)
   }
 
-  static async recalculateRoutes (van) {
+  static async recalculateRoutes (van, cutOffStep) {
     let startLocation
     if (van.nextRoutes.length > 0) {
       // if so, set start location to the current routes last step
-      let endLocation = _.last(van.nextRoutes[0].routes[0].legs[0].steps).end_location
+      let endLocation = van.nextRoutes[0].routes[0].legs[0].steps[cutOffStep].end_location
       startLocation = { latitude: endLocation.lat, longitude: endLocation.lng }
+      van.nextRoutes[0].routes[0].legs[0].steps.splice(cutOffStep + 1)
     } else {
       // if not calculate the route from the current van location
       startLocation = van.location
