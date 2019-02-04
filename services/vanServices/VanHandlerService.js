@@ -115,11 +115,11 @@ class VanHandlerService {
     // van.nextRoutes needs to be updated
     _.remove(van.nextStops, nextStop => nextStop.orderId.equals(orderId))
     _.remove(van.passengers, p => p.orderId.equals(orderId))
-    const numberStops = _.uniqWith(van.nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).length
+    // const numberStops = _.uniqWith(van.nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).length
     if (van.nextStops.length === 0) {
       // if the list of next stops then is empty, the van has no order anymore and can be reset
       this.resetVan(van)
-    } else if (numberStops === 1) {
+    } else {
       // calculatae the routes to the next stops
       const nextStopTime = await this.recalculateRoutes(van, van.currentStep)
 
@@ -156,6 +156,7 @@ class VanHandlerService {
       van.lastStepTime = new Date()
     }
     let nextVBs = _.uniqWith(van.nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).map(stop => stop.vb)
+    console.log(van.nextStops.length, '>!<', nextVBs.length)
     for (let vb of nextVBs) {
       const route = await GoogleMapsHelper.simpleGoogleRoute(startLocation, vb.location)
       van.nextRoutes.push(route)
