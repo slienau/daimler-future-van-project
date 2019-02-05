@@ -41,22 +41,6 @@ const MainRideScreen = props => {
             <Row>
               <Col>
                 <VanCard
-                  header="Games"
-                  icon="game-controller-b"
-                  onPress={() => props.navigation.push('Games')}
-                />
-              </Col>
-              <Col>
-                <VanCard
-                  header="Sights"
-                  icon="globe"
-                  onPress={() => props.navigation.push('Sights')}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <VanCard
                   header="Fun Facts"
                   description={''}
                   icon="star"
