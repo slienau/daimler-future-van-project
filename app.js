@@ -3,6 +3,7 @@ const createError = require('http-errors')
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 const WinstonLogger = require('./services/WinstonLogger')
 const mung = require('express-mung')
@@ -46,6 +47,8 @@ app.use(cookieParser())
 // app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(WinstonLogger.expressLogger)
+
+app.use(cors({ origin: 'http://localhost:5000' }))
 
 app.use('/login', auth)
 app.use('/', jwtlogin, indexRouter)
