@@ -19,10 +19,12 @@ class RemainingTimeMessage extends React.Component {
         toValue: 0.5,
         duration: 500,
         delay: 700,
+        useNativeDriver: true,
       }),
       Animated.timing(this.state.animation, {
         toValue: 1,
         duration: 500,
+        useNativeDriver: true,
       }),
     ]).start(() => {
       this.cycleAnimation()

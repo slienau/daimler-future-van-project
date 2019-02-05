@@ -43,7 +43,9 @@ class StartWalkCardLarge extends React.Component {
             <Text>
               Van departure: {this.props.departure}
               {'\n'}
-              <TextItalic>{this.props.activeOrderStatus.message}</TextItalic>
+              <TextItalic>
+                {_.get(this.props.activeOrderStatus, 'message')}
+              </TextItalic>
             </Text>
             {/* <TextGreen note>{this.props.waitingTime}</TextGreen> */}
             {/* </Body> */}

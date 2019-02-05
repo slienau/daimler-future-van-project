@@ -1,9 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
-import {Col, Row, Grid} from 'react-native-easy-grid'
 import {Container, Content} from 'native-base'
 import {changeMapState, MapState} from '../../ducks/map'
-import VanCard from './components/VanCard'
 import JourneyOverview from './components/JourneyOverview'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
@@ -14,6 +12,7 @@ import backgroundImage from './assets/background_ridescreen.jpg'
 import CustomButton from '../../components/UI/CustomButton'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
 import RemainingTimeMessage from './components/RemainingTimeMessage'
+import CustomCardButtonWithIcon from '../../components/UI/CustomCardButtonWithIcon'
 
 const RideScreen = props => {
   const handleExitButtonClick = async () => {
@@ -66,25 +65,18 @@ const RideScreen = props => {
           <View style={styles.journeyOverviewContainer}>
             <JourneyOverview />
           </View>
-          <Grid>
-            <Row>
-              <Col>
-                <VanCard
-                  header="Fun Facts"
-                  description={''}
-                  icon="star"
-                  onPress={() => props.navigation.push('Funfacts')}
-                />
-              </Col>
-              <Col>
-                <VanCard
-                  header="Map"
-                  icon="map"
-                  onPress={() => props.navigation.push('InRideMap')}
-                />
-              </Col>
-            </Row>
-          </Grid>
+          <View style={styles.cardButtonsContainer}>
+            <CustomCardButtonWithIcon
+              title="Map"
+              icon="map"
+              onPress={() => props.navigation.push('InRideMap')}
+            />
+            <CustomCardButtonWithIcon
+              title="Fun Facts"
+              icon="star"
+              onPress={() => props.navigation.push('Funfacts')}
+            />
+          </View>
         </Content>
       </ImageBackground>
     </Container>
@@ -126,6 +118,9 @@ const styles = StyleSheet.create({
   contentContainer: {
     marginLeft: 10,
     marginRight: 10,
+  },
+  cardButtonsContainer: {
+    marginTop: 10,
   },
 })
 

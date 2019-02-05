@@ -12,7 +12,7 @@ const JourneyOverview = props => {
   ).format('HH:mm')
 
   const vanETAatEndVBS = moment(
-    _.get(props.activeOrder, 'route.vanETAatEndVBS')
+    _.get(props.activeOrderStatus, 'vanETAatDestinationVBS')
   ).format('HH:mm')
   const loyaltyPoints =
     '' + _.round(_.get(props.activeOrder, 'loyaltyPoints'), 2)
@@ -50,11 +50,13 @@ const JourneyOverview = props => {
 
 JourneyOverview.propTypes = {
   activeOrder: PropTypes.object,
+  activeOrderStatus: PropTypes.object,
 }
 
 const mapStateToProps = state => {
   return {
     activeOrder: state.orders.activeOrder,
+    activeOrderStatus: state.orders.activeOrderStatus,
   }
 }
 

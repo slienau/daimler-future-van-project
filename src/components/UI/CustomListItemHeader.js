@@ -8,11 +8,16 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 21,
     color: DARK_COLOR,
+    fontWeight: 'bold',
+  },
+  listItem: {
+    paddingTop: 10,
+    paddingBottom: 10,
   },
 })
 
 const CustomListItemHeader = props => (
-  <ListItem itemHeader first>
+  <ListItem itemHeader first style={styles.listItem}>
     <Text style={[styles.headerText, props.style]}>{props.title}</Text>
   </ListItem>
 )
