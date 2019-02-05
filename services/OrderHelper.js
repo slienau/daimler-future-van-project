@@ -20,7 +20,7 @@ class OrderHelper {
 
     let user, userId, vbs
     let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End, distance1, distance2, distance3
-    let accountnames = ['admin', 'maexle', 'christoph', 'sebastian', 'alex', 'domenic', 'marius', 'philipp', 'antonio']
+    let accountnames = ['christoph', 'sebastian', 'alex', 'domenic', 'marius', 'philipp', 'antonio']
 
     for (let i = 0; i < accountnames.length; i++) {
       try {
