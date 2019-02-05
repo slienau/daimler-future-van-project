@@ -1,6 +1,7 @@
 import React from 'react'
-import {Text, ListItem, Left, Body, Right, Icon} from 'native-base'
+import {ListItem, Left, Body, Right, Icon} from 'native-base'
 import PropTypes from 'prop-types'
+import DefaultText from '../../../components/UI/DefaultText'
 
 const PastOrderDetailsItem = props => {
   return (
@@ -9,10 +10,10 @@ const PastOrderDetailsItem = props => {
         <Icon active name={props.icon} type={props.iconType} />
       </Left>
       <Body>
-        <Text>{props.body}</Text>
+        <DefaultText>{props.body}</DefaultText>
       </Body>
       <Right>
-        <Text>{props.right}</Text>
+        <DefaultText>{props.right}</DefaultText>
       </Right>
     </ListItem>
   )

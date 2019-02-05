@@ -26,6 +26,15 @@ function momentifyOrder(order) {
   return Object.assign({}, order, ...moments)
 }
 
+function fixNumbers(order) {
+  if (_.isNumber(order.co2savings))
+    order.co2savings = order.co2savings.toFixed(2)
+  if (_.isNumber(order.distance)) order.distance = order.distance.toFixed(2)
+  if (_.isNumber(order.loyaltyPoints))
+    order.loyaltyPoints = order.loyaltyPoints.toFixed(0)
+  return order
+}
+
 // reducers (pure functions, no side-effects!)
 export default function orders(state = initialState, action) {
   switch (action.type) {
@@ -33,13 +42,7 @@ export default function orders(state = initialState, action) {
       const orders = _.uniqBy(
         [].concat(state.pastOrders, action.payload.map(momentifyOrder)),
         'id'
-      ).map(order => {
-        if (_.isNumber(order.co2savings))
-          order.co2savings = order.co2savings.toFixed(2)
-        if (_.isNumber(order.distance))
-          order.distance = order.distance.toFixed(2)
-        return order
-      })
+      ).map(order => fixNumbers(order))
       return {
         ...state,
         activeOrder: _.find(orders, 'active') || null,
@@ -48,7 +51,7 @@ export default function orders(state = initialState, action) {
     case SET_ACTIVE_ORDER:
       return {
         ...state,
-        activeOrder: momentifyOrder(action.payload),
+        activeOrder: fixNumbers(momentifyOrder(action.payload)),
       }
     case SET_ACTIVE_ORDER_STATUS:
       return {

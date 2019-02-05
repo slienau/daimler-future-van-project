@@ -2,13 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {StyleSheet} from 'react-native'
 import {Button, Icon, Text} from 'native-base'
-import {DARK_COLOR, GREY_COLOR, LIGHT_COLOR} from './colors'
+import {DARK_COLOR, LIGHT_COLOR, LIGHT_GREY_COLOR} from './colors'
 
 const CustomButton = props => {
   const styles = StyleSheet.create({
     button: {
       justifyContent: 'center',
-      backgroundColor: !props.disabled ? DARK_COLOR : GREY_COLOR,
+      backgroundColor: !props.disabled ? DARK_COLOR : LIGHT_GREY_COLOR,
       width: props.fullWidth ? '100%' : undefined,
     },
     icon: {

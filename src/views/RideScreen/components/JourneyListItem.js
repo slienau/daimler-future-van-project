@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Text, Body, Icon, ListItem, Left, Right} from 'native-base'
+import {Body, Icon, ListItem, Left, Right} from 'native-base'
+import DefaultText from '../../../components/UI/DefaultText'
 
 const JourneyListItem = props => {
   return (
@@ -9,10 +10,10 @@ const JourneyListItem = props => {
         <Icon active name={props.iconName} style={{color: props.iconColor}} />
       </Left>
       <Body>
-        <Text>{props.description}</Text>
+        <DefaultText>{props.description}</DefaultText>
       </Body>
       <Right>
-        <Text>{props.info}</Text>
+        <DefaultText>{props.info}</DefaultText>
       </Right>
     </ListItem>
   )
