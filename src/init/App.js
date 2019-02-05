@@ -84,7 +84,8 @@ const MainAppStack = createStackNavigator(
     Ride: {
       screen: RideScreen,
       navigationOptions: ({navigation}) => ({
-        header: <CustomScreenHeader title="Journey Overview" />,
+        // header: <CustomScreenHeader title="Journey Overview" />,
+        header: null,
       }),
     },
     Funfacts: {

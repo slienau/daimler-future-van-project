@@ -1,5 +1,6 @@
 import React from 'react'
-import {StyleSheet, Text} from 'react-native'
+import {StyleSheet} from 'react-native'
+import {Text} from 'native-base'
 import {DARK_COLOR} from './colors'
 
 const DefaultText = props => (
