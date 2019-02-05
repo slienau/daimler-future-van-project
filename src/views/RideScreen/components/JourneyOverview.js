@@ -13,12 +13,12 @@ const StyledText = styled(Text)`
 
 const JourneyOverview = props => {
   const userETAatUserDestinationLocation = moment(
-    _.get(props.route, 'userETAatUserDestinationLocation')
+    _.get(props.activeOrder, 'route.userETAatUserDestinationLocation')
   ).format('HH:mm')
 
-  const vanETAatEndVBS = moment(_.get(props.route, 'vanETAatEndVBS')).format(
-    'HH:mm'
-  )
+  const vanETAatEndVBS = moment(
+    _.get(props.activeOrderStatus, 'vanETAatDestinationVBS')
+  ).format('HH:mm')
   const loyaltyPoints =
     '' + _.round(_.get(props.activeOrder, 'loyaltyPoints'), 2)
 
@@ -58,16 +58,13 @@ const JourneyOverview = props => {
 
 JourneyOverview.propTypes = {
   activeOrder: PropTypes.object,
-  route: PropTypes.object,
+  activeOrderStatus: PropTypes.object,
 }
 
 const mapStateToProps = state => {
   return {
     activeOrder: state.orders.activeOrder,
-    mapState: state.map.mapState,
-    userStartLocation: state.map.userStartLocation,
-    userDestinationLocation: state.map.userDestinationLocation,
-    route: _.get(state.map, 'routes.0'),
+    activeOrderStatus: state.orders.activeOrderStatus,
   }
 }
 

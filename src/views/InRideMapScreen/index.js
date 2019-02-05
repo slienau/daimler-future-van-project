@@ -14,10 +14,9 @@ const StyledMapView = styled(MapView)`
 
 const InRideMapScreen = props => {
   const mapRegion = {
-    latitude: _.get(props.route, 'vanStartVBS.location.latitude'),
-    longitude: _.get(props.route, 'vanStartVBS.location.longitude'),
     latitudeDelta: 0.02,
     longitudeDelta: 0.02,
+    ..._.get(props.activeOrderStatus, 'vanLocation'),
   }
   return (
     <Container>
@@ -25,7 +24,7 @@ const InRideMapScreen = props => {
         showsUserLocation
         showsMyLocationButton={false}
         initialRegion={mapRegion}>
-        <Routes hideStart />
+        <Routes />
         <MapMarkers />
       </StyledMapView>
     </Container>
@@ -33,9 +32,9 @@ const InRideMapScreen = props => {
 }
 
 InRideMapScreen.propTypes = {
-  route: PropTypes.object,
+  activeOrderStatus: PropTypes.object,
 }
 
 export default connect(state => ({
-  route: _.get(state.map, 'routes.0'),
+  activeOrderStatus: state.orders.activeOrderStatus,
 }))(InRideMapScreen)
