@@ -4,13 +4,13 @@ import {Text} from 'native-base'
 import {DARK_COLOR} from './colors'
 
 const DefaultText = props => (
-  <Text {...props} style={[styles.textHeading, props.style]}>
+  <Text {...props} style={[styles.text, props.style]}>
     {props.children}
   </Text>
 )
 
 const styles = StyleSheet.create({
-  textHeading: {
+  text: {
     fontSize: 16,
     color: DARK_COLOR,
   },
