@@ -7,7 +7,10 @@
     "test": "npm run lint",
     "lint": "eslint .",
     "fix": "eslint --fix .",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "vansviewer:watch": "watchify VansViewer/map.js -o VansViewer/map.bundle.js",
+    "vansviewer:build": "browserify VansViewer/map.js -o VansViewer/map.bundle.js",
+    "vansviewer": "npm run vansviewer:build && serve VansViewer"
   },
   "lint-staged": {
     "*.js": [
@@ -48,6 +51,7 @@
     "babel-plugin-preval": "^3.0.1",
     "babel-plugin-styled-components": "^1.9.1",
     "babel-preset-es2015": "6.24.1",
+    "browserify": "^16.2.3",
     "eslint": "^5.9.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-config-standard": "^12.0.0",
@@ -67,6 +71,8 @@
     "lint-staged": "^8.1.0",
     "metro-react-native-babel-preset": "0.49.2",
     "prettier": "^1.15.2",
-    "react-test-renderer": "16.6.1"
+    "react-test-renderer": "16.6.1",
+    "serve": "^10.1.1",
+    "watchify": "^3.11.0"
   }
 }
