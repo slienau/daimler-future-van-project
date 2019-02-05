@@ -51,6 +51,10 @@ export const TextLarge = styled(Text)`
   font-size: 35;
 `
 
+export const TextItalic = styled(Text)`
+  font-style: italic;
+`
+
 export const IconBlack = styled(Icon)`
   color: black;
   font-size: 26;

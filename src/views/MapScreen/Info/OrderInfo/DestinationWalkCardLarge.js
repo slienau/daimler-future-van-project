@@ -1,4 +1,4 @@
-import {Text, Body, Icon, Left, Right, Button} from 'native-base'
+import {Text, Body, Icon, Left, Right} from 'native-base'
 import PropTypes from 'prop-types'
 import {
   StyledCard,
@@ -10,8 +10,8 @@ import {
   CardItemBorderBottom,
 } from '../StyledComponents'
 import React from 'react'
-// import {resetMapState} from '../../../../../ducks/map'
 import geolib from 'geolib'
+import CustomButton from '../../../../components/UI/CustomButton'
 
 class DestinationWalkCardLarge extends React.Component {
   componentDidMount() {
@@ -66,9 +66,10 @@ class DestinationWalkCardLarge extends React.Component {
             </ViewCentered>
           </Body>
           <Right>
-            <Button rounded onPress={() => this.props.toMapScreen()}>
-              <Text>Stop Journey</Text>
-            </Button>
+            <CustomButton
+              text="Stop Journey"
+              onPress={() => this.props.toMapScreen()}
+            />
           </Right>
         </CardItemNoBorders>
       </StyledCard>

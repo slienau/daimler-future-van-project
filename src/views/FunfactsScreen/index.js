@@ -12,16 +12,14 @@ import {
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import _ from 'lodash'
-import {StyleSheet} from 'react-native'
+import CustomListItemHeader from '../../components/UI/CustomListItemHeader'
 
 const FunfactsScreen = props => {
   const co2savings = _.get(props.activeOrder, 'co2savings')
   return (
     <Container>
       <Content>
-        <ListItem itemHeader first>
-          <Text style={styles.headerSize}>Fun Facts</Text>
-        </ListItem>
+        <CustomListItemHeader title="Fun Facts" />
         <ListItem icon>
           <Left>
             <Icon active name="ios-leaf" />
@@ -44,9 +42,7 @@ const FunfactsScreen = props => {
             <Text>54 Kcal</Text>
           </Right>
         </ListItem>
-        <ListItem itemHeader first>
-          <Text style={styles.headerSize}>Van Facts</Text>
-        </ListItem>
+        <CustomListItemHeader title="Van Facts" />
         <ListItem icon>
           <Left>
             <Icon active name="ios-battery-charging" />
@@ -94,11 +90,5 @@ const mapStateToProps = state => {
     activeOrder: state.orders.activeOrder,
   }
 }
-
-const styles = StyleSheet.create({
-  headerSize: {
-    fontSize: 21,
-  },
-})
 
 export default connect(mapStateToProps)(FunfactsScreen)

@@ -39,26 +39,11 @@ class PastOrdersScreen extends Component {
   }
 
   render() {
-    let activeOrderItem = null
-    if (!this.props.activeOrder) {
-      activeOrderItem = <Text>There is no active order at the moment.</Text>
-    } else {
-      activeOrderItem = (
-        <PastOrdersListItem
-          key={this.props.activeOrder.id}
-          order={this.props.activeOrder}
-        />
-      )
-    }
     return (
       <Container>
         <Content>
           <Separator bordered>
-            <Text>ACTIVE ORDER</Text>
-          </Separator>
-          {activeOrderItem}
-          <Separator bordered>
-            <Text>PAST ORDERS</Text>
+            <Text>TODO: separate by month</Text>
           </Separator>
           <List
             dataArray={this.props.pastOrders.sort(
@@ -84,7 +69,6 @@ class PastOrdersScreen extends Component {
 
 const mapStateToProps = state => {
   return {
-    activeOrder: state.orders.activeOrder,
     pastOrders: state.orders.pastOrders,
   }
 }
@@ -96,7 +80,6 @@ const mapDispatchToProps = dispatch => {
 }
 
 PastOrdersScreen.propTypes = {
-  activeOrder: PropTypes.object,
   onFetchOrders: PropTypes.func,
   pastOrders: PropTypes.array,
 }
