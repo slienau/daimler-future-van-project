@@ -40,6 +40,9 @@ async function starttest () {
   const order1 = await axiosInstance1.post('/orders', { routeId: routeInfo1.id })
   const orderInfo1 = order1.data
   assert.strictEqual(true, orderInfo1 != null, 'order is null')
+  // console.log(order1)
+
+  // await sleep(10000)
 
   console.log('testing second route request with same destination')
   const route2 = await axiosInstance2.post('/routes', {
