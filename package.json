@@ -8,9 +8,9 @@
     "lint": "eslint .",
     "fix": "eslint --fix .",
     "precommit": "lint-staged",
-    "vanviewer:watch": "watchify VansViewer/map.js -o VansViewer/map.bundle.js",
-    "vanviewer:build": "browserify VansViewer/map.js -o VansViewer/map.bundle.js",
-    "vanviewer:start": "npm run vanviewer:build && serve VansViewer"
+    "vansviewer:watch": "watchify VansViewer/map.js -o VansViewer/map.bundle.js",
+    "vansviewer:build": "browserify VansViewer/map.js -o VansViewer/map.bundle.js",
+    "vansviewer": "npm run vansviewer:build && serve VansViewer"
   },
   "lint-staged": {
     "*.js": [
