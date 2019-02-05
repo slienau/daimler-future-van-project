@@ -10,6 +10,7 @@ import {connect} from 'react-redux'
 import {Container} from 'native-base'
 import {Dimensions} from 'react-native'
 import _ from 'lodash'
+import PushNotification from 'react-native-push-notification'
 import {
   MapState,
   setCurrentUserLocation,
@@ -123,6 +124,16 @@ class MapScreen extends React.Component {
               passengerLongitude: this.props.currentUserLocation.longitude,
             },
           })
+          const newPassengers = _.difference(
+            resp.data.otherPassengers,
+            _.get(this.props.activeOrderStatus, 'otherPassengers', [])
+          )
+          if (newPassengers.length > 0) {
+            console.log(newPassengers)
+            PushNotification.localNotification({
+              message: 'A new passenger will join you on your ride.',
+            })
+          }
           this.props.setActiveOrderStatus(resp.data)
         } catch (e) {
           console.log(e)
@@ -256,6 +267,7 @@ class MapScreen extends React.Component {
 
 MapScreen.propTypes = {
   activeOrder: PropTypes.object,
+  activeOrderStatus: PropTypes.object,
   changeMapState: PropTypes.func,
   currentUserLocation: PropTypes.object,
   edgePadding: PropTypes.object,
@@ -280,6 +292,7 @@ export default connect(
     hasVisibleCoordinatesUpdate: state.map.hasVisibleCoordinatesUpdate,
     edgePadding: state.map.edgePadding,
     activeOrder: state.orders.activeOrder,
+    activeOrderStatus: state.orders.activeOrderStatus,
   }),
   dispatch => ({
     fetchActiveOrder: payload => dispatch(fetchActiveOrder(payload)),
