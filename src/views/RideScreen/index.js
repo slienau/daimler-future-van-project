@@ -12,9 +12,8 @@ import {ImageBackground, StyleSheet, View} from 'react-native'
 import moment from 'moment'
 import backgroundImage from './assets/background_ridescreen.jpg'
 import CustomButton from '../../components/UI/CustomButton'
-import DefaultText from '../../components/UI/DefaultText'
-import defaultStyles from '../../components/UI/defaultStyles'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
+import RemainingTimeMessage from './components/RemainingTimeMessage'
 
 const RideScreen = props => {
   const handleExitButtonClick = async () => {
@@ -33,21 +32,13 @@ const RideScreen = props => {
     }
   }
 
-  const remainingTime = moment(
+  const remainingTimeMessage = moment(
     _.get(props.activeOrderStatus, 'vanETAatDestinationVBS')
   ).fromNow()
 
   let topContent = (
     <View style={[styles.topMessageContainer, styles.topContentContainer]}>
-      <DefaultText
-        style={[
-          defaultStyles.textCenter,
-          defaultStyles.textBold,
-          defaultStyles.textLarge,
-          defaultStyles.textLight,
-        ]}>
-        Van will arrive {remainingTime}.
-      </DefaultText>
+      <RemainingTimeMessage message={remainingTimeMessage} />
     </View>
   )
   if (_.get(props.activeOrderStatus, 'userAllowedToExit'))
