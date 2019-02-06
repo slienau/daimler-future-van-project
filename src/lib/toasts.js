@@ -6,6 +6,14 @@ export const NETWORK_TIMEOUT_TOAST = {
   buttonText: 'Okay',
 }
 
+export const DEFAULT_REQUEST_ERROR_TOAST = {
+  text: "Couldn't get data from server.",
+  duration: 10000,
+  type: 'danger',
+  position: 'bottom',
+  buttonText: 'Okay',
+}
+
 export const UNEXPECTED_BEHAVIOUR_TOAST = {
   text: 'Something unexpected happened.',
   duration: 5000,
