@@ -67,7 +67,10 @@ export default function orders(state = initialState, action) {
 export function fetchOrders() {
   return async dispatch => {
     const {data} = await api.get('/orders')
-    dispatch(setOrderData(data))
+    dispatch({
+      type: SET_ORDER_DATA,
+      payload: data,
+    })
   }
 }
 
@@ -77,7 +80,10 @@ export function fetchActiveOrder() {
       const {data, status} = await api.get('/activeorder')
       if (status !== 200) return
       // currently there is an active order, so set the state correctly
-      dispatch(setActiveOrder(data))
+      dispatch({
+        type: SET_ACTIVE_ORDER,
+        payload: data,
+      })
       dispatch(setRoutes([data.route]))
       dispatch(changeMapState(MapState.ROUTE_ORDERED))
     } catch (e) {}
@@ -87,7 +93,10 @@ export function fetchActiveOrder() {
 export function placeOrder(payload) {
   return async dispatch => {
     const {data} = await api.post('/orders', payload)
-    dispatch(setActiveOrder(data))
+    dispatch({
+      type: SET_ACTIVE_ORDER,
+      payload: data,
+    })
     dispatch(changeMapState(MapState.ROUTE_ORDERED))
   }
 }
@@ -101,22 +110,11 @@ export function cancelActiveOrder() {
         longitude: 1,
       },
     })
-    dispatch(setActiveOrder(null)) // won't be done if put response code is not 200 because .put() throws an error
+    dispatch({
+      type: SET_ACTIVE_ORDER,
+      payload: null,
+    }) // won't be done if put response code is not 200 because .put() throws an error
     dispatch(resetMapState())
-  }
-}
-
-function setOrderData(orderData) {
-  return {
-    type: SET_ORDER_DATA,
-    payload: orderData,
-  }
-}
-
-function setActiveOrder(orderData) {
-  return {
-    type: SET_ACTIVE_ORDER,
-    payload: orderData,
   }
 }
 
