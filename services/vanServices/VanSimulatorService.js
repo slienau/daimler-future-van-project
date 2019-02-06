@@ -5,7 +5,7 @@ const geolib = require('geolib')
 const _ = require('lodash')
 const Logger = require('../WinstonLogger').logger
 
-const tenMinutes = 1 * 60 * 1000
+const tenMinutes = 5 * 60 * 1000
 
 class VanSimulatorService {
   static async updateVanLocations (vans) {
