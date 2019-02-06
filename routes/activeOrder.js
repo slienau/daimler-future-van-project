@@ -64,7 +64,8 @@ router.put('/', async function (req, res) {
   let orderNew
 
   const vanId = order.vanId
-  const vanLocation = ManagementSystem.vans[vanId - 1].location
+  const van = ManagementSystem.vans[vanId - 1]
+  const vanLocation = van.location
 
   switch (req.body.action) {
     case 'startride':
@@ -75,11 +76,10 @@ router.put('/', async function (req, res) {
         return res.status(403).json({ code: 403, description: 'Van has not arrived at the virtual bus stop yet.' })
       } else if (order.vanEnterTime) {
         return res.status(403).json({ code: 403, description: 'Ride has already been started.' })
+      } else if (!van.waiting) {
+        return res.status(403).json({ code: 403, description: 'Van is not yet waiting.' })
       }
-      let res2 = await ManagementSystem.startRide(order)
-      if (!res2) {
-        return res.status(403).json({ code: 403, description: 'Van not yet waiting.' })
-      }
+      await ManagementSystem.startRide(order)
 
       await Order.updateOne({ _id: orderId }, { $set: { vanEnterTime: new Date() } })
 
@@ -94,11 +94,11 @@ router.put('/', async function (req, res) {
         return res.status(403).json({ code: 403, description: 'The ride has not yet started.' })
       } else if (geolib.getDistance({ latitude: virtualBusStopEnd.location.latitude, longitude: virtualBusStopEnd.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > range) {
         return res.status(403).json({ code: 403, description: 'Van has not arrived at its destination yet.' })
+      } else if (!van.waiting) {
+        return res.status(403).json({ code: 403, description: 'Van is not yet waiting.' })
       }
-      let res3 = await ManagementSystem.endRide(order)
-      if (!res3) {
-        return res.status(403).json({ code: 403, description: 'Van not yet waiting.' })
-      }
+      await ManagementSystem.endRide(order)
+
       await Order.updateOne({ _id: orderId }, { $set: { endTime: new Date(), active: false } })
 
       // await ManagementSystem.endRide(order)

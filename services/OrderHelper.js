@@ -177,6 +177,7 @@ class OrderHelper {
     const virtualBusStopEnd = await VirtualBusStop.findById(order.vanEndVBS).lean()
 
     // TODO get vanArrival Time from VAN
+    const van = ManagementSystem.vans[order.vanId - 1]
     const vanLocation = ManagementSystem.vans[order.vanId - 1].lastStepLocation
     const actualVanLocation = ManagementSystem.vans[order.vanId - 1].location
 
@@ -248,12 +249,12 @@ class OrderHelper {
 
     if (!order.vanEnterTime) {
       if (geolib.getDistance(vanLocation, virtualBusStopStart.location) > range) return { ...res, message: 'Van has not arrived yet.' }
-      res.userAllowedToEnter = geolib.getDistance(virtualBusStopStart.location, passengerLocation) < range
+      res.userAllowedToEnter = geolib.getDistance(virtualBusStopStart.location, passengerLocation) < range && van.waiting
       res.userAllowedToExit = false
       res.message = res.userAllowedToEnter ? 'Van is ready to be entered.' : 'Van is ready, but passenger is not close enough to the van.'
     } else {
       res.userAllowedToEnter = false
-      res.userAllowedToExit = geolib.getDistance(virtualBusStopEnd.location, vanLocation) < range
+      res.userAllowedToExit = geolib.getDistance(virtualBusStopEnd.location, vanLocation) < range && van.waiting
       res.message = res.userAllowedToExit ? 'Van is ready to be exited.' : 'You have not arrived at the destination virtual bus stop yet.'
     }
     return res

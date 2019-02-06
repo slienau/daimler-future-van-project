@@ -21,11 +21,11 @@ async function starttest () {
   })
 
   const route1 = await axiosInstance.post('/routes', {
-    'start': VBS.kufue,
+    'start': VBS.potsdamerPl,
     'destination': VBS.fried
   })
   const routeInfo = _.first(route1.data)
-
+  await sleep(10000)
   console.log('testing first route request')
   assert.strictEqual(true, routeInfo != null, 'route null')
   assert.strictEqual(true, routeInfo.vanId != null, 'vanId null')
