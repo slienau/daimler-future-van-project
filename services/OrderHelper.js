@@ -113,7 +113,7 @@ class OrderHelper {
     if (route.validUntil < new Date(Date.now() + 1000)) return { code: 400, message: 'your route is no longer valid, please get a new route' }
 
     const vanId = route.vanId
-    const vanArrivalTime = new Date(Date.now() + ManagementSystem.vans[vanId - 1].potentialRoute.routes[0].legs[0].duration.value * 1000)
+    const vanArrivalTime = new Date(Date.now() + ManagementSystem.vans[vanId - 1].potentialRoute[0].routes[0].legs[0].duration.value * 1000)
     if (!vanArrivalTime) return { code: 400, message: 'old van route is corrupted' }
 
     await Route.updateOne({ _id: routeId }, { $set: {
@@ -157,9 +157,10 @@ class OrderHelper {
       Logger.error(e)
     }
 
+    const passengerCount = route.passengerCount ? route.passengerCount : 1
     try {
       const order = await newOrder.save()
-      await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId, order)
+      await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId, order, passengerCount)
 
       return order._id
     } catch (error) {
@@ -176,25 +177,43 @@ class OrderHelper {
     const virtualBusStopEnd = await VirtualBusStop.findById(order.vanEndVBS).lean()
 
     // TODO get vanArrival Time from VAN
+    const van = ManagementSystem.vans[order.vanId - 1]
     const vanLocation = ManagementSystem.vans[order.vanId - 1].lastStepLocation
     const actualVanLocation = ManagementSystem.vans[order.vanId - 1].location
 
     const nextStops = ManagementSystem.vans[order.vanId - 1].nextStops
     const nextRoutes = ManagementSystem.vans[order.vanId - 1].nextRoutes
 
+    // counter counts through the Virtual bus stops, while routesCouter counts through the routes
     let counter = 0
+    let routesCounter = 0
     let myStops = []
     let arrivalTimes = []
     let otherOrder, otherUser, arrivalTime
     let otherPassengers = []
+
+    // We are trying to allign the routes in nextRoutes with stops in nextStops, the cushion helps to cover different cases
+    // the routeCushion is necessary for the case that the first route has been cut in two at a cut-off step
+    // also the routeCushion accounts for when the van is waiting --> one route less
+    const uniqueStopCount = _.uniqWith(nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).length
+    let routeCushion = uniqueStopCount < nextRoutes.length ? 1 : 0
+    routeCushion += ManagementSystem.vans[order.vanId - 1].waiting ? -1 : 0
 
     // iterate through next stops to get potential other passengers and find out what stops we get on and off
     for (let stop of nextStops) {
       // fill the arrival time
       if (counter === 0) {
         arrivalTimes.push(ManagementSystem.vans[order.vanId - 1].nextStopTime)
+        routesCounter++
       } else {
-        arrivalTime = new Date(arrivalTimes[counter - 1].getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(nextRoutes[counter]) * 1000 + 30 * 1000)
+        // arrivalTime is same as before if the vbs are equal
+        if (nextStops[counter].vb.equals(nextStops[counter - 1].vb)) {
+          arrivalTime = arrivalTimes[counter - 1]
+        } else {
+          // arrivalTime is freshly calculated because vbs is different than its predecessor --> new route; update routesCounter
+          arrivalTime = new Date(arrivalTimes[counter - 1].getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(nextRoutes[routesCounter + routeCushion]) * 1000 + 30 * 1000)
+          routesCounter++
+        }
         arrivalTimes.push(arrivalTime)
       }
       // check if stop belongs to me. if yes store arrivalTimes if not store userName
@@ -230,12 +249,12 @@ class OrderHelper {
 
     if (!order.vanEnterTime) {
       if (geolib.getDistance(vanLocation, virtualBusStopStart.location) > range) return { ...res, message: 'Van has not arrived yet.' }
-      res.userAllowedToEnter = geolib.getDistance(virtualBusStopStart.location, passengerLocation) < range
+      res.userAllowedToEnter = geolib.getDistance(virtualBusStopStart.location, passengerLocation) < range && van.waiting
       res.userAllowedToExit = false
       res.message = res.userAllowedToEnter ? 'Van is ready to be entered.' : 'Van is ready, but passenger is not close enough to the van.'
     } else {
       res.userAllowedToEnter = false
-      res.userAllowedToExit = geolib.getDistance(virtualBusStopEnd.location, vanLocation) < range
+      res.userAllowedToExit = geolib.getDistance(virtualBusStopEnd.location, vanLocation) < range && van.waiting
       res.message = res.userAllowedToExit ? 'Van is ready to be exited.' : 'You have not arrived at the destination virtual bus stop yet.'
     }
     return res

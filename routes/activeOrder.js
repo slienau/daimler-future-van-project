@@ -18,7 +18,7 @@ router.get('/status', async function (req, res) {
 
   if (!req.query.passengerLatitude || !req.query.passengerLongitude) return res.status(400).json({ code: 400, description: 'Bad params, you need passengerLongitude and passengerLatitude' })
 
-  ManagementSystem.updateVanLocations()
+  await ManagementSystem.updateVanLocations()
   const order = await Order.findOne({ accountId: req.user._id, active: true })
 
   if (!order) return res.status(404).json({ code: 404, description: 'No active order' })
@@ -51,10 +51,10 @@ router.put('/', async function (req, res) {
 
   if (!req.body.userLocation.latitude || !req.body.userLocation.longitude) res.status(400).json({ code: 400, description: 'Bad params, you need userLocation' })
 
+  await ManagementSystem.updateVanLocations()
+
   const order = await Order.findOne({ accountId: req.user._id, active: true })
   if (!order) return res.status(404).json({ code: 404, description: 'user has no active order' })
-
-  await ManagementSystem.updateVanLocations()
 
   const orderId = order._id
 
@@ -64,7 +64,8 @@ router.put('/', async function (req, res) {
   let orderNew
 
   const vanId = order.vanId
-  const vanLocation = ManagementSystem.vans[vanId - 1].location
+  const van = ManagementSystem.vans[vanId - 1]
+  const vanLocation = van.location
 
   switch (req.body.action) {
     case 'startride':
@@ -75,11 +76,10 @@ router.put('/', async function (req, res) {
         return res.status(403).json({ code: 403, description: 'Van has not arrived at the virtual bus stop yet.' })
       } else if (order.vanEnterTime) {
         return res.status(403).json({ code: 403, description: 'Ride has already been started.' })
+      } else if (!van.waiting) {
+        return res.status(403).json({ code: 403, description: 'Van is not yet waiting.' })
       }
-      let res2 = await ManagementSystem.startRide(order)
-      if (!res2) {
-        return res.status(403).json({ code: 403, description: 'Van not yet waiting.' })
-      }
+      await ManagementSystem.startRide(order)
 
       await Order.updateOne({ _id: orderId }, { $set: { vanEnterTime: new Date() } })
 
@@ -94,11 +94,11 @@ router.put('/', async function (req, res) {
         return res.status(403).json({ code: 403, description: 'The ride has not yet started.' })
       } else if (geolib.getDistance({ latitude: virtualBusStopEnd.location.latitude, longitude: virtualBusStopEnd.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > range) {
         return res.status(403).json({ code: 403, description: 'Van has not arrived at its destination yet.' })
+      } else if (!van.waiting) {
+        return res.status(403).json({ code: 403, description: 'Van is not yet waiting.' })
       }
-      let res3 = await ManagementSystem.endRide(order)
-      if (!res3) {
-        return res.status(403).json({ code: 403, description: 'Van not yet waiting.' })
-      }
+      await ManagementSystem.endRide(order)
+
       await Order.updateOne({ _id: orderId }, { $set: { endTime: new Date(), active: false } })
 
       // await ManagementSystem.endRide(order)

@@ -5,7 +5,7 @@ const geolib = require('geolib')
 const _ = require('lodash')
 const Logger = require('../WinstonLogger').logger
 
-const tenMinutes = 1 * 60 * 1000
+const tenMinutes = 5 * 60 * 1000
 
 class VanSimulatorService {
   static async updateVanLocations (vans) {
@@ -14,9 +14,10 @@ class VanSimulatorService {
     // Iterate through all vans
     for (let van of vans) {
       // check if potential is older than 10 minutes
-      if (van.potentialRoute && van.potentialRouteTime.getTime() + 60 * 1000 < currentTime.getTime()) {
+      if (van.potentialRoute.length > 0 && van.potentialRouteTime.getTime() + 60 * 1000 < currentTime.getTime()) {
         Logger.info('Deleting old potential route')
-        van.potentialRoute = null
+        van.potentialRoute = []
+        van.potentialStops = []
         van.potentialCutOffStep = null
         van.potentialRouteTime = null
       }
@@ -34,8 +35,7 @@ class VanSimulatorService {
 
       // This happens if van has aroute and has not reached the next bus Stop yet
       // This updates the step location
-      const currentRoute = van.nextRoutes[0]
-      const steps = currentRoute.routes[0].legs[0].steps
+      const steps = _.get(van, 'nextRoutes.0.routes.0.legs.0.steps', [])
       Logger.info('##### UPDATE LOCATIONS #####')
       Logger.info('next stops: ' + van.nextStops.length)
       Logger.info('number steps: ' + steps.length)
@@ -70,7 +70,8 @@ class VanSimulatorService {
           }
           // if algorithm has advanced a step, save the current time as the time of the last step and set the actual location to the step location
           if (step > van.currentStep) {
-            van.lastStepTime = new Date(van.lastStepTime.getTime() + steps[step - 1].duration.value * 1000)
+            const lastStepDurations = steps.slice(van.currentStep, step).reduce((prev, curr) => prev + curr.duration.value, 0)
+            van.lastStepTime = new Date(van.lastStepTime.getTime() + lastStepDurations * 1000)
             Logger.info('setting new step')
             van.location = {
               latitude: steps[step].start_location.lat,
@@ -148,7 +149,7 @@ class VanSimulatorService {
       const referenceTime = order.vanEnterTime ? route.vanETAatEndVBS.getTime() + tenMinutes : route.vanETAatStartVBS.getTime() + tenMinutes
       if (referenceTime < currentTime.getTime()) {
         Logger.info('deactivated Order ' + oid)
-        await Order.updateOne({ _id: oid }, { $set: { active: false } })
+        await Order.updateOne({ _id: oid }, { $set: { active: false, vanExitTime: new Date() } })
         await VanHandlerService.cancelRide(van, oid)
         counter--
       }

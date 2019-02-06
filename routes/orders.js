@@ -33,7 +33,6 @@ router.post('/', async function (req, res) {
   const accountId = req.user._id
 
   const potentialOrder = await Order.findOne({ accountId: accountId, active: true })
-
   if (potentialOrder) return res.status(403).json({ code: 403, description: 'user still has active order, which has to be stopped first' })
 
   // test if parameters are there

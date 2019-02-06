@@ -1,23 +1,11 @@
 const axios = require('axios')
 var assert = require('assert')
 var _ = require('lodash')
+const VBS = require('./allVBS')
 
 const address = 'http://localhost:8080'
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-const start1 = {
-  'latitude': 52.524722,
-  'longitude': 13.407217
-}
-const start2 = {
-  'latitude': 52.52302,
-  'longitude': 13.411019
-}
-const destination1 = {
-  'latitude': 52.510144,
-  'longitude': 13.387231
 }
 
 // test if the vans assigned to the routes are locked and not available anymore
@@ -30,18 +18,18 @@ async function starttest () {
 
   const axiosInstance1 = axios.create({
     baseURL: address,
-    timeout: 5000,
+    timeout: 60000,
     headers: { 'Authorization': 'Bearer ' + credentials1.data.token }
   })
   const axiosInstance2 = axios.create({
     baseURL: address,
-    timeout: 5000,
+    timeout: 60000,
     headers: { 'Authorization': 'Bearer ' + credentials2.data.token }
   })
 
   const route1 = await axiosInstance1.post('/routes', {
-    'start': start1,
-    'destination': destination1
+    'start': VBS.kufue,
+    'destination': VBS.potsdamerPl
   })
   const routeInfo1 = _.first(route1.data)
 
@@ -55,8 +43,8 @@ async function starttest () {
 
   console.log('testing second route request with same destination')
   const route2 = await axiosInstance2.post('/routes', {
-    'start': start2,
-    'destination': destination1
+    'start': VBS.kufue,
+    'destination': VBS.potsdamerPl
   })
   const routeInfo2 = _.first(route2.data)
   assert.strictEqual(true, routeInfo2 != null, 'route2 null')
@@ -79,14 +67,14 @@ async function starttest () {
         action: 'startride',
         userLocation: orderInfo1.route.vanStartVBS.location
       })
-      console.log('start time (1):', res.data.startTime)
+      console.log('start time (1):', res.data.vanEnterTime)
 
       res = await axiosInstance2.put('/activeorder', {
         action: 'startride',
         userLocation: orderInfo2.route.vanStartVBS.location
       })
       started = true
-      console.log('start time (2):', res.data.startTime)
+      console.log('start time (2):', res.data.vanEnterTime)
       continue
     }
 
