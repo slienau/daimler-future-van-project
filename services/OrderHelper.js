@@ -216,9 +216,7 @@ class OrderHelper {
         arrivalTimes.push(arrivalTime)
       }
       // check if stop belongs to me. if yes store arrivalTimes if not store userName
-      Logger.info(orderId.equals(stop.orderId))
       if (orderId.equals(stop.orderId)) {
-        Logger.info(arrivalTimes[counter])
         myStops.push({ index: counter, arrivalTime: arrivalTimes[counter] })
       } else {
         otherOrder = await Order.findById(stop.orderId).lean()
@@ -229,7 +227,6 @@ class OrderHelper {
       }
       counter++
     }
-    Logger.info(myStops)
 
     const startVBSTime = order.vanEnterTime ? order.vanEnterTime : myStops[0].arrivalTime
     const endVBSTime = order.vanEnterTime ? myStops[0].arrivalTime : myStops[1].arrivalTime

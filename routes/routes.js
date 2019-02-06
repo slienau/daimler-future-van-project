@@ -30,6 +30,7 @@ router.post('/', async function (req, res) {
   // request a Van a find out how long it takes to the VB
   const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, walkingTimeToStartVB, passengerCount)
 
+
   // If there is an error send error message
   if (van.code) {
     Logger.error(van)
@@ -66,7 +67,7 @@ router.post('/', async function (req, res) {
   /*
 
   try {
-    route = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, startVB, destinationVB, req.body.destination, time, van.nextStopTime, van.vanId)
+    route = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, startVB, destinationVB, req.body.destination, time, van.nextStopTime, van.vanId, passengerCount)
   } catch (error) {
     Logger.error(error)
     res.json(error)

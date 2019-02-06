@@ -37,7 +37,8 @@ async function starttest () {
     'destination': {
       'latitude': 52.510144,
       'longitude': 13.387231
-    }
+    },
+    'passengers': 2
   })
   const routeInfo = route.data[0]
 
