@@ -30,7 +30,6 @@ router.post('/', async function (req, res) {
   // request a Van a find out how long it takes to the VB
   const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, walkingTimeToStartVB, passengerCount)
 
-
   // If there is an error send error message
   if (van.code) {
     Logger.error(van)
@@ -44,8 +43,6 @@ router.post('/', async function (req, res) {
   const fromVB2ToDestRouteDur = GoogleMapsHelper.readDurationFromGoogleResponse(fromVB2ToDestRoute)
 
   let suggestions = []
-
-  // Get a route for the passenger consisting of three route legs
 
   const routeObject = {
     userStartLocation: req.body.start,
