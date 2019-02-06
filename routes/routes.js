@@ -44,8 +44,6 @@ router.post('/', async function (req, res) {
 
   let suggestions = []
 
-  // Get a route for the passenger consisting of three route legs
-
   const routeObject = {
     userStartLocation: req.body.start,
     userDestinationLocation: req.body.destination,
