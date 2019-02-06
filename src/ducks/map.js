@@ -82,6 +82,7 @@ export const fetchRoutes = () => {
     const {data} = await api.post('/routes', {
       start: map.userStartLocation.location,
       destination: map.userDestinationLocation.location,
+      passengers: map.personCount,
     })
     dispatch(setRoutes(data))
     dispatch(changeMapState(MapState.ROUTE_SEARCHED))

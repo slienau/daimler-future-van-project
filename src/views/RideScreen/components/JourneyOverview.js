@@ -1,53 +1,45 @@
 import React from 'react'
-import {ListItem, Text} from 'native-base'
 import JourneyListItem from './JourneyListItem'
 import {connect} from 'react-redux'
 import _ from 'lodash'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import styled from 'styled-components/native'
-
-const StyledText = styled(Text)`
-  font-size: 21;
-`
+import CustomListItemHeader from '../../../components/UI/CustomListItemHeader'
 
 const JourneyOverview = props => {
   const userETAatUserDestinationLocation = moment(
-    _.get(props.route, 'userETAatUserDestinationLocation')
+    _.get(props.activeOrder, 'route.userETAatUserDestinationLocation')
   ).format('HH:mm')
 
-  const vanETAatEndVBS = moment(_.get(props.route, 'vanETAatEndVBS')).format(
-    'HH:mm'
-  )
+  const vanETAatEndVBS = moment(
+    _.get(props.activeOrderStatus, 'vanETAatDestinationVBS')
+  ).format('HH:mm')
   const loyaltyPoints =
     '' + _.round(_.get(props.activeOrder, 'loyaltyPoints'), 2)
 
   return (
     <>
-      <ListItem itemHeader first>
-        <StyledText>Journey overview</StyledText>
-      </ListItem>
+      <CustomListItemHeader title="Journey Overview" />
       <JourneyListItem
-        description="Time of arrival"
-        iconColor="darkgreen"
-        iconName="flag"
-        info={userETAatUserDestinationLocation}
-        vanEndTime // TODO: kann weg?
-      />
-      <JourneyListItem
-        description="Time of arrival of exit point"
+        description="Time of arrival at van exit point"
         iconColor="darkblue"
         iconName="bus"
         info={vanETAatEndVBS}
       />
       <JourneyListItem
-        description="Overall Kilometers"
-        iconColor="black"
-        iconName="speedometer"
-        info="4.23 Km" // TODO: show kilometers from order / route?
+        description="Time of arrival at destination"
+        iconColor="darkgreen"
+        iconName="flag"
+        info={userETAatUserDestinationLocation}
       />
       <JourneyListItem
-        description="Bonus Points"
+        description="Total distance"
+        iconColor="black"
+        iconName="speedometer"
+        info={_.get(props.activeOrder, 'distance')}
+      />
+      <JourneyListItem
+        description="Loyalty Points"
         iconColor="orange"
         iconName="star"
         info={loyaltyPoints}
@@ -58,16 +50,13 @@ const JourneyOverview = props => {
 
 JourneyOverview.propTypes = {
   activeOrder: PropTypes.object,
-  route: PropTypes.object,
+  activeOrderStatus: PropTypes.object,
 }
 
 const mapStateToProps = state => {
   return {
     activeOrder: state.orders.activeOrder,
-    mapState: state.map.mapState,
-    userStartLocation: state.map.userStartLocation,
-    userDestinationLocation: state.map.userDestinationLocation,
-    route: _.get(state.map, 'routes.0'),
+    activeOrderStatus: state.orders.activeOrderStatus,
   }
 }
 
