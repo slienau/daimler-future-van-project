@@ -11,7 +11,7 @@ import moment from 'moment'
 import backgroundImage from './assets/background_ridescreen.jpg'
 import CustomButton from '../../components/UI/CustomButton'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
-import RemainingTimeMessage from './components/RemainingTimeMessage'
+import BigFlashingMessage from '../../components/UI/BigFlashingMessage'
 import CustomCardButtonWithIcon from '../../components/UI/CustomCardButtonWithIcon'
 
 const RideScreen = props => {
@@ -25,19 +25,21 @@ const RideScreen = props => {
         ]),
       })
       props.changeMapState(MapState.EXIT_VAN)
-      props.navigation.goBack()
+      props.navigation.navigate('Map')
     } catch (e) {
       console.log(e)
     }
   }
 
-  const remainingTimeMessage = moment(
-    _.get(props.activeOrderStatus, 'vanETAatDestinationVBS')
-  ).fromNow()
+  let remainingTimeMessage = 'Please wait a moment ...'
+  if (props.activeOrderStatus)
+    remainingTimeMessage =
+      'Van will arrive ' +
+      moment(_.get(props.activeOrderStatus, 'vanETAatDestinationVBS')).fromNow()
 
   let topContent = (
     <View style={[styles.topMessageContainer, styles.topContentContainer]}>
-      <RemainingTimeMessage message={remainingTimeMessage} />
+      <BigFlashingMessage message={remainingTimeMessage} />
     </View>
   )
   if (_.get(props.activeOrderStatus, 'userAllowedToExit'))
@@ -61,7 +63,6 @@ const RideScreen = props => {
         imageStyle={styles.backgroundImage}>
         <Content contentContainerStyle={styles.contentContainer}>
           {topContent}
-
           <View style={styles.journeyOverviewContainer}>
             <JourneyOverview />
           </View>
