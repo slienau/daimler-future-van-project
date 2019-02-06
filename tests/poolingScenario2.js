@@ -75,7 +75,9 @@ async function starttest () {
 
   let started1 = false
   let started2 = false
-  let ended = false
+  let ended1 = false
+  let ended2 = false
+
   while (!started1 && !started2) {
     await sleep(1000 * 10)
 
@@ -92,7 +94,7 @@ async function starttest () {
         userLocation: routeInfo1.vanStartVBS.location
       })
       if (res.data.vanEnterTime) started1 = true
-      console.log('start time (1):', res.data.startTime)
+      console.log('start time (1):', res.data.vanEnterTime)
     }
     if (status2.data.userAllowedToEnter) {
       res = await axiosInstance2.put('/activeorder', {
@@ -100,32 +102,34 @@ async function starttest () {
         userLocation: routeInfo2.vanStartVBS.location
       })
       if (res.data.vanEnterTime) started2 = true
-      console.log('start time (2):', res.data.startTime)
+      console.log('start time (2):', res.data.vanEnterTime)
     }
   }
-  while (!ended) {
+  while (!ended1 && !ended2) {
     await sleep(1000 * 10)
 
     let status1 = await axiosInstance1.get(`/activeorder/status?passengerLatitude=${routeInfo1.vanEndVBS.location.latitude}&passengerLongitude=${routeInfo1.vanEndVBS.location.longitude}`)
     let status2 = await axiosInstance2.get(`/activeorder/status?passengerLatitude=${routeInfo2.vanEndVBS.location.latitude}&passengerLongitude=${routeInfo1.vanEndVBS.location.longitude}`)
+    let res
 
     console.log(status1.data)
     console.log(status2.data)
     console.log('----------------------------')
     if (status1.data.userAllowedToExit) {
-      await axiosInstance1.put('/activeorder', {
+      res = await axiosInstance1.put('/activeorder', {
         action: 'endride',
         userLocation: routeInfo1.vanEndVBS.location
       })
+      if (res.data.vanExitTime) ended1 = true
       console.log('ride ended (1)')
     }
     if (status2.data.userAllowedToExit) {
-      await axiosInstance2.put('/activeorder', {
+      res = await axiosInstance2.put('/activeorder', {
         action: 'endride',
         userLocation: routeInfo2.vanEndVBS.location
       })
       console.log('ride ended (1)')
-      ended = true
+      if (res.data.vanExitTime) ended2 = true
     }
 
     console.log('rides ended')
