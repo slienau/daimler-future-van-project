@@ -196,7 +196,7 @@ class VirtualBusStopHelper {
   }
 
   // get Suggestions for Journey
-  static async getRouteSuggestions (start, startVB, destinationVB, destination, startTime, vanArrivalTime, vanID) {
+  static async getRouteSuggestions (start, startVB, destinationVB, destination, startTime, vanArrivalTime, vanID, passengerCount) {
     // Get Google Responses
     const googleResponse = await GoogleMapsHelper.googleAPICall(start, destination, startVB, destinationVB, startTime, vanArrivalTime)
 
@@ -217,7 +217,8 @@ class VirtualBusStopHelper {
       vanRoute: googleResponse[1],
       toDestinationRoute: googleResponse[2],
       vanId: vanID,
-      validUntil: new Date(startTime.getTime() + (1000 * 60))
+      validUntil: new Date(startTime.getTime() + (1000 * 60)),
+      passengerCount: passengerCount
     }
 
     // Right now give only one suggestion
