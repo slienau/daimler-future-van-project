@@ -197,6 +197,7 @@ class VanRequestService {
         // Compare the times of the routes
         const isA1B2A2Better = !(fromA1ToA2Dur + fromA2ToB2Dur < fromA1ToB2Dur + fromB2ToA2Dur)
 
+        // Now apply the pooling
         if (isA1A2B2Allowed && !(isA1B2A2Allowed && isA1B2A2Better)) {
           possibleVans.push({
             vanId: van.vanId,
