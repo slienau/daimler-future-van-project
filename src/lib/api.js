@@ -1,6 +1,8 @@
 import _ from 'lodash'
 import axios from 'axios'
 import {AsyncStorage} from 'react-native'
+import {setNetworkTimeoutError} from '../ducks/errors'
+import {getStore} from '../init/store'
 
 import config from './config'
 
@@ -10,6 +12,7 @@ const api = axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
+  timeout: 10,
 })
 
 api.interceptors.request.use(
@@ -21,12 +24,13 @@ api.interceptors.request.use(
 )
 
 api.interceptors.response.use(null, async error => {
-  if (error.config.loginRetry || error.response.status !== 401) {
-    console.log(
-      'http response error',
-      error.response.status,
-      error.response.data
-    )
+  if (
+    _.get(error, 'config.loginRetry') ||
+    _.get(error, 'response.status') !== 401
+  ) {
+    if (error.message.startsWith('timeout of ')) {
+      getStore().dispatch(setNetworkTimeoutError(true))
+    }
     throw error
   }
   try {

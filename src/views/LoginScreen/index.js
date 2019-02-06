@@ -1,5 +1,5 @@
 import React from 'react'
-import {Container, Content, Form, Item, Input, Label} from 'native-base'
+import {Container, Content, Form, Item, Input, Label, Toast} from 'native-base'
 import _ from 'lodash'
 import {
   View,
@@ -13,11 +13,16 @@ import CustomButton from '../../components/UI/CustomButton'
 import HeadingText from '../../components/UI/HeadingText'
 import backgroundImage from './assets/login_background.jpg'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
+import {NETWORK_TIMEOUT_TOAST} from '../../lib/toasts'
+import {connect} from 'react-redux'
+import {setNetworkTimeoutError} from '../../ducks/errors'
+import PropTypes from 'prop-types'
 
-export default class LoginScreen extends React.Component {
+class LoginScreen extends React.Component {
   state = {
     username: '',
     password: '',
+    // networkTimeout: false,
     loginAnimation: new Animated.Value(1), // start value
   }
 
@@ -38,8 +43,10 @@ export default class LoginScreen extends React.Component {
         this.props.navigation.navigate('MainAppStack')
       })
     } catch (err) {
+      // if (err.message.startsWith('timeout of ')) {
+      //   this.setState({networkTimeout: true})
+      // }
       if (_.get(err, 'response.status') !== 400) throw err
-      alert('Invalid username or password!')
     }
   }
 
@@ -52,6 +59,10 @@ export default class LoginScreen extends React.Component {
   }
 
   render() {
+    if (this.props.networkTimeoutError) {
+      Toast.show(NETWORK_TIMEOUT_TOAST)
+      this.props.clearNetworkTimeoutError()
+    }
     return (
       <Container>
         <ImageBackground
@@ -125,6 +136,11 @@ export default class LoginScreen extends React.Component {
   }
 }
 
+LoginScreen.propTypes = {
+  clearNetworkTimeoutError: PropTypes.func,
+  networkTimeoutError: PropTypes.bool,
+}
+
 const TRANSPARENT_WHITE_BACKGROUND = 'rgba(255, 255, 255, 0.7)'
 
 const styles = StyleSheet.create({
@@ -168,3 +184,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 })
+
+export default connect(
+  state => ({
+    networkTimeoutError: state.errors.networkTimeout,
+  }),
+  dispatch => ({
+    clearNetworkTimeoutError: () => dispatch(setNetworkTimeoutError(false)),
+  })
+)(LoginScreen)
