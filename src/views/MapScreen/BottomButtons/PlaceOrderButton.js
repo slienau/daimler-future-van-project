@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {ProgressButton} from 'react-native-progress-button'
 
 const PlaceOrderButton = props => {
+  const isRefresh = props.routeExpireProgress === 0
   return (
     <ProgressButton
       buttonState="progress"
@@ -10,7 +11,7 @@ const PlaceOrderButton = props => {
       progress={props.routeExpireProgress}
       progressColor="green"
       onPress={props.onPress}
-      text="Place Order"
+      text={isRefresh ? 'Refresh Route' : 'Place Order'}
     />
   )
 }

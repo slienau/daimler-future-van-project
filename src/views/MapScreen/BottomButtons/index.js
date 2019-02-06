@@ -23,11 +23,20 @@ import PushNotification from 'react-native-push-notification'
 class BottomButtons extends React.Component {
   state = {
     expireProgress: 100,
-    validUntil: null,
   }
+
   componentDidMount() {
-    setInterval(() => this.checkRouteExpireProgress(), 1200)
+    this.checkProgressInterval = setInterval(
+      () => this.checkRouteExpireProgress(),
+      1200
+    )
   }
+
+  componentWillUnmount() {
+    clearInterval(this.checkProgressInterval)
+  }
+
+  checkProgressInterval = null
 
   zoomToMarkers = () => {
     if (!this.props.userStartLocation || !this.props.userDestinationLocation)
@@ -64,40 +73,20 @@ class BottomButtons extends React.Component {
 
   fetchRoutes = async () => {
     await this.props.fetchRoutes()
-    const validUntil =
-      new Date(_.get(this.props.routes, '0.validUntil')).getTime() -
-      new Date().getTime()
-    this.setState({validUntil: validUntil})
   }
 
   checkRouteExpireProgress = () => {
-    if (!_.get(this.props.routes, '0.validUntil')) return
-    let currentDiff =
-      new Date(_.get(this.props.routes, '0.validUntil')).getTime() -
-      new Date().getTime()
-    if (currentDiff <= 0) {
-      currentDiff = 0
-    }
-
-    const prog = parseInt(
-      ((currentDiff / this.state.validUntil) * 100).toFixed(0)
-    )
+    const validUntil = _.get(this.props.routes, '0.validUntil')
+    if (!validUntil) return
+    let currentDiff = new Date(validUntil).getTime() - new Date().getTime()
+    if (currentDiff <= 0) currentDiff = 0
     this.setState({
-      expireProgress: prog,
+      expireProgress: parseInt(((currentDiff / 60000) * 100).toFixed(0)),
     })
   }
 
   placeOrder = async () => {
-    const validUntil =
-      new Date().getTime() -
-      new Date(_.get(this.props.routes, '0.validUntil')).getTime()
-    if (validUntil > 0) {
-      Alert.alert(
-        'Route expired',
-        'The route has expired and will be recalculate now...'
-      )
-      return this.props.fetchRoutes()
-    }
+    if (this.state.expireProgress === 0) return this.props.fetchRoutes()
     Alert.alert(
       'Confirm your order',
       'Do you want to order this route?',
