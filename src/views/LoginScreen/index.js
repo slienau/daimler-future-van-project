@@ -13,7 +13,11 @@ import CustomButton from '../../components/UI/CustomButton'
 import HeadingText from '../../components/UI/HeadingText'
 import backgroundImage from './assets/login_background.jpg'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
-import {NETWORK_TIMEOUT_TOAST, WRONG_PASSWORD_TOAST} from '../../lib/toasts'
+import {
+  NETWORK_TIMEOUT_TOAST,
+  defaultDangerToast,
+  UNEXPECTED_BEHAVIOUR_TOAST,
+} from '../../lib/toasts'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 
@@ -21,7 +25,6 @@ class LoginScreen extends React.Component {
   state = {
     username: '',
     password: '',
-    wrongPassword: false,
     loginAnimation: new Animated.Value(1), // start value
   }
 
@@ -34,6 +37,7 @@ class LoginScreen extends React.Component {
   login = async () => {
     try {
       await login(this.state)
+      Toast.hide()
       Animated.timing(this.state.loginAnimation, {
         toValue: 0,
         duration: 500, // milliseconds
@@ -42,8 +46,12 @@ class LoginScreen extends React.Component {
         this.props.navigation.navigate('MainAppStack')
       })
     } catch (err) {
-      if (_.get(err, 'response.status') !== 400) throw err
-      this.setState({wrongPassword: true})
+      if (_.get(err, 'response.status') !== 400) {
+        Toast.show(UNEXPECTED_BEHAVIOUR_TOAST)
+        console.warn('unexpected error in login screen', err)
+        throw err
+      }
+      Toast.show(defaultDangerToast('Wrong username or password.'))
     }
   }
 
@@ -58,10 +66,6 @@ class LoginScreen extends React.Component {
   render() {
     if (this.props.networkTimeoutError) {
       Toast.show(NETWORK_TIMEOUT_TOAST)
-    }
-    if (this.state.wrongPassword) {
-      Toast.show(WRONG_PASSWORD_TOAST)
-      // this.setState({wrongPassword: false})
     }
     return (
       <Container>
