@@ -7,9 +7,9 @@ class AccountHelper {
       return null
     }
     let status
-    if (loyaltyPoints > 200) {
+    if (loyaltyPoints > 300) {
       status = 'gold'
-    } else if (loyaltyPoints > 100) {
+    } else if (loyaltyPoints > 150) {
       status = 'silver'
     } else {
       status = 'bronze'
