@@ -9,7 +9,7 @@ function sleep (ms) {
 }
 
 async function starttest () {
-  const credentials = await axios.post(address + '/login', { username: 'admin', password: 'adminiscooler' })
+  const credentials = await axios.post(address + '/login', { username: 'antonio', password: 'antonioiscooler' })
   console.log('Login worked')
   console.log('----------------------')
 

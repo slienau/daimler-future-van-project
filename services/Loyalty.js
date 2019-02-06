@@ -5,17 +5,21 @@ let longWaitingMultiplier = 1.0
 let longWalkingMultiplier = 1.0
 let offPeakTimeMultiplier = 1.0
 const co2PerKilometer = 0.13 // EU limit for new cars = 0.13 kg/km
+const _ = require('lodash')
 
 class Loyalty {
   static loyaltyPoints (route) {
     let vanDistance, walkingDistance, waitingTime, co2savings, loyaltyPoints
-    if (route.vanRoute.routes[0].legs[0].distance) {
+    if (_.has(route, 'vanRoute.routes[0].legs[0].distance.value')) {
       vanDistance = route.vanRoute.routes[0].legs[0].distance.value / 1000
     }
-    if (route.toStartRoute.routes[0].legs[0].distance && route.toDestinationRoute.routes[0].legs[0].distance) {
+    if (_.has(route, 'toStartRoute.routes[0].legs[0].distance.value') && _.has(route, 'toDestinationRoute.routes[0].legs[0].distance.value')) {
       walkingDistance = (route.toStartRoute.routes[0].legs[0].distance.value + route.toDestinationRoute.routes[0].legs[0].distance.value) / 1000
+      if (walkingDistance > 1) {
+        longWalkingMultiplier = 1.25
+      }
     }
-    if (route.vanETAatStartVBS && route.toStartRoute.routes[0].legs[0].duration) {
+    if (_.has(route, 'vanETAatStartVBS') && route.vanETAatStartVBS !== null && route.vanETAatStartVBS !== undefined && _.has(route, 'toStartRoute.routes[0].legs[0].duration.value')) {
       // Calculate the difference between van ETA at Start VBS and now in minutes
       // Subtract the walking time of the user to the Start VBS because he isn't waiting while walking to Start VBS
       waitingTime = Math.abs(Math.round((((route.vanETAatStartVBS - new Date()) % 86400000) % 3600000) / 60000) - route.toStartRoute.routes[0].legs[0].duration.value)
@@ -24,9 +28,6 @@ class Loyalty {
       }
       if (waitingTime > 10) {
         longWaitingMultiplier = 1.25
-      }
-      if (walkingDistance > 1) {
-        longWalkingMultiplier = 1.25
       }
       let hours = route.vanETAatStartVBS.getHours()
       if (hours <= 7 || (hours >= 11 && hours <= 14) || hours >= 20) {
