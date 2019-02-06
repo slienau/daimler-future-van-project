@@ -2,6 +2,7 @@ const vanMultiplier = 10
 const walkingMultiplier = 20
 const waitingMultiplier = 10
 let longWaitingMultiplier = 1.0
+let longWalkingMultiplier = 1.0
 let offPeakTimeMultiplier = 1.0
 const co2PerKilometer = 0.13 // EU limit for new cars = 0.13 kg/km
 
@@ -24,6 +25,9 @@ class Loyalty {
       if (waitingTime > 10) {
         longWaitingMultiplier = 1.25
       }
+      if (walkingDistance > 1) {
+        longWalkingMultiplier = 1.25
+      }
       let hours = route.vanETAatStartVBS.getHours()
       if (hours <= 7 || (hours >= 11 && hours <= 14) || hours >= 20) {
         offPeakTimeMultiplier = 1.25
@@ -31,7 +35,7 @@ class Loyalty {
     }
     co2savings = vanDistance * co2PerKilometer
     co2savings = Number(co2savings.toFixed(2))
-    loyaltyPoints = vanDistance * vanMultiplier * offPeakTimeMultiplier + walkingDistance * walkingMultiplier + waitingTime * waitingMultiplier * longWaitingMultiplier
+    loyaltyPoints = vanDistance * vanMultiplier * offPeakTimeMultiplier + walkingDistance * walkingMultiplier * longWalkingMultiplier + waitingTime * waitingMultiplier * longWaitingMultiplier
     loyaltyPoints = Number(loyaltyPoints.toFixed(0))
     vanDistance = Number(vanDistance.toFixed(0))
     return { loyaltyPoints: loyaltyPoints, co2savings: co2savings, distance: vanDistance }
