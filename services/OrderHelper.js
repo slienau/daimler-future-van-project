@@ -157,9 +157,10 @@ class OrderHelper {
       Logger.error(e)
     }
 
+    const passengerCount = route.passengerCount ? route.passengerCount : 1
     try {
       const order = await newOrder.save()
-      await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId, order)
+      await ManagementSystem.confirmVan(vbs[0], vbs[1], vanId, order, passengerCount)
 
       return order._id
     } catch (error) {

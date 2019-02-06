@@ -18,6 +18,8 @@ router.post('/', async function (req, res) {
   const startVB = await VirtualBusStopHelper.getClosestVB(req.body.start)
   const destinationVB = await VirtualBusStopHelper.getClosestVB(req.body.destination)
 
+  const passengerCount = req.body.passengers ? req.body.passengers : 1
+
   // Abort if the two Virtual Busstops are the same
   if (startVB._id.equals(destinationVB._id)) return res.status(403).json({ code: 403, message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' })
 
@@ -26,7 +28,7 @@ router.post('/', async function (req, res) {
   const walkingTimeToStartVB = GoogleMapsHelper.readDurationFromGoogleResponse(walkingRouteToStartVB)
 
   // request a Van a find out how long it takes to the VB
-  const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, walkingTimeToStartVB)
+  const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, walkingTimeToStartVB, passengerCount)
 
   // If there is an error send error message
   if (van.code) {
@@ -56,7 +58,8 @@ router.post('/', async function (req, res) {
     vanRoute: vanRoute,
     toDestinationRoute: fromVB2ToDestRoute,
     vanId: van.vanId,
-    validUntil: new Date(Date.now() + (1000 * 60))
+    validUntil: new Date(Date.now() + (1000 * 60)),
+    passengerCount: passengerCount
   }
 
   // Right now give only one suggestion
