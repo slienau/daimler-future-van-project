@@ -1,6 +1,7 @@
 const GoogleMapsHelper = require('../GoogleMapsHelper')
 // const Route = require('../../models/Route.js')
 const _ = require('lodash')
+const Order = require('../../models/Order')
 const Logger = require('../WinstonLogger').logger
 
 class VanHandlerService {
@@ -68,6 +69,8 @@ class VanHandlerService {
     Logger.info('##### CONFIRM #####')
     Logger.info(van.nextStops)
     Logger.info(van.nextRoutes)
+    // Increase the loyalty points about 20 for pooling
+    await Order.update({ _id: orderId }, { '$inc': { 'loyaltyPoints': 20 } })
     return van
   }
 
