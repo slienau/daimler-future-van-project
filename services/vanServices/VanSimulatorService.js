@@ -150,7 +150,7 @@ class VanSimulatorService {
       const referenceTime = order.vanEnterTime ? route.vanETAatEndVBS.getTime() + tenMinutes : route.vanETAatStartVBS.getTime() + tenMinutes
       if (referenceTime < currentTime.getTime()) {
         Logger.info('deactivated Order ' + oid)
-        await Order.updateOne({ _id: oid }, { $set: { active: false } })
+        await Order.updateOne({ _id: oid }, { $set: { active: false, vanExitTime: new Date() } })
         await VanHandlerService.cancelRide(van, oid)
         counter--
       }

@@ -192,7 +192,8 @@ class OrderHelper {
 
     // the routeCushion is necessary for the case that the first route has been cut in two at a cut-off step
     const uniqueStopCount = _.uniqWith(nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).length
-    const routeCushion = uniqueStopCount < nextRoutes.length ? 1 : 0
+    let routeCushion = uniqueStopCount < nextRoutes.length ? 1 : 0
+    routeCushion += ManagementSystem.vans[order.vanId - 1].waiting ? -1 : 0
 
     // iterate through next stops to get potential other passengers and find out what stops we get on and off
     for (let stop of nextStops) {

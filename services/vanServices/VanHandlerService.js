@@ -101,6 +101,17 @@ class VanHandlerService {
       let r = _.remove(van.nextStops, nextStop => nextStop.orderId.equals(orderId))
       _.remove(van.passengers, p => p.orderId.equals(orderId))
       Logger.info('removed ' + r.length + ' stops')
+
+      if (_.find(van.nextStops, (nextStop) => nextStop.vb._id.equals(van.waitingAt._id)) === undefined) {
+        van.currentStep = 0
+        van.lastStepTime = new Date()
+        van.waiting = false
+        van.waitingAt = null
+        const timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0])
+        van.nextStopTime = new Date(Date.now() + (timeToVB * 1000))
+        Logger.info('continue ride')
+      }
+
       if (van.nextStops.length === 0) {
         this.resetVan(van)
         Logger.info('van reset')
