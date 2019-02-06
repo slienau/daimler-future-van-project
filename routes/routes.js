@@ -28,14 +28,13 @@ router.post('/', async function (req, res) {
   // request a Van a find out how long it takes to the VB
   const van = await ManagementSystem.requestVan(req.body.start, startVB, destinationVB, req.body.destination, walkingTimeToStartVB)
 
-  // Frontend cannot handle vanRoute Arrays yet so if there is multiple routes due to pooling just give the frontend the simple route connection instead
-  const vanRoute = (van.userVanRoute.length > 1) ? await GoogleMapsHelper.simpleGoogleRoute(startVB.location, destinationVB.location) : van.userVanRoute[0]
-
   // If there is an error send error message
   if (van.code) {
     Logger.error(van)
     return res.status(403).json(van)
   }
+  // Frontend cannot handle vanRoute Arrays yet so if there is multiple routes due to pooling just give the frontend the simple route connection instead
+  const vanRoute = (van.userVanRoute.length > 1) ? await GoogleMapsHelper.simpleGoogleRoute(startVB.location, destinationVB.location) : van.userVanRoute[0]
 
   // Route from second VBS to the users destination, duration is in seconds
   const fromVB2ToDestRoute = await GoogleMapsHelper.simpleGoogleRoute(destinationVB.location, req.body.destination, 'walking')
