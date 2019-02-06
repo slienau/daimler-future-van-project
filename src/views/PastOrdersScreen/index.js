@@ -1,16 +1,20 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
-import {Container, Content, Text, List, Separator, View} from 'native-base'
+import {
+  Container,
+  Content,
+  Text,
+  List,
+  Separator,
+  View,
+  Toast,
+} from 'native-base'
 import {fetchOrders} from '../../ducks/orders'
 import PastOrdersListItem from './components/PastOrdersListItem'
+import {DEFAULT_REQUEST_ERROR_TOAST} from '../../lib/toasts'
 
 class PastOrdersScreen extends Component {
-  state = {
-    loading: false,
-    error: false,
-  }
-
   componentDidMount() {
     this.props.navigation.addListener('didFocus', () => {
       this.fetchOrderData()
@@ -18,24 +22,12 @@ class PastOrdersScreen extends Component {
   }
 
   async fetchOrderData() {
-    this.setState({
-      loading: true,
-      error: false,
-    })
-
     try {
       await this.props.onFetchOrders()
     } catch (error) {
-      alert('Something went wrong while fetching order data')
+      Toast.show(DEFAULT_REQUEST_ERROR_TOAST)
       console.log(error)
-      this.setState({
-        error: true,
-      })
     }
-
-    this.setState({
-      loading: false,
-    })
   }
 
   render() {

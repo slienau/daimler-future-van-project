@@ -1,6 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
-import {Container, Content} from 'native-base'
+import {Container, Content, Toast} from 'native-base'
 import {changeMapState, MapState} from '../../ducks/map'
 import JourneyOverview from './components/JourneyOverview'
 import {connect} from 'react-redux'
@@ -13,6 +13,7 @@ import CustomButton from '../../components/UI/CustomButton'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
 import BigFlashingMessage from '../../components/UI/BigFlashingMessage'
 import CustomCardButtonWithIcon from '../../components/UI/CustomCardButtonWithIcon'
+import {defaultDangerToast, NETWORK_TIMEOUT_TOAST} from '../../lib/toasts'
 
 const RideScreen = props => {
   const handleExitButtonClick = async () => {
@@ -27,7 +28,9 @@ const RideScreen = props => {
       props.changeMapState(MapState.EXIT_VAN)
       props.navigation.navigate('Map')
     } catch (e) {
-      console.log(e)
+      const errorMessage = "Couldn't exit van."
+      Toast.show(defaultDangerToast(errorMessage))
+      console.log(errorMessage, e)
     }
   }
 
@@ -54,6 +57,10 @@ const RideScreen = props => {
         />
       </View>
     )
+
+  if (props.networkTimeoutError) {
+    Toast.show(NETWORK_TIMEOUT_TOAST)
+  }
 
   return (
     <Container>
@@ -129,12 +136,14 @@ RideScreen.propTypes = {
   activeOrderStatus: PropTypes.object,
   changeMapState: PropTypes.func,
   currentUserLocation: PropTypes.object,
+  networkTimeoutError: PropTypes.bool,
 }
 
 export default connect(
   state => ({
     activeOrderStatus: state.orders.activeOrderStatus,
     currentUserLocation: state.map.currentUserLocation,
+    networkTimeoutError: state.errors.networkTimeout,
   }),
   dispatch => ({
     changeMapState: payload => dispatch(changeMapState(payload)),
