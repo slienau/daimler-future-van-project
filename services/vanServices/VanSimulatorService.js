@@ -35,8 +35,7 @@ class VanSimulatorService {
 
       // This happens if van has aroute and has not reached the next bus Stop yet
       // This updates the step location
-      const currentRoute = van.nextRoutes[0]
-      const steps = currentRoute.routes[0].legs[0].steps
+      const steps = _.get(van, 'nextRoutes.0.routes.0.legs.0.steps', [])
       Logger.info('##### UPDATE LOCATIONS #####')
       Logger.info('next stops: ' + van.nextStops.length)
       Logger.info('number steps: ' + steps.length)
