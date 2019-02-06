@@ -154,12 +154,22 @@ class VanRequestService {
         if (van.nextStopTime.getTime() - currentTime.getTime() < 60 * 1000) continue
 
         // Calculate the new Time for the van to leave at the the VBS where both passengers enter
-        const origPassWalkingArrivalTime = otherPasRoute.vanETAatStartVBS
+        const origPassRideStartTime = otherPasRoute.vanETAatStartVBS
         const newPassWalkingArrivalTime = new Date(currentTime.getTime() + walkingTimeToStartVB * 1000)
 
-        const newVanStartTime = newPassWalkingArrivalTime > origPassWalkingArrivalTime ? newPassWalkingArrivalTime : origPassWalkingArrivalTime
+        const vanArrivalTime = van.nextStopTime
+        const newVanStartTime = newPassWalkingArrivalTime > origPassRideStartTime ? newPassWalkingArrivalTime : origPassRideStartTime
 
-        const extraWaitingTimeAtVBS = Math.max(0, newPassWalkingArrivalTime.getTime() - (origPassWalkingArrivalTime.getTime() - 30 * 1000))
+        // Calculate the extra waiting times for both passengers in milliseconds
+        // new passenger waiting time is either difference between the arrivals of the two passengers or between the orig pass' arrival time and the van arrival time
+        // We have to deduct the 30 seconds that have been added to the ride start time of the original passenger
+        let newPassExtraWaitingTimeAtVBS = 0
+        if (newPassWalkingArrivalTime > vanArrivalTime) {
+          newPassExtraWaitingTimeAtVBS = Math.max(0, (origPassRideStartTime.getTime() - 30 * 1000) - newPassWalkingArrivalTime.getTime())
+        } else {
+          newPassExtraWaitingTimeAtVBS = Math.max(0, (origPassRideStartTime.getTime() - 30 * 1000) - vanArrivalTime.getTime())
+        }
+        const origPassExtraWaitingTimeAtVBS = Math.max(0, newPassWalkingArrivalTime.getTime() - (origPassRideStartTime.getTime() - 30 * 1000))
 
         // Route Naming Logic:
         // origPass & newPass start VBS: A1, origPass end VBS: A2, newPass end VBS: B2,
@@ -168,13 +178,26 @@ class VanRequestService {
 
         const fromA1ToA2Dur = GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[1])
 
-        // origPass & newPass start VBS: A1, origPass end VBS: A2, newPass end VBS: B2,
-
         const fromA2ToB2 = await GoogleMapsHelper.simpleGoogleRoute(van.nextStops[1].vb.location, toVB.location)
         const fromA2ToB2Dur = GoogleMapsHelper.readDurationFromGoogleResponse(fromA2ToB2)
 
-        // Check first: First delivering origPass and then newPass - check if newPass experiences max 10 min delay
-        if (walkingTimeToStartVB < threshold && fromA1ToB2Dur + threshold < fromA1ToA2Dur + fromA2ToB2Dur + 30) {
+        const fromB2ToA2 = await GoogleMapsHelper.simpleGoogleRoute(toVB.location, van.nextStops[1].vb.location)
+        const fromB2ToA2Dur = GoogleMapsHelper.readDurationFromGoogleResponse(fromB2ToA2)
+
+        // Compare the times of the routes
+
+        // Check first: Is the pure route of the new passenger minus pooling route (incl. extra waiting time) small than ten minutes
+        // durations in seconds
+        const isA1A2B2Allowed = threshold > fromA1ToB2Dur - (fromA1ToA2Dur + fromA2ToB2Dur + 30 + newPassExtraWaitingTimeAtVBS / 1000)
+
+        // Check second: if new route is maximum of 10 minutes longer for origPass
+        // Since the guaranteed time of arrival of the orig passenger is a time point (not duration) we have to work with dates (in seconds from origin)
+        const isA1B2A2Allowed = threshold > otherPasRoute.vanETAatEndVBS.getTime() / 1000 - (origPassRideStartTime / 1000 + origPassExtraWaitingTimeAtVBS / 1000 + fromA1ToB2Dur + fromB2ToA2Dur)
+
+        // Compare the times of the routes
+        const isA1B2A2Better = !(fromA1ToA2Dur + fromA2ToB2Dur < fromA1ToB2Dur + fromB2ToA2Dur)
+
+        if (isA1A2B2Allowed && !(isA1B2A2Allowed && isA1B2A2Better)) {
           possibleVans.push({
             vanId: van.vanId,
             potentialNewRoute: [van.nextRoutes[0], van.nextRoutes[1], fromA2ToB2],
@@ -189,11 +212,7 @@ class VanRequestService {
           continue
         }
 
-        const fromB2ToA2 = await GoogleMapsHelper.simpleGoogleRoute(toVB.location, van.nextStops[1].vb.location)
-        const fromB2ToA2Dur = GoogleMapsHelper.readDurationFromGoogleResponse(fromB2ToA2)
-
-        // Check second: if new route is maximum of 10 minutes longer for origPass
-        if (threshold > otherPasRoute.vanETAatEndVBS.getTime() / 1000 - (otherPasRoute.vanETAatStartVBS / 1000 + extraWaitingTimeAtVBS / 1000 + fromA1ToB2Dur + fromB2ToA2Dur)) {
+        if (isA1B2A2Allowed) {
           // Pooling is allowed
           possibleVans.push({
             vanId: van.vanId,
@@ -228,10 +247,8 @@ class VanRequestService {
   static async requestBestVan (start, fromVB, toVB, walkingTimeToStartVB, passengerCount, vans) {
     // get walking time
 
-    let possibleVans = await this.getPossibleVans(fromVB, toVB, walkingTimeToStartVB, passengerCount, vans)
-    let bestVan = this.getBestVan(possibleVans, vans)
-
-    return bestVan
+    const possibleVans = await this.getPossibleVans(fromVB, toVB, walkingTimeToStartVB, passengerCount, vans)
+    return this.getBestVan(possibleVans, vans)
   }
 }
 

@@ -6,16 +6,18 @@ const address = 'http://localhost:8080'
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
-
+// Kufue
 const startVB = {
   'latitude': 52.500048,
   'longitude': 13.361408
 }
-const stopVB1 = {
+// ERP
+const stopVB2 = {
   'latitude': 52.508969,
   'longitude': 13.332151
 }
-const stopVB2 = {
+// Zoo
+const stopVB1 = {
   'latitude': 52.511135,
   'longitude': 13.320412
 }
@@ -41,7 +43,7 @@ async function starttest () {
 
   const route1 = await axiosInstance1.post('/routes', {
     'start': startVB,
-    'destination': stopVB2
+    'destination': stopVB1
   })
   const routeInfo1 = _.first(route1.data)
 
@@ -60,7 +62,7 @@ async function starttest () {
   console.log('testing second route request with same destination')
   const route2 = await axiosInstance2.post('/routes', {
     'start': startVB,
-    'destination': stopVB1
+    'destination': stopVB2
   })
   const routeInfo2 = _.first(route2.data)
   assert.strictEqual(true, routeInfo2 != null, 'route2 null')

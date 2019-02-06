@@ -190,7 +190,9 @@ class OrderHelper {
     let otherOrder, otherUser, arrivalTime
     let otherPassengers = []
 
+    // We are trying to allign the routes in nextRoutes with stops in nextStops, the cushion helps to cover different cases
     // the routeCushion is necessary for the case that the first route has been cut in two at a cut-off step
+    // also the routeCushion accounts for when the van is waiting --> one route less
     const uniqueStopCount = _.uniqWith(nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).length
     let routeCushion = uniqueStopCount < nextRoutes.length ? 1 : 0
     routeCushion += ManagementSystem.vans[order.vanId - 1].waiting ? -1 : 0
