@@ -30,6 +30,12 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 2. Run an Android Virtual Device via the AVD Manager. If you haven't created a device yet, see the official Android Studio User Guide: [Create and manage virtual devices](https://developer.android.com/studio/run/managing-avds)
 3. Start the application via `react-native run-android`. If the application doesn't start on the virtual device, make sure that you set the environment variables correctly.
 
+## Tools
+
+### Vans Viewer
+
+To see all vans in a map in your browser, execute `npm run vansviewer` from the project root folder. Afterwards you can access the map at [http://localhost:5000](http://localhost:5000)
+
 ## Folder Structure
 | Folder| Description |
 |--- |--- |
