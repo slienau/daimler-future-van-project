@@ -13,16 +13,15 @@ import CustomButton from '../../components/UI/CustomButton'
 import HeadingText from '../../components/UI/HeadingText'
 import backgroundImage from './assets/login_background.jpg'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
-import {NETWORK_TIMEOUT_TOAST} from '../../lib/toasts'
+import {NETWORK_TIMEOUT_TOAST, WRONG_PASSWORD_TOAST} from '../../lib/toasts'
 import {connect} from 'react-redux'
-import {setNetworkTimeoutError} from '../../ducks/errors'
 import PropTypes from 'prop-types'
 
 class LoginScreen extends React.Component {
   state = {
     username: '',
     password: '',
-    // networkTimeout: false,
+    wrongPassword: false,
     loginAnimation: new Animated.Value(1), // start value
   }
 
@@ -43,10 +42,8 @@ class LoginScreen extends React.Component {
         this.props.navigation.navigate('MainAppStack')
       })
     } catch (err) {
-      // if (err.message.startsWith('timeout of ')) {
-      //   this.setState({networkTimeout: true})
-      // }
       if (_.get(err, 'response.status') !== 400) throw err
+      this.setState({wrongPassword: true})
     }
   }
 
@@ -61,7 +58,10 @@ class LoginScreen extends React.Component {
   render() {
     if (this.props.networkTimeoutError) {
       Toast.show(NETWORK_TIMEOUT_TOAST)
-      this.props.clearNetworkTimeoutError()
+    }
+    if (this.state.wrongPassword) {
+      Toast.show(WRONG_PASSWORD_TOAST)
+      // this.setState({wrongPassword: false})
     }
     return (
       <Container>
@@ -137,7 +137,6 @@ class LoginScreen extends React.Component {
 }
 
 LoginScreen.propTypes = {
-  clearNetworkTimeoutError: PropTypes.func,
   networkTimeoutError: PropTypes.bool,
 }
 
@@ -185,11 +184,6 @@ const styles = StyleSheet.create({
   },
 })
 
-export default connect(
-  state => ({
-    networkTimeoutError: state.errors.networkTimeout,
-  }),
-  dispatch => ({
-    clearNetworkTimeoutError: () => dispatch(setNetworkTimeoutError(false)),
-  })
-)(LoginScreen)
+export default connect(state => ({
+  networkTimeoutError: state.errors.networkTimeout,
+}))(LoginScreen)

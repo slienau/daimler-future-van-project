@@ -17,6 +17,9 @@ const api = axios.create({
 
 api.interceptors.request.use(
   config => {
+    // if networkTimeout error is set to true, set it back to false
+    if (getStore().getState().errors.networkTimeout)
+      getStore().dispatch(setNetworkTimeoutError(false))
     console.log(`🌍 ${_.toUpper(config.method)} ${config.url}`)
     return config
   },
