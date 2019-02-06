@@ -94,14 +94,14 @@ class VanRequestService {
 
         if (van.nextStops.length === 1) {
         // first, get the reference way point, because the van may be driving atm
-          [referenceWayPoint, referenceWayPointDuration, potentialCutOffStep] = this.getStepAheadOnCurrentRoute(van.vanId)
+          [referenceWayPoint, referenceWayPointDuration, potentialCutOffStep] = this.getStepAheadOnCurrentRoute(van)
         } else if (van.nextStops.length > 1) {
           referenceWayPoint = _.nth(van.nextStops, -2).vb.location
           const orderId = _.nth(van.nextStops, -2).orderId
           // get route from orderId
           const order = await Order.findById(orderId)
           const route = await Route.findById(order.route).lean()
-          referenceWayPointDuration = route.vanETAatStartVBS
+          referenceWayPointDuration = (route.vanETAatStartVBS - currentTime) / 1000
           // referenceWayPointDuration = this.getRemainingRouteDuration(van) - GoogleMapsHelper.readDurationFromGoogleResponse(_.last(van.nextRoutes)) // TODO
         }
         if (!referenceWayPoint || !referenceWayPointDuration) continue
