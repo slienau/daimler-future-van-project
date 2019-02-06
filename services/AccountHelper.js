@@ -18,8 +18,8 @@ class AccountHelper {
   }
   // Check if any users are there and if not create two static users
   static async setUpAccounts () {
-    const accs = await Account.find({ 'username': 'christoph' })
-    if (accs !== null && accs.length !== 0) return (console.log(accs))
+    const accs = await Account.findOne({ 'username': 'christoph' })
+    if (accs !== null) return (console.log(accs))
 
     const christoph = new Account({
       username: 'christoph',

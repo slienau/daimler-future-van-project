@@ -21,7 +21,7 @@ class OrderHelper {
     let user, userId, vbs
     let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End, distance1, distance2, distance3
     let accountnames = ['christoph', 'sebastian', 'antonio', 'alex', 'domenic', 'marius', 'philipp']
-    let leaderboardDifference = 1.5
+    let leaderboardDifference = 1.6
 
     for (let i = 0; i < accountnames.length; i++) {
       try {
