@@ -7,51 +7,26 @@ class AccountHelper {
       return null
     }
     let status
-    if (loyaltyPoints > 150) {
+    if (loyaltyPoints > 300) {
       status = 'gold'
-    } else if (loyaltyPoints > 100) {
+    } else if (loyaltyPoints > 150) {
       status = 'silver'
-    } else if (loyaltyPoints > 50) {
+    } else {
       status = 'bronze'
     }
     return status
   }
   // Check if any users are there and if not create two static users
   static async setUpAccounts () {
-    const accs = await Account.find({ 'username': 'admin' })
-    if (accs !== null && accs.length !== 0) return (console.log(accs))
-
-    const admin = new Account({
-      username: 'admin',
-      firstName: 'admin',
-      lastName: 'admin',
-      password: 'adminiscooler',
-      address: {
-        street: 'adminstreet 1',
-        zipcode: 10000,
-        city: 'Berlin'
-      },
-      email: 'ad@min.admin'
-    })
-    const maxUser = new Account({
-      username: 'maexle',
-      firstName: 'Max',
-      lastName: 'Müller',
-      password: 'maxiscool',
-      email: 'max@max.max',
-      address: {
-        street: 'Salzufer 1',
-        zipcode: 10587,
-        city: 'Berlin'
-      }
-    })
+    const accs = await Account.findOne({ 'username': 'christoph' })
+    if (accs !== null) return (console.log(accs))
 
     const christoph = new Account({
       username: 'christoph',
-      firstName: 'Max',
-      lastName: 'Müller',
+      firstName: 'Christoph',
+      lastName: 'Witzko',
       password: 'christophiscooler',
-      email: 'max@max.max',
+      email: 'christoph.witzko@tu-berlin.de',
       address: {
         street: 'Salzufer 1',
         zipcode: 10587,
@@ -61,10 +36,10 @@ class AccountHelper {
 
     const alex = new Account({
       username: 'alex',
-      firstName: 'Max',
-      lastName: 'Müller',
+      firstName: 'Alex',
+      lastName: 'Dittmann',
       password: 'alexiscooler',
-      email: 'max@max.max',
+      email: 'alex.dittmann@tu-berlin.de',
       address: {
         street: 'Salzufer 1',
         zipcode: 10587,
@@ -74,10 +49,10 @@ class AccountHelper {
 
     const sebastian = new Account({
       username: 'sebastian',
-      firstName: 'Max',
-      lastName: 'Müller',
+      firstName: 'Sebastian',
+      lastName: 'Lienau',
       password: 'sebastianiscooler',
-      email: 'max@max.max',
+      email: 'sebastian.lienau@tu-berlin.de',
       address: {
         street: 'Salzufer 1',
         zipcode: 10587,
@@ -87,10 +62,10 @@ class AccountHelper {
 
     const domenic = new Account({
       username: 'domenic',
-      firstName: 'Max',
-      lastName: 'Müller',
+      firstName: 'Domenic',
+      lastName: 'Bosin',
       password: 'domeniciscooler',
-      email: 'max@max.max',
+      email: 'domenic.bosin@tu-berlin.de',
       address: {
         street: 'Salzufer 1',
         zipcode: 10587,
@@ -100,10 +75,10 @@ class AccountHelper {
 
     const marius = new Account({
       username: 'marius',
-      firstName: 'Max',
-      lastName: 'Müller',
+      firstName: 'Marius',
+      lastName: 'Möck',
       password: 'mariusiscooler',
-      email: 'max@max.max',
+      email: 'marius.moeck@tu-berlin.de',
       address: {
         street: 'Salzufer 1',
         zipcode: 10587,
@@ -113,10 +88,10 @@ class AccountHelper {
 
     const philipp = new Account({
       username: 'philipp',
-      firstName: 'Max',
-      lastName: 'Müller',
+      firstName: 'Philipp',
+      lastName: 'Ratz',
       password: 'philippiscooler',
-      email: 'max@max.max',
+      email: 'philipp.ratz@tu-berlin.de',
       address: {
         street: 'Salzufer 1',
         zipcode: 10587,
@@ -126,10 +101,10 @@ class AccountHelper {
 
     const antonio = new Account({
       username: 'antonio',
-      firstName: 'Max',
-      lastName: 'Müller',
+      firstName: 'Antonio',
+      lastName: 'Schürer',
       password: 'antonioiscooler',
-      email: 'max@max.max',
+      email: 'antonio.schuerer@tu-berlin.de',
       address: {
         street: 'Salzufer 1',
         zipcode: 10587,
@@ -137,8 +112,6 @@ class AccountHelper {
       }
     })
 
-    await admin.save()
-    await maxUser.save()
     await christoph.save()
     await sebastian.save()
     await alex.save()
