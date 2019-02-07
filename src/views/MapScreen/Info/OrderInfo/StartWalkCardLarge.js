@@ -10,6 +10,9 @@ import {
   TextLarge,
   CardItemBorderBottom,
   TextItalic,
+  RightAddress,
+  LeftFlex,
+  BodyFlex,
 } from '../StyledComponents'
 import _ from 'lodash'
 import React from 'react'
@@ -24,17 +27,17 @@ class StartWalkCardLarge extends React.Component {
     return (
       <StyledCard>
         <CardItemNoBorders button onPress={this.props.zoomToStartWalk}>
-          <Left>
+          <LeftFlex>
             <Icon name="walk" />
-            <Body>
+            <BodyFlex>
               <Text>{this.props.walkingDuration}</Text>
               <Text note>{this.props.walkingDistance}</Text>
-            </Body>
-          </Left>
-          <IconCenterFlex type="Entypo" name="arrow-long-right" />
-          <Right>
+            </BodyFlex>
+            <IconCenterFlex type="Entypo" name="arrow-long-right" />
+          </LeftFlex>
+          <RightAddress>
             <Text>{this.props.busStopStartName}</Text>
-          </Right>
+          </RightAddress>
         </CardItemNoBorders>
         <CardItemBorderBottom>
           <Left>

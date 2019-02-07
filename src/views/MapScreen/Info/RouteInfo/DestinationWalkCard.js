@@ -1,9 +1,12 @@
-import {Text, Body, Icon, Left, Right} from 'native-base'
+import {Text, Icon} from 'native-base'
 import {
   CardItemNoBorders,
   StyledContainer,
   IconCenterFlex,
   StyledCardFlex,
+  RightAddress,
+  LeftFlex,
+  BodyFlex,
 } from '../StyledComponents'
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -13,17 +16,17 @@ const DestinationWalkCard = props => {
     <StyledContainer>
       <StyledCardFlex>
         <CardItemNoBorders>
-          <Left>
+          <LeftFlex>
             <Icon name="walk" />
-            <Body>
+            <BodyFlex>
               <Text>{props.destinationWalkingDuration}</Text>
               <Text note>{props.destinationWalkingDistance}</Text>
-            </Body>
-          </Left>
-          <IconCenterFlex type="Entypo" name="arrow-long-right" />
-          <Right>
+            </BodyFlex>
+            <IconCenterFlex type="Entypo" name="arrow-long-right" />
+          </LeftFlex>
+          <RightAddress>
             <Text>{props.destinationName}</Text>
-          </Right>
+          </RightAddress>
         </CardItemNoBorders>
         {/* <CardItemNoBorders>
             <Body>

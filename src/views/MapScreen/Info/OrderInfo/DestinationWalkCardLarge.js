@@ -8,6 +8,9 @@ import {
   ViewCentered,
   TextLarge,
   CardItemBorderBottom,
+  LeftFlex,
+  BodyFlex,
+  RightAddress,
 } from '../StyledComponents'
 import React from 'react'
 import geolib from 'geolib'
@@ -37,17 +40,17 @@ class DestinationWalkCardLarge extends React.Component {
     return (
       <StyledCard>
         <CardItemNoBorders button onPress={this.props.zoomToDestinationWalk}>
-          <Left>
+          <LeftFlex>
             <Icon name="walk" />
-            <Body>
+            <BodyFlex>
               <Text>{this.props.walkingDuration}</Text>
               <Text note>{this.props.walkingDistance}</Text>
-            </Body>
-          </Left>
-          <IconCenterFlex type="Entypo" name="arrow-long-right" />
-          <Right>
+            </BodyFlex>
+            <IconCenterFlex type="Entypo" name="arrow-long-right" />
+          </LeftFlex>
+          <RightAddress>
             <Text>{this.props.endAddress}</Text>
-          </Right>
+          </RightAddress>
         </CardItemNoBorders>
         <CardItemBorderBottom>
           <Left>
