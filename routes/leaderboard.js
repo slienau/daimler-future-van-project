@@ -21,8 +21,7 @@ router.get('/', async function (req, res) {
           $group:
             {
               _id: '$accountId',
-              loyaltyPoints: { $sum: '$loyaltyPoints' },
-              co2savings: { $sum: '$co2savings' }
+              loyaltyPoints: { $sum: '$loyaltyPoints' }
             }
         }
       ]
@@ -37,12 +36,17 @@ router.get('/', async function (req, res) {
         account = await Account.findById(String(leaderboard[i]._id)).lean()
         delete leaderboardWithUsernames[i]._id
         leaderboardWithUsernames[i].username = account.username
-        leaderboardWithUsernames[i].co2savings = Number(leaderboardWithUsernames[i].co2savings.toFixed(2))
         // Calculate the status of an account based on the loyalty points
         leaderboardWithUsernames[i].status = AccountHelper.status(leaderboard[i].loyaltyPoints)
       }
     }
-    res.json(leaderboardWithUsernames)
+    let leaderboardFilterAdmin
+    for (let i = 0; i < leaderboardWithUsernames.length; i++) {
+      if (leaderboardWithUsernames[i].username === 'admin') {
+        leaderboardFilterAdmin = leaderboardWithUsernames.splice(0, i).concat(leaderboardWithUsernames.splice(i + 1, leaderboardWithUsernames.length))
+      }
+    }
+    res.json(leaderboardFilterAdmin)
   } catch (error) {
     Logger.error(error)
     res.status(404).json({ error: error, message: 'No items found' })
