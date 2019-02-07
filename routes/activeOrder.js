@@ -36,7 +36,7 @@ router.get('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
-  if (!order) return res.status(404).json({ code: 400, message: 'no order active' })
+  if (!order) return res.status(404).json({ code: 404, message: 'No active order' })
 
   const orderLean = await Order.findById(order._id).lean()
   orderLean.id = order._id
@@ -57,7 +57,7 @@ router.put('/', async function (req, res) {
   await ManagementSystem.updateVanLocations()
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
-  if (!order) return res.status(404).json({ code: 404, message: 'user has no active order' })
+  if (!order) return res.status(404).json({ code: 404, message: 'No active order' })
 
   const orderId = order._id
 
