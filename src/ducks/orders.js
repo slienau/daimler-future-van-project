@@ -27,6 +27,7 @@ function momentifyOrder(order) {
 }
 
 function fixNumbers(order) {
+  if (!order) return order
   if (_.isNumber(order.co2savings))
     order.co2savings = order.co2savings.toFixed(2)
   if (_.isNumber(order.distance)) order.distance = order.distance.toFixed(2)
