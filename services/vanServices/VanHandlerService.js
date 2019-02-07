@@ -1,5 +1,4 @@
 const GoogleMapsHelper = require('../GoogleMapsHelper')
-// const Route = require('../../models/Route.js')
 const _ = require('lodash')
 const Order = require('../../models/Order')
 const Logger = require('../WinstonLogger').logger
