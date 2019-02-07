@@ -1,6 +1,5 @@
 import React from 'react'
 import {Container, Content, Form, Item, Input, Label, Toast} from 'native-base'
-import _ from 'lodash'
 import {
   View,
   AsyncStorage,
@@ -13,13 +12,7 @@ import CustomButton from '../../components/UI/CustomButton'
 import HeadingText from '../../components/UI/HeadingText'
 import backgroundImage from './assets/login_background.jpg'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
-import {
-  NETWORK_TIMEOUT_TOAST,
-  defaultDangerToast,
-  UNEXPECTED_BEHAVIOUR_TOAST,
-} from '../../lib/toasts'
-import {connect} from 'react-redux'
-import PropTypes from 'prop-types'
+import {defaultDangerToast} from '../../lib/toasts'
 
 class LoginScreen extends React.Component {
   state = {
@@ -45,13 +38,8 @@ class LoginScreen extends React.Component {
       }).start(() => {
         this.props.navigation.navigate('MainAppStack')
       })
-    } catch (err) {
-      if (_.get(err, 'response.status') !== 400) {
-        Toast.show(UNEXPECTED_BEHAVIOUR_TOAST)
-        console.warn('unexpected error in login screen', err)
-        throw err
-      }
-      Toast.show(defaultDangerToast('Wrong username or password.'))
+    } catch (error) {
+      Toast.show(defaultDangerToast("Couldn't login. " + error.message))
     }
   }
 
@@ -64,9 +52,6 @@ class LoginScreen extends React.Component {
   }
 
   render() {
-    if (this.props.networkTimeoutError) {
-      Toast.show(NETWORK_TIMEOUT_TOAST)
-    }
     return (
       <Container>
         <ImageBackground
@@ -140,10 +125,6 @@ class LoginScreen extends React.Component {
   }
 }
 
-LoginScreen.propTypes = {
-  networkTimeoutError: PropTypes.bool,
-}
-
 const TRANSPARENT_WHITE_BACKGROUND = 'rgba(255, 255, 255, 0.7)'
 
 const styles = StyleSheet.create({
@@ -188,6 +169,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default connect(state => ({
-  networkTimeoutError: state.errors.networkTimeout,
-}))(LoginScreen)
+export default LoginScreen

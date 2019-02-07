@@ -1,8 +1,6 @@
 import _ from 'lodash'
 import axios from 'axios'
 import {AsyncStorage} from 'react-native'
-import {setNetworkTimeoutError} from '../ducks/errors'
-import {getStore} from '../init/store'
 
 import config from './config'
 
@@ -17,9 +15,6 @@ const api = axios.create({
 
 api.interceptors.request.use(
   config => {
-    // if networkTimeout error is set to true, set it back to false
-    if (getStore().getState().errors.networkTimeout)
-      getStore().dispatch(setNetworkTimeoutError(false))
     console.log(`🌍 ${_.toUpper(config.method)} ${config.url}`)
     return config
   },
@@ -32,7 +27,6 @@ api.interceptors.response.use(null, async error => {
     _.get(error, 'response.status') !== 401
   ) {
     if (error.message.startsWith('timeout of ')) {
-      getStore().dispatch(setNetworkTimeoutError(true))
       error.code = 408
       error.message = 'Timeout exceeded. Please check your internet connection.'
       throw error

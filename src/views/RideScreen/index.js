@@ -13,7 +13,7 @@ import CustomButton from '../../components/UI/CustomButton'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
 import BigFlashingMessage from '../../components/UI/BigFlashingMessage'
 import CustomCardButtonWithIcon from '../../components/UI/CustomCardButtonWithIcon'
-import {defaultDangerToast, NETWORK_TIMEOUT_TOAST} from '../../lib/toasts'
+import {defaultDangerToast} from '../../lib/toasts'
 
 const RideScreen = props => {
   const handleExitButtonClick = async () => {
@@ -57,10 +57,6 @@ const RideScreen = props => {
         />
       </View>
     )
-
-  if (props.networkTimeoutError) {
-    Toast.show(NETWORK_TIMEOUT_TOAST)
-  }
 
   return (
     <Container>
@@ -136,14 +132,12 @@ RideScreen.propTypes = {
   activeOrderStatus: PropTypes.object,
   changeMapState: PropTypes.func,
   currentUserLocation: PropTypes.object,
-  networkTimeoutError: PropTypes.bool,
 }
 
 export default connect(
   state => ({
     activeOrderStatus: state.orders.activeOrderStatus,
     currentUserLocation: state.map.currentUserLocation,
-    networkTimeoutError: state.errors.networkTimeout,
   }),
   dispatch => ({
     changeMapState: payload => dispatch(changeMapState(payload)),
