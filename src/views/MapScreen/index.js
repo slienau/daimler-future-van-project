@@ -153,10 +153,12 @@ class MapScreen extends React.Component {
   watchPosition = () => {
     this.watchId = navigator.geolocation.watchPosition(
       position => this.props.setCurrentUserLocation(position.coords),
-      error =>
-        Toast.show(
-          defaultDangerToast('Error watching user position. ' + error.message)
-        ),
+      error => {
+        if (!error.message.includes('temporarily'))
+          Toast.show(
+            defaultDangerToast('Error watching user position. ' + error.message)
+          )
+      },
       {
         distanceFilter: 3,
         useSignificantChanges: true,

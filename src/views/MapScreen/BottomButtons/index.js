@@ -19,6 +19,11 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import CustomFabWithIcon from '../../../components/UI/CustomFabWithIcon'
 import PushNotification from 'react-native-push-notification'
+import {
+  defaultDangerToast,
+  defaultSuccessToast,
+  UNEXPECTED_BEHAVIOUR_TOAST,
+} from '../../../lib/toasts'
 
 class BottomButtons extends React.Component {
   state = {
@@ -56,13 +61,17 @@ class BottomButtons extends React.Component {
         {
           text: 'Yes',
           onPress: async () => {
-            await this.props.cancelActiveOrder()
-            Toast.show({
-              text: 'Your order has been canceled!',
-              buttonText: 'Okay',
-              type: 'success',
-              duration: 10000,
-            })
+            try {
+              await this.props.cancelActiveOrder()
+              Toast.show(defaultSuccessToast('Your order has been canceled!'))
+            } catch (error) {
+              Toast.show(
+                defaultDangerToast(
+                  "Your order couldn't be canceled! " +
+                    _.get(error, 'response.data.message', '')
+                )
+              )
+            }
           },
         },
         {text: 'No'},
@@ -72,7 +81,15 @@ class BottomButtons extends React.Component {
   }
 
   fetchRoutes = async () => {
-    await this.props.fetchRoutes()
+    try {
+      await this.props.fetchRoutes()
+    } catch (error) {
+      const errorMessage = _.get(error, 'response.data.message', '')
+      const errorCode = _.get(error, 'response.data.code', 400)
+      if (errorCode === 404)
+        Toast.show(defaultDangerToast('No routes found. ' + errorMessage, 0))
+      else Toast.show(UNEXPECTED_BEHAVIOUR_TOAST)
+    }
   }
 
   checkRouteExpireProgress = () => {
@@ -94,33 +111,41 @@ class BottomButtons extends React.Component {
         {
           text: 'Yes',
           onPress: async () => {
-            await this.props.placeOrder({
-              routeId: this.props.routes[0].id,
-            })
-            Toast.show({
-              text: 'Your order has been confirmed!',
-              buttonText: 'Okay',
-              type: 'success',
-              duration: 10000,
-            })
-            PushNotification.localNotificationSchedule({
-              message: 'Your van will arrive at the exit point in a minute',
-              date: new Date(
-                new Date(
-                  _.get(this.props.routes, '0.vanETAatEndVBS')
-                ).getTime() -
-                  60 * 1000
-              ),
-            })
-            PushNotification.localNotificationSchedule({
-              message: 'Your van is at the start point in a minute',
-              date: new Date(
-                new Date(
-                  _.get(this.props.routes, '0.vanETAatStartVBS')
-                ).getTime() -
-                  60 * 1000
-              ),
-            })
+            let success = false
+            try {
+              await this.props.placeOrder({
+                routeId: this.props.routes[0].id,
+              })
+              success = true
+            } catch (error) {
+              Toast.show(
+                defaultDangerToast(
+                  "Your order couldn't be confirmed! " +
+                    _.get(error, 'response.data.message', '')
+                )
+              )
+            }
+            if (success) {
+              Toast.show(defaultSuccessToast('Your order has been confirmed!'))
+              PushNotification.localNotificationSchedule({
+                message: 'Your van will arrive at the exit point in a minute',
+                date: new Date(
+                  new Date(
+                    _.get(this.props.routes, '0.vanETAatEndVBS')
+                  ).getTime() -
+                    60 * 1000
+                ),
+              })
+              PushNotification.localNotificationSchedule({
+                message: 'Your van is at the start point in a minute',
+                date: new Date(
+                  new Date(
+                    _.get(this.props.routes, '0.vanETAatStartVBS')
+                  ).getTime() -
+                    60 * 1000
+                ),
+              })
+            }
           },
         },
         {text: 'Cancel'},

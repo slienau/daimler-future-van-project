@@ -22,21 +22,36 @@ export const UNEXPECTED_BEHAVIOUR_TOAST = {
   buttonText: 'Okay',
 }
 
-export function defaultDangerToast(message) {
+const DEFAULT_TOAST_DURATION = 10000
+
+export function defaultToast(
+  message,
+  duration = DEFAULT_TOAST_DURATION,
+  type = undefined,
+  position = 'bottom',
+  buttonText = 'Okay'
+) {
   return {
     text: message,
-    duration: 5000,
-    type: 'danger',
-    position: 'bottom',
-    buttonText: 'Okay',
+    duration: duration,
+    type: type,
+    position: position,
+    buttonText: buttonText,
   }
 }
 
-export function defaultToast(message) {
-  return {
-    text: message,
-    duration: 5000,
-    position: 'bottom',
-    buttonText: 'Okay',
-  }
+export function defaultSuccessToast(
+  message,
+  duration = DEFAULT_TOAST_DURATION,
+  position = 'bottom'
+) {
+  return defaultToast(message, duration, 'success', position)
+}
+
+export function defaultDangerToast(
+  message,
+  duration = DEFAULT_TOAST_DURATION,
+  position = 'bottom'
+) {
+  return defaultToast(message, duration, 'danger', position)
 }
