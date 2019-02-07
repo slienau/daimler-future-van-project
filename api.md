@@ -144,6 +144,7 @@ This object represents a user account.
 | `address` | `Object` | No | The users address. Contains `street`, `zipcode` and `city` | *See account example.* |
 | `distance` | `Number` | yes | Total amount of kilometres driven by the user. | `423.34` |
 | `co2savings` | `Number` | yes | Total amount of CO2 savings (in kilogram) for all van rides. | `70.4` |
+| `status` | `String` | yes | The loyalty program status. | `gold` |
 
 #### Example
 
@@ -161,7 +162,8 @@ This object represents a user account.
     "city": "Berlin"
   },
   "distance": 423.34,
-  "co2savings": 70.4
+  "co2savings": 70.4,
+  "status": "gold"
 }
 ```
 
