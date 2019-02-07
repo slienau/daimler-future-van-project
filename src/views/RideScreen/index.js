@@ -1,6 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
-import {Container, Content} from 'native-base'
+import {Container, Content, Toast} from 'native-base'
 import {changeMapState, MapState} from '../../ducks/map'
 import JourneyOverview from './components/JourneyOverview'
 import {connect} from 'react-redux'
@@ -11,8 +11,9 @@ import moment from 'moment'
 import backgroundImage from './assets/background_ridescreen.jpg'
 import CustomButton from '../../components/UI/CustomButton'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
-import RemainingTimeMessage from './components/RemainingTimeMessage'
+import BigFlashingMessage from '../../components/UI/BigFlashingMessage'
 import CustomCardButtonWithIcon from '../../components/UI/CustomCardButtonWithIcon'
+import {defaultDangerToast} from '../../lib/toasts'
 
 const RideScreen = props => {
   const handleExitButtonClick = async () => {
@@ -25,19 +26,21 @@ const RideScreen = props => {
         ]),
       })
       props.changeMapState(MapState.EXIT_VAN)
-      props.navigation.goBack()
-    } catch (e) {
-      console.log(e)
+      props.navigation.navigate('Map')
+    } catch (error) {
+      Toast.show(defaultDangerToast("Couldn't exit van. " + error.message))
     }
   }
 
-  const remainingTimeMessage = moment(
-    _.get(props.activeOrderStatus, 'vanETAatDestinationVBS')
-  ).fromNow()
+  let remainingTimeMessage = 'Please wait a moment ...'
+  if (props.activeOrderStatus)
+    remainingTimeMessage =
+      'Van will arrive ' +
+      moment(_.get(props.activeOrderStatus, 'vanETAatDestinationVBS')).fromNow()
 
   let topContent = (
     <View style={[styles.topMessageContainer, styles.topContentContainer]}>
-      <RemainingTimeMessage message={remainingTimeMessage} />
+      <BigFlashingMessage message={remainingTimeMessage} />
     </View>
   )
   if (_.get(props.activeOrderStatus, 'userAllowedToExit'))
@@ -61,7 +64,6 @@ const RideScreen = props => {
         imageStyle={styles.backgroundImage}>
         <Content contentContainerStyle={styles.contentContainer}>
           {topContent}
-
           <View style={styles.journeyOverviewContainer}>
             <JourneyOverview />
           </View>

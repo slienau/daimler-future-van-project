@@ -58,6 +58,14 @@ const MainAppStack = createStackNavigator(
     },
     Search: {
       screen: SearchScreen,
+      navigationOptions: ({navigation}) => ({
+        header: (
+          <CustomScreenHeader
+            title="Search Place"
+            onPress={() => navigation.goBack()}
+          />
+        ),
+      }),
     },
     PastOrders: {
       screen: PastOrdersScreen,

@@ -13,6 +13,7 @@ export default function account(state = initialState, action) {
   switch (action.type) {
     case SET_ACCOUNT_DATA:
       return {
+        ...state,
         ...action.payload,
         name: action.payload.firstName + ' ' + action.payload.lastName,
       }
@@ -30,27 +31,19 @@ export default function account(state = initialState, action) {
 export function fetchAccountData() {
   return async dispatch => {
     const {data} = await api.get('/account')
-    dispatch(setAccountData(data))
-  }
-}
-
-function setAccountData(accountData) {
-  return {
-    type: SET_ACCOUNT_DATA,
-    payload: accountData,
+    dispatch({
+      type: SET_ACCOUNT_DATA,
+      payload: data,
+    })
   }
 }
 
 export function fetchLeaderBoardData() {
   return async dispatch => {
     const {data} = await api.get('/leaderboard')
-    dispatch(setLeaderBoardData(data))
-  }
-}
-
-function setLeaderBoardData(leaderBoardData) {
-  return {
-    type: SET_LEADERBOARD_DATA,
-    payload: leaderBoardData,
+    dispatch({
+      type: SET_LEADERBOARD_DATA,
+      payload: data,
+    })
   }
 }

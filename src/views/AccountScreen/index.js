@@ -1,11 +1,10 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import styled from 'styled-components/native'
+import _ from 'lodash'
 import goldStatus from '../LeaderboardScreen/assets/gold.png'
 import silverStatus from '../LeaderboardScreen/assets/silver.png'
 import bronzeStatus from '../LeaderboardScreen/assets/bronze.png'
-import _ from 'lodash'
-
 import {
   Body,
   Container,
@@ -19,11 +18,14 @@ import {
   Right,
   Text,
   Thumbnail,
+  Toast,
 } from 'native-base'
 import PropTypes from 'prop-types'
-import {fetchAccountData, fetchLeaderBoardData} from '../../ducks/account'
+import {fetchAccountData} from '../../ducks/account'
 import {logout} from '../../lib/api'
 import CustomButton from '../../components/UI/CustomButton'
+import {defaultDangerToast} from '../../lib/toasts'
+import {firstLetterToUppercase} from '../../lib/utils'
 
 const StarIcon = styled(Icon)`
   color: gold;
@@ -49,68 +51,24 @@ class Account extends React.Component {
   static propTypes = {
     account: PropTypes.object,
     onFetchAccountData: PropTypes.func,
-    onFetchLeaderBoardData: PropTypes.func,
   }
 
   state = {
     avatarVisible: false,
-    loading: false,
-    error: false,
-    status: 'bronze',
   }
 
   componentDidMount() {
     this.fetchAccountData()
-    this.getLeaderBoardData()
   }
 
   fetchAccountData = async () => {
-    this.setState({
-      loading: true,
-      error: false,
-    })
-
     try {
       await this.props.onFetchAccountData()
     } catch (error) {
-      alert('Something went wrong while fetching account data')
-      console.log(error)
-      this.setState({
-        error: true,
-      })
+      Toast.show(
+        defaultDangerToast("Couldn't get account data. " + error.message)
+      )
     }
-
-    this.setState({
-      loading: false,
-    })
-  }
-
-  getLeaderBoardData = async () => {
-    this.setState({
-      loading: true,
-      error: false,
-    })
-
-    try {
-      await this.props.onFetchLeaderBoardData()
-      const userLeader = _.filter(this.props.account.leaders, [
-        'username',
-        this.props.account.username,
-      ])
-      this.setState({
-        status: userLeader[0].status,
-      })
-    } catch (error) {
-      alert('Something went wrong while fetching LeaderBoard Data')
-      console.log(error)
-      this.setState({
-        error: true,
-      })
-    }
-
-    this.setState({
-      loading: false,
-    })
   }
 
   logout = async () => {
@@ -122,14 +80,20 @@ class Account extends React.Component {
     const uri =
       'https://www.thehindu.com/sci-tech/technology/internet/article17759222.ece/alternates/FREE_660/02th-egg-person'
 
-    let statusIcon = null
-    if (this.state.status === 'gold') {
-      statusIcon = goldStatus
-    } else if (this.state.status === 'silver') {
-      statusIcon = silverStatus
-    } else {
-      statusIcon = bronzeStatus
+    const loyaltyStatus = _.get(this.props.account, 'loyaltyStatus')
+    let statusIcon = bronzeStatus
+    switch (loyaltyStatus) {
+      case 'gold':
+        statusIcon = goldStatus
+        break
+      case 'silver':
+        statusIcon = silverStatus
+        break
     }
+
+    let loyaltyStatusText = ''
+    if (_.isString(loyaltyStatus))
+      loyaltyStatusText = firstLetterToUppercase(loyaltyStatus)
     return (
       <Container>
         <Content>
@@ -138,12 +102,12 @@ class Account extends React.Component {
               <Left>
                 <Thumbnail large source={{uri: uri}} />
                 <Body>
-                  <Text>{this.props.account.username}</Text>
-                  <Text note>{this.props.account.email}</Text>
+                  <Text>{_.get(this.props.account, 'username')}</Text>
+                  <Text note>{_.get(this.props.account, 'email')}</Text>
                 </Body>
                 <Right>
                   <Thumbnail source={statusIcon} medium />
-                  <Text note>Status: Gold</Text>
+                  <Text note>Status: {loyaltyStatusText}</Text>
                 </Right>
               </Left>
             </CardItem>
@@ -160,7 +124,7 @@ class Account extends React.Component {
                 <Text>Loyalty Points</Text>
               </Body>
               <Right>
-                <Text>{this.props.account.loyaltyPoints}</Text>
+                <Text>{_.get(this.props.account, 'loyaltyPoints')}</Text>
               </Right>
             </ListItem>
             <ListItem icon button onPress={() => {}}>
@@ -213,7 +177,7 @@ class Account extends React.Component {
                 <Text>Driven Kilometers</Text>
               </Body>
               <Right>
-                <Text>{this.props.account.distance + ' km'}</Text>
+                <Text>{_.get(this.props.account, 'distance') + ' km'}</Text>
               </Right>
             </ListItem>
             <ListItem icon>
@@ -224,7 +188,7 @@ class Account extends React.Component {
                 <Text>CO2 savings</Text>
               </Body>
               <Right>
-                <Text>{this.props.account.co2savings + ' kg'}</Text>
+                <Text>{_.get(this.props.account, 'co2savings') + ' kg'}</Text>
               </Right>
             </ListItem>
             <ListItem itemDivider>
@@ -238,7 +202,7 @@ class Account extends React.Component {
                 <Text>Name</Text>
               </Body>
               <Right>
-                <Text>{this.props.account.name}</Text>
+                <Text>{_.get(this.props.account, 'name')}</Text>
               </Right>
             </ListItem>
             <ListItem icon>
@@ -249,7 +213,7 @@ class Account extends React.Component {
                 <Text>E-Mail</Text>
               </Body>
               <Right>
-                <Text>{this.props.account.email}</Text>
+                <Text>{_.get(this.props.account, 'email')}</Text>
               </Right>
             </ListItem>
             <ListItem icon button onPress={() => {}}>
@@ -273,7 +237,7 @@ class Account extends React.Component {
               </Left>
               <Body />
               <Right>
-                <Text>{this.props.account.address.street}</Text>
+                <Text>{_.get(this.props.account, 'address.street')}</Text>
               </Right>
             </ListItem>
             <ListItem icon>
@@ -282,7 +246,7 @@ class Account extends React.Component {
               </Left>
               <Body />
               <Right>
-                <Text>{this.props.account.address.zipcode}</Text>
+                <Text>{_.get(this.props.account, 'address.zipcode')}</Text>
               </Right>
             </ListItem>
             <ListItem icon>
@@ -291,7 +255,7 @@ class Account extends React.Component {
               </Left>
               <Body />
               <Right>
-                <Text>{this.props.account.address.city}</Text>
+                <Text>{_.get(this.props.account, 'address.city')}</Text>
               </Right>
             </ListItem>
             <ListItem>
@@ -312,6 +276,5 @@ export default connect(
   }),
   dispatch => ({
     onFetchAccountData: () => dispatch(fetchAccountData()),
-    onFetchLeaderBoardData: () => dispatch(fetchLeaderBoardData()),
   })
 )(Account)

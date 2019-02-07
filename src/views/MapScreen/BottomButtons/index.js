@@ -19,6 +19,7 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import CustomFabWithIcon from '../../../components/UI/CustomFabWithIcon'
 import PushNotification from 'react-native-push-notification'
+import {defaultDangerToast, defaultSuccessToast} from '../../../lib/toasts'
 
 class BottomButtons extends React.Component {
   state = {
@@ -56,13 +57,16 @@ class BottomButtons extends React.Component {
         {
           text: 'Yes',
           onPress: async () => {
-            await this.props.cancelActiveOrder()
-            Toast.show({
-              text: 'Your order has been canceled!',
-              buttonText: 'Okay',
-              type: 'success',
-              duration: 10000,
-            })
+            try {
+              await this.props.cancelActiveOrder()
+              Toast.show(defaultSuccessToast('Your order has been canceled!'))
+            } catch (error) {
+              Toast.show(
+                defaultDangerToast(
+                  "Your order couldn't be canceled! " + error.message
+                )
+              )
+            }
           },
         },
         {text: 'No'},
@@ -72,7 +76,14 @@ class BottomButtons extends React.Component {
   }
 
   fetchRoutes = async () => {
-    await this.props.fetchRoutes()
+    try {
+      await this.props.fetchRoutes()
+    } catch (error) {
+      if (error.code === 404)
+        Toast.show(defaultDangerToast('No routes found. ' + error.message, 0))
+      else
+        Toast.show(defaultDangerToast('Error getting routes. ' + error.message))
+    }
   }
 
   checkRouteExpireProgress = () => {
@@ -94,33 +105,40 @@ class BottomButtons extends React.Component {
         {
           text: 'Yes',
           onPress: async () => {
-            await this.props.placeOrder({
-              routeId: this.props.routes[0].id,
-            })
-            Toast.show({
-              text: 'Your order has been confirmed!',
-              buttonText: 'Okay',
-              type: 'success',
-              duration: 10000,
-            })
-            PushNotification.localNotificationSchedule({
-              message: 'Your van will arrive at the exit point in a minute',
-              date: new Date(
-                new Date(
-                  _.get(this.props.routes, '0.vanETAatEndVBS')
-                ).getTime() -
-                  60 * 1000
-              ),
-            })
-            PushNotification.localNotificationSchedule({
-              message: 'Your van is at the start point in a minute',
-              date: new Date(
-                new Date(
-                  _.get(this.props.routes, '0.vanETAatStartVBS')
-                ).getTime() -
-                  60 * 1000
-              ),
-            })
+            let success = false
+            try {
+              await this.props.placeOrder({
+                routeId: this.props.routes[0].id,
+              })
+              success = true
+            } catch (error) {
+              Toast.show(
+                defaultDangerToast(
+                  "Your order couldn't be confirmed! " + error.message
+                )
+              )
+            }
+            if (success) {
+              Toast.show(defaultSuccessToast('Your order has been confirmed!'))
+              PushNotification.localNotificationSchedule({
+                message: 'Your van will arrive at the exit point in a minute',
+                date: new Date(
+                  new Date(
+                    _.get(this.props.routes, '0.vanETAatEndVBS')
+                  ).getTime() -
+                    60 * 1000
+                ),
+              })
+              PushNotification.localNotificationSchedule({
+                message: 'Your van is at the start point in a minute',
+                date: new Date(
+                  new Date(
+                    _.get(this.props.routes, '0.vanETAatStartVBS')
+                  ).getTime() -
+                    60 * 1000
+                ),
+              })
+            }
           },
         },
         {text: 'Cancel'},

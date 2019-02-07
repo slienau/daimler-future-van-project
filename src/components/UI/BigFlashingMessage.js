@@ -1,10 +1,10 @@
-import DefaultText from '../../../components/UI/DefaultText'
-import defaultStyles from '../../../components/UI/defaultStyles'
+import DefaultText from './DefaultText'
+import defaultStyles from './defaultStyles'
 import React from 'react'
 import {Animated} from 'react-native'
 import PropTypes from 'prop-types'
 
-class RemainingTimeMessage extends React.Component {
+class BigFlashingMessage extends React.Component {
   state = {
     animation: new Animated.Value(1),
   }
@@ -44,15 +44,15 @@ class RemainingTimeMessage extends React.Component {
             defaultStyles.textLarge,
             defaultStyles.textLight,
           ]}>
-          Van will arrive {this.props.message}.
+          {this.props.message}.
         </DefaultText>
       </Animated.View>
     )
   }
 }
 
-RemainingTimeMessage.propTypes = {
+BigFlashingMessage.propTypes = {
   message: PropTypes.string,
 }
 
-export default RemainingTimeMessage
+export default BigFlashingMessage

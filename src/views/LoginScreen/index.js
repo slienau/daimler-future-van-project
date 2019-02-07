@@ -1,6 +1,5 @@
 import React from 'react'
-import {Container, Content, Form, Item, Input, Label} from 'native-base'
-import _ from 'lodash'
+import {Container, Content, Form, Item, Input, Label, Toast} from 'native-base'
 import {
   View,
   AsyncStorage,
@@ -13,8 +12,9 @@ import CustomButton from '../../components/UI/CustomButton'
 import HeadingText from '../../components/UI/HeadingText'
 import backgroundImage from './assets/login_background.jpg'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
+import {defaultDangerToast} from '../../lib/toasts'
 
-export default class LoginScreen extends React.Component {
+class LoginScreen extends React.Component {
   state = {
     username: '',
     password: '',
@@ -30,6 +30,7 @@ export default class LoginScreen extends React.Component {
   login = async () => {
     try {
       await login(this.state)
+      Toast.hide()
       Animated.timing(this.state.loginAnimation, {
         toValue: 0,
         duration: 500, // milliseconds
@@ -37,9 +38,8 @@ export default class LoginScreen extends React.Component {
       }).start(() => {
         this.props.navigation.navigate('MainAppStack')
       })
-    } catch (err) {
-      if (_.get(err, 'response.status') !== 400) throw err
-      alert('Invalid username or password!')
+    } catch (error) {
+      Toast.show(defaultDangerToast("Couldn't login. " + error.message))
     }
   }
 
@@ -168,3 +168,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 })
+
+export default LoginScreen

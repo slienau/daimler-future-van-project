@@ -7,7 +7,7 @@ import BottomButtons from './BottomButtons'
 import Routes from './Routes'
 import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
-import {Container} from 'native-base'
+import {Container, Toast} from 'native-base'
 import {Dimensions} from 'react-native'
 import _ from 'lodash'
 import PushNotification from 'react-native-push-notification'
@@ -27,6 +27,7 @@ import {defaultMapRegion} from '../../lib/config'
 import CustomFabWithIcon from '../../components/UI/CustomFabWithIcon'
 import CurrentLocationButton from './Buttons/CurrentLocationButton'
 import api from '../../lib/api'
+import {defaultDangerToast, defaultToast} from '../../lib/toasts'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -130,13 +131,19 @@ class MapScreen extends React.Component {
           )
           if (newPassengers.length > 0) {
             console.log(newPassengers)
+            const message = 'A new passenger will join you on your ride.'
             PushNotification.localNotification({
-              message: 'A new passenger will join you on your ride.',
+              message: message,
             })
+            Toast.show(defaultToast(message))
           }
           this.props.setActiveOrderStatus(resp.data)
-        } catch (e) {
-          console.log(e)
+        } catch (error) {
+          Toast.show(
+            defaultDangerToast(
+              'Error getting current active order status. ' + error.message
+            )
+          )
         }
       }
       this.updatePositionTimerId = setTimeout(fn, 1000)
@@ -147,7 +154,12 @@ class MapScreen extends React.Component {
   watchPosition = () => {
     this.watchId = navigator.geolocation.watchPosition(
       position => this.props.setCurrentUserLocation(position.coords),
-      error => this.setState({error: error.message}),
+      error => {
+        if (!error.message.includes('temporarily'))
+          Toast.show(
+            defaultDangerToast('Error watching user position. ' + error.message)
+          )
+      },
       {
         distanceFilter: 3,
         useSignificantChanges: true,
@@ -163,8 +175,10 @@ class MapScreen extends React.Component {
         try {
           const {data} = await api.get('/vans')
           this.props.setVans(data)
-        } catch (e) {
-          console.log(e)
+        } catch (error) {
+          Toast.show(
+            defaultDangerToast("Couldn't get van positions. " + error.message)
+          )
         }
       }
       this.getVansTimerId = setTimeout(fn, 5000)
@@ -184,7 +198,11 @@ class MapScreen extends React.Component {
         // this.animateToRegion(position.coords)
         this.props.setVisibleCoordinates([position.coords])
       },
-      error => this.setState({error: error.message})
+      error => {
+        Toast.show(
+          defaultDangerToast("Couldn't get current position. " + error.message)
+        )
+      }
     )
   }
 
@@ -210,8 +228,8 @@ class MapScreen extends React.Component {
         ]),
       })
       this.toRideScreen()
-    } catch (e) {
-      console.log(e)
+    } catch (error) {
+      Toast.show(defaultDangerToast("Couldn't enter van. " + error.message))
     }
   }
 
