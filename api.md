@@ -141,10 +141,10 @@ This object represents a user account.
 | `email` | `String` | Yes | The users email. | `maxmueller@tu-berlin.de` |
 | `username` | `String` | Yes | The username. | `maxiboy123` |
 | `loyaltyPoints` | `Number` | Yes | The users total loyalty points. | `234` |
+| `loyaltyStatus` | `String` | yes | The loyalty program status. | `gold` |
 | `address` | `Object` | No | The users address. Contains `street`, `zipcode` and `city` | *See account example.* |
 | `distance` | `Number` | yes | Total amount of kilometres driven by the user. | `423.34` |
 | `co2savings` | `Number` | yes | Total amount of CO2 savings (in kilogram) for all van rides. | `70.4` |
-| `status` | `String` | yes | The loyalty program status. | `gold` |
 
 #### Example
 
@@ -156,6 +156,7 @@ This object represents a user account.
   "email": "maxmueller@tu-berlin.de",
   "username": "maxiboy123",
   "loyaltyPoints": 234,
+  "loyaltyStatus": "gold",
   "address": {
     "street": "Salzufer 1",
     "zipcode": "10587",
@@ -163,7 +164,6 @@ This object represents a user account.
   },
   "distance": 423.34,
   "co2savings": 70.4,
-  "status": "gold"
 }
 ```
 
