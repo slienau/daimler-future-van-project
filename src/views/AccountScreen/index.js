@@ -24,7 +24,7 @@ import PropTypes from 'prop-types'
 import {fetchAccountData} from '../../ducks/account'
 import {logout} from '../../lib/api'
 import CustomButton from '../../components/UI/CustomButton'
-import {DEFAULT_REQUEST_ERROR_TOAST} from '../../lib/toasts'
+import {defaultDangerToast} from '../../lib/toasts'
 import {firstLetterToUppercase} from '../../lib/utils'
 
 const StarIcon = styled(Icon)`
@@ -65,8 +65,9 @@ class Account extends React.Component {
     try {
       await this.props.onFetchAccountData()
     } catch (error) {
-      Toast.show(DEFAULT_REQUEST_ERROR_TOAST)
-      console.log(error)
+      Toast.show(
+        defaultDangerToast("Couldn't get account data. " + error.message)
+      )
     }
   }
 

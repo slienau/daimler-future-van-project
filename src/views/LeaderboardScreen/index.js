@@ -4,7 +4,7 @@ import {Container, Content, List, ListItem, Text, Toast} from 'native-base'
 import PropTypes from 'prop-types'
 import LeaderListItem from './components/LeaderListItem'
 import {fetchLeaderBoardData} from '../../ducks/account'
-import {DEFAULT_REQUEST_ERROR_TOAST} from '../../lib/toasts'
+import {defaultDangerToast} from '../../lib/toasts'
 
 class LeaderboardScreen extends Component {
   componentDidMount() {
@@ -17,8 +17,9 @@ class LeaderboardScreen extends Component {
     try {
       await this.props.onFetchLeaderBoardData()
     } catch (error) {
-      Toast.show(DEFAULT_REQUEST_ERROR_TOAST)
-      console.log(error)
+      Toast.show(
+        defaultDangerToast("Couldn't get leaderboard data. " + error.message)
+      )
     }
   }
 

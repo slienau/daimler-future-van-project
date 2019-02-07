@@ -27,10 +27,8 @@ const RideScreen = props => {
       })
       props.changeMapState(MapState.EXIT_VAN)
       props.navigation.navigate('Map')
-    } catch (e) {
-      const errorMessage = "Couldn't exit van."
-      Toast.show(defaultDangerToast(errorMessage))
-      console.log(errorMessage, e)
+    } catch (error) {
+      Toast.show(defaultDangerToast("Couldn't exit van. " + error.message))
     }
   }
 

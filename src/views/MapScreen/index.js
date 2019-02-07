@@ -139,10 +139,11 @@ class MapScreen extends React.Component {
           }
           this.props.setActiveOrderStatus(resp.data)
         } catch (error) {
-          const errorMessage =
-            'Error getting current active order status. ' + error.message
-          Toast.show(defaultDangerToast(errorMessage))
-          console.log(errorMessage, error)
+          Toast.show(
+            defaultDangerToast(
+              'Error getting current active order status. ' + error.message
+            )
+          )
         }
       }
       this.updatePositionTimerId = setTimeout(fn, 1000)
@@ -175,9 +176,9 @@ class MapScreen extends React.Component {
           const {data} = await api.get('/vans')
           this.props.setVans(data)
         } catch (error) {
-          const errorMessage = "Couldn't get van positions. " + error.message
-          Toast.show(defaultDangerToast(errorMessage))
-          console.log(errorMessage, error)
+          Toast.show(
+            defaultDangerToast("Couldn't get van positions. " + error.message)
+          )
         }
       }
       this.getVansTimerId = setTimeout(fn, 5000)
@@ -198,9 +199,9 @@ class MapScreen extends React.Component {
         this.props.setVisibleCoordinates([position.coords])
       },
       error => {
-        const errorMessage = "Couldn't get current position. " + error.message
-        Toast.show(defaultDangerToast(errorMessage))
-        console.warn(errorMessage, error)
+        Toast.show(
+          defaultDangerToast("Couldn't get current position. " + error.message)
+        )
       }
     )
   }
@@ -227,10 +228,8 @@ class MapScreen extends React.Component {
         ]),
       })
       this.toRideScreen()
-    } catch (e) {
-      const errorMessage = "Couldn't enter van. " + e.message
-      Toast.show(defaultDangerToast(errorMessage))
-      console.log(errorMessage, e)
+    } catch (error) {
+      Toast.show(defaultDangerToast("Couldn't enter van. " + error.message))
     }
   }
 

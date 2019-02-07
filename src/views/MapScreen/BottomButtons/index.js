@@ -19,11 +19,7 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import CustomFabWithIcon from '../../../components/UI/CustomFabWithIcon'
 import PushNotification from 'react-native-push-notification'
-import {
-  defaultDangerToast,
-  defaultSuccessToast,
-  UNEXPECTED_BEHAVIOUR_TOAST,
-} from '../../../lib/toasts'
+import {defaultDangerToast, defaultSuccessToast} from '../../../lib/toasts'
 
 class BottomButtons extends React.Component {
   state = {
@@ -85,7 +81,8 @@ class BottomButtons extends React.Component {
     } catch (error) {
       if (error.code === 404)
         Toast.show(defaultDangerToast('No routes found. ' + error.message, 0))
-      else Toast.show(UNEXPECTED_BEHAVIOUR_TOAST)
+      else
+        Toast.show(defaultDangerToast('Error getting routes. ' + error.message))
     }
   }
 

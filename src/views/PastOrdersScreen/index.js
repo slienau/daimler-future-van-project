@@ -12,7 +12,7 @@ import {
 } from 'native-base'
 import {fetchOrders} from '../../ducks/orders'
 import PastOrdersListItem from './components/PastOrdersListItem'
-import {DEFAULT_REQUEST_ERROR_TOAST} from '../../lib/toasts'
+import {defaultDangerToast} from '../../lib/toasts'
 
 class PastOrdersScreen extends Component {
   componentDidMount() {
@@ -25,8 +25,9 @@ class PastOrdersScreen extends Component {
     try {
       await this.props.onFetchOrders()
     } catch (error) {
-      Toast.show(DEFAULT_REQUEST_ERROR_TOAST)
-      console.log(error)
+      Toast.show(
+        defaultDangerToast("Couldn't get order history. " + error.message)
+      )
     }
   }
 
