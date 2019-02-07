@@ -25,6 +25,7 @@ import {fetchAccountData} from '../../ducks/account'
 import {logout} from '../../lib/api'
 import CustomButton from '../../components/UI/CustomButton'
 import {DEFAULT_REQUEST_ERROR_TOAST} from '../../lib/toasts'
+import {firstLetterToUppercase} from '../../lib/utils'
 
 const StarIcon = styled(Icon)`
   color: gold;
@@ -88,6 +89,9 @@ class Account extends React.Component {
         break
     }
 
+    let loyaltyStatusText = _.get(this.props.account, 'status')
+    if (_.isString(loyaltyStatusText))
+      loyaltyStatusText = firstLetterToUppercase(loyaltyStatusText)
     return (
       <Container>
         <Content>
@@ -101,9 +105,7 @@ class Account extends React.Component {
                 </Body>
                 <Right>
                   <Thumbnail source={statusIcon} medium />
-                  <Text note>
-                    Status: {_.get(this.props.account, 'status')}
-                  </Text>
+                  <Text note>Status: {loyaltyStatusText}</Text>
                 </Right>
               </Left>
             </CardItem>

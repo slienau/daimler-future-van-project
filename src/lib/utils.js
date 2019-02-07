@@ -24,3 +24,8 @@ export const getRegionForCoordinates = points => {
     longitudeDelta: (maxY - minY) * 1.5 || 0.001,
   }
 }
+
+export const firstLetterToUppercase = inputString => {
+  if (!_.isString(inputString)) return ''
+  return inputString.charAt(0).toUpperCase() + inputString.slice(1)
+}
