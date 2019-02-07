@@ -67,8 +67,7 @@ class BottomButtons extends React.Component {
             } catch (error) {
               Toast.show(
                 defaultDangerToast(
-                  "Your order couldn't be canceled! " +
-                    _.get(error, 'response.data.message', '')
+                  "Your order couldn't be canceled! " + error.message
                 )
               )
             }
@@ -84,10 +83,8 @@ class BottomButtons extends React.Component {
     try {
       await this.props.fetchRoutes()
     } catch (error) {
-      const errorMessage = _.get(error, 'response.data.message', '')
-      const errorCode = _.get(error, 'response.data.code', 400)
-      if (errorCode === 404)
-        Toast.show(defaultDangerToast('No routes found. ' + errorMessage, 0))
+      if (error.code === 404)
+        Toast.show(defaultDangerToast('No routes found. ' + error.message, 0))
       else Toast.show(UNEXPECTED_BEHAVIOUR_TOAST)
     }
   }
@@ -120,8 +117,7 @@ class BottomButtons extends React.Component {
             } catch (error) {
               Toast.show(
                 defaultDangerToast(
-                  "Your order couldn't be confirmed! " +
-                    _.get(error, 'response.data.message', '')
+                  "Your order couldn't be confirmed! " + error.message
                 )
               )
             }

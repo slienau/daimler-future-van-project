@@ -33,7 +33,17 @@ api.interceptors.response.use(null, async error => {
   ) {
     if (error.message.startsWith('timeout of ')) {
       getStore().dispatch(setNetworkTimeoutError(true))
+      error.code = 408
+      error.message = 'Timeout exceeded. Please check your internet connection.'
+      throw error
     }
+    // set error message to response body error message if possible
+    error.code = _.get(
+      error,
+      'response.data.code',
+      _.get(error, 'response.status', 400)
+    )
+    error.message = _.get(error, 'response.data.message', error.message)
     throw error
   }
   try {
