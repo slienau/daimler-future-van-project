@@ -12,6 +12,18 @@ class ConfigService {
   static jwtSecret () {
     return this._instance.values.jwtSecret
   }
+  static vanStartLocations () {
+    return this._instance.values.vanStartLocations
+  }
+  static numberOfSeats () {
+    return this._instance.values.numberOfSeats
+  }
+  static numberOfVans () {
+    return this._instance.values.numberOfVans
+  }
+  static inactiveTimeToReset () {
+    return this._instance.values.inactiveTimeToReset
+  }
 }
 ConfigService._instance = new ConfigService()
 module.exports = ConfigService

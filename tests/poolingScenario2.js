@@ -24,8 +24,8 @@ const stopVB1 = {
 
 // test if the vans assigned to the routes are locked and not available anymore
 async function starttest () {
-  const credentials1 = await axios.post(address + '/login', { username: 'maexle', password: 'maxiscool' })
-  console.log('maexle Login worked')
+  const credentials1 = await axios.post(address + '/login', { username: 'admin', password: 'adminiscooler' })
+  console.log('admin Login worked')
   const credentials2 = await axios.post(address + '/login', { username: 'philipp', password: 'philippiscooler' })
   console.log('philipp Login worked')
   console.log('----------------------')

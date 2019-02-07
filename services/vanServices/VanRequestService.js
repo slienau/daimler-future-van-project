@@ -11,7 +11,7 @@ class VanRequestService {
       if the van has only one next bus stop left, its meaning that the van is directly riding to the destionation, so in this case we can just
       take the step that is at least secondsAhead seconds ahead on the route
     */
-  static getStepAheadOnCurrentRoute (van, secondsAhead = 120) {
+  static getStepAheadOnCurrentRoute (van, secondsAhead = 75) {
     let currentTime = new Date()
     if (van.nextRoutes.length > 0) {
       let steps = van.nextRoutes[0].routes[0].legs[0].steps
