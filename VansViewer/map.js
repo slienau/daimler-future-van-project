@@ -68,6 +68,16 @@ function createVanMarker(coords, id) {
     map,
   })
 }
+
+function createVBSMarker(vbs) {
+  return new google.maps.Marker({
+    position: normalizePosition(vbs.location),
+    icon: 'vbs.png',
+    title: vbs.name,
+    map,
+  })
+}
+
 const vanColors = ['red', 'green', 'blue']
 function createVanRoute(i, path) {
   return new google.maps.Polyline({
@@ -107,6 +117,11 @@ async function update() {
   setTimeout(update, 1500)
 }
 
+async function getVBS() {
+  const {data} = await api.get('/virtualbusstops')
+  data.map(createVBSMarker)
+}
+
 global.initMap = async () => {
   map = new google.maps.Map(document.getElementById('map'), {
     center: {
@@ -116,5 +131,6 @@ global.initMap = async () => {
     zoom: 12,
   })
   await login()
+  await getVBS()
   update()
 }
