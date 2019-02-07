@@ -340,7 +340,8 @@ To get the user account information.
 | Code | Body Type | Description |
 |--- |--- |--- |
 | `200` | `Account` | See [Account](#account) |
-| `400` | `Error` | |
+| `400` | `Error` | Bad request. See [Error](#error-object) |
+| `401` | `Error` | When username or password is wrong. See [Error](#error-object) |
 
 ---
 
@@ -359,7 +360,7 @@ To update user account information.
 | Code | Body Type | Description |
 |--- |--- |--- |
 | `200` | `Account` | Containing the updated user account information. See [Account](#account) |
-| `400` | `Error` | |
+| `400` | `Error` | See [Error](#error-object) |
 
 ---
 
@@ -388,7 +389,7 @@ Get the orders of a user.
 | Code | Body Type | Description |
 |--- |--- |--- |
 | `200` | Array of `Order` | Orders which match the request parameters. See [Order](#order) |
-| `400` | `Error` | |
+| `400` | `Error` | See [Error](#error-object) |
 
 ###### Example
 
@@ -440,7 +441,7 @@ To create (place) a new van order.
 | Code | Body Type | Description |
 |--- |--- |--- |
 | `200` | `Order` | The new created order. See [Order](#order) |
-| `400` | `Error` | If the order couldn't be created. |
+| `400` | `Error` | If the order couldn't be created. See [Error](#error-object) |
 | `404` | `Error` | If the `routeId` wasn't found. See [Error object](#error-object) |
 
 ---
@@ -488,7 +489,7 @@ Possible `action`-types are:
 | Code | Body Type | Description |
 |--- |--- |--- |
 | `200` | `Order` | See [Order](#order) |
-| `400` | `Error` | |
+| `400` | `Error` | See [Error](#error-object) |
 | `403` | `Error` | If the `action` requested by the user is not allowed. See request body and [Error object](#error-object) |
 
 ---
@@ -515,7 +516,7 @@ GET /activeorder/status?passengerLatitude=52.123456&passengerLongitude=13.123456
 | Code | Body Type | Description |
 |--- |--- |--- |
 | `200` | `Object` | The updated order (see example) |
-| `400` | `Error` | |
+| `400` | `Error` | See [Error](#error-object) |
 
 On `HTTP 200` the following object will be returned:
 
@@ -590,8 +591,8 @@ Get suggested routes from starting point to destination.
 | Code | Body Type | Description |
 |--- |--- |--- |
 | `200` | Array of `Route` | Array of possible routes from desired start location to destination. Array will contain *max. 5 items*. See [Route](#route). |
-| `400` | `Error` | |
-| `404` | `Error` | If no route was found. |
+| `400` | `Error` | See [Error](#error-object) |
+| `404` | `Error` | If no route was found. See [Error](#error-object) |
 
 ###### Example
 
@@ -651,7 +652,7 @@ Get nearby virtual bus stops.
 | Code | Body Type | Description |
 |--- |--- |--- |
 | `200` | Array of `VirtualBusStop` | Array of virtual bus stops which are inside of the radius from the given location. See [VirtualBusStop](#virtualbusstop) |
-| `400` | `Error` | If the order couldn't be updated. |
+| `400` | `Error` | See [Error](#error-object) |
 
 ###### Examples
 
@@ -697,7 +698,7 @@ Get the top 10 users with the most loyalty points.
 | Code | Body Type | Description |
 |--- |--- |--- |
 | `200` | Array of `Objects` | Containing the loyalty points (for schema see example). Sorted by property `loyalty points` |
-| `400` | `Error` | |
+| `400` | `Error` | See [Error](#error-object) |
 
 ###### Example
 
