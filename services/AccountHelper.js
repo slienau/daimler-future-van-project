@@ -21,6 +21,19 @@ class AccountHelper {
     const accs = await Account.findOne({ 'username': 'christoph' })
     if (accs !== null) return (console.log(accs))
 
+    const admin = new Account({
+      username: 'admin',
+      firstName: 'admin',
+      lastName: 'admin',
+      password: 'adminiscooler',
+      address: {
+        street: 'adminstreet 1',
+        zipcode: 10000,
+        city: 'Berlin'
+      },
+      email: 'ad@min.admin'
+    })
+
     const christoph = new Account({
       username: 'christoph',
       firstName: 'Christoph',
@@ -112,6 +125,7 @@ class AccountHelper {
       }
     })
 
+    await admin.save()
     await christoph.save()
     await sebastian.save()
     await alex.save()
