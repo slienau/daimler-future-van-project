@@ -1,5 +1,5 @@
 import {View} from 'react-native'
-import {Text, Card, Container, CardItem, Icon} from 'native-base'
+import {Text, Card, Container, CardItem, Icon, Left, Body} from 'native-base'
 import styled from 'styled-components/native'
 
 export const StyledRouteInfo = styled(View)`
@@ -27,6 +27,16 @@ export const StyledContainer = styled(Container)`
 export const IconCenterFlex = styled(Icon)`
   align-items: center;
   flex: 1;
+`
+
+export const RightAddress = styled(Text)`
+  flex: 2;
+`
+export const BodyFlex = styled(Body)`
+  flex: 2;
+`
+export const LeftFlex = styled(Left)`
+  flex: 2;
 `
 
 export const TextFlex = styled(Text)`
