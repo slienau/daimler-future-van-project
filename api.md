@@ -592,7 +592,8 @@ Get suggested routes from starting point to destination.
 | Code | Body Type | Description |
 |--- |--- |--- |
 | `200` | Array of `Route` | Array of possible routes from desired start location to destination. Array will contain *max. 5 items*. See [Route](#route). |
-| `400` | `Error` | If the order couldn't be updated. |
+| `400` | `Error` | |
+| `404` | `Error` | If no route was found. |
 
 ###### Example
 
