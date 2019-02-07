@@ -13,6 +13,7 @@ export default function account(state = initialState, action) {
   switch (action.type) {
     case SET_ACCOUNT_DATA:
       return {
+        ...state,
         ...action.payload,
         name: action.payload.firstName + ' ' + action.payload.lastName,
       }

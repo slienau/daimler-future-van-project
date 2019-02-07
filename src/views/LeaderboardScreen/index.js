@@ -7,7 +7,6 @@ import {fetchLeaderBoardData} from '../../ducks/account'
 import {DEFAULT_REQUEST_ERROR_TOAST} from '../../lib/toasts'
 
 class LeaderboardScreen extends Component {
-  // TODO: data (List) is not shown the first time LeaderboardScreen is opened, only the following times
   componentDidMount() {
     this.props.navigation.addListener('didFocus', () => {
       this.getLeaderBoardData()
