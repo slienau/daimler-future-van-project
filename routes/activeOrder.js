@@ -99,7 +99,7 @@ router.put('/', async function (req, res) {
       }
       await ManagementSystem.endRide(order)
 
-      await Order.updateOne({ _id: orderId }, { $set: { endTime: new Date(), active: false } })
+      await Order.updateOne({ _id: orderId }, { $set: { vanExitTime: new Date(), active: false } })
 
       // await ManagementSystem.endRide(order)
 
