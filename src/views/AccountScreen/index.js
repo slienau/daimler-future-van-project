@@ -79,8 +79,9 @@ class Account extends React.Component {
     const uri =
       'https://www.thehindu.com/sci-tech/technology/internet/article17759222.ece/alternates/FREE_660/02th-egg-person'
 
+    const loyaltyStatus = _.get(this.props.account, 'loyaltyStatus')
     let statusIcon = bronzeStatus
-    switch (this.props.account.status) {
+    switch (loyaltyStatus) {
       case 'gold':
         statusIcon = goldStatus
         break
@@ -89,9 +90,9 @@ class Account extends React.Component {
         break
     }
 
-    let loyaltyStatusText = _.get(this.props.account, 'status')
-    if (_.isString(loyaltyStatusText))
-      loyaltyStatusText = firstLetterToUppercase(loyaltyStatusText)
+    let loyaltyStatusText = ''
+    if (_.isString(loyaltyStatus))
+      loyaltyStatusText = firstLetterToUppercase(loyaltyStatus)
     return (
       <Container>
         <Content>
