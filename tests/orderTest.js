@@ -9,7 +9,7 @@ function sleep (ms) {
 }
 
 async function starttest () {
-  const credentials = await axios.post(address + '/login', { username: 'antonio', password: 'antonioiscooler' })
+  const credentials = await axios.post(address + '/login', { username: 'admin', password: 'adminiscooler' })
   console.log('Login worked')
   console.log('----------------------')
 
@@ -24,7 +24,7 @@ async function starttest () {
   console.log('PastOrders worked')
   console.log('----------------------')
 
-  await axiosInstance.get('/vans')
+  await axiosInstance.get('vans')
   // console.log(vans.data)
   console.log('Vans worked')
   console.log('----------------------')
@@ -42,10 +42,11 @@ async function starttest () {
   })
   const routeInfo = route.data[0]
 
-  // console.log(routeInfo)
+  console.log(routeInfo)
   console.log('Route is ok')
   console.log('----------------------')
   await axiosInstance.post('/orders', { routeId: routeInfo.id })
+
   // console.log(orderInfo)
   console.log('Order is ok')
   console.log('----------------------')

@@ -32,7 +32,7 @@ router.get('/', async function (req, res) {
     let leaderboardWithUsernames = leaderboard.slice()
     let account
     for (let i = 0; i < leaderboard.length; i++) {
-      leaderboardWithUsernames[i].loyaltyPoints = Number(leaderboardWithUsernames[i].loyaltyPoints.toFixed(0))
+      account = String(leaderboard[i]._id)
       if (String(leaderboard[i]._id)) {
         account = await Account.findById(String(leaderboard[i]._id)).lean()
         delete leaderboardWithUsernames[i]._id

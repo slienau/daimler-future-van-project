@@ -20,8 +20,7 @@ class OrderHelper {
 
     let user, userId, vbs
     let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End, distance1, distance2, distance3
-    let accountnames = ['christoph', 'sebastian', 'antonio', 'alex', 'domenic', 'marius', 'philipp']
-    let leaderboardDifference = 1.6
+    let accountnames = ['admin', 'maexle', 'christoph', 'sebastian', 'alex', 'domenic', 'marius', 'philipp', 'antonio']
 
     for (let i = 0; i < accountnames.length; i++) {
       try {
@@ -54,7 +53,7 @@ class OrderHelper {
           vanExitTime: time1End,
           vanId: 3,
           distance: distance1,
-          loyaltyPoints: Number((distance1 * 10 * leaderboardDifference).toFixed(0)),
+          loyaltyPoints: distance1 * 10,
           co2savings: distance1 * 0.13,
           route: '273jsnsb9201'
         })
@@ -71,7 +70,7 @@ class OrderHelper {
           vanExitTime: time2End,
           vanId: 4,
           distance: distance2,
-          loyaltyPoints: Number((distance2 * 10 * leaderboardDifference).toFixed(0)),
+          loyaltyPoints: distance2 * 10,
           co2savings: distance2 * 0.13,
           route: '273jsnsb9250'
         })
@@ -87,7 +86,7 @@ class OrderHelper {
           vanExitTime: time2End,
           vanId: 4,
           distance: distance3,
-          loyaltyPoints: Number((distance3 * 10 * leaderboardDifference).toFixed(0)),
+          loyaltyPoints: distance3 * 10,
           co2savings: distance3 * 0.13,
           route: '273jsnsb9250'
         })
@@ -95,7 +94,6 @@ class OrderHelper {
         await order1.save()
         await order2.save()
         await order3.save()
-        leaderboardDifference -= 0.2
       } catch (error) {
         Logger.error(error)
       }
