@@ -30,6 +30,7 @@ function (username, password, cb) {
     })
 }
 ))
+// small
 const secret = EnvVariableService.jwtSecret()
 passport.use(new JWTStrategy({
   jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
