@@ -45,7 +45,7 @@ router.get('/', async function (req, res) {
     res.json(leaderboardWithUsernames)
   } catch (error) {
     Logger.error(error)
-    res.status(404).json({ error: error, description: 'No items found' })
+    res.status(404).json({ error: error, message: 'No items found' })
   }
 })
 

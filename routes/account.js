@@ -46,11 +46,11 @@ router.get('/', async function (req, res) {
     responsebody.co2savings = co2savings
     responsebody.distance = distance // total distance the user travelled
     // Calculate the status of an account based on the loyalty points
-    responsebody.status = AccountHelper.status(loyaltyPoints)
+    responsebody.loyaltyStatus = AccountHelper.status(loyaltyPoints)
     res.json(responsebody)
   } catch (error) {
     Logger.error(error)
-    res.status(404).json({ error: error, msg: 'No items found' })
+    res.status(404).json({ error: error, message: 'No items found' })
   }
 })
 

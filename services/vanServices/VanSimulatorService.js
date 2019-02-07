@@ -4,8 +4,7 @@ const Order = require('../../models/Order.js')
 const geolib = require('geolib')
 const _ = require('lodash')
 const Logger = require('../WinstonLogger').logger
-
-const tenMinutes = 5 * 60 * 1000
+const inactiveTimeToReset = require('../ConfigService').inactiveTimeToReset()
 
 class VanSimulatorService {
   static async updateVanLocations (vans) {
@@ -13,7 +12,7 @@ class VanSimulatorService {
     let latDif, longDif, timeFraction
     // Iterate through all vans
     for (let van of vans) {
-      // check if potential is older than 10 minutes
+      // check if potential is older than 1 minute - if yes delete
       if (van.potentialRoute.length > 0 && van.potentialRouteTime.getTime() + 60 * 1000 < currentTime.getTime()) {
         Logger.info('Deleting old potential route')
         van.potentialRoute = []
@@ -23,7 +22,7 @@ class VanSimulatorService {
       }
 
       // Reset van if if waiting for more than 10 minutes
-      if (van.waiting && van.lastStepTime.getTime() + tenMinutes < currentTime.getTime()) {
+      if (van.waiting && van.lastStepTime.getTime() + inactiveTimeToReset < currentTime.getTime()) {
         await this.checkForInactiveOrders(van)
         continue
       }
@@ -146,7 +145,7 @@ class VanSimulatorService {
       const order = await Order.findById(oid)
       const route = await Route.findById(order.route).lean()
       // set reference time based on whether passenger has started ride or not
-      const referenceTime = order.vanEnterTime ? route.vanETAatEndVBS.getTime() + tenMinutes : route.vanETAatStartVBS.getTime() + tenMinutes
+      const referenceTime = order.vanEnterTime ? route.vanETAatEndVBS.getTime() + inactiveTimeToReset : route.vanETAatStartVBS.getTime() + inactiveTimeToReset
       if (referenceTime < currentTime.getTime()) {
         Logger.info('deactivated Order ' + oid)
         await Order.updateOne({ _id: oid }, { $set: { active: false, vanExitTime: new Date() } })

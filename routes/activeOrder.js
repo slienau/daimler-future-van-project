@@ -16,15 +16,17 @@ router.get('/status', async function (req, res) {
 
   res.setHeader('Content-Type', 'application/json')
 
-  if (!req.query.passengerLatitude || !req.query.passengerLongitude) return res.status(400).json({ code: 400, description: 'Bad params, you need passengerLongitude and passengerLatitude' })
+  if (!req.query.passengerLatitude || !req.query.passengerLongitude) return res.status(400).json({ code: 400, message: 'Bad params, you need passengerLongitude and passengerLatitude' })
 
   await ManagementSystem.updateVanLocations()
   const order = await Order.findOne({ accountId: req.user._id, active: true })
 
-  if (!order) return res.status(404).json({ code: 404, description: 'No active order' })
+  if (!order) return res.status(404).json({ code: 404, message: 'No active order' })
 
   const result = await OrderHelper.checkOrderLocationStatus(order._id, { latitude: req.query.passengerLatitude, longitude: req.query.passengerLongitude })
 
+  // Check for errors
+  if (result.code) res.status(result.code).json(result)
   res.json(result)
 })
 
@@ -34,7 +36,8 @@ router.get('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
-  if (!order) return res.status(404).json({ message: 'no order active' })
+  if (!order) return res.status(404).json({ code: 400, message: 'no order active' })
+
   const orderLean = await Order.findById(order._id).lean()
   orderLean.id = order._id
 
@@ -49,12 +52,12 @@ router.get('/', async function (req, res) {
 router.put('/', async function (req, res) {
   Logger.info('Put activeOrder request zu user: ' + req.user._id + ' mit Action: ' + req.body.action)
 
-  if (!req.body.userLocation.latitude || !req.body.userLocation.longitude) res.status(400).json({ code: 400, description: 'Bad params, you need userLocation' })
+  if (!req.body.userLocation.latitude || !req.body.userLocation.longitude) res.status(400).json({ code: 400, message: 'Bad params, you need userLocation' })
 
   await ManagementSystem.updateVanLocations()
 
   const order = await Order.findOne({ accountId: req.user._id, active: true })
-  if (!order) return res.status(404).json({ code: 404, description: 'user has no active order' })
+  if (!order) return res.status(404).json({ code: 404, message: 'user has no active order' })
 
   const orderId = order._id
 
@@ -71,13 +74,13 @@ router.put('/', async function (req, res) {
     case 'startride':
 
       if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: req.body.userLocation.latitude, longitude: req.body.userLocation.longitude }) > range) {
-        return res.status(403).json({ code: 403, description: 'User is not close enough to the van.' })
+        return res.status(403).json({ code: 403, message: 'User is not close enough to the van.' })
       } else if (geolib.getDistance({ latitude: virtualBusStop.location.latitude, longitude: virtualBusStop.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > range) {
-        return res.status(403).json({ code: 403, description: 'Van has not arrived at the virtual bus stop yet.' })
+        return res.status(403).json({ code: 403, message: 'Van has not arrived at the virtual bus stop yet.' })
       } else if (order.vanEnterTime) {
-        return res.status(403).json({ code: 403, description: 'Ride has already been started.' })
+        return res.status(403).json({ code: 403, message: 'Ride has already been started.' })
       } else if (!van.waiting) {
-        return res.status(403).json({ code: 403, description: 'Van is not yet waiting.' })
+        return res.status(403).json({ code: 403, message: 'Van is not yet waiting.' })
       }
       await ManagementSystem.startRide(order)
 
@@ -91,11 +94,11 @@ router.put('/', async function (req, res) {
 
     case 'endride':
       if (!order.vanEnterTime) {
-        return res.status(403).json({ code: 403, description: 'The ride has not yet started.' })
+        return res.status(403).json({ code: 403, message: 'The ride has not yet started.' })
       } else if (geolib.getDistance({ latitude: virtualBusStopEnd.location.latitude, longitude: virtualBusStopEnd.location.longitude }, { latitude: vanLocation.latitude, longitude: vanLocation.longitude }) > range) {
-        return res.status(403).json({ code: 403, description: 'Van has not arrived at its destination yet.' })
+        return res.status(403).json({ code: 403, message: 'Van has not arrived at its destination yet.' })
       } else if (!van.waiting) {
-        return res.status(403).json({ code: 403, description: 'Van is not yet waiting.' })
+        return res.status(403).json({ code: 403, message: 'Van is not yet waiting.' })
       }
       await ManagementSystem.endRide(order)
 
@@ -109,7 +112,7 @@ router.put('/', async function (req, res) {
 
     case 'cancel':
       if (order.vanEnterTime) {
-        return res.status(403).json({ code: 403, description: 'Cannot be canceled. Ride has already started.' })
+        return res.status(403).json({ code: 403, message: 'Cannot be canceled. Ride has already started.' })
       }
       await ManagementSystem.cancelRide(order)
 
@@ -119,7 +122,7 @@ router.put('/', async function (req, res) {
       res.json(orderNew)
       break
     default:
-      res.status(400).json({ code: 400, description: 'Bad action parameter' })
+      res.status(400).json({ code: 400, message: 'Bad action parameter' })
   }
 })
 

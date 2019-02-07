@@ -17,7 +17,7 @@ class VirtualBusStopHelper {
         latitude: 52.507144,
         longitude: 13.330612
       },
-      name: 'Zoo - Hardenbergstraße 31',
+      name: 'Bahnhof Zoo',
       accessible: true
     })
     const potsdamerPl = new VirtualBusStop({
@@ -25,7 +25,7 @@ class VirtualBusStopHelper {
         latitude: 52.509726,
         longitude: 13.376962
       },
-      name: 'Potsdamer Platz 25',
+      name: 'Potsdamer Platz',
       accessible: true
     })
     const hbf = new VirtualBusStop({
@@ -33,7 +33,7 @@ class VirtualBusStopHelper {
         latitude: 52.524158,
         longitude: 13.369407
       },
-      name: 'Hauptbahnhof - Washingtonplatz 1 ',
+      name: 'Hauptbahnhof',
       accessible: true
     })
     const alex = new VirtualBusStop({
@@ -49,7 +49,7 @@ class VirtualBusStopHelper {
         latitude: 52.499044,
         longitude: 13.417085
       },
-      name: 'Kottbusser Tor - Skalitzer Str. 139',
+      name: 'Kottbusser Tor',
       accessible: true
     })
     const erp = new VirtualBusStop({
@@ -57,7 +57,7 @@ class VirtualBusStopHelper {
         latitude: 52.511632,
         longitude: 13.322181
       },
-      name: 'Ernst-Reuter-Platz - Hardenbergstraße 4',
+      name: 'Ernst-Reuter-Platz',
       accessible: true
     })
     const kufue = new VirtualBusStop({
@@ -65,7 +65,7 @@ class VirtualBusStopHelper {
         latitude: 52.499960,
         longitude: 13.363111
       },
-      name: 'Kurfürstenstraße - Potsdamer Straße 109',
+      name: 'Kurfürstenstraße',
       accessible: true
     })
     const tustra = new VirtualBusStop({
@@ -73,7 +73,7 @@ class VirtualBusStopHelper {
         latitude: 52.519688,
         longitude: 13.340634
       },
-      name: 'Turmstraße - Alt Moabit 85',
+      name: 'Turmstraße',
       accessible: true
     })
     const fried = new VirtualBusStop({
@@ -81,7 +81,7 @@ class VirtualBusStopHelper {
         latitude: 52.519671,
         longitude: 13.388097
       },
-      name: 'Friedrichstraße - Friedrichstraße 147',
+      name: 'Friedrichstraße',
       accessible: true
     })
     const ostb = new VirtualBusStop({
@@ -89,7 +89,7 @@ class VirtualBusStopHelper {
         latitude: 52.510105,
         longitude: 13.433079
       },
-      name: 'Ostbahnhof - Am Ostbahnhof 5',
+      name: 'Ostbahnhof',
       accessible: true
     })
     const rosi = new VirtualBusStop({
@@ -97,7 +97,7 @@ class VirtualBusStopHelper {
         latitude: 52.529326,
         longitude: 13.401422
       },
-      name: 'Rosenthaler Platz - Rosenthaler Straße 1',
+      name: 'Rosenthaler Platz',
       accessible: true
     })
     const natu = new VirtualBusStop({
@@ -105,7 +105,7 @@ class VirtualBusStopHelper {
         latitude: 52.529967,
         longitude: 13.380471
       },
-      name: 'Naturkundemuseum - Invalidenstraße 40',
+      name: 'Naturkundemuseum',
       accessible: true
     })
     const herm = new VirtualBusStop({
@@ -113,7 +113,7 @@ class VirtualBusStopHelper {
         latitude: 52.487297,
         longitude: 13.424565
       },
-      name: 'Hermannplatz - Hermannplatz 10',
+      name: 'Hermannplatz',
       accessible: true
     })
     const charl = new VirtualBusStop({
@@ -121,7 +121,7 @@ class VirtualBusStopHelper {
         latitude: 52.505242,
         longitude: 13.301897
       },
-      name: 'Charlottenburg - Stuttgarter Platz 30',
+      name: 'S-Bahnhof Charlottenburg',
       accessible: true
     })
     const mehr = new VirtualBusStop({
@@ -129,7 +129,7 @@ class VirtualBusStopHelper {
         latitude: 52.493413,
         longitude: 13.387769
       },
-      name: 'Mehringdamm - Mehringdamm 36',
+      name: 'Mehringdamm',
       accessible: true
     })
     const greif = new VirtualBusStop({
@@ -137,7 +137,7 @@ class VirtualBusStopHelper {
         latitude: 52.536260,
         longitude: 13.432289
       },
-      name: 'Greifswalder Straße - Danziger Straße 116',
+      name: 'Greifswalder Straße',
       accessible: true
     })
     const ftor = new VirtualBusStop({
@@ -145,7 +145,7 @@ class VirtualBusStopHelper {
         latitude: 52.516142,
         longitude: 13.453484
       },
-      name: 'Frankfurter Tor - Frankfurter Tor 1',
+      name: 'Frankfurter Tor',
       accessible: true
     })
     const check = new VirtualBusStop({
@@ -153,7 +153,7 @@ class VirtualBusStopHelper {
         latitude: 52.507475,
         longitude: 13.390161
       },
-      name: 'Checkpoint Charlie - Friedrichstraße 206',
+      name: 'Checkpoint Charlie',
       accessible: true
     })
     const ebers = new VirtualBusStop({
@@ -161,7 +161,7 @@ class VirtualBusStopHelper {
         latitude: 52.540788,
         longitude: 13.411868
       },
-      name: 'Eberswalder Straße - Schönhauser Allee 145',
+      name: 'Eberswalder Straße',
       accessible: true
     })
     const berl = new VirtualBusStop({
@@ -169,7 +169,7 @@ class VirtualBusStopHelper {
         latitude: 52.487768,
         longitude: 13.331290
       },
-      name: 'Berliner Straße - Bundesalleee 180',
+      name: 'Berliner Straße',
       accessible: true
     })
 

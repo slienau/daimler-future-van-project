@@ -12,7 +12,7 @@ router.post('/', async function (req, res) {
   Logger.info('Request to Routes with body: ')
   Logger.info(req.body)
 
-  if (!req.body.start.latitude || !req.body.destination.longitude || !req.body.start.longitude || !req.body.destination.latitude) return res.status(400).json({ code: 400, description: 'Bad body params' })
+  if (!req.body.start.latitude || !req.body.destination.longitude || !req.body.start.longitude || !req.body.destination.latitude) return res.status(400).json({ code: 400, message: 'Bad body params' })
 
   // Find the virtual bus stops that a closest to the passenger
   const startVB = await VirtualBusStopHelper.getClosestVB(req.body.start)
@@ -21,7 +21,7 @@ router.post('/', async function (req, res) {
   const passengerCount = req.body.passengers ? req.body.passengers : 1
 
   // Abort if the two Virtual Busstops are the same
-  if (startVB._id.equals(destinationVB._id)) return res.status(403).json({ code: 403, message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' })
+  if (startVB._id.equals(destinationVB._id)) return res.status(404).json({ code: 404, message: 'The virtual busstop that is closest to your starting locations is the same as the one closest to your destination location. Hence, it does not make sense for you to use this service' })
 
   // Walking Route from the users location to the first VBS, duration is in seconds
   const walkingRouteToStartVB = await GoogleMapsHelper.simpleGoogleRoute(req.body.start, startVB.location, 'walking')
@@ -33,7 +33,7 @@ router.post('/', async function (req, res) {
   // If there is an error send error message
   if (van.code) {
     Logger.error(van)
-    return res.status(403).json(van)
+    return res.status(van.code).json(van)
   }
   // Frontend cannot handle vanRoute Arrays yet so if there is multiple routes due to pooling just give the frontend the simple route connection instead
   const vanRoute = (van.userVanRoute.length > 1) ? await GoogleMapsHelper.simpleGoogleRoute(startVB.location, destinationVB.location) : van.userVanRoute[0]

@@ -1,7 +1,10 @@
 const VanHandlerService = require('./vanServices/VanHandlerService')
 const VanRequestService = require('./vanServices/VanRequestService')
 const VanSimulatorService = require('./vanServices/VanSimulatorService')
+const ConfigService = require('./ConfigService')
 const Logger = require('./WinstonLogger').logger
+
+const numberOfVans = ConfigService.numberOfVans()
 
 class ManagementSystem {
   // Returns the van that will execute the ride
@@ -61,16 +64,19 @@ class ManagementSystem {
   }
 
   static initializeVans () {
+    const vanLocations = ConfigService.vanStartLocations()
+    const numberOfSeats = ConfigService.numberOfSeats()
+
     for (let i = 0; i < this.numberOfVans; i++) {
       this.vans[i] = {
         vanId: i + 1,
         lastStepLocation: {
-          latitude: 52.507541,
-          longitude: 13.368500
+          latitude: vanLocations[i].location.latitude,
+          longitude: vanLocations[i].location.longitude
         },
         location: {
-          latitude: 52.507541,
-          longitude: 13.368500
+          latitude: vanLocations[i].location.latitude,
+          longitude: vanLocations[i].location.longitude
         },
         lastStepTime: null,
         nextStopTime: null,
@@ -85,7 +91,7 @@ class ManagementSystem {
         waiting: false,
         waitingAt: null,
         passengers: [],
-        numberSeats: 8
+        numberSeats: numberOfSeats
       }
     }
   }
@@ -101,5 +107,5 @@ class ManagementSystem {
 }
 
 ManagementSystem.vans = []
-ManagementSystem.numberOfVans = 3
+ManagementSystem.numberOfVans = numberOfVans
 module.exports = ManagementSystem

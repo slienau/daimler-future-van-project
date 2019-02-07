@@ -1,2 +1,15 @@
 googleAPIkey: "AIzaSyBLjSLCSdnDP2K1muAvuiREJmMdY5ahPgk"
 jwtSecret: "pas-secret"
+vanStartLocations:
+  - location:
+      latitude: 52.507541
+      longitude: 13.368500
+  - location:
+      latitude: 52.526351
+      longitude: 13.387010
+  - location:
+      latitude: 52.515043
+      longitude: 13.328737
+numberOfSeats : 8
+numberOfVans: 3
+inactiveTimeToReset: 300000

@@ -33,10 +33,10 @@ router.post('/', async function (req, res) {
   const accountId = req.user._id
 
   const potentialOrder = await Order.findOne({ accountId: accountId, active: true })
-  if (potentialOrder) return res.status(403).json({ code: 403, description: 'user still has active order, which has to be stopped first' })
+  if (potentialOrder) return res.status(403).json({ code: 403, message: 'user still has active order, which has to be stopped first' })
 
   // test if parameters are there
-  if (!req.body.routeId) return res.status(400).json({ code: 400, description: 'bad parameters, you need routeId (from route request)' })
+  if (!req.body.routeId) return res.status(400).json({ code: 400, message: 'bad parameters, you need routeId (from route request)' })
 
   let order, orderId
 
@@ -69,7 +69,7 @@ router.put('/:orderId', async function (req, res) {
 
   const orderId = req.params.orderId || req.query.orderId
 
-  if (!req.query.orderId && !req.params.orderId) res.status(400).json({ code: 400, description: 'No orderId as been sent as param.', reasonPhrase: 'Bad Request' })
+  if (!req.query.orderId && !req.params.orderId) res.status(400).json({ code: 400, message: 'No orderId as been sent as param.', reasonPhrase: 'Bad Request' })
 
   if (req.body.canceled === false || req.body.canceled === 'false') {
     await Order.updateOne({ _id: orderId }, { $set: { canceled: true, vanExitTime: new Date(), active: false } })
