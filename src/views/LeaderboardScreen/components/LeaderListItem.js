@@ -7,6 +7,15 @@ import silverStatus from '../assets/silver.png'
 import bronzeStatus from '../assets/bronze.png'
 
 const LeaderListItem = props => {
+  if (
+    !(
+      props.username &&
+      props.loyaltyPoints &&
+      props.leaderStatus &&
+      props.place
+    )
+  )
+    return null
   let userName = 'Max Mustermann'
   if (props.username) {
     userName = props.username
