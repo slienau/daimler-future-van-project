@@ -1,5 +1,4 @@
 import React from 'react'
-import {Content} from 'native-base'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import {
@@ -78,9 +77,7 @@ const SearchForm = props => {
 
   return (
     <StyledSearchForm>
-      <Content padder>
-        <StyledCard>{content}</StyledCard>
-      </Content>
+      <StyledCard>{content}</StyledCard>
     </StyledSearchForm>
   )
 }

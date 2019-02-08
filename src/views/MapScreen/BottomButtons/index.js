@@ -148,37 +148,41 @@ class BottomButtons extends React.Component {
   }
 
   render() {
+    let toReturn
     switch (this.props.mapState) {
       case MapState.INIT:
-        return (
+        toReturn = (
           <DestinationButton
             onPress={() => this.props.toSearchView('DESTINATION')}
           />
         )
+        break
       case MapState.SEARCH_ROUTES:
-        return (
+        toReturn = (
           <>
             <BackButton onPress={() => this.props.resetMapState()} />
             <SearchRoutesButton onPress={() => this.fetchRoutes()} />
           </>
         )
+        break
       case MapState.ROUTE_SEARCHED:
-        return (
+        toReturn = (
           <>
-            <View style={styles.placeOrderButton}>
-              <PlaceOrderButton
-                routeExpireProgress={this.state.expireProgress}
-                onPress={() => this.placeOrder()}
-              />
-            </View>
             <CancelOrderButton
               onPress={() => {
                 this.props.clearRoutes()
                 this.zoomToMarkers()
               }}
             />
+            <View style={styles.placeOrderButton}>
+              <PlaceOrderButton
+                routeExpireProgress={this.state.expireProgress}
+                onPress={() => this.placeOrder()}
+              />
+            </View>
           </>
         )
+        break
       case MapState.ROUTE_ORDERED:
         return (
           <CustomFabWithIcon
@@ -187,18 +191,18 @@ class BottomButtons extends React.Component {
             position="topLeft"
           />
         )
+      default:
+        return null
     }
-    return null
+    return <View style={styles.bottomButtons}>{toReturn}</View>
   }
 }
 
 const styles = StyleSheet.create({
-  placeOrderButton: {
-    display: 'flex',
-    position: 'absolute',
-    left: '40%',
-    right: '65%',
-    bottom: '16%',
+  bottomButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 3,
   },
 })
 

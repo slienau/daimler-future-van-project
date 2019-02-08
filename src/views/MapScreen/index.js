@@ -7,8 +7,8 @@ import BottomButtons from './BottomButtons'
 import Routes from './Routes'
 import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
-import {Container, Toast} from 'native-base'
-import {Dimensions} from 'react-native'
+import {Toast} from 'native-base'
+import {Dimensions, View} from 'react-native'
 import _ from 'lodash'
 import PushNotification from 'react-native-push-notification'
 import {
@@ -28,6 +28,7 @@ import CustomFabWithIcon from '../../components/UI/CustomFabWithIcon'
 import CurrentLocationButton from './Buttons/CurrentLocationButton'
 import api from '../../lib/api'
 import {defaultDangerToast, defaultToast} from '../../lib/toasts'
+import Spacer from './Spacer'
 
 const StyledMapView = styled(MapView)`
   position: absolute;
@@ -35,6 +36,9 @@ const StyledMapView = styled(MapView)`
   left: 0;
   right: 0;
   bottom: 0;
+`
+const StyledView = styled(View)`
+  flex: 1;
 `
 
 class MapScreen extends React.Component {
@@ -245,7 +249,7 @@ class MapScreen extends React.Component {
     }
 
     return (
-      <Container>
+      <StyledView>
         <StyledMapView
           ref={ref => {
             this.mapRef = ref
@@ -271,6 +275,7 @@ class MapScreen extends React.Component {
           mapState={this.props.mapState}
           onPress={() => this.getCurrentPosition()}
         />
+        <Spacer mapState={this.props.mapState} />
 
         <BottomButtons toSearchView={this.toSearchView} />
 
@@ -278,7 +283,7 @@ class MapScreen extends React.Component {
           onEnterVanPress={() => this.enterVan()}
           toMapScreen={() => this.toMapScreen()}
         />
-      </Container>
+      </StyledView>
     )
   }
 }
