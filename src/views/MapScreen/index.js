@@ -134,10 +134,11 @@ class MapScreen extends React.Component {
             _.get(this.props.activeOrderStatus, 'otherPassengers', [])
           )
           if (newPassengers.length > 0) {
-            console.log(newPassengers)
-            const message = 'A new passenger will join you on your ride.'
+            const message = `${newPassengers.join(
+              ','
+            )} will join you on your ride`
             PushNotification.localNotification({
-              message: message,
+              message,
             })
             Toast.show(defaultToast(message))
           }

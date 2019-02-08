@@ -11,14 +11,12 @@ import {
   Toast,
 } from 'native-base'
 import {fetchOrders} from '../../ducks/orders'
-import PastOrdersListItem from './components/PastOrdersListItem'
+import OrderHistoryListItem from './components/OrderHistoryListItem'
 import {defaultDangerToast} from '../../lib/toasts'
 
-class PastOrdersScreen extends Component {
+class OrderHistoryScreen extends Component {
   componentDidMount() {
-    this.props.navigation.addListener('didFocus', () => {
-      this.fetchOrderData()
-    })
+    this.fetchOrderData()
   }
 
   async fetchOrderData() {
@@ -52,11 +50,11 @@ class PastOrdersScreen extends Component {
                 <List
                   dataArray={ordersByMonth[month]}
                   renderRow={item => (
-                    <PastOrdersListItem
+                    <OrderHistoryListItem
                       key={item.id}
                       order={item}
                       onItemPress={() =>
-                        this.props.navigation.push('PastOrderDetails', {
+                        this.props.navigation.push('OrderHistoryDetails', {
                           order: item,
                         })
                       }
@@ -84,7 +82,7 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-PastOrdersScreen.propTypes = {
+OrderHistoryScreen.propTypes = {
   onFetchOrders: PropTypes.func,
   pastOrders: PropTypes.array,
 }
@@ -92,4 +90,4 @@ PastOrdersScreen.propTypes = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(PastOrdersScreen)
+)(OrderHistoryScreen)

@@ -4,9 +4,16 @@ import {View, Dimensions, StyleSheet} from 'react-native'
 import MapView from 'react-native-maps'
 import {getRegionForCoordinates} from '../../lib/utils'
 import MapMarker from '../../components/MapMarker'
-import PastOrderDetailsItem from './components/PastOrderDetailsItem'
+import DefaultListItem from '../../components/UI/DefaultListItem'
+import {
+  CO2SavingsIcon,
+  DistanceIcon,
+  EndVBSIcon,
+  LoyaltyPointsIcon,
+  StartVBSIcon,
+} from '../../components/UI/defaultIcons'
 
-const PastOrderDetailsScreen = props => {
+const OrderHistoryDetailsScreen = props => {
   const order = props.navigation.getParam('order')
   const {width, height} = Dimensions.get('window')
   const mapHeight = 0.45 * height // 45% height
@@ -40,31 +47,30 @@ const PastOrderDetailsScreen = props => {
         </View>
         <View>
           <List>
-            <PastOrderDetailsItem
-              icon="pin"
-              body={order.vanStartVBS.name}
-              right={order.vanEnterTime.format('LT')}
+            <DefaultListItem
+              iconElement={<StartVBSIcon />}
+              bodyText={order.vanStartVBS.name}
+              rightText={order.vanEnterTime.format('LT')}
             />
-            <PastOrderDetailsItem
-              icon="flag"
-              body={order.vanEndVBS.name}
-              right={order.vanExitTime.format('LT')}
+            <DefaultListItem
+              iconElement={<EndVBSIcon />}
+              bodyText={order.vanEndVBS.name}
+              rightText={order.vanExitTime.format('LT')}
             />
-            <PastOrderDetailsItem
-              icon="bus"
-              body="Distance"
-              right={order.distance + ' km'}
+            <DefaultListItem
+              iconElement={<DistanceIcon />}
+              bodyText="Distance"
+              rightText={order.distance + ' km'}
             />
-            <PastOrderDetailsItem
-              icon="trees"
-              iconType="Foundation"
-              body="CO2 savings"
-              right={order.co2savings + ' kg'}
+            <DefaultListItem
+              iconElement={<CO2SavingsIcon />}
+              bodyText="CO2 savings"
+              rightText={order.co2savings + ' kg'}
             />
-            <PastOrderDetailsItem
-              icon="star"
-              body="Loyalty Points"
-              right={order.loyaltyPoints}
+            <DefaultListItem
+              iconElement={<LoyaltyPointsIcon />}
+              bodyText="Loyalty Points"
+              rightText={order.loyaltyPoints}
             />
           </List>
         </View>
@@ -80,4 +86,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default PastOrderDetailsScreen
+export default OrderHistoryDetailsScreen
