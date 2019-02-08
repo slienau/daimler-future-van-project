@@ -8,9 +8,7 @@ import {defaultDangerToast} from '../../lib/toasts'
 
 class LeaderboardScreen extends Component {
   componentDidMount() {
-    this.props.navigation.addListener('didFocus', () => {
-      this.getLeaderBoardData()
-    })
+    this.getLeaderBoardData()
   }
 
   async getLeaderBoardData() {

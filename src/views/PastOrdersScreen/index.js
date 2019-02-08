@@ -16,9 +16,7 @@ import {defaultDangerToast} from '../../lib/toasts'
 
 class PastOrdersScreen extends Component {
   componentDidMount() {
-    this.props.navigation.addListener('didFocus', () => {
-      this.fetchOrderData()
-    })
+    this.fetchOrderData()
   }
 
   async fetchOrderData() {
