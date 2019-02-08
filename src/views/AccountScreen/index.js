@@ -1,6 +1,5 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import styled from 'styled-components/native'
 import _ from 'lodash'
 import goldStatus from '../LeaderboardScreen/assets/gold.png'
 import silverStatus from '../LeaderboardScreen/assets/silver.png'
@@ -24,28 +23,19 @@ import PropTypes from 'prop-types'
 import {fetchAccountData} from '../../ducks/account'
 import {logout} from '../../lib/api'
 import CustomButton from '../../components/UI/CustomButton'
+import {
+  CO2SavingsIcon,
+  LoyaltyPointsIcon,
+  BusIcon,
+  LeaderboardIcon,
+  PlanetIcon,
+  RewardsIcon,
+  NameIcon,
+  MailIcon,
+  PaymentIcon,
+} from '../../components/UI/defaultIcons'
 import {defaultDangerToast} from '../../lib/toasts'
 import {firstLetterToUppercase} from '../../lib/utils'
-
-const StarIcon = styled(Icon)`
-  color: gold;
-`
-const UnlockIcon = styled(Icon)`
-  color: palegoldenrod;
-`
-const BusIcon = styled(Icon)`
-  color: dodgerblue;
-`
-const PlanetIcon = styled(Icon)`
-  color: gray;
-`
-
-const LeaderBoardIcon = styled(Icon)`
-  color: darkblue;
-`
-const TreesIcon = styled(Icon)`
-  color: darkgreen;
-`
 
 class Account extends React.Component {
   static propTypes = {
@@ -118,7 +108,7 @@ class Account extends React.Component {
             </ListItem>
             <ListItem icon>
               <Left>
-                <StarIcon active name="star" />
+                <LoyaltyPointsIcon active />
               </Left>
               <Body>
                 <Text>Loyalty Points</Text>
@@ -129,7 +119,7 @@ class Account extends React.Component {
             </ListItem>
             <ListItem icon button onPress={() => {}}>
               <Left>
-                <UnlockIcon name="unlock" />
+                <RewardsIcon />
               </Left>
               <Body>
                 <Text>Rewards</Text>
@@ -143,7 +133,7 @@ class Account extends React.Component {
               button
               onPress={() => this.props.navigation.push('Leaderboard')}>
               <Left>
-                <LeaderBoardIcon name="people" />
+                <LeaderboardIcon />
               </Left>
               <Body>
                 <Text>Leaderboard</Text>
@@ -160,7 +150,7 @@ class Account extends React.Component {
               button
               onPress={() => this.props.navigation.push('OrderHistory')}>
               <Left>
-                <BusIcon name="bus" />
+                <BusIcon />
               </Left>
               <Body>
                 <Text>Order History</Text>
@@ -171,7 +161,7 @@ class Account extends React.Component {
             </ListItem>
             <ListItem icon>
               <Left>
-                <PlanetIcon name="planet" />
+                <PlanetIcon />
               </Left>
               <Body>
                 <Text>Driven Kilometers</Text>
@@ -182,7 +172,7 @@ class Account extends React.Component {
             </ListItem>
             <ListItem icon>
               <Left>
-                <TreesIcon name="trees" type="Foundation" />
+                <CO2SavingsIcon />
               </Left>
               <Body>
                 <Text>CO2 savings</Text>
@@ -196,7 +186,7 @@ class Account extends React.Component {
             </ListItem>
             <ListItem icon>
               <Left>
-                <Icon name="person" />
+                <NameIcon />
               </Left>
               <Body>
                 <Text>Name</Text>
@@ -207,7 +197,7 @@ class Account extends React.Component {
             </ListItem>
             <ListItem icon>
               <Left>
-                <Icon name="mail" />
+                <MailIcon />
               </Left>
               <Body>
                 <Text>E-Mail</Text>
@@ -218,7 +208,7 @@ class Account extends React.Component {
             </ListItem>
             <ListItem icon button onPress={() => {}}>
               <Left>
-                <Icon name="card" />
+                <PaymentIcon />
               </Left>
               <Body>
                 <Text>Payment Information</Text>
