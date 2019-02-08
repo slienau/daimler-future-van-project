@@ -58,6 +58,7 @@ class BottomButtons extends React.Component {
           text: 'Yes',
           onPress: async () => {
             try {
+              PushNotification.cancelAllLocalNotifications()
               await this.props.cancelActiveOrder()
               Toast.show(defaultSuccessToast('Your order has been canceled!'))
             } catch (error) {
@@ -120,6 +121,7 @@ class BottomButtons extends React.Component {
             }
             if (success) {
               Toast.show(defaultSuccessToast('Your order has been confirmed!'))
+              PushNotification.cancelAllLocalNotifications()
               PushNotification.localNotificationSchedule({
                 message: 'Your van will arrive at the exit point in a minute',
                 date: new Date(
