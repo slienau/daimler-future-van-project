@@ -13,7 +13,7 @@ const OrderHistoryDetailsItem = props => {
         <DefaultText>{props.body}</DefaultText>
       </Body>
       <Right>
-        <DefaultText>{props.right}</DefaultText>
+        <DefaultText greyColor>{props.right}</DefaultText>
       </Right>
     </ListItem>
   )
