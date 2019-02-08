@@ -103,7 +103,7 @@ class Account extends React.Component {
                 <Thumbnail large source={{uri: uri}} />
                 <Body>
                   <Text>{_.get(this.props.account, 'username')}</Text>
-                  <Text note>{_.get(this.props.account, 'email')}</Text>
+                  <Text note>{_.get(this.props.account, 'name')}</Text>
                 </Body>
                 <Right>
                   <Thumbnail source={statusIcon} medium />
