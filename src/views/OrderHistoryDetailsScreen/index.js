@@ -4,7 +4,14 @@ import {View, Dimensions, StyleSheet} from 'react-native'
 import MapView from 'react-native-maps'
 import {getRegionForCoordinates} from '../../lib/utils'
 import MapMarker from '../../components/MapMarker'
-import OrderHistoryDetailsItem from './components/OrderHistoryDetailsItem'
+import DefaultListItem from '../../components/UI/DefaultListItem'
+import {
+  CO2SavingsIcon,
+  DistanceIcon,
+  EndVBSIcon,
+  LoyaltyPointsIcon,
+  StartVBSIcon,
+} from '../../components/UI/defaultIcons'
 
 const OrderHistoryDetailsScreen = props => {
   const order = props.navigation.getParam('order')
@@ -40,31 +47,30 @@ const OrderHistoryDetailsScreen = props => {
         </View>
         <View>
           <List>
-            <OrderHistoryDetailsItem
-              icon="pin"
-              body={order.vanStartVBS.name}
-              right={order.vanEnterTime.format('LT')}
+            <DefaultListItem
+              iconElement={<StartVBSIcon />}
+              bodyText={order.vanStartVBS.name}
+              rightText={order.vanEnterTime.format('LT')}
             />
-            <OrderHistoryDetailsItem
-              icon="flag"
-              body={order.vanEndVBS.name}
-              right={order.vanExitTime.format('LT')}
+            <DefaultListItem
+              iconElement={<EndVBSIcon />}
+              bodyText={order.vanEndVBS.name}
+              rightText={order.vanExitTime.format('LT')}
             />
-            <OrderHistoryDetailsItem
-              icon="bus"
-              body="Distance"
-              right={order.distance + ' km'}
+            <DefaultListItem
+              iconElement={<DistanceIcon />}
+              bodyText="Distance"
+              rightText={order.distance + ' km'}
             />
-            <OrderHistoryDetailsItem
-              icon="trees"
-              iconType="Foundation"
-              body="CO2 savings"
-              right={order.co2savings + ' kg'}
+            <DefaultListItem
+              iconElement={<CO2SavingsIcon />}
+              bodyText="CO2 savings"
+              rightText={order.co2savings + ' kg'}
             />
-            <OrderHistoryDetailsItem
-              icon="star"
-              body="Loyalty Points"
-              right={order.loyaltyPoints}
+            <DefaultListItem
+              iconElement={<LoyaltyPointsIcon />}
+              bodyText="Loyalty Points"
+              rightText={order.loyaltyPoints}
             />
           </List>
         </View>

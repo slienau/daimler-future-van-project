@@ -8,19 +8,15 @@ const StyledIcon = styled(Icon)`
 `
 
 export const LoyaltyPointsIcon = props => (
-  <StyledIcon {...props} color="gold" name="star" />
+  <StyledIcon {...props} color="gold" name="star" active />
 )
 
 export const RewardsIcon = props => (
   <StyledIcon {...props} color="palegoldenrod" name="unlock" />
 )
 
-export const BusIcon = props => (
-  <StyledIcon {...props} color="dodgerblue" name="bus" />
-)
-
-export const PlanetIcon = props => (
-  <StyledIcon {...props} color="gray" name="planet" />
+export const OrderHistoryIcon = props => (
+  <StyledIcon {...props} color="black" name="list" type="Feather" />
 )
 
 export const LeaderboardIcon = props => (
@@ -30,6 +26,12 @@ export const LeaderboardIcon = props => (
 export const CO2SavingsIcon = props => (
   <StyledIcon {...props} color="darkgreen" name="trees" type="Foundation" />
 )
+
+export const DistanceIcon = props => <StyledIcon {...props} name="bus" />
+
+export const StartVBSIcon = props => <StyledIcon {...props} name="pin" />
+
+export const EndVBSIcon = props => <StyledIcon {...props} name="flag" />
 
 export const NameIcon = props => <StyledIcon {...props} name="person" />
 

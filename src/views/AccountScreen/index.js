@@ -8,7 +8,6 @@ import {
   Body,
   Container,
   Content,
-  Icon,
   Left,
   List,
   Card,
@@ -26,16 +25,17 @@ import CustomButton from '../../components/UI/CustomButton'
 import {
   CO2SavingsIcon,
   LoyaltyPointsIcon,
-  BusIcon,
+  OrderHistoryIcon,
   LeaderboardIcon,
-  PlanetIcon,
   RewardsIcon,
   NameIcon,
   MailIcon,
   PaymentIcon,
+  DistanceIcon,
 } from '../../components/UI/defaultIcons'
 import {defaultDangerToast} from '../../lib/toasts'
 import {firstLetterToUppercase} from '../../lib/utils'
+import DefaultListItem from '../../components/UI/DefaultListItem'
 
 class Account extends React.Component {
   static propTypes = {
@@ -106,153 +106,82 @@ class Account extends React.Component {
             <ListItem itemDivider>
               <Text>Loyalty Program</Text>
             </ListItem>
-            <ListItem icon>
-              <Left>
-                <LoyaltyPointsIcon active />
-              </Left>
-              <Body>
-                <Text>Loyalty Points</Text>
-              </Body>
-              <Right>
-                <Text>{_.get(this.props.account, 'loyaltyPoints')}</Text>
-              </Right>
-            </ListItem>
-            <ListItem icon button onPress={() => {}}>
-              <Left>
-                <RewardsIcon />
-              </Left>
-              <Body>
-                <Text>Rewards</Text>
-              </Body>
-              <Right>
-                <Icon name="arrow-forward" />
-              </Right>
-            </ListItem>
-            <ListItem
-              icon
-              button
-              onPress={() => this.props.navigation.push('Leaderboard')}>
-              <Left>
-                <LeaderboardIcon />
-              </Left>
-              <Body>
-                <Text>Leaderboard</Text>
-              </Body>
-              <Right>
-                <Icon name="arrow-forward" />
-              </Right>
-            </ListItem>
-            <ListItem itemDivider>
-              <Text>Overall Overview</Text>
-            </ListItem>
-            <ListItem
-              icon
-              button
-              onPress={() => this.props.navigation.push('OrderHistory')}>
-              <Left>
-                <BusIcon />
-              </Left>
-              <Body>
-                <Text>Order History</Text>
-              </Body>
-              <Right>
-                <Icon name="arrow-forward" />
-              </Right>
-            </ListItem>
-            <ListItem icon>
-              <Left>
-                <PlanetIcon />
-              </Left>
-              <Body>
-                <Text>Driven Kilometers</Text>
-              </Body>
-              <Right>
-                <Text>{_.get(this.props.account, 'distance') + ' km'}</Text>
-              </Right>
-            </ListItem>
-            <ListItem icon>
-              <Left>
-                <CO2SavingsIcon />
-              </Left>
-              <Body>
-                <Text>CO2 savings</Text>
-              </Body>
-              <Right>
-                <Text>{_.get(this.props.account, 'co2savings') + ' kg'}</Text>
-              </Right>
-            </ListItem>
-            <ListItem itemDivider>
-              <Text>Details</Text>
-            </ListItem>
-            <ListItem icon>
-              <Left>
-                <NameIcon />
-              </Left>
-              <Body>
-                <Text>Name</Text>
-              </Body>
-              <Right>
-                <Text>{_.get(this.props.account, 'name')}</Text>
-              </Right>
-            </ListItem>
-            <ListItem icon>
-              <Left>
-                <MailIcon />
-              </Left>
-              <Body>
-                <Text>E-Mail</Text>
-              </Body>
-              <Right>
-                <Text>{_.get(this.props.account, 'email')}</Text>
-              </Right>
-            </ListItem>
-            <ListItem icon button onPress={() => {}}>
-              <Left>
-                <PaymentIcon />
-              </Left>
-              <Body>
-                <Text>Payment Information</Text>
-              </Body>
-              <Right>
-                <Icon name="arrow-forward" />
-              </Right>
-            </ListItem>
+            <DefaultListItem
+              iconElement={<LoyaltyPointsIcon />}
+              bodyText="Loyalty Points"
+              rightText={_.get(this.props.account, 'loyaltyPoints')}
+            />
+            <DefaultListItem
+              iconElement={<RewardsIcon />}
+              bodyText="Rewards"
+              onPress={() => {}}
+            />
+            <DefaultListItem
+              iconElement={<LeaderboardIcon />}
+              bodyText="Leaderboard"
+              onPress={() => this.props.navigation.push('Leaderboard')}
+            />
 
             <ListItem itemDivider>
-              <Text>Address information</Text>
+              <Text>Order Overview</Text>
             </ListItem>
-            <ListItem icon>
-              <Left>
-                <Text>Street</Text>
-              </Left>
-              <Body />
-              <Right>
-                <Text>{_.get(this.props.account, 'address.street')}</Text>
-              </Right>
+            <DefaultListItem
+              iconElement={<OrderHistoryIcon />}
+              bodyText="Order History"
+              onPress={() => this.props.navigation.push('OrderHistory')}
+            />
+            <DefaultListItem
+              iconElement={<DistanceIcon />}
+              bodyText="Total Driven Kilometers"
+              rightText={_.get(this.props.account, 'distance') + ' km'}
+            />
+            <DefaultListItem
+              iconElement={<CO2SavingsIcon />}
+              bodyText="Total CO2 savings"
+              rightText={_.get(this.props.account, 'co2savings') + ' kg'}
+            />
+
+            <ListItem itemDivider>
+              <Text>Account Details</Text>
             </ListItem>
-            <ListItem icon>
-              <Left>
-                <Text>Zip Code</Text>
-              </Left>
-              <Body />
-              <Right>
-                <Text>{_.get(this.props.account, 'address.zipcode')}</Text>
-              </Right>
+            <DefaultListItem
+              iconElement={<NameIcon />}
+              bodyText="Name"
+              rightText={_.get(this.props.account, 'name')}
+            />
+            <DefaultListItem
+              iconElement={<MailIcon />}
+              bodyText="E-Mail"
+              rightText={_.get(this.props.account, 'email')}
+            />
+            <DefaultListItem
+              iconElement={<PaymentIcon />}
+              bodyText="Payment Information"
+              onPress={() => {}}
+            />
+
+            <ListItem itemDivider>
+              <Text>Address Information</Text>
             </ListItem>
-            <ListItem icon>
-              <Left>
-                <Text>City</Text>
-              </Left>
-              <Body />
-              <Right>
-                <Text>{_.get(this.props.account, 'address.city')}</Text>
-              </Right>
-            </ListItem>
-            <ListItem>
-              <Body>
+
+            <DefaultListItem
+              leftText="Street"
+              rightText={_.get(this.props.account, 'address.street')}
+            />
+            <DefaultListItem
+              leftText="Zip Code"
+              rightText={_.get(this.props.account, 'address.zipcode')}
+            />
+            <DefaultListItem
+              leftText="City"
+              rightText={_.get(this.props.account, 'address.city')}
+            />
+
+            <DefaultListItem
+              bodyElement={
                 <CustomButton text="Log out" onPress={this.logout} fullWidth />
-              </Body>
-            </ListItem>
+              }
+            />
           </List>
         </Content>
       </Container>
