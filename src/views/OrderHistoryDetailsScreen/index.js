@@ -4,9 +4,9 @@ import {View, Dimensions, StyleSheet} from 'react-native'
 import MapView from 'react-native-maps'
 import {getRegionForCoordinates} from '../../lib/utils'
 import MapMarker from '../../components/MapMarker'
-import PastOrderDetailsItem from './components/PastOrderDetailsItem'
+import OrderHistoryDetailsItem from './components/OrderHistoryDetailsItem'
 
-const PastOrderDetailsScreen = props => {
+const OrderHistoryDetailsScreen = props => {
   const order = props.navigation.getParam('order')
   const {width, height} = Dimensions.get('window')
   const mapHeight = 0.45 * height // 45% height
@@ -40,28 +40,28 @@ const PastOrderDetailsScreen = props => {
         </View>
         <View>
           <List>
-            <PastOrderDetailsItem
+            <OrderHistoryDetailsItem
               icon="pin"
               body={order.vanStartVBS.name}
               right={order.vanEnterTime.format('LT')}
             />
-            <PastOrderDetailsItem
+            <OrderHistoryDetailsItem
               icon="flag"
               body={order.vanEndVBS.name}
               right={order.vanExitTime.format('LT')}
             />
-            <PastOrderDetailsItem
+            <OrderHistoryDetailsItem
               icon="bus"
               body="Distance"
               right={order.distance + ' km'}
             />
-            <PastOrderDetailsItem
+            <OrderHistoryDetailsItem
               icon="trees"
               iconType="Foundation"
               body="CO2 savings"
               right={order.co2savings + ' kg'}
             />
-            <PastOrderDetailsItem
+            <OrderHistoryDetailsItem
               icon="star"
               body="Loyalty Points"
               right={order.loyaltyPoints}
@@ -80,4 +80,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default PastOrderDetailsScreen
+export default OrderHistoryDetailsScreen

@@ -3,7 +3,7 @@ import {ListItem, Left, Body, Right, Icon} from 'native-base'
 import PropTypes from 'prop-types'
 import DefaultText from '../../../components/UI/DefaultText'
 
-const PastOrderDetailsItem = props => {
+const OrderHistoryDetailsItem = props => {
   return (
     <ListItem icon>
       <Left>
@@ -19,11 +19,11 @@ const PastOrderDetailsItem = props => {
   )
 }
 
-PastOrderDetailsItem.propTypes = {
+OrderHistoryDetailsItem.propTypes = {
   body: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
   iconType: PropTypes.string,
   right: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
-export default PastOrderDetailsItem
+export default OrderHistoryDetailsItem

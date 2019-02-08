@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {Text, ListItem, Right, Icon, Body} from 'native-base'
 import {StyleSheet} from 'react-native'
 
-const PastOrdersListItem = props => {
+const OrderHistoryListItem = props => {
   let bodyText = 'Order has been canceled'
   if (!props.order.canceled) {
     bodyText = (
@@ -35,7 +35,7 @@ const PastOrdersListItem = props => {
   )
 }
 
-PastOrdersListItem.propTypes = {
+OrderHistoryListItem.propTypes = {
   onItemPress: PropTypes.func,
   order: PropTypes.object,
 }
@@ -46,4 +46,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default PastOrdersListItem
+export default OrderHistoryListItem

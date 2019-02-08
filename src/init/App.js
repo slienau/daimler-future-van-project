@@ -14,14 +14,14 @@ import LoginScreen from '../views/LoginScreen'
 import MapScreen from '../views/MapScreen'
 import AccountScreen from '../views/AccountScreen'
 import SearchScreen from '../views/SearchScreen'
-import PastOrdersScreen from '../views/PastOrdersScreen'
-import PastOrderDetailsScreen from '../views/PastOrderDetailsScreen'
+import OrderHistoryScreen from '../views/OrderHistoryScreen'
+import OrderHistoryDetailsScreen from '../views/OrderHistoryDetailsScreen'
 import LeaderboardScreen from '../views/LeaderboardScreen'
 import RideScreen from '../views/RideScreen'
 import FunfactsScreen from '../views/FunfactsScreen'
 import InRideMapScreen from '../views/InRideMapScreen'
-import GamesScreen from '../views/GamesScreen'
-import SightsScreen from '../views/SightsScreen'
+// import GamesScreen from '../views/GamesScreen'
+// import SightsScreen from '../views/SightsScreen'
 
 // components
 import CustomScreenHeader from '../components/UI/CustomScreenHeader'
@@ -67,8 +67,8 @@ const MainAppStack = createStackNavigator(
         ),
       }),
     },
-    PastOrders: {
-      screen: PastOrdersScreen,
+    OrderHistory: {
+      screen: OrderHistoryScreen,
       navigationOptions: ({navigation}) => ({
         header: (
           <CustomScreenHeader
@@ -78,8 +78,8 @@ const MainAppStack = createStackNavigator(
         ),
       }),
     },
-    PastOrderDetails: {
-      screen: PastOrderDetailsScreen,
+    OrderHistoryDetails: {
+      screen: OrderHistoryDetailsScreen,
       navigationOptions: ({navigation}) => ({
         header: (
           <CustomScreenHeader
@@ -114,28 +114,28 @@ const MainAppStack = createStackNavigator(
         ),
       }),
     },
-    Games: {
-      screen: GamesScreen,
-      navigationOptions: ({navigation}) => ({
-        header: (
-          <CustomScreenHeader
-            title="Games"
-            onPress={() => navigation.goBack()}
-          />
-        ),
-      }),
-    },
-    Sights: {
-      screen: SightsScreen,
-      navigationOptions: ({navigation}) => ({
-        header: (
-          <CustomScreenHeader
-            title="Sights"
-            onPress={() => navigation.goBack()}
-          />
-        ),
-      }),
-    },
+    // Games: {
+    //   screen: GamesScreen,
+    //   navigationOptions: ({navigation}) => ({
+    //     header: (
+    //       <CustomScreenHeader
+    //         title="Games"
+    //         onPress={() => navigation.goBack()}
+    //       />
+    //     ),
+    //   }),
+    // },
+    // Sights: {
+    //   screen: SightsScreen,
+    //   navigationOptions: ({navigation}) => ({
+    //     header: (
+    //       <CustomScreenHeader
+    //         title="Sights"
+    //         onPress={() => navigation.goBack()}
+    //       />
+    //     ),
+    //   }),
+    // },
   },
   {
     initialRouteName: 'Map',

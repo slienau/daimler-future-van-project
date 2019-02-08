@@ -158,7 +158,7 @@ class Account extends React.Component {
             <ListItem
               icon
               button
-              onPress={() => this.props.navigation.push('PastOrders')}>
+              onPress={() => this.props.navigation.push('OrderHistory')}>
               <Left>
                 <BusIcon name="bus" />
               </Left>
