@@ -5,13 +5,9 @@ import PropTypes from 'prop-types'
 const SearchRoutesButton = props => {
   return (
     <BottomButton
-      iconRight
       onPress={props.onPress}
       text="Search Route"
       iconName="arrow-forward"
-      left="45%"
-      right="10%"
-      bottom="3%"
     />
   )
 }
