@@ -28,14 +28,6 @@ import api from '../../lib/api'
 import {defaultDangerToast, defaultToast} from '../../lib/toasts'
 import TopButtons from './TopButtons'
 
-const StyledMapView = styled(MapView)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-`
-
 class MapScreen extends React.Component {
   componentDidMount() {
     this.getCurrentPosition()
@@ -246,7 +238,7 @@ class MapScreen extends React.Component {
 
     return (
       <Container>
-        <StyledMapView
+        <FullScreenMapView
           ref={ref => {
             this.mapRef = ref
           }}
@@ -255,55 +247,59 @@ class MapScreen extends React.Component {
           showsMyLocationButton={false}>
           <Routes />
           <MapMarkers />
-        </StyledMapView>
+        </FullScreenMapView>
 
         <View style={styles.mapOverlayContainer}>
-          <View styles={styles.topViewContainer}>
+          <TopView>
             <SearchForm toSearchView={this.toSearchView} />
             <TopButtons
               toAccountView={() => this.props.navigation.push('Account')}
               onCurrentLocationButtonPress={() => this.getCurrentPosition()}
             />
-          </View>
+          </TopView>
 
-          <View style={styles.mapPlaceholder} />
+          <MapPlaceholder />
 
-          <View style={styles.footerViewContainer}>
+          <BottomView>
             <BottomButtons toSearchView={this.toSearchView} />
-
-            {[MapState.INIT, MapState.SEARCH_ROUTES].includes(
-              this.props.mapState
-            ) && <View style={styles.bottomPadder} />}
 
             <Info
               onEnterVanPress={() => this.enterVan()}
               toMapScreen={() => this.toMapScreen()}
             />
-          </View>
+          </BottomView>
         </View>
       </Container>
     )
   }
 }
 
+const FullScreenMapView = styled(MapView)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`
+
+const MapPlaceholder = styled(View)`
+  flex: 4;
+`
+
+const TopView = styled(View)`
+  flex: 2;
+  justify-content: flex-start;
+`
+
+const BottomView = styled(View)`
+  flex: 2;
+  justify-content: flex-end;
+`
+
 const styles = StyleSheet.create({
   mapOverlayContainer: {
     flex: 1,
     flexDirection: 'column',
-  },
-  topViewContainer: {
-    flex: 2,
-    justifyContent: 'flex-start',
-  },
-  footerViewContainer: {
-    flex: 2,
-    justifyContent: 'flex-end',
-  },
-  mapPlaceholder: {
-    flex: 4,
-  },
-  bottomPadder: {
-    height: 20,
   },
 })
 

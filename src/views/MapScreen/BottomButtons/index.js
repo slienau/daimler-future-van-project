@@ -176,7 +176,7 @@ class BottomButtons extends React.Component {
                 this.zoomToMarkers()
               }}
             />
-            <View style={styles.placeOrderButton}>
+            <View>
               <PlaceOrderButton
                 routeExpireProgress={this.state.expireProgress}
                 onPress={() => this.placeOrder()}
@@ -196,7 +196,14 @@ class BottomButtons extends React.Component {
       default:
         return null
     }
-    return <View style={styles.bottomButtons}>{toReturn}</View>
+    return (
+      <>
+        <View style={styles.bottomButtons}>{toReturn}</View>
+        {[MapState.INIT, MapState.SEARCH_ROUTES].includes(
+          this.props.mapState
+        ) && <View style={styles.bottomPadding} />}
+      </>
+    )
   }
 }
 
@@ -205,6 +212,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 3,
+  },
+  bottomPadding: {
+    height: 20,
   },
 })
 
