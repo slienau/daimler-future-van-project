@@ -4,10 +4,8 @@ import {Card, CardItem, Icon, Text} from 'native-base'
 import NumericInput from 'react-native-numeric-input'
 
 export const StyledSearchForm = styled(View)`
-  position: absolute;
-  right: 0.5%;
-  left: 0.5%;
-  top: -1%;
+  width: 98%;
+  align-self: center;
 `
 export const StyledTouchableOpacity = styled(TouchableOpacity)`
   align-self: flex-end;

@@ -11,13 +11,12 @@ import DestinationButton from './DestinationButton'
 import BackButton from './BackButton'
 import SearchRoutesButton from './SearchRoutesButton'
 import PlaceOrderButton from './PlaceOrderButton'
-import CancelOrderButton from './CancelOrderButton'
-import {cancelActiveOrder, placeOrder} from '../../../ducks/orders'
+import ClearRoutesButton from './ClearRoutesButton'
+import {placeOrder} from '../../../ducks/orders'
 import {Alert, StyleSheet, View} from 'react-native'
 import {Toast} from 'native-base'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import CustomFabWithIcon from '../../../components/UI/CustomFabWithIcon'
 import PushNotification from 'react-native-push-notification'
 import {defaultDangerToast, defaultSuccessToast} from '../../../lib/toasts'
 
@@ -47,33 +46,6 @@ class BottomButtons extends React.Component {
       this.props.userDestinationLocation.location,
     ]
     this.props.setVisibleCoordinates(coords)
-  }
-
-  cancelActiveOrder = async () => {
-    Alert.alert(
-      'Cancel your order',
-      'Do you want to cancel your current order?',
-      [
-        {
-          text: 'Yes',
-          onPress: async () => {
-            try {
-              PushNotification.cancelAllLocalNotifications()
-              await this.props.cancelActiveOrder()
-              Toast.show(defaultSuccessToast('Your order has been canceled!'))
-            } catch (error) {
-              Toast.show(
-                defaultDangerToast(
-                  "Your order couldn't be canceled! " + error.message
-                )
-              )
-            }
-          },
-        },
-        {text: 'No'},
-      ],
-      {cancelable: true}
-    )
   }
 
   fetchRoutes = async () => {
@@ -150,62 +122,69 @@ class BottomButtons extends React.Component {
   }
 
   render() {
+    let toReturn
     switch (this.props.mapState) {
       case MapState.INIT:
-        return (
+        toReturn = (
           <DestinationButton
             onPress={() => this.props.toSearchView('DESTINATION')}
           />
         )
+        break
       case MapState.SEARCH_ROUTES:
-        return (
+        toReturn = (
           <>
             <BackButton onPress={() => this.props.resetMapState()} />
             <SearchRoutesButton onPress={() => this.fetchRoutes()} />
           </>
         )
+        break
       case MapState.ROUTE_SEARCHED:
-        return (
+        toReturn = (
           <>
-            <View style={styles.placeOrderButton}>
-              <PlaceOrderButton
-                routeExpireProgress={this.state.expireProgress}
-                onPress={() => this.placeOrder()}
-              />
-            </View>
-            <CancelOrderButton
+            <ClearRoutesButton
               onPress={() => {
                 this.props.clearRoutes()
                 this.zoomToMarkers()
               }}
             />
+            <View>
+              <PlaceOrderButton
+                routeExpireProgress={this.state.expireProgress}
+                onPress={() => this.placeOrder()}
+              />
+            </View>
           </>
         )
+        break
       case MapState.ROUTE_ORDERED:
-        return (
-          <CustomFabWithIcon
-            icon="md-close"
-            onPress={() => this.cancelActiveOrder()}
-            position="topLeft"
-          />
-        )
+        return null
+      default:
+        return null
     }
-    return null
+    return (
+      <>
+        <View style={styles.bottomButtons}>{toReturn}</View>
+        {[MapState.INIT, MapState.SEARCH_ROUTES].includes(
+          this.props.mapState
+        ) && <View style={styles.bottomPadding} />}
+      </>
+    )
   }
 }
 
 const styles = StyleSheet.create({
-  placeOrderButton: {
-    display: 'flex',
-    position: 'absolute',
-    left: '40%',
-    right: '65%',
-    bottom: '16%',
+  bottomButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 3,
+  },
+  bottomPadding: {
+    height: 20,
   },
 })
 
 BottomButtons.propTypes = {
-  cancelActiveOrder: PropTypes.func,
   clearRoutes: PropTypes.func,
   fetchRoutes: PropTypes.func,
   mapState: PropTypes.string,
@@ -228,7 +207,6 @@ export default connect(
   dispatch => ({
     resetMapState: () => dispatch(resetMapState()),
     clearRoutes: () => dispatch(clearRoutes()),
-    cancelActiveOrder: () => dispatch(cancelActiveOrder()),
     fetchRoutes: () => dispatch(fetchRoutes()),
     placeOrder: payload => dispatch(placeOrder(payload)),
     setVisibleCoordinates: (coords, edgePadding) =>

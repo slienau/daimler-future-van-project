@@ -1,27 +1,19 @@
 import {View} from 'react-native'
-import {Text, Card, Container, CardItem, Icon, Left, Body} from 'native-base'
+import {Text, Card, CardItem, Icon, Body, Left} from 'native-base'
 import styled from 'styled-components/native'
 
 export const StyledRouteInfo = styled(View)`
-  height: 15%;
-  margin-top: 560;
+  align-self: center;
+  flex: 2;
+  width: 98%;
 `
 export const StyledOrderInfo = styled(View)`
-  position: absolute;
-  bottom: 0%;
-  left: 1%;
-  right: -1%;
+  align-self: center;
+  width: 98%;
 `
 
 export const ViewCentered = styled(View)`
   align-items: center;
-`
-
-export const StyledContainer = styled(Container)`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0);
 `
 
 export const IconCenterFlex = styled(Icon)`
@@ -72,14 +64,12 @@ export const IconBlack = styled(Icon)`
 
 export const StyledCard = styled(Card)`
   border-radius: 10;
-  align-items: stretch;
-  width: 97%;
+  width: 100%;
 `
 export const StyledCardFlex = styled(Card)`
   border-radius: 10;
-  align-items: stretch;
+  width: 100%;
   flex: 1;
-  width: 97%;
 `
 
 export const CardItemBorderBottom = styled(CardItem)`

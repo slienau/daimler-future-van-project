@@ -5,11 +5,9 @@ import PropTypes from 'prop-types'
 const DestinationButton = props => {
   return (
     <BottomButton
-      iconRight
       onPress={props.onPress}
       text="destination"
       iconName="arrow-forward"
-      bottom="3%"
     />
   )
 }

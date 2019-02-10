@@ -3,16 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const BackButton = props => {
-  return (
-    <BottomButton
-      iconLeft
-      onPress={props.onPress}
-      iconName="arrow-back"
-      left="10%"
-      right="70%"
-      bottom="3%"
-    />
-  )
+  return <BottomButton onPress={props.onPress} iconName="arrow-back" />
 }
 
 BackButton.propTypes = {

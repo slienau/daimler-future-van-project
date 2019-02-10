@@ -7,8 +7,8 @@ import BottomButtons from './BottomButtons'
 import Routes from './Routes'
 import MapMarkers from './MapMarkers'
 import {connect} from 'react-redux'
-import {Container, Toast} from 'native-base'
-import {Dimensions} from 'react-native'
+import {Toast, Container} from 'native-base'
+import {Dimensions, View, StyleSheet} from 'react-native'
 import _ from 'lodash'
 import PushNotification from 'react-native-push-notification'
 import {
@@ -24,18 +24,9 @@ import {
 import {fetchActiveOrder, setActiveOrderStatus} from '../../ducks/orders'
 import Info from './Info'
 import {defaultMapRegion} from '../../lib/config'
-import CustomFabWithIcon from '../../components/UI/CustomFabWithIcon'
-import CurrentLocationButton from './Buttons/CurrentLocationButton'
 import api from '../../lib/api'
 import {defaultDangerToast, defaultToast} from '../../lib/toasts'
-
-const StyledMapView = styled(MapView)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-`
+import TopButtons from './TopButtons'
 
 class MapScreen extends React.Component {
   componentDidMount() {
@@ -247,7 +238,7 @@ class MapScreen extends React.Component {
 
     return (
       <Container>
-        <StyledMapView
+        <FullScreenMapView
           ref={ref => {
             this.mapRef = ref
           }}
@@ -256,33 +247,61 @@ class MapScreen extends React.Component {
           showsMyLocationButton={false}>
           <Routes />
           <MapMarkers />
-        </StyledMapView>
+        </FullScreenMapView>
 
-        <SearchForm toSearchView={this.toSearchView} />
+        <View style={styles.mapOverlayContainer}>
+          <TopView>
+            <SearchForm toSearchView={this.toSearchView} />
+            <TopButtons
+              toAccountView={() => this.props.navigation.push('Account')}
+              onCurrentLocationButtonPress={() => this.getCurrentPosition()}
+            />
+          </TopView>
 
-        {this.props.mapState === MapState.INIT && (
-          <CustomFabWithIcon
-            icon="md-person"
-            position="topLeft"
-            onPress={() => this.props.navigation.push('Account')}
-          />
-        )}
+          <MapPlaceholder />
 
-        <CurrentLocationButton
-          mapState={this.props.mapState}
-          onPress={() => this.getCurrentPosition()}
-        />
+          <BottomView>
+            <BottomButtons toSearchView={this.toSearchView} />
 
-        <BottomButtons toSearchView={this.toSearchView} />
-
-        <Info
-          onEnterVanPress={() => this.enterVan()}
-          toMapScreen={() => this.toMapScreen()}
-        />
+            <Info
+              onEnterVanPress={() => this.enterVan()}
+              toMapScreen={() => this.toMapScreen()}
+            />
+          </BottomView>
+        </View>
       </Container>
     )
   }
 }
+
+const FullScreenMapView = styled(MapView)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`
+
+const MapPlaceholder = styled(View)`
+  flex: 4;
+`
+
+const TopView = styled(View)`
+  flex: 2;
+  justify-content: flex-start;
+`
+
+const BottomView = styled(View)`
+  flex: 2;
+  justify-content: flex-end;
+`
+
+const styles = StyleSheet.create({
+  mapOverlayContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+})
 
 MapScreen.propTypes = {
   activeOrder: PropTypes.object,
