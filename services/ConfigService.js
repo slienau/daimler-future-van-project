@@ -24,6 +24,9 @@ class ConfigService {
   static inactiveTimeToReset () {
     return this._instance.values.inactiveTimeToReset
   }
+  static vanLocationTolerance () {
+    return this._instance.values.vanLocationTolerance
+  }
 }
 ConfigService._instance = new ConfigService()
 module.exports = ConfigService

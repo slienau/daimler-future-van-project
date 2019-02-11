@@ -7,8 +7,9 @@ const ManagementSystem = require('../services/ManagementSystem.js')
 const Route = require('../models/Route.js')
 const Logger = require('../services/WinstonLogger').logger
 const geolib = require('geolib')
+const EnvVariableService = require('../services/ConfigService')
 
-const range = 25
+const range = EnvVariableService.vanLocationTolerance()
 
 router.get('/status', async function (req, res) {
   Logger.info('Get activeOrder status request zu user: ' + req.user._id + ' with Query: ')
@@ -88,7 +89,11 @@ router.put('/', async function (req, res) {
 
       // await ManagementSystem.startRide(order)
 
-      orderNew = await Order.findById(orderId)
+      orderNew = await Order.findById(orderId).lean()
+      orderNew.id = orderId
+      orderNew.route = await Route.findById(order.route, '-confirmed -validUntil')
+      orderNew.vanStartVBS = virtualBusStop
+      orderNew.vanEndVBS = virtualBusStopEnd
       res.json(orderNew)
       break
 
@@ -106,7 +111,11 @@ router.put('/', async function (req, res) {
 
       // await ManagementSystem.endRide(order)
 
-      orderNew = await Order.findById(orderId)
+      orderNew = await Order.findById(orderId).lean()
+      orderNew.id = orderId
+      orderNew.route = await Route.findById(order.route, '-confirmed -validUntil')
+      orderNew.vanStartVBS = virtualBusStop
+      orderNew.vanEndVBS = virtualBusStopEnd
       res.json(orderNew)
       break
 
@@ -118,7 +127,12 @@ router.put('/', async function (req, res) {
 
       await Order.updateOne({ _id: orderId }, { $set: { canceled: true, vanExitTime: new Date(), active: false } })
 
-      orderNew = await Order.findById(orderId)
+      orderNew = await Order.findById(orderId).lean()
+      orderNew.id = orderId
+      orderNew.route = await Route.findById(order.route, '-confirmed -validUntil')
+      orderNew.vanStartVBS = virtualBusStop
+      orderNew.vanEndVBS = virtualBusStopEnd
+
       res.json(orderNew)
       break
     default:
