@@ -4,6 +4,7 @@ const Order = require('../models/Order.js')
 const Account = require('../models/Account.js')
 const Logger = require('../services/WinstonLogger').logger
 const AccountHelper = require('../services/AccountHelper.js')
+const _ = require('lodash')
 
 router.get('/', async function (req, res) {
   res.setHeader('Content-Type', 'application/json')
@@ -40,12 +41,9 @@ router.get('/', async function (req, res) {
         leaderboardWithUsernames[i].status = AccountHelper.status(leaderboard[i].loyaltyPoints)
       }
     }
-    let leaderboardFilterAdmin
-    for (let i = 0; i < leaderboardWithUsernames.length; i++) {
-      if (leaderboardWithUsernames[i].username === 'admin') {
-        leaderboardFilterAdmin = leaderboardWithUsernames.splice(0, i).concat(leaderboardWithUsernames.splice(i + 1, leaderboardWithUsernames.length))
-      }
-    }
+    let leaderboardFilterAdmin = _.remove(leaderboardWithUsernames, function (account) {
+      return account.username !== 'admin'
+    })
     res.json(leaderboardFilterAdmin)
   } catch (error) {
     Logger.error(error)
