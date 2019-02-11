@@ -171,6 +171,21 @@ class OrderHelper {
     }
   }
 
+  static getUsersNextRoutes (nextRoutes, nextStops, orderId) {
+    // first get the users last stop
+    const usersNextStops = nextStops.filter(stop => stop.orderId.equals(orderId))
+    const usersLastStop = _.last(usersNextStops)
+
+    // now get all routes until the one that ends at the users last stop
+    const index = _.findIndex(nextRoutes, route => {
+      const from = { latitude: route.routes[0].legs[0].end_location.lat, longitude: route.routes[0].legs[0].end_location.lng }
+      const to = { latitude: usersLastStop.vb.location.latitude, longitude: usersLastStop.vb.location.longitude }
+      return geolib.getDistance(from, to) <= 25
+    })
+    const usersNextRoutes = nextRoutes.slice(0, index + 1)
+    return usersNextRoutes
+  }
+
   // To-Do: Only rely on location instead of time
   static async checkOrderLocationStatus (orderId, passengerLocation) {
     const order = await Order.findById(orderId).lean()
@@ -246,7 +261,7 @@ class OrderHelper {
       otherPassengers: otherPassengers,
       vanLocation: actualVanLocation,
       nextStops: uniqueStops,
-      nextRoutes: nextRoutes
+      nextRoutes: this.getUsersNextRoutes(nextRoutes, nextStops, orderId)
     }
 
     if (!order.vanEnterTime) {
