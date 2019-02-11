@@ -12,6 +12,9 @@ export const SET_VISIBLE_COORDINATES = 'map/SET_VISIBLE_COORDINATES'
 export const VISIBLE_COORDINATES_UPDATED = 'map/VISIBLE_COORDINATES_UPDATED'
 export const SET_VANS = 'map/SET_VANS'
 export const SET_PERSON_COUNT = 'map/SET_PERSON_COUNT'
+export const FETCH_ROUTES = 'map/FETCH_ROUTES'
+export const CLEAR_ROUTES = 'map/CLEAR_ROUTES'
+export const RESET_MAP_STATE = 'map/RESET_MAP_STATE'
 
 export const MapState = {
   INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
@@ -23,11 +26,22 @@ export const MapState = {
 }
 
 const initialState = {
+  mapState: MapState.INIT,
   userStartLocation: null, // {lat, lng, name, description}
   userDestinationLocation: null, // {lat, lng, name, description}
   currentUserLocation: null,
-  mapState: MapState.INIT,
-  routes: null,
+  routes: null, // TODO: remove routes array after we don't use this state anymore
+  routeInfo: {
+    vanStartVBS: null,
+    vanEndVBS: null,
+    toDestinationRoute: null,
+    toStartRoute: null,
+    vanRoute: null,
+    vanETAatStartVBS: null,
+    vanETAatEndVBS: null,
+    userETAatUserDestinationLocation: null,
+    validUntil: null,
+  },
   visibleCoordinates: [],
   edgePadding: {top: 0.2, right: 0.1, left: 0.1, bottom: 0.2},
   hasVisibleCoordinatesUpdate: false,
@@ -47,8 +61,25 @@ const map = (state = initialState, action) => {
     case SET_CURRENT_USER_LOCATION:
       newState.currentUserLocation = action.payload
       return newState
-    case SET_ROUTES:
-      newState.routes = action.payload
+    // case SET_ROUTES:
+    //   newState.routes = action.payload
+    //   return newState
+    case FETCH_ROUTES:
+      newState.routes = action.payload // TODO: remove routes array after we don't use this state anymore
+      const firstRouteItem = action.payload[0]
+      newState.routeInfo.vanStartVBS = firstRouteItem.vanStartVBS
+      newState.routeInfo.vanEndVBS = firstRouteItem.vanEndVBS
+      newState.routeInfo.toDestinationRoute = firstRouteItem.toDestinationRoute
+      newState.routeInfo.toStartRoute = firstRouteItem.toStartRoute
+      newState.routeInfo.vanRoute = firstRouteItem.vanRoute
+      newState.routeInfo.userETAatUserDestinationLocation =
+        firstRouteItem.userETAatUserDestinationLocation
+      newState.routeInfo.vanETAatStartVBS = firstRouteItem.vanETAatStartVBS
+      newState.routeInfo.vanETAatEndVBS = firstRouteItem.vanETAatEndVBS
+      newState.routeInfo.validUntil = firstRouteItem.validUntil
+      return newState
+    case CLEAR_ROUTES:
+      newState.routeInfo = {}
       return newState
     case CHANGE_MAP_STATE:
       newState.mapState = action.payload
@@ -71,6 +102,13 @@ const map = (state = initialState, action) => {
     case SET_PERSON_COUNT:
       newState.personCount = action.payload
       return newState
+    case RESET_MAP_STATE:
+      newState.mapState = MapState.INIT
+      newState.userStartLocation = null
+      newState.userDestinationLocation = null
+      newState.routes = null // TODO: remove routes array after we don't use this state anymore
+      newState.routeInfo = null
+      return newState
     default:
       return state
   }
@@ -84,7 +122,10 @@ export const fetchRoutes = () => {
       destination: map.userDestinationLocation.location,
       passengers: map.personCount,
     })
-    dispatch(setRoutes(data))
+    dispatch({
+      type: FETCH_ROUTES,
+      payload: data,
+    })
     dispatch(changeMapState(MapState.ROUTE_SEARCHED))
   }
 }
@@ -98,7 +139,9 @@ export const changeMapState = payload => {
 
 export const clearRoutes = () => {
   return dispatch => {
-    dispatch(setRoutes(null))
+    dispatch({
+      type: CLEAR_ROUTES,
+    })
     dispatch(changeMapState(MapState.SEARCH_ROUTES))
   }
 }
@@ -138,10 +181,9 @@ export const visibleCoordinatesUpdated = () => {
 
 export const resetMapState = () => {
   return dispatch => {
-    dispatch(changeMapState(MapState.INIT))
-    dispatch(setUserStartLocation(null))
-    dispatch(setUserDestinationLocation(null))
-    dispatch(setRoutes(null))
+    dispatch({
+      TYPE: RESET_MAP_STATE,
+    })
   }
 }
 
@@ -158,12 +200,12 @@ export const setVisibleCoordinates = (
   }
 }
 
-export const setRoutes = payload => {
-  return {
-    type: SET_ROUTES,
-    payload: payload,
-  }
-}
+// export const setRoutes = payload => {
+//   return {
+//     type: SET_ROUTES,
+//     payload: payload,
+//   }
+// }
 
 export const setVans = payload => {
   return {
