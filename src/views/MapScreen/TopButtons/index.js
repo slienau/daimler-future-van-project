@@ -16,7 +16,6 @@ const TopButtons = props => {
           mapState={props.mapState}
           toAccountView={props.toAccountView}
         />
-
         <CurrentLocationButton
           mapState={props.mapState}
           onPress={props.onCurrentLocationButtonPress}
@@ -25,14 +24,28 @@ const TopButtons = props => {
     )
 
   if (props.mapState === MapState.ROUTE_ORDERED) {
-    content = <CancelOrderButton onPress={() => alert('TODO')} />
+    content = <CancelOrderButton />
   }
 
-  return <View style={styles.wrapper}>{content}</View>
+  return (
+    <View
+      style={[
+        styles.wrapper,
+        props.mapState !== MapState.INIT ? styles.noTopMargin : null,
+      ]}>
+      {content}
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
   wrapper: {
+    marginTop: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    flexDirection: 'row',
+  },
+  noTopMargin: {
     marginTop: 0,
   },
 })

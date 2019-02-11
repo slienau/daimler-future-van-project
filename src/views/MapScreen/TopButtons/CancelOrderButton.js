@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import CustomFabWithIcon from '../../../components/UI/CustomFabWithIcon'
 import {cancelActiveOrder} from '../../../ducks/orders'
-import {Alert} from 'react-native'
+import {Alert, StyleSheet} from 'react-native'
 import PushNotification from 'react-native-push-notification'
 import {Toast} from 'native-base'
 import {defaultDangerToast, defaultSuccessToast} from '../../../lib/toasts'
+import DefaultIconButton from '../../../components/UI/DefaultIconButton'
 
 const CancelOrderButton = props => {
   const cancelActiveOrder = async () => {
@@ -37,13 +37,20 @@ const CancelOrderButton = props => {
   }
 
   return (
-    <CustomFabWithIcon
+    <DefaultIconButton
       icon="md-close"
       onPress={() => cancelActiveOrder()}
-      position="topLeft"
+      style={styles.button}
     />
   )
 }
+
+const styles = StyleSheet.create({
+  button: {
+    position: 'absolute',
+    left: 0,
+  },
+})
 
 CancelOrderButton.propTypes = {
   cancelActiveOrder: PropTypes.func.isRequired,
