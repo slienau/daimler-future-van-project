@@ -30,8 +30,8 @@ class VirtualBusStopHelper {
     })
     const hbf = new VirtualBusStop({
       location: {
-        latitude: 52.524158,
-        longitude: 13.369407
+        latitude: 52.524095,
+        longitude: 13.370751
       },
       name: 'Hauptbahnhof',
       accessible: true

@@ -9,8 +9,8 @@ VBS.potsdamerPl = {
   longitude: 13.376962
 }
 VBS.hbf = {
-  latitude: 52.524158,
-  longitude: 13.369407
+  latitude: 52.524095,
+  longitude: 13.370751
 }
 VBS.alex = {
   latitude: 52.523020,
