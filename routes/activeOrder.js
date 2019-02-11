@@ -7,8 +7,9 @@ const ManagementSystem = require('../services/ManagementSystem.js')
 const Route = require('../models/Route.js')
 const Logger = require('../services/WinstonLogger').logger
 const geolib = require('geolib')
+const EnvVariableService = require('../services/ConfigService')
 
-const range = 25
+const range = EnvVariableService.vanLocationTolerance()
 
 router.get('/status', async function (req, res) {
   Logger.info('Get activeOrder status request zu user: ' + req.user._id + ' with Query: ')

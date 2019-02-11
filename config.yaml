@@ -13,3 +13,4 @@ vanStartLocations:
 numberOfSeats : 8
 numberOfVans: 3
 inactiveTimeToReset: 300000
+vanLocationTolerance: 25

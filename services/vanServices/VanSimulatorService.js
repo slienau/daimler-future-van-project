@@ -4,7 +4,9 @@ const Order = require('../../models/Order.js')
 const geolib = require('geolib')
 const _ = require('lodash')
 const Logger = require('../WinstonLogger').logger
-const inactiveTimeToReset = require('../ConfigService').inactiveTimeToReset()
+const EnvVariableService = require('../ConfigService.js')
+
+const inactiveTimeToReset = EnvVariableService.inactiveTimeToReset()
 
 class VanSimulatorService {
   static async updateVanLocations (vans) {
@@ -125,7 +127,7 @@ class VanSimulatorService {
   static wait (van) {
     let nextVB = van.nextStops[0].vb
     // check if the next stop is close to the current van location (range in meters)
-    let range = 20
+    let range = EnvVariableService.vanLocationTolerance()
     let from = { latitude: van.lastStepLocation.latitude, longitude: van.lastStepLocation.longitude }
     let to = { latitude: nextVB.location.latitude, longitude: nextVB.location.longitude }
     let dist = geolib.getDistance(from, to)

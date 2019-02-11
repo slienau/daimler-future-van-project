@@ -8,9 +8,10 @@ const Loyalty = require('./Loyalty.js')
 const geolib = require('geolib')
 const Logger = require('./WinstonLogger').logger
 const _ = require('lodash')
+const EnvVariableService = require('./ConfigService.js')
 
 // range in meter how far the van and user can be from the vbs to still be able to start/end the ride
-const range = 25
+const range = EnvVariableService.vanLocationTolerance()
 
 class OrderHelper {
   static async setupOrders () {
@@ -180,7 +181,7 @@ class OrderHelper {
     const index = _.findIndex(nextRoutes, route => {
       const from = { latitude: route.routes[0].legs[0].end_location.lat, longitude: route.routes[0].legs[0].end_location.lng }
       const to = { latitude: usersLastStop.vb.location.latitude, longitude: usersLastStop.vb.location.longitude }
-      return geolib.getDistance(from, to) <= 25
+      return geolib.getDistance(from, to) <= range
     })
     const usersNextRoutes = nextRoutes.slice(0, index + 1)
     return usersNextRoutes
