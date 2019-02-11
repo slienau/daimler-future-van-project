@@ -1,6 +1,7 @@
 /* global google */
 const axios = require('axios')
 const _ = require('lodash')
+const chroma = require('chroma-js')
 
 function decodePolyline(t) {
   const d = []
@@ -78,15 +79,20 @@ function createVBSMarker(vbs) {
   })
 }
 
-const vanColors = ['red', 'green', 'blue']
-function createVanRoute(i, path) {
-  return new google.maps.Polyline({
-    map,
-    path,
-    strokeColor: vanColors[i],
-    strokeOpacity: 1.0,
-    strokeWeight: 2,
-  })
+const vanColors = ['hotpink', 'peru', 'aquamarine']
+function createVanRoute(i, paths) {
+  return paths.map(
+    (path, x) =>
+      new google.maps.Polyline({
+        map,
+        path,
+        strokeColor: chroma(vanColors[i])
+          .saturate(x)
+          .hex(),
+        strokeOpacity: 1.0,
+        strokeWeight: 3,
+      })
+  )
 }
 
 let vanMarkers = []
@@ -96,20 +102,21 @@ async function loadVans() {
   const vanPolylines = data
     .map(v => v.nextRoutes)
     .map(n =>
-      _.flatten(
-        n
-          .map(ns => _.get(ns, 'routes.0.overview_polyline.points', ''))
-          .map(decodePolyline)
-      )
+      n
+        .map(ns => _.get(ns, 'routes.0.overview_polyline.points', ''))
+        .map(decodePolyline)
     )
+  const newVanRoutes = _.flatten(
+    data.map((v, i) => createVanRoute(i, vanPolylines[i]))
+  )
+  vanRoutes.forEach(v => v.setMap(null))
+  vanRoutes = newVanRoutes
   if (vanMarkers.length === 0) {
     vanMarkers = data.map(v => createVanMarker(v.location, v.vanId))
-    vanRoutes = data.map((v, i) => createVanRoute(i, vanPolylines[i]))
     return
   }
   const vanPos = data.map(v => normalizePosition(v.location))
   vanMarkers.forEach((v, i) => v.setPosition(vanPos[i]))
-  vanRoutes.forEach((v, i) => v.setPath(vanPolylines[i]))
 }
 
 async function update() {
