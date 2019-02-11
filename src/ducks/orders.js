@@ -6,6 +6,7 @@ import {changeMapState, setRoutes, resetMapState, MapState} from './map'
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
 export const SET_ACTIVE_ORDER = 'orders/SET_ACTIVE_ORDER'
 export const SET_ACTIVE_ORDER_STATUS = 'orders/SET_ACTIVE_ORDER_STATUS'
+export const END_RIDE = 'orders/END_RIDE'
 
 const initialState = {
   activeOrder: null,
@@ -116,6 +117,20 @@ export function cancelActiveOrder() {
       payload: null,
     }) // won't be done if put response code is not 200 because .put() throws an error
     dispatch(resetMapState())
+  }
+}
+
+export function endRide() {
+  return async (dispatch, getState) => {
+    dispatch({
+      type: END_RIDE,
+    })
+    const {map} = getState()
+    await api.put('/activeorder', {
+      action: 'endride',
+      userLocation: _.pick(map.currentUserLocation, ['latitude', 'longitude']),
+    })
+    dispatch(changeMapState(MapState.EXIT_VAN))
   }
 }
 

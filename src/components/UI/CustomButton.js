@@ -54,6 +54,7 @@ CustomButton.propTypes = {
   iconLeft: PropTypes.string,
   iconRight: PropTypes.string,
   onPress: PropTypes.func.isRequired,
+  style: PropTypes.object,
   text: PropTypes.string,
 }
 

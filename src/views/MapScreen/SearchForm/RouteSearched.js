@@ -6,6 +6,7 @@ import {
   TextDarkGray,
   TextBoldBlue,
 } from './StyledComponents'
+import PropTypes from 'prop-types'
 
 const RouteSearched = props => {
   return (
@@ -30,10 +31,19 @@ const RouteSearched = props => {
         </Left>
         <Right>
           <TextBoldBlue>Duration: {props.durationTime}</TextBoldBlue>
+          <TextBoldBlue>Arrival: {props.arrivalTime}</TextBoldBlue>
         </Right>
       </CardItemNoBorders>
     </>
   )
+}
+
+RouteSearched.propTypes = {
+  arrivalTime: PropTypes.string,
+  destinationText: PropTypes.string,
+  durationTime: PropTypes.string,
+  startText: PropTypes.string,
+  waitingTime: PropTypes.string,
 }
 
 export default RouteSearched

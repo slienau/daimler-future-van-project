@@ -1,31 +1,23 @@
 import React from 'react'
 import _ from 'lodash'
 import {Container, Content, Toast} from 'native-base'
-import {changeMapState, MapState} from '../../ducks/map'
+import {endRide} from '../../ducks/orders'
 import JourneyOverview from './components/JourneyOverview'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
-import api from '../../lib/api'
 import {ImageBackground, StyleSheet, View} from 'react-native'
 import moment from 'moment'
 import backgroundImage from './assets/background_ridescreen.jpg'
 import CustomButton from '../../components/UI/CustomButton'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
 import BigFlashingMessage from '../../components/UI/BigFlashingMessage'
-import CustomCardButtonWithIcon from '../../components/UI/CustomCardButtonWithIcon'
 import {defaultDangerToast} from '../../lib/toasts'
+import CardButtons from './components/CardButtons'
 
 const RideScreen = props => {
   const handleExitButtonClick = async () => {
     try {
-      await api.put('/activeorder', {
-        action: 'endride',
-        userLocation: _.pick(props.currentUserLocation, [
-          'latitude',
-          'longitude',
-        ]),
-      })
-      props.changeMapState(MapState.EXIT_VAN)
+      props.endRide()
       props.navigation.navigate('Map')
     } catch (error) {
       Toast.show(defaultDangerToast("Couldn't exit van. " + error.message))
@@ -49,7 +41,6 @@ const RideScreen = props => {
         <CustomButton
           fullWidth
           text="Exit Van"
-          // disabled={!_.get(props.activeOrderStatus, 'userAllowedToExit')}
           iconRight="exit"
           onPress={() => handleExitButtonClick()}
         />
@@ -68,16 +59,7 @@ const RideScreen = props => {
             <JourneyOverview />
           </View>
           <View style={styles.cardButtonsContainer}>
-            <CustomCardButtonWithIcon
-              title="Map"
-              icon="map"
-              onPress={() => props.navigation.push('InRideMap')}
-            />
-            <CustomCardButtonWithIcon
-              title="Fun Facts"
-              icon="star"
-              onPress={() => props.navigation.push('Funfacts')}
-            />
+            <CardButtons {...props} />
           </View>
         </Content>
       </ImageBackground>
@@ -122,22 +104,21 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   cardButtonsContainer: {
+    flexDirection: 'column',
     marginTop: 10,
   },
 })
 
 RideScreen.propTypes = {
   activeOrderStatus: PropTypes.object,
-  changeMapState: PropTypes.func,
-  currentUserLocation: PropTypes.object,
+  endRide: PropTypes.func,
 }
 
 export default connect(
   state => ({
     activeOrderStatus: state.orders.activeOrderStatus,
-    currentUserLocation: state.map.currentUserLocation,
   }),
   dispatch => ({
-    changeMapState: payload => dispatch(changeMapState(payload)),
+    endRide: () => dispatch(endRide()),
   })
 )(RideScreen)
