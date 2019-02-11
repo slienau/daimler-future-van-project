@@ -10,6 +10,7 @@ import {
   StyledNumericInput,
   IconBlack,
 } from './StyledComponents'
+import {DARK_COLOR, LIGHT_COLOR} from '../../../components/UI/colors'
 
 const SearchRoutes = props => {
   return (
@@ -48,10 +49,10 @@ const SearchRoutes = props => {
             initValue={props.personCount}
             value={props.personCount}
             rounded
-            textColor="#B0228C"
+            textColor={DARK_COLOR}
             iconStyle={styles.numericInputIconColor}
-            rightButtonBackgroundColor="#32CD32"
-            leftButtonBackgroundColor="#FF0000"
+            rightButtonBackgroundColor={DARK_COLOR}
+            leftButtonBackgroundColor={DARK_COLOR}
           />
         </Right>
       </CardItemBorderBottom>
@@ -59,10 +60,9 @@ const SearchRoutes = props => {
   )
 }
 
-const $whiteColor = '#FFFFFF'
 const styles = StyleSheet.create({
   numericInputIconColor: {
-    color: $whiteColor,
+    color: LIGHT_COLOR,
   },
 })
 
