@@ -8,20 +8,22 @@ import {MapState} from '../../ducks/map'
 const MapMarkers = props => {
   return (
     <>
-      {props.routeInfo && (
-        <>
-          <MapMarker
-            location={_.get(props.routeInfo, 'vanStartVBS.location')}
-            title={'Start station'}
-            image="vbs"
-          />
-          <MapMarker
-            location={_.get(props.routeInfo, 'vanEndVBS.location')}
-            title={'End station'}
-            image="vbs"
-          />
-        </>
-      )}
+      {props.routeInfo &&
+        props.routeInfo.vanStartVBS &&
+        props.routeInfo.vanEndVBS && (
+          <>
+            <MapMarker
+              location={_.get(props.routeInfo, 'vanStartVBS.location')}
+              title={'Start station'}
+              image="vbs"
+            />
+            <MapMarker
+              location={_.get(props.routeInfo, 'vanEndVBS.location')}
+              title={'End station'}
+              image="vbs"
+            />
+          </>
+        )}
       {props.userStartLocation && (
         <MapMarker
           location={props.userStartLocation.location}
