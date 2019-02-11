@@ -16,10 +16,14 @@ import CustomListItemHeader from '../../components/UI/CustomListItemHeader'
 
 const FunfactsScreen = props => {
   const co2savings = _.get(props.activeOrder, 'co2savings')
-  const distanceToVBS =
-    props.currentRoute[0].toStartRoute.routes[0].legs[0].distance.value
-  const distanceToDestination =
-    props.currentRoute[0].toDestinationRoute.routes[0].legs[0].distance.value
+  const distanceToVBS = _.get(
+    props.routeInfo,
+    'toStartRoute.routes.0.legs.0.distance.value'
+  )
+  const distanceToDestination = _.get(
+    props.routeInfo,
+    'toDestinationRoute.routes.0.legs.0.distance.value'
+  )
 
   const burntCalories = (distanceToVBS + distanceToDestination) * 0.064
 
@@ -90,13 +94,13 @@ const FunfactsScreen = props => {
 
 FunfactsScreen.propTypes = {
   activeOrder: PropTypes.object,
-  currentRoute: PropTypes.array,
+  routeInfo: PropTypes.object,
 }
 
 const mapStateToProps = state => {
   return {
     activeOrder: state.orders.activeOrder,
-    currentRoute: state.map.routes,
+    routeInfo: state.map.routeInfo,
   }
 }
 

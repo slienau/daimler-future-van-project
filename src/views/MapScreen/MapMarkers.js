@@ -8,15 +8,15 @@ import {MapState} from '../../ducks/map'
 const MapMarkers = props => {
   return (
     <>
-      {props.routes && props.routes.length && (
+      {props.routeInfo && (
         <>
           <MapMarker
-            location={_.get(props.routes[0], 'vanStartVBS.location')}
+            location={_.get(props.routeInfo, 'vanStartVBS.location')}
             title={'Start station'}
             image="vbs"
           />
           <MapMarker
-            location={_.get(props.routes[0], 'vanEndVBS.location')}
+            location={_.get(props.routeInfo, 'vanEndVBS.location')}
             title={'End station'}
             image="vbs"
           />
@@ -49,7 +49,7 @@ const MapMarkers = props => {
 MapMarkers.propTypes = {
   activeOrderStatus: PropTypes.object,
   mapState: PropTypes.string,
-  routes: PropTypes.array,
+  routeInfo: PropTypes.object,
   userDestinationLocation: PropTypes.object,
   userStartLocation: PropTypes.object,
   vans: PropTypes.array,
@@ -60,6 +60,6 @@ export default connect(state => ({
   userDestinationLocation: state.map.userDestinationLocation,
   userStartLocation: state.map.userStartLocation,
   mapState: state.map.mapState,
-  routes: state.map.routes,
+  routeInfo: state.map.routeInfo,
   vans: state.map.vans,
 }))(MapMarkers)

@@ -1,5 +1,5 @@
 export default {
-  apiEndpoint: '3.120.249.73',
+  apiEndpoint: '192.168.178.58',
   googleApiKey: 'AIzaSyBLjSLCSdnDP2K1muAvuiREJmMdY5ahPgk',
 }
 

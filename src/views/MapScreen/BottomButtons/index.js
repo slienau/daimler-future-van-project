@@ -60,7 +60,7 @@ class BottomButtons extends React.Component {
   }
 
   checkRouteExpireProgress = () => {
-    const validUntil = _.get(this.props.routes, '0.validUntil')
+    const validUntil = _.get(this.props.routeInfo, 'validUntil')
     if (!validUntil) return
     let currentDiff = new Date(validUntil).getTime() - new Date().getTime()
     if (currentDiff <= 0) currentDiff = 0
@@ -81,7 +81,7 @@ class BottomButtons extends React.Component {
             let success = false
             try {
               await this.props.placeOrder({
-                routeId: this.props.routes[0].id,
+                routeId: this.props.routeInfo.id,
               })
               success = true
             } catch (error) {
@@ -98,7 +98,7 @@ class BottomButtons extends React.Component {
                 message: 'Your van will arrive at the exit point in a minute',
                 date: new Date(
                   new Date(
-                    _.get(this.props.routes, '0.vanETAatEndVBS')
+                    _.get(this.props.routeInfo, 'vanETAatEndVBS')
                   ).getTime() -
                     60 * 1000
                 ),
@@ -107,7 +107,7 @@ class BottomButtons extends React.Component {
                 message: 'Your van is at the start point in a minute',
                 date: new Date(
                   new Date(
-                    _.get(this.props.routes, '0.vanETAatStartVBS')
+                    _.get(this.props.routeInfo, 'vanETAatStartVBS')
                   ).getTime() -
                     60 * 1000
                 ),
@@ -190,7 +190,7 @@ BottomButtons.propTypes = {
   mapState: PropTypes.string,
   placeOrder: PropTypes.func,
   resetMapState: PropTypes.func,
-  routes: PropTypes.array,
+  routeInfo: PropTypes.object,
   setVisibleCoordinates: PropTypes.func,
   toSearchView: PropTypes.func,
   userDestinationLocation: PropTypes.object,
@@ -202,7 +202,7 @@ export default connect(
     mapState: state.map.mapState,
     userStartLocation: state.map.userStartLocation,
     userDestinationLocation: state.map.userDestinationLocation,
-    routes: state.map.routes,
+    routeInfo: state.map.routeInfo,
   }),
   dispatch => ({
     resetMapState: () => dispatch(resetMapState()),
