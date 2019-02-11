@@ -21,7 +21,7 @@ class OrderHelper {
     let user, userId, vbs
     let orderTime1, orderTime2, time1Start, time1End, time2Start, time2End, distance1, distance2, distance3
     let accountnames = ['christoph', 'sebastian', 'antonio', 'alex', 'domenic', 'marius', 'philipp', 'admin']
-    let leaderboardDifference = 1.6
+    let leaderboardDifference = 1.3
 
     for (let i = 0; i < accountnames.length; i++) {
       try {
@@ -53,8 +53,8 @@ class OrderHelper {
           vanEnterTime: time1Start,
           vanExitTime: time1End,
           vanId: 3,
-          distance: distance1,
-          loyaltyPoints: Number((distance1 * 10 * leaderboardDifference).toFixed(0)),
+          distance: Number((distance1 * leaderboardDifference).toFixed(0)),
+          loyaltyPoints: Number((distance1 * 17 * leaderboardDifference).toFixed(0)),
           co2savings: distance1 * 0.13,
           route: '273jsnsb9201'
         })
@@ -70,8 +70,8 @@ class OrderHelper {
           vanEnterTime: time2Start,
           vanExitTime: time2End,
           vanId: 4,
-          distance: distance2,
-          loyaltyPoints: Number((distance2 * 10 * leaderboardDifference).toFixed(0)),
+          distance: Number((distance2 * leaderboardDifference).toFixed(0)),
+          loyaltyPoints: Number((distance2 * 17 * leaderboardDifference).toFixed(0)),
           co2savings: distance2 * 0.13,
           route: '273jsnsb9250'
         })
@@ -86,8 +86,8 @@ class OrderHelper {
           vanEnterTime: time2Start,
           vanExitTime: time2End,
           vanId: 4,
-          distance: distance3,
-          loyaltyPoints: Number((distance3 * 10 * leaderboardDifference).toFixed(0)),
+          distance: Number((distance3 * leaderboardDifference).toFixed(0)),
+          loyaltyPoints: Number((distance3 * 17 * leaderboardDifference).toFixed(0)),
           co2savings: distance3 * 0.13,
           route: '273jsnsb9250'
         })
@@ -95,7 +95,7 @@ class OrderHelper {
         await order1.save()
         await order2.save()
         await order3.save()
-        leaderboardDifference -= 0.2
+        leaderboardDifference -= 0.18
       } catch (error) {
         Logger.error(error)
       }
