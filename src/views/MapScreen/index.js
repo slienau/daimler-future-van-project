@@ -110,6 +110,7 @@ class MapScreen extends React.Component {
         this.props.currentUserLocation
       ) {
         try {
+          // TODO: move api call to redux
           const resp = await api.get('/activeorder/status', {
             params: {
               passengerLatitude: this.props.currentUserLocation.latitude,
@@ -165,6 +166,7 @@ class MapScreen extends React.Component {
         [MapState.INIT, MapState.SEARCH_ROUTES].includes(this.props.mapState)
       ) {
         try {
+          // TODO: move api call to redux
           const {data} = await api.get('/vans')
           this.props.setVans(data)
         } catch (error) {
@@ -212,6 +214,7 @@ class MapScreen extends React.Component {
   enterVan = async () => {
     if (_.get(this.props.activeOrder, 'vanEnterTime')) return
     try {
+      // TODO: move api call to redux
       await api.put('/activeorder', {
         action: 'startride',
         userLocation: _.pick(this.props.currentUserLocation, [
