@@ -1,13 +1,13 @@
-import BottomButton from './BottomButton'
 import React from 'react'
 import PropTypes from 'prop-types'
+import CustomButton from '../../../components/UI/CustomButton'
 
 const DestinationButton = props => {
   return (
-    <BottomButton
+    <CustomButton
       onPress={props.onPress}
-      text="destination"
-      iconName="arrow-forward"
+      text="Destination"
+      iconRight="arrow-forward"
     />
   )
 }

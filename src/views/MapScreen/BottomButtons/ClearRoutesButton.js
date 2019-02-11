@@ -1,20 +1,13 @@
-import BottomButton from './BottomButton'
 import React from 'react'
 import PropTypes from 'prop-types'
+import CustomButton from '../../../components/UI/CustomButton'
 
 const ClearRoutesButton = props => {
-  return (
-    <BottomButton
-      iconLeft
-      onPress={props.onPress}
-      iconName={props.iconName ? props.iconName : 'arrow-back'}
-    />
-  )
+  return <CustomButton onPress={props.onPress} iconLeft="arrow-back" />
 }
 
 ClearRoutesButton.propTypes = {
-  iconName: PropTypes.string,
-  onPress: PropTypes.func,
+  onPress: PropTypes.func.isRequired,
 }
 
 export default ClearRoutesButton
