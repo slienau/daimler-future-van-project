@@ -12,8 +12,8 @@ import backgroundImage from './assets/background_ridescreen.jpg'
 import CustomButton from '../../components/UI/CustomButton'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
 import BigFlashingMessage from '../../components/UI/BigFlashingMessage'
-import CustomCardButtonWithIcon from '../../components/UI/CustomCardButtonWithIcon'
 import {defaultDangerToast} from '../../lib/toasts'
+import CardButtons from './components/CardButtons'
 
 const RideScreen = props => {
   const handleExitButtonClick = async () => {
@@ -68,16 +68,7 @@ const RideScreen = props => {
             <JourneyOverview />
           </View>
           <View style={styles.cardButtonsContainer}>
-            <CustomCardButtonWithIcon
-              title="Map"
-              icon="map"
-              onPress={() => props.navigation.push('InRideMap')}
-            />
-            <CustomCardButtonWithIcon
-              title="Fun Facts"
-              icon="star"
-              onPress={() => props.navigation.push('Funfacts')}
-            />
+            <CardButtons {...props} />
           </View>
         </Content>
       </ImageBackground>
@@ -122,6 +113,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   cardButtonsContainer: {
+    flexDirection: 'column',
     marginTop: 10,
   },
 })
