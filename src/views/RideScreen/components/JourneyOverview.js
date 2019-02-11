@@ -11,21 +11,12 @@ const JourneyOverview = props => {
     _.get(props.activeOrder, 'route.userETAatUserDestinationLocation')
   ).format('HH:mm')
 
-  const vanETAatEndVBS = moment(
-    _.get(props.activeOrderStatus, 'vanETAatDestinationVBS')
-  ).format('HH:mm')
   const loyaltyPoints =
     '' + _.round(_.get(props.activeOrder, 'loyaltyPoints'), 2)
 
   return (
     <>
       <CustomListItemHeader title="Journey Overview" />
-      <JourneyListItem
-        description="Time of arrival at van exit point"
-        iconColor="darkblue"
-        iconName="bus"
-        info={vanETAatEndVBS}
-      />
       <JourneyListItem
         description="Time of arrival at destination"
         iconColor="darkgreen"
@@ -36,10 +27,10 @@ const JourneyOverview = props => {
         description="Total distance"
         iconColor="black"
         iconName="speedometer"
-        info={_.get(props.activeOrder, 'distance')}
+        info={_.get(props.activeOrder, 'distance') + ' Km'}
       />
       <JourneyListItem
-        description="Loyalty Points"
+        description="Loyalty points"
         iconColor="orange"
         iconName="star"
         info={loyaltyPoints}
