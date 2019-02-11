@@ -528,6 +528,7 @@ On `HTTP 200` the following object will be returned:
 | `vanLocation` | `Object` | The current position of the van. |
 | `vanETAatStartVBS` | `Datetime` | Esimated time of arrival of the van at the start location |
 | `vanETAatDestinationVBS` | `Datetime` | Esimated time of arrival of the van at the start location |
+| `userETAatUserDestinationLocation` | `Datetime` | The estimated time of arrival of the user at the `userDestinationLocation` |
 | `otherPassengers` | `Array` | Array containing usernames (Strings) of other passengers |
 | `message` | `String` | |
 
@@ -542,6 +543,7 @@ On `HTTP 200` the following object will be returned:
   },
   "vanETAatStartVBS": "2018-11-23T18:20:25.000Z",
   "vanETAatDestinationVBS": "2018-11-23T18:30:25.000Z",
+  "userETAatUserDestinationLocation": "2018-11-23T18:34:25.000Z",
   "otherPassengers": [
     "Sarah",
     "Wilbert"
