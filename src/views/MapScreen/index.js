@@ -21,7 +21,11 @@ import {
   setVans,
   resetMapState,
 } from '../../ducks/map'
-import {fetchActiveOrder, setActiveOrderStatus} from '../../ducks/orders'
+import {
+  fetchActiveOrder,
+  startRide,
+  setActiveOrderStatus,
+} from '../../ducks/orders'
 import Info from './Info'
 import {defaultMapRegion} from '../../lib/config'
 import api from '../../lib/api'
@@ -111,14 +115,15 @@ class MapScreen extends React.Component {
       ) {
         try {
           // TODO: move api call to redux
-          const resp = await api.get('/activeorder/status', {
+          const {data} = await api.get('/activeorder/status', {
             params: {
               passengerLatitude: this.props.currentUserLocation.latitude,
               passengerLongitude: this.props.currentUserLocation.longitude,
             },
           })
+          this.props.setActiveOrderStatus(data)
           const newPassengers = _.difference(
-            resp.data.otherPassengers,
+            data.otherPassengers,
             _.get(this.props.activeOrderStatus, 'otherPassengers', [])
           )
           if (newPassengers.length > 0) {
@@ -130,7 +135,6 @@ class MapScreen extends React.Component {
             })
             Toast.show(defaultToast(message))
           }
-          this.props.setActiveOrderStatus(resp.data)
         } catch (error) {
           Toast.show(
             defaultDangerToast(
@@ -214,14 +218,7 @@ class MapScreen extends React.Component {
   enterVan = async () => {
     if (_.get(this.props.activeOrder, 'vanEnterTime')) return
     try {
-      // TODO: move api call to redux
-      await api.put('/activeorder', {
-        action: 'startride',
-        userLocation: _.pick(this.props.currentUserLocation, [
-          'latitude',
-          'longitude',
-        ]),
-      })
+      this.props.startRide()
       this.toRideScreen()
     } catch (error) {
       Toast.show(defaultDangerToast("Couldn't enter van. " + error.message))
@@ -321,6 +318,7 @@ MapScreen.propTypes = {
   setJourneyStart: PropTypes.func,
   setVans: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
+  startRide: PropTypes.func,
   visibleCoordinates: PropTypes.array,
   visibleCoordinatesUpdated: PropTypes.func,
 }
@@ -344,8 +342,9 @@ export default connect(
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
     visibleCoordinatesUpdated: () => dispatch(visibleCoordinatesUpdated()),
-    setActiveOrderStatus: payload => dispatch(setActiveOrderStatus(payload)),
     changeMapState: payload => dispatch(changeMapState(payload)),
     setVans: payload => dispatch(setVans(payload)),
+    startRide: () => dispatch(startRide()),
+    setActiveOrderStatus: payload => dispatch(setActiveOrderStatus(payload)),
   })
 )(MapScreen)

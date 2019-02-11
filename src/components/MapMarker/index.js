@@ -10,6 +10,7 @@ const images = {
 }
 
 const MapMarker = props => {
+  if (!props.location) return null
   return (
     <Marker
       coordinate={props.location}

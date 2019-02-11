@@ -7,11 +7,12 @@ import {connect} from 'react-redux'
 import {MapState} from '../../ducks/map'
 
 const Routes = props => {
-  if (!props.route) return null
-  const coordinates = [_.get(props.route, 'vanStartVBS.location')].concat(
+  if (!props.routeInfo.toStartRoute || !props.routeInfo.toDestinationRoute)
+    return null
+  const coordinates = [_.get(props.routeInfo, 'vanStartVBS.location')].concat(
     props.mapState === MapState.VAN_RIDE
       ? _.map(_.get(props.activeOrderStatus, 'nextStops', []), 'location')
-      : _.get(props.route, 'vanEndVBS.location')
+      : _.get(props.routeInfo, 'vanEndVBS.location')
   )
 
   return (
@@ -19,7 +20,7 @@ const Routes = props => {
       {props.mapState !== MapState.VAN_RIDE && (
         <MapEncodedPolyline
           points={_.get(
-            props.route,
+            props.routeInfo,
             'toStartRoute.routes.0.overview_polyline.points'
           )}
           strokeWidth={3}
@@ -34,7 +35,7 @@ const Routes = props => {
       />
       <MapEncodedPolyline
         points={_.get(
-          props.route,
+          props.routeInfo,
           'toDestinationRoute.routes.0.overview_polyline.points'
         )}
         strokeWidth={3}
@@ -47,11 +48,11 @@ const Routes = props => {
 Routes.propTypes = {
   activeOrderStatus: PropTypes.object,
   mapState: PropTypes.string,
-  route: PropTypes.object,
+  routeInfo: PropTypes.object,
 }
 
 export default connect(state => ({
-  route: _.get(state.map, 'routes.0'),
+  routeInfo: state.map.routeInfo,
   mapState: state.map.mapState,
   activeOrderStatus: state.orders.activeOrderStatus,
 }))(Routes)

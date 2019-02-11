@@ -1,12 +1,18 @@
 import api from '../lib/api'
 import moment from 'moment'
 import _ from 'lodash'
-import {changeMapState, MapState, SET_ROUTE_INFO, RESET_MAP_STATE} from './map'
+import {
+  changeMapState,
+  MapState,
+  UPDATE_ROUTE_INFO,
+  RESET_MAP_STATE,
+} from './map'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
 export const SET_ACTIVE_ORDER = 'orders/SET_ACTIVE_ORDER'
 export const SET_ACTIVE_ORDER_STATUS = 'orders/SET_ACTIVE_ORDER_STATUS'
 export const END_RIDE = 'orders/END_RIDE'
+export const START_RIDE = 'orders/START_RIDE'
 
 const initialState = {
   activeOrder: null,
@@ -86,7 +92,7 @@ const onSetActiveOrder = data => {
       },
     })
     dispatch({
-      type: SET_ROUTE_INFO,
+      type: UPDATE_ROUTE_INFO,
       payload: data.route,
     })
     dispatch(changeMapState(MapState.ROUTE_ORDERED))
@@ -98,19 +104,6 @@ export function fetchActiveOrder() {
     try {
       const {data, status} = await api.get('/activeorder')
       if (status !== 200) return
-      // currently there is an active order, so set the state correctly
-      // dispatch({
-      //   type: SET_ACTIVE_ORDER,
-      //   payload: {
-      //     ...data,
-      //     route: undefined,
-      //   },
-      // })
-      // dispatch({
-      //   type: SET_ROUTE_INFO,
-      //   payload: data.route,
-      // })
-      // dispatch(changeMapState(MapState.ROUTE_ORDERED))
       dispatch(onSetActiveOrder(data))
     } catch (e) {}
   }
@@ -119,11 +112,6 @@ export function fetchActiveOrder() {
 export function placeOrder(payload) {
   return async dispatch => {
     const {data} = await api.post('/orders', payload)
-    // dispatch({
-    //   type: SET_ACTIVE_ORDER,
-    //   payload: data,
-    // })
-    // dispatch(changeMapState(MapState.ROUTE_ORDERED))
     dispatch(onSetActiveOrder(data))
   }
 }
@@ -147,6 +135,20 @@ export function cancelActiveOrder() {
   }
 }
 
+export function startRide() {
+  return async (dispatch, getState) => {
+    dispatch({
+      type: START_RIDE,
+    })
+    const {map} = getState()
+    const {data} = await api.put('/activeorder', {
+      action: 'startride',
+      userLocation: _.pick(map.currentUserLocation, ['latitude', 'longitude']),
+    })
+    dispatch(onSetActiveOrder(data))
+  }
+}
+
 export function endRide() {
   return async (dispatch, getState) => {
     dispatch({
@@ -161,9 +163,30 @@ export function endRide() {
   }
 }
 
-export function setActiveOrderStatus(state) {
-  return {
-    type: SET_ACTIVE_ORDER_STATUS,
-    payload: state,
+export function setActiveOrderStatus(data) {
+  return dispatch => {
+    dispatch({
+      type: SET_ACTIVE_ORDER_STATUS,
+      payload: _.pick(data, [
+        'vanId',
+        'userAllowedToEnter',
+        'userAllowedToExit',
+        'vanLocation',
+        'otherPassengers',
+        'message',
+        'nextStops',
+        'nextRoutes',
+      ]),
+    })
+    dispatch({
+      type: UPDATE_ROUTE_INFO,
+      payload: {
+        vanLocation: data.vanLocation,
+        vanETAatStartVBS: data.vanETAatStartVBS,
+        vanETAatEndVBS: data.vanETAatDestinationVBS, // TODO: rename vanETAatDestinationVBS to vanETAatEndVBS in API
+        userETAatUserDestinationLocation: data.userETAatUserDestinationLocation,
+        guaranteedArrivalTime: data.guaranteedArrivalTime,
+      },
+    })
   }
 }
