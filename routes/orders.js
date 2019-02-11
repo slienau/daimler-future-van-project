@@ -55,10 +55,12 @@ router.post('/', async function (req, res) {
   try {
     order = await Order.findById(orderId, '-bonusMultiplier').lean()
   } catch (error) {
-    return res.json(error)
+    return res.status(404).json(error)
   }
   order.id = orderId
   order.route = await Route.findById(order.route)
+  order.vanStartVBS = await VirtualBusStop.findById(order.vanStartVBS)
+  order.vanEndVBS = await VirtualBusStop.findById(order.vanEndVBS)
   Logger.info('created active order for user ' + accountId + ' with orderId: ' + orderId)
   res.json(order)
 })
