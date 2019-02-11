@@ -9,7 +9,7 @@ import CustomListItemHeader from '../../../components/UI/CustomListItemHeader'
 const JourneyOverview = props => {
   const userETAatUserDestinationLocation = moment(
     _.get(props.activeOrder, 'route.userETAatUserDestinationLocation')
-  ).format('HH:mm')
+  ).format('HH:mm') // TODO: get this from activeOrderStatus
 
   const loyaltyPoints =
     '' + _.round(_.get(props.activeOrder, 'loyaltyPoints'), 2)
