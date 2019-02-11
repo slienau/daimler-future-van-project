@@ -13,23 +13,20 @@ import {connect} from 'react-redux'
 import _ from 'lodash'
 
 const SearchForm = props => {
-  const parseDeparture = () => {
-    if (!props.routes || !props.routes.length) return
-
-    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
-    const date = moment(departure)
-    return date.format('HH:mm')
+  const formatTime = time => {
+    if (!time) return
+    return moment(time).format('LT')
   }
 
   const calculateDuration = () => {
     if (!props.routes || !props.routes.length) return
 
-    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
     const arrival = _.get(props.routes[0], 'userETAatUserDestinationLocation')
-    const start = moment(departure)
+    const start = moment()
     const end = moment(arrival)
-    const diff = end.diff(start)
-    return moment.utc(diff).format('HH:mm')
+    const diff = end.diff(start) // diff in milliseconds
+    if (diff / (1000 * 60) < 60) return end.from(start, true) // if diff is less than an hour, return 'xx minutes'
+    return moment.utc(diff).format('HH:mm') + ' hours'
   }
 
   const calculateWaitingTime = () => {
@@ -65,9 +62,12 @@ const SearchForm = props => {
         <RouteSearched
           startText={startText}
           destinationText={destinationText}
-          departureTime={parseDeparture()}
+          departureTime={formatTime(_.get(props.routes, '0.vanETAatStartVBS'))}
           waitingTime={calculateWaitingTime()}
           durationTime={calculateDuration()}
+          arrivalTime={formatTime(
+            _.get(props.routes, '0.userETAatUserDestinationLocation')
+          )}
         />
       )
       break
