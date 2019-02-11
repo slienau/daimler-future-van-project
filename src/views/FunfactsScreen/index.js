@@ -16,6 +16,13 @@ import CustomListItemHeader from '../../components/UI/CustomListItemHeader'
 
 const FunfactsScreen = props => {
   const co2savings = _.get(props.activeOrder, 'co2savings')
+  const distanceToVBS =
+    props.currentRoute[0].toStartRoute.routes[0].legs[0].distance.value
+  const distanceToDestination =
+    props.currentRoute[0].toDestinationRoute.routes[0].legs[0].distance.value
+
+  const burntCalories = (distanceToVBS + distanceToDestination) * 0.064
+
   return (
     <Container>
       <Content>
@@ -25,10 +32,10 @@ const FunfactsScreen = props => {
             <Icon active name="ios-leaf" />
           </Left>
           <Body>
-            <Text>CO2 Savings</Text>
+            <Text>CO2 savings</Text>
           </Body>
           <Right>
-            <Text>{co2savings}</Text>
+            <Text>{co2savings} kg CO2</Text>
           </Right>
         </ListItem>
         <ListItem icon>
@@ -39,7 +46,7 @@ const FunfactsScreen = props => {
             <Text>Burnt calories</Text>
           </Body>
           <Right>
-            <Text>54 Kcal</Text>
+            <Text>{burntCalories} Kcal</Text>
           </Right>
         </ListItem>
         <CustomListItemHeader title="Van Facts" />
@@ -59,7 +66,7 @@ const FunfactsScreen = props => {
             <Icon type="FontAwesome" name="rocket" />
           </Left>
           <Body>
-            <Text>Highest Speed</Text>
+            <Text>Highest speed</Text>
           </Body>
           <Right>
             <Text>90 Km/h</Text>
@@ -83,11 +90,13 @@ const FunfactsScreen = props => {
 
 FunfactsScreen.propTypes = {
   activeOrder: PropTypes.object,
+  currentRoute: PropTypes.array,
 }
 
 const mapStateToProps = state => {
   return {
     activeOrder: state.orders.activeOrder,
+    currentRoute: state.map.routes,
   }
 }
 

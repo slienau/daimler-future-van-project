@@ -7,6 +7,7 @@ import {
 import {Provider} from 'react-redux'
 import {configureStore} from './store'
 import {Root} from 'native-base'
+import {PermissionsAndroid} from 'react-native'
 
 // screens
 import LoadingScreen from '../views/LoadingScreen'
@@ -161,8 +162,29 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
+    this.requestLocationPermission()
     const store = configureStore()
     this.setState({store})
+  }
+
+  async requestLocationPermission() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message:
+            'Daimler Van needs access to your location in order to work.',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        }
+      )
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED)
+        console.log('Location permission denied')
+      console.log('Permission', granted)
+    } catch (err) {
+      console.warn(err)
+    }
   }
 
   render() {
