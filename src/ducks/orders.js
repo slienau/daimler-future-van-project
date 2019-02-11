@@ -1,7 +1,7 @@
 import api from '../lib/api'
 import moment from 'moment'
 import _ from 'lodash'
-import {changeMapState, setRoutes, resetMapState, MapState} from './map'
+import {changeMapState, MapState, SET_ROUTE_INFO, RESET_MAP_STATE} from './map'
 
 export const SET_ORDER_DATA = 'orders/SET_ORDER_DATA'
 export const SET_ACTIVE_ORDER = 'orders/SET_ACTIVE_ORDER'
@@ -76,18 +76,42 @@ export function fetchOrders() {
   }
 }
 
+const onSetActiveOrder = data => {
+  return dispatch => {
+    dispatch({
+      type: SET_ACTIVE_ORDER,
+      payload: {
+        ...data,
+        route: undefined,
+      },
+    })
+    dispatch({
+      type: SET_ROUTE_INFO,
+      payload: data.route,
+    })
+    dispatch(changeMapState(MapState.ROUTE_ORDERED))
+  }
+}
+
 export function fetchActiveOrder() {
   return async dispatch => {
     try {
       const {data, status} = await api.get('/activeorder')
       if (status !== 200) return
       // currently there is an active order, so set the state correctly
-      dispatch({
-        type: SET_ACTIVE_ORDER,
-        payload: data,
-      })
-      dispatch(setRoutes([data.route]))
-      dispatch(changeMapState(MapState.ROUTE_ORDERED))
+      // dispatch({
+      //   type: SET_ACTIVE_ORDER,
+      //   payload: {
+      //     ...data,
+      //     route: undefined,
+      //   },
+      // })
+      // dispatch({
+      //   type: SET_ROUTE_INFO,
+      //   payload: data.route,
+      // })
+      // dispatch(changeMapState(MapState.ROUTE_ORDERED))
+      dispatch(onSetActiveOrder(data))
     } catch (e) {}
   }
 }
@@ -95,11 +119,12 @@ export function fetchActiveOrder() {
 export function placeOrder(payload) {
   return async dispatch => {
     const {data} = await api.post('/orders', payload)
-    dispatch({
-      type: SET_ACTIVE_ORDER,
-      payload: data,
-    })
-    dispatch(changeMapState(MapState.ROUTE_ORDERED))
+    // dispatch({
+    //   type: SET_ACTIVE_ORDER,
+    //   payload: data,
+    // })
+    // dispatch(changeMapState(MapState.ROUTE_ORDERED))
+    dispatch(onSetActiveOrder(data))
   }
 }
 
@@ -116,7 +141,9 @@ export function cancelActiveOrder() {
       type: SET_ACTIVE_ORDER,
       payload: null,
     }) // won't be done if put response code is not 200 because .put() throws an error
-    dispatch(resetMapState())
+    dispatch({
+      type: RESET_MAP_STATE,
+    })
   }
 }
 

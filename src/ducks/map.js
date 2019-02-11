@@ -4,7 +4,6 @@ import _ from 'lodash'
 export const SET_USER_START_LOCATION = 'map/SET_USER_START_LOCATION'
 export const SET_USER_DESTINATION_LOCATION = 'map/SET_USER_DESTINATION_LOCATION'
 export const SET_CURRENT_USER_LOCATION = 'map/SET_CURRENT_USER_LOCATION'
-export const SET_ROUTES = 'map/SET_ROUTES'
 export const CHANGE_MAP_STATE = 'map/CHANGE_MAP_STATE'
 export const SWAP_JOURNEY_START_AND_DESTINATION =
   'map/SWAP_JOURNEY_START_AND_DESTINATION'
@@ -15,6 +14,7 @@ export const SET_PERSON_COUNT = 'map/SET_PERSON_COUNT'
 export const FETCH_ROUTES = 'map/FETCH_ROUTES'
 export const CLEAR_ROUTES = 'map/CLEAR_ROUTES'
 export const RESET_MAP_STATE = 'map/RESET_MAP_STATE'
+export const SET_ROUTE_INFO = 'map/SET_ROUTE_INFO'
 
 export const MapState = {
   INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
@@ -32,6 +32,7 @@ const initialState = {
   currentUserLocation: null,
   routes: null, // TODO: remove routes array after we don't use this state anymore
   routeInfo: {
+    id: null,
     vanStartVBS: null,
     vanEndVBS: null,
     toDestinationRoute: null,
@@ -41,12 +42,43 @@ const initialState = {
     vanETAatEndVBS: null,
     userETAatUserDestinationLocation: null,
     validUntil: null,
+    vanId: null,
   },
   visibleCoordinates: [],
   edgePadding: {top: 0.2, right: 0.1, left: 0.1, bottom: 0.2},
   hasVisibleCoordinatesUpdate: false,
   vans: [],
   personCount: 1,
+}
+
+const getUpdatedRouteInfoObject = (input, oldState) => {
+  console.log('getUpdatedRouteInfoObject', input, oldState)
+  return {
+    id: _.get(input, 'id', oldState.id),
+    vanStartVBS: _.get(input, 'vanStartVBS', oldState.vanStartVBS),
+    vanEndVBS: _.get(input, 'vanEndVBS', oldState.vanEndVBS),
+    toDestinationRoute: _.get(
+      input,
+      'toDestinationRoute',
+      oldState.toDestinationRoute
+    ),
+    toStartRoute: _.get(input, 'toStartRoute', oldState.toStartRoute),
+    vanRoute: _.get(input, 'vanRoute', oldState.vanRoute),
+    userETAatUserDestinationLocation: _.get(
+      input,
+      'userETAatUserDestinationLocation',
+      oldState.userETAatUserDestinationLocation
+    ),
+    vanETAatStartVBS: _.get(
+      input,
+      'vanETAatStartVBS',
+      oldState.vanETAatStartVBS
+    ),
+    vanETAatEndVBS: _.get(input, 'vanETAatEndVBS', oldState.vanETAatEndVBS),
+    validUntil: _.get(input, 'validUntil', null),
+    vanId: _.get(input, 'vanId', null),
+    vanLocation: _.get(input, 'vanLocation', null),
+  }
 }
 
 const map = (state = initialState, action) => {
@@ -61,25 +93,22 @@ const map = (state = initialState, action) => {
     case SET_CURRENT_USER_LOCATION:
       newState.currentUserLocation = action.payload
       return newState
-    // case SET_ROUTES:
-    //   newState.routes = action.payload
-    //   return newState
     case FETCH_ROUTES:
       newState.routes = action.payload // TODO: remove routes array after we don't use this state anymore
-      const firstRouteItem = action.payload[0]
-      newState.routeInfo.vanStartVBS = firstRouteItem.vanStartVBS
-      newState.routeInfo.vanEndVBS = firstRouteItem.vanEndVBS
-      newState.routeInfo.toDestinationRoute = firstRouteItem.toDestinationRoute
-      newState.routeInfo.toStartRoute = firstRouteItem.toStartRoute
-      newState.routeInfo.vanRoute = firstRouteItem.vanRoute
-      newState.routeInfo.userETAatUserDestinationLocation =
-        firstRouteItem.userETAatUserDestinationLocation
-      newState.routeInfo.vanETAatStartVBS = firstRouteItem.vanETAatStartVBS
-      newState.routeInfo.vanETAatEndVBS = firstRouteItem.vanETAatEndVBS
-      newState.routeInfo.validUntil = firstRouteItem.validUntil
+      newState.routeInfo = getUpdatedRouteInfoObject(
+        action.payload[0],
+        state.routeInfo
+      )
+      return newState
+    case SET_ROUTE_INFO:
+      newState.routes = [action.payload] // TODO: remove routes array after we don't use this state anymore
+      newState.routeInfo = getUpdatedRouteInfoObject(
+        action.payload,
+        state.routeInfo
+      )
       return newState
     case CLEAR_ROUTES:
-      newState.routeInfo = {}
+      newState.routeInfo = initialState.routeInfo
       return newState
     case CHANGE_MAP_STATE:
       newState.mapState = action.payload
@@ -103,12 +132,7 @@ const map = (state = initialState, action) => {
       newState.personCount = action.payload
       return newState
     case RESET_MAP_STATE:
-      newState.mapState = MapState.INIT
-      newState.userStartLocation = null
-      newState.userDestinationLocation = null
-      newState.routes = null // TODO: remove routes array after we don't use this state anymore
-      newState.routeInfo = null
-      return newState
+      return initialState
     default:
       return state
   }
@@ -199,13 +223,6 @@ export const setVisibleCoordinates = (
     },
   }
 }
-
-// export const setRoutes = payload => {
-//   return {
-//     type: SET_ROUTES,
-//     payload: payload,
-//   }
-// }
 
 export const setVans = payload => {
   return {
