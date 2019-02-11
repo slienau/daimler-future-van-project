@@ -31,7 +31,10 @@ const TopButtons = props => {
     <View
       style={[
         styles.wrapper,
-        props.mapState !== MapState.INIT ? styles.noTopMargin : null,
+        props.mapState === MapState.SEARCH_ROUTES ||
+        props.mapState === MapState.ROUTE_SEARCHED
+          ? styles.noTopMargin
+          : null,
       ]}>
       {content}
     </View>
