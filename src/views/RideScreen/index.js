@@ -28,7 +28,7 @@ const RideScreen = props => {
   if (props.activeOrderStatus)
     remainingTimeMessage =
       'Van will arrive ' +
-      moment(_.get(props.activeOrderStatus, 'vanETAatDestinationVBS')).fromNow()
+      moment(_.get(props.routeInfo, 'vanETAatEndVBS')).fromNow()
 
   let topContent = (
     <View style={[styles.topMessageContainer, styles.topContentContainer]}>
@@ -112,11 +112,13 @@ const styles = StyleSheet.create({
 RideScreen.propTypes = {
   activeOrderStatus: PropTypes.object,
   endRide: PropTypes.func,
+  routeInfo: PropTypes.object,
 }
 
 export default connect(
   state => ({
     activeOrderStatus: state.orders.activeOrderStatus,
+    routeInfo: state.map.routeInfo,
   }),
   dispatch => ({
     endRide: () => dispatch(endRide()),
