@@ -98,7 +98,6 @@ const OrderInfo = props => {
     case MapState.EXIT_VAN:
       visibleCard = (
         <DestinationWalkCardLarge
-          toMapScreen={props.toMapScreen}
           walkingDuration={_.get(
             props.routeInfo,
             'toDestinationRoute.routes.0.legs.0.duration.text'
@@ -137,7 +136,6 @@ OrderInfo.propTypes = {
   onEnterVanPress: PropTypes.func,
   routeInfo: PropTypes.object,
   setVisibleCoordinates: PropTypes.func,
-  toMapScreen: PropTypes.func,
 }
 
 export default connect(
