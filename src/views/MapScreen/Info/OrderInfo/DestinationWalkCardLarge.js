@@ -4,9 +4,6 @@ import {
   StyledCard,
   CardItemNoBorders,
   IconCenterFlex,
-  TextDarkGray,
-  ViewCentered,
-  TextLarge,
   CardItemBorderBottom,
   LeftFlex,
   BodyFlex,
@@ -26,8 +23,13 @@ class DestinationWalkCardLarge extends React.Component {
         this.props.currentUserLocation,
         this.props.destinationLocation
       )
+<<<<<<< HEAD
       if (distance < 10) return this.props.resetMapState()
       setTimeout(checkDestination, 3000)
+=======
+      if (distance < 30) return this.props.toMapScreen()
+      this.exitTimerId = setTimeout(checkDestination, 3000)
+>>>>>>> fix: DestinationWalkCardLarge style
     }
     checkDestination()
   }
@@ -56,20 +58,15 @@ class DestinationWalkCardLarge extends React.Component {
         </CardItemNoBorders>
         <CardItemBorderBottom>
           <Left>
-            <Icon name="bus" />
+            <Icon name="pin" />
             {/* <Body> */}
-            <Text>Van arrival: {this.props.vanArrival}</Text>
+            <Text>Destination arrival: {this.props.destArrival}</Text>
             {/* <TextGreen note>{this.props.waitingTime}</TextGreen> */}
             {/* </Body> */}
           </Left>
         </CardItemBorderBottom>
         <CardItemNoBorders>
-          <Body>
-            <ViewCentered>
-              <TextLarge>{this.props.vanId}</TextLarge>
-              <TextDarkGray>Van number</TextDarkGray>
-            </ViewCentered>
-          </Body>
+          <Body />
           <Right>
             <CustomButton
               text="Stop Journey"
@@ -84,11 +81,16 @@ class DestinationWalkCardLarge extends React.Component {
 
 DestinationWalkCardLarge.propTypes = {
   currentUserLocation: PropTypes.object,
+  destArrival: PropTypes.string,
   destinationLocation: PropTypes.object,
   endAddress: PropTypes.string,
+<<<<<<< HEAD
   resetMapState: PropTypes.func,
   vanArrival: PropTypes.string,
   vanId: PropTypes.number,
+=======
+  toMapScreen: PropTypes.func,
+>>>>>>> fix: DestinationWalkCardLarge style
   walkingDistance: PropTypes.string,
   walkingDuration: PropTypes.string,
   zoomToDestinationWalk: PropTypes.func,
