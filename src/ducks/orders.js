@@ -104,7 +104,8 @@ const onSetActiveOrder = data => {
       type: UPDATE_ROUTE_INFO,
       payload: data.route,
     })
-    dispatch(changeMapState(MapState.ROUTE_ORDERED))
+    if (data.vanEnterTime) dispatch(changeMapState(MapState.VAN_RIDE))
+    else dispatch(changeMapState(MapState.ROUTE_ORDERED))
   }
 }
 
