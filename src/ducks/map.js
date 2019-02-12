@@ -42,7 +42,6 @@ const initialState = {
     userETAatUserDestinationLocation: null,
     validUntil: null,
     vanId: null,
-    vanLocation: null,
     guaranteedArrivalTime: null,
   },
   visibleCoordinates: [],
@@ -77,7 +76,6 @@ const getUpdatedRouteInfoObject = (input, oldState) => {
     vanETAatEndVBS: _.get(input, 'vanETAatEndVBS', oldState.vanETAatEndVBS),
     validUntil: _.get(input, 'validUntil', oldState.validUntil),
     vanId: _.get(input, 'vanId', oldState.vanId),
-    vanLocation: _.get(input, 'vanLocation', oldState.vanLocation),
     guaranteedArrivalTime: _.get(
       input,
       'guaranteedArrivalTime',
