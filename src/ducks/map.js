@@ -204,10 +204,8 @@ export const visibleCoordinatesUpdated = () => {
 }
 
 export const resetMapState = () => {
-  return dispatch => {
-    dispatch({
-      TYPE: RESET_MAP_STATE,
-    })
+  return {
+    type: RESET_MAP_STATE,
   }
 }
 
