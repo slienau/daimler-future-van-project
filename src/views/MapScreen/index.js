@@ -120,11 +120,11 @@ class MapScreen extends React.Component {
               passengerLongitude: this.props.currentUserLocation.longitude,
             },
           })
-          this.props.setActiveOrderStatus(data)
           const newPassengers = _.difference(
             data.otherPassengers,
             _.get(this.props.activeOrderStatus, 'otherPassengers', [])
           )
+          this.props.setActiveOrderStatus(data)
           if (newPassengers.length > 0) {
             const message = `${newPassengers.join(
               ','
