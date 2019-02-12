@@ -251,17 +251,14 @@ class OrderHelper {
     const endVBSTime = order.vanEnterTime ? myStops[0].arrivalTime : myStops[1].arrivalTime
 
     const uniqueStops = _.uniqWith(nextStops, (stop1, stop2) => stop1.vb._id.equals(stop2.vb._id)).map(stop => stop.vb)
-    const walkingTime = GoogleMapsHelper.readDurationFromGoogleResponse(route.toDestinationRoute)
     const res = {
       vanId: order.vanId,
       userAllowedToEnter: false,
       userAllowedToExit: false,
       message: 'unknown state',
-      guaranteedArrivalTimeAtEndVBS: new Date(route.vanETAatEndVBS.getTime() + 10 * 60 * 1000),
-      latestArrivalTimeAtUserDestinationLocation: new Date(route.vanETAatEndVBS.getTime() + 10 * 60 * 1000 + walkingTime * 1000),
+      guaranteedArrivalTime: new Date(route.vanETAatEndVBS.getTime() + 10 * 60 * 1000),
       vanETAatStartVBS: startVBSTime,
-      vanETAatEndVBS: endVBSTime,
-      userETAatUserDestinationLocation: endVBSTime + walkingTime,
+      vanETAatDestinationVBS: endVBSTime,
       otherPassengers: otherPassengers,
       vanLocation: actualVanLocation,
       nextStops: uniqueStops,

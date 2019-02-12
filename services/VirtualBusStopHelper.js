@@ -204,7 +204,6 @@ class VirtualBusStopHelper {
     const vanStartTime = new Date(googleResponse[3] * 1000)
     const vanEndTime = new Date(vanStartTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[1]) * 1000)
     const destinationTime = new Date(vanEndTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[2]) * 1000)
-    const latestArrivalTimeAtUserDestinationLocation = new Date(vanEndTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[2]) * 1000 + 60 * 10 * 1000)
 
     const routeObject = {
       userStartLocation: start,
@@ -214,7 +213,6 @@ class VirtualBusStopHelper {
       vanETAatStartVBS: vanStartTime,
       vanETAatEndVBS: vanEndTime,
       userETAatUserDestinationLocation: destinationTime,
-      latestArrivalTimeAtUserDestinationLocation: latestArrivalTimeAtUserDestinationLocation,
       toStartRoute: googleResponse[0],
       vanRoute: googleResponse[1],
       toDestinationRoute: googleResponse[2],
