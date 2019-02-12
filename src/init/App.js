@@ -181,7 +181,6 @@ export default class App extends React.Component {
       )
       if (granted !== PermissionsAndroid.RESULTS.GRANTED)
         console.log('Location permission denied')
-      console.log('Permission', granted)
     } catch (err) {
       console.warn(err)
     }
