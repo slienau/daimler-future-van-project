@@ -48,17 +48,6 @@ class BottomButtons extends React.Component {
     this.props.setVisibleCoordinates(coords)
   }
 
-  fetchRoutes = async () => {
-    try {
-      await this.props.fetchRoutes()
-    } catch (error) {
-      if (error.code === 404)
-        Toast.show(defaultDangerToast('No routes found. ' + error.message, 0))
-      else
-        Toast.show(defaultDangerToast('Error getting routes. ' + error.message))
-    }
-  }
-
   checkRouteExpireProgress = () => {
     const validUntil = _.get(this.props.routeInfo, 'validUntil')
     if (!validUntil) return
@@ -125,17 +114,13 @@ class BottomButtons extends React.Component {
     let toReturn
     switch (this.props.mapState) {
       case MapState.INIT:
-        toReturn = (
-          <DestinationButton
-            onPress={() => this.props.toSearchView('DESTINATION')}
-          />
-        )
+        toReturn = <DestinationButton {...this.props} />
         break
       case MapState.SEARCH_ROUTES:
         toReturn = (
           <>
             <BackButton onPress={() => this.props.resetMapState()} />
-            <SearchRoutesButton onPress={() => this.fetchRoutes()} />
+            <SearchRoutesButton />
           </>
         )
         break
