@@ -1,4 +1,4 @@
-import styled from 'styled-components/native/dist/styled-components.native.esm'
+import styled from 'styled-components/native'
 import {TouchableOpacity, View} from 'react-native'
 import {Card, CardItem, Icon, Text} from 'native-base'
 import NumericInput from 'react-native-numeric-input'

@@ -1,6 +1,6 @@
 import React from 'react'
 import {StyleSheet} from 'react-native'
-import styled from 'styled-components/native/dist/styled-components.native.esm'
+import styled from 'styled-components/native'
 import {Text} from 'native-base'
 import {DARK_COLOR, GREY_COLOR} from './colors'
 

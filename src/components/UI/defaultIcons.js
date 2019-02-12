@@ -1,4 +1,4 @@
-import styled from 'styled-components/native/dist/styled-components.native.esm'
+import styled from 'styled-components/native'
 import {Icon} from 'native-base'
 import React from 'react'
 import {DARK_COLOR} from './colors'
