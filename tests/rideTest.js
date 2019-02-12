@@ -1,22 +1,11 @@
 const axios = require('axios')
 var assert = require('assert')
 var _ = require('lodash')
+var VBS = require('./allVBS')
 
 const address = 'http://localhost:8080'
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
-}
-const start1 = {
-  'latitude': 52.524722,
-  'longitude': 13.407217
-}
-// const start2 = {
-//   'latitude': 52.52302,
-//   'longitude': 13.411019
-// }
-const destination1 = {
-  'latitude': 52.510144,
-  'longitude': 13.387231
 }
 
 // test if the vans assigned to the routes are locked and not available anymore
@@ -27,13 +16,13 @@ async function starttest () {
 
   const axiosInstance1 = axios.create({
     baseURL: address,
-    timeout: 5000,
+    timeout: 60000,
     headers: { 'Authorization': 'Bearer ' + credentials1.data.token }
   })
 
   const route1 = await axiosInstance1.post('/routes', {
-    'start': start1,
-    'destination': destination1
+    'start': VBS.kufue,
+    'destination': VBS.potsdamerPl
   })
   const routeInfo1 = _.first(route1.data)
 
