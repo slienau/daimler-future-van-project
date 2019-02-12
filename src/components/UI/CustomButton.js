@@ -13,12 +13,24 @@ const CustomButton = props => {
     },
     icon: {
       color: LIGHT_COLOR,
-      fontSize: 34,
+      fontSize: 26,
+    },
+    iconLeftWithText: {
+      marginRight: 0,
+      paddingRight: 0,
+    },
+    iconRightWithText: {
+      marginLeft: 0,
+      paddingLeft: 0,
     },
     text: {
       color: LIGHT_COLOR,
       fontWeight: 'bold',
       fontSize: 16,
+      marginRight: 0,
+      marginLeft: 0,
+      paddingRight: props.iconRight ? 10 : 20,
+      paddingLeft: props.iconLeft ? 10 : 20,
     },
   })
 
@@ -27,11 +39,21 @@ const CustomButton = props => {
 
   let iconLeft = null
   if (props.iconLeft)
-    iconLeft = <Icon name={props.iconLeft} style={styles.icon} />
+    iconLeft = (
+      <Icon
+        name={props.iconLeft}
+        style={[styles.icon, props.text ? styles.iconLeftWithText : null]}
+      />
+    )
 
   let iconRight = null
   if (props.iconRight)
-    iconRight = <Icon name={props.iconRight} style={styles.icon} />
+    iconRight = (
+      <Icon
+        name={props.iconRight}
+        style={[styles.icon, props.text ? styles.iconRightWithText : null]}
+      />
+    )
 
   return (
     <Button
