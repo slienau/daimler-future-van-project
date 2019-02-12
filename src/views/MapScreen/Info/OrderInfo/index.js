@@ -19,10 +19,7 @@ const OrderInfo = props => {
 
   const parseDestArrival = () => {
     if (!props.activeOrder) return
-    const arrival = _.get(
-      props.activeOrder,
-      'route.userETAatUserDestinationLocation'
-    )
+    const arrival = _.get(props.routeInfo, 'userETAatUserDestinationLocation')
     return moment(arrival).format('HH:mm')
   }
 
