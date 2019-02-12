@@ -20,6 +20,8 @@
     + [Example](#example-4)
   * [Route](#route)
     + [Example](#example-5)
+  * [ActiveOrderStatus](#activeorderstatus)
+    + [Example](#example-6)
 - [Resources](#resources)
   * [Authorization](#authorization)
     + [Authorization Header](#authorization-header)
@@ -111,7 +113,7 @@ This object represents a virtual bus stop.
 | `id` | `String` | yes | The ID. | `0e8cedd0-ad98-11e6-bf2e-47644ada7c0b` |
 | `name` | `String` | Yes | Name of the station, e.g. street name or point of interest name | `Straße des 17. Juni 135` |
 | `accessible` | `Boolean` | Yes | True if the virtual bus stop is currently accessible, false if not. | `true`, `false` |
-| `location` | `Object` `(Location)` | Yes | The location of the VirtualBusStop. | *See location object.* |
+| `location` | `Location` | Yes | The location of the VirtualBusStop. | See [Location](#location) |
 
 #### Example
 
@@ -176,15 +178,15 @@ This object represents a van order which can be made by a user.
 | `orderTime` | `Datetime` | yes | Time at which the order was placed. | `2018-11-23T18:25:43.511Z` |
 | `active` | `Boolean` | yes | True if this order is active (user is still travelling to the ending virtual bus stop).<br>False if the user reached the ending virtual bus stop (finished the journey), or if the order was canceled. | `true` |
 | `canceled` | `Boolean` | yes | True if the user canceled the order. | `false` |
-| `vanStartVBS` | `Object` `(VirtualBusStop)` | yes | Starting Virtual Bus Stop |  |
-| `vanEndVBS` | `Object` `(VirtualBusStop)` | yes | Ending Virtual Bus Stop |  |
+| `vanStartVBS` | `VirtualBusStop` | yes | Starting Virtual Bus Stop |  |
+| `vanEndVBS` | `VirtualBusStop` | yes | Ending Virtual Bus Stop |  |
 | `vanEnterTime` | `Datetime` | no | Time at which the user entered the van.<br> Null if the user canceled the order. | `2018-11-23T18:30:25.000Z` |
 | `vanExitTime` | `Datetime` | no | Time at which the user left the van.<br> Null if the user canceled the order. | `2018-11-23T18:45:48.000Z` |
 | `vanId` | `Number` | yes | The van which carried the user. | |
 | `loyaltyPoints` | `Number` | yes | The amount of loyalty points for this order. | |
 | `distance` | `Number` | yes | Amount of kilometres the van drove. | `12.4` |
 | `co2savings` | `Number` | yes | Amount of CO2 savings (in kilogram) for this ride . | `2.2` |
-| `route` | `Object` `(Route)` | only if `active` is `true` | The route object for this order. | See [Route](#route) |
+| `route` | `Route` | only if `active` is `true` | The route object for this order. | See [Route](#route) |
 
 #### Example
 
@@ -237,10 +239,10 @@ This object represents a travel route from journey start to the final destinatio
 | `vanETAatStartVBS` | `Datetime` | Yes | The expected time when the van will pick up the user at the `vanStartVBS` | `2018-12-17T17:20:00.000Z` |
 | `vanETAatEndVBS` | `Datetime` | Yes | The expected time when the van will arrive at the `vanEndVBS` | `2018-12-17T17:35:00.000Z` |
 | `userETAatUserDestinationLocation` | `Datetime` | Yes | The estimated time of arrival of the user at the `userDestinationLocation` | `2018-12-17T17:40:00.000Z` |
-| `toStartRoute` | `Object` | Yes | Route from `startLocation` to `startStation` |  |
-| `vanRoute` | `Object` | Yes | Van route from `startStation` to `endStation` |  |
-| `toDestinationRoute` | `Object` | Yes | Route from `endStation` to `destination` |  |
-| `vanId` | `Number` | yes | The van which will drive this route. | |
+| `toStartRoute` | `Object` | Yes | Route from `userStartLocation` to `vanStartVBS` |  |
+| `vanRoute` | `Object` | Yes | Van route from `vanStartVBS` to `vanEndVBS` |  |
+| `toDestinationRoute` | `Object` | Yes | Route from `vanEndVBS` to `userDestinationLocation` |  |
+| `vanId` | `Number` | yes | The id of the van which will drive this route. | |
 | `validUntil` | `Datetime` | Yes | Time until the route can be confirmed (create an order from this route). After this time has elapsed, a new request must be sent, otherwise no order can be created. | `2018-12-17T17:10:00.000Z` |
 
 #### Example
@@ -282,6 +284,50 @@ This object represents a travel route from journey start to the final destinatio
   "toDestinationRoute": {},
   "vanId": 7,
   "validUntil": "2018-12-17T17:10:00.000Z"
+}
+```
+
+### ActiveOrderStatus
+
+| Property | Type | Description |
+|--- |--- |--- |
+| `vanId` | `Number` | |
+| `userAllowedToEnter` | `Boolean` | `true` if user can enter the van (if the user is close enough to the van), `false` otherwise |
+| `userAllowedToExit` | `Boolean` | self explaining |
+| `vanLocation` | `Location` | The current position of the van |
+| `vanETAatStartVBS` | `Datetime` | Esimated time of arrival of the van at the start VBS |
+| `vanETAatEndVBS` | `Datetime` | Esimated time of arrival of the van at the end VBS |
+| `userETAatUserDestinationLocation` | `Datetime` | The estimated time of arrival of the user at the `userDestinationLocation` |
+| `otherPassengers` | `Array` | Array containing usernames (Strings) of other passengers |
+| `message` | `String` | The status message. |
+| `nextRoutes` | `Array` | TODO |
+| `nextStops` | `Array` | TODO |
+| `guaranteedArrivalTimeAtEndVBS` | `Datetime` | The guaranteed arrival time `vanETAatEndVBS` |
+| `latestArrivalTimeAtUserDestinationLocation` | `Datetime` | The guaranteed arrival time at the users destination location |
+
+#### Example
+
+```json
+{
+  "vanId": 7,
+  "userAllowedToEnter": false,
+  "userAllowedToExit": false,
+  "vanLocation": {
+    "latitude": 52.515598,
+    "longitude": 13.32686
+  },
+  "vanETAatStartVBS": "2018-11-23T18:20:25.000Z",
+  "vanETAatEndVBS": "2018-11-23T18:30:25.000Z",
+  "userETAatUserDestinationLocation": "2018-11-23T18:34:25.000Z",
+  "otherPassengers": [
+    "Sarah",
+    "Wilbert"
+  ],
+  "message": "Van has not arrived yet",
+  "nextRoutes": [],
+  "nextStops": [],
+  "guaranteedArrivalTimeAtEndVBS": "2018-11-23T18:37:25.000Z",
+  "latestArrivalTimeAtUserDestinationLocation": "2018-11-23T18:41:25.000Z"
 }
 ```
 
@@ -515,42 +561,8 @@ GET /activeorder/status?passengerLatitude=52.123456&passengerLongitude=13.123456
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `Object` | The updated order (see example) |
+| `200` | `ActiveOrderStatus` | See [ActiveOrderStatus](#activeorderstatus) |
 | `400` | `Error` | See [Error](#error-object) |
-
-On `HTTP 200` the following object will be returned:
-
-| Property | Type | Description |
-|--- |--- |--- |
-| `vanId` | `Number` | |
-| `userAllowedToEnter` | `Boolean` | `true` if user can enter the van (if the user is close enough to the van), `false` otherwise. |
-| `userAllowedToExit` | `Boolean` | self explaining |
-| `vanLocation` | `Object` | The current position of the van. |
-| `vanETAatStartVBS` | `Datetime` | Esimated time of arrival of the van at the start location |
-| `vanETAatDestinationVBS` | `Datetime` | Esimated time of arrival of the van at the start location |
-| `userETAatUserDestinationLocation` | `Datetime` | The estimated time of arrival of the user at the `userDestinationLocation` |
-| `otherPassengers` | `Array` | Array containing usernames (Strings) of other passengers |
-| `message` | `String` | |
-
-```json
-{
-  "vanId": 7,
-  "userAllowedToEnter": false,
-  "userAllowedToExit": false,
-  "vanLocation": {
-    "latitude": 52.515598,
-    "longitude": 13.32686
-  },
-  "vanETAatStartVBS": "2018-11-23T18:20:25.000Z",
-  "vanETAatDestinationVBS": "2018-11-23T18:30:25.000Z",
-  "userETAatUserDestinationLocation": "2018-11-23T18:34:25.000Z",
-  "otherPassengers": [
-    "Sarah",
-    "Wilbert"
-  ],
-  "message": "Van has not arrived yet"
-}
-```
 
 ---
 
@@ -568,8 +580,8 @@ Get suggested routes from starting point to destination.
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
-| `start` | `Location` | Yes | Journey start location. |
-| `destination` | `Location` | Yes | Journey destination. |
+| `start` | `Location` | Yes | Journey start location. See [Location](#location) |
+| `destination` | `Location` | Yes | Journey destination. See [Location](#location) |
 | `startTime` | `Datetime` | No | Route start time. Current time if not specified. |
 
 ###### Example
@@ -638,8 +650,8 @@ Get nearby virtual bus stops.
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
-| `latitude` | `Location` | Yes | The latitude of the center position |
-| `longitude` | `Location` | Yes | The longitude of the center position |
+| `latitude` | `Number` | Yes | The latitude of the center position |
+| `longitude` | `Number` | Yes | The longitude of the center position |
 | `radius` | `Number` | No | Maximum distance of the virtual bus stops to the location parameter. **Unit: meter** <br> Min: `100`; Max: `10000`; Default: `1000` |
 
 ###### Examples
