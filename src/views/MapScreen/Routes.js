@@ -17,7 +17,7 @@ const Routes = props => {
 
   return (
     <>
-      {props.mapState !== MapState.VAN_RIDE && (
+      {![MapState.VAN_RIDE, MapState.EXIT_VAN].includes(props.mapState) && (
         <MapEncodedPolyline
           points={_.get(
             props.routeInfo,
@@ -27,12 +27,14 @@ const Routes = props => {
           strokeColor="red"
         />
       )}
-      <Polyline
-        key={3}
-        strokeWidth={3}
-        strokeColor="blue"
-        coordinates={coordinates}
-      />
+      {![MapState.EXIT_VAN].includes(props.mapState) && (
+        <Polyline
+          key={3}
+          strokeWidth={3}
+          strokeColor="blue"
+          coordinates={coordinates}
+        />
+      )}
       <MapEncodedPolyline
         points={_.get(
           props.routeInfo,

@@ -12,6 +12,13 @@ export const defaultMapRegion = {
 
 export const initialMapSearchLocations = [
   {
+    id: 0,
+    description: 'Alexanderplatz',
+    name: 'Alexanderplatz',
+    vicinity: 'Berlin',
+    geometry: {location: {lat: 52.522042, lng: 13.413032}},
+  },
+  {
     id: 1,
     description: 'TU Berlin',
     name: 'Technische Universität Berlin',

@@ -17,12 +17,10 @@ const OrderInfo = props => {
     return date.format('HH:mm')
   }
 
-  const parseVanArrival = () => {
-    if (!props.routeInfo) return
-
-    const arrival = _.get(props.routeInfo, 'vanETAatEndVBS')
-    const date = moment(arrival)
-    return date.format('HH:mm')
+  const parseDestArrival = () => {
+    if (!props.activeOrder) return
+    const arrival = _.get(props.routeInfo, 'userETAatUserDestinationLocation')
+    return moment(arrival).format('HH:mm')
   }
 
   // const parseArrival = () => {
@@ -106,12 +104,11 @@ const OrderInfo = props => {
             props.routeInfo,
             'toDestinationRoute.routes.0.legs.0.distance.text'
           )}
-          vanArrival={parseVanArrival()}
+          destArrival={parseDestArrival()}
           endAddress={_.get(
             props.routeInfo,
             'toDestinationRoute.routes.0.legs.0.end_address'
           )}
-          vanId={_.get(props.activeOrder, 'vanId')}
           currentUserLocation={props.currentUserLocation}
           destinationLocation={_.get(
             props.routeInfo,

@@ -17,7 +17,7 @@ import {Alert, StyleSheet, View} from 'react-native'
 import {Toast} from 'native-base'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import PushNotification from 'react-native-push-notification'
+// import PushNotification from 'react-native-push-notification'
 import {defaultDangerToast, defaultSuccessToast} from '../../../lib/toasts'
 
 class BottomButtons extends React.Component {
@@ -82,25 +82,24 @@ class BottomButtons extends React.Component {
             }
             if (success) {
               Toast.show(defaultSuccessToast('Your order has been confirmed!'))
-              PushNotification.cancelAllLocalNotifications()
-              PushNotification.localNotificationSchedule({
-                message: 'Your van will arrive at the exit point in a minute',
-                date: new Date(
-                  new Date(
-                    _.get(this.props.routeInfo, 'vanETAatEndVBS')
-                  ).getTime() -
-                    60 * 1000
-                ),
-              })
-              PushNotification.localNotificationSchedule({
-                message: 'Your van is at the start point in a minute',
-                date: new Date(
-                  new Date(
-                    _.get(this.props.routeInfo, 'vanETAatStartVBS')
-                  ).getTime() -
-                    60 * 1000
-                ),
-              })
+              // PushNotification.localNotificationSchedule({
+              //   message: 'Your van will arrive at the exit point in a minute',
+              //   date: new Date(
+              //     new Date(
+              //       _.get(this.props.routeInfo, 'vanETAatEndVBS')
+              //     ).getTime() -
+              //       60 * 1000
+              //   ),
+              // })
+              // PushNotification.localNotificationSchedule({
+              //   message: 'Your van is at the start point in a minute',
+              //   date: new Date(
+              //     new Date(
+              //       _.get(this.props.routeInfo, 'vanETAatStartVBS')
+              //     ).getTime() -
+              //       60 * 1000
+              //   ),
+              // })
             }
           },
         },

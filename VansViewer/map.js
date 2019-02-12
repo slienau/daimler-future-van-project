@@ -79,7 +79,7 @@ function createVBSMarker(vbs) {
   })
 }
 
-const vanColors = ['hotpink', 'peru', 'aquamarine']
+const vanColors = ['hotpink', 'peru', 'mediumslateblue']
 function createVanRoute(i, paths) {
   return paths.map(
     (path, x) =>

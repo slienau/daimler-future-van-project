@@ -10,7 +10,7 @@ import {connect} from 'react-redux'
 import {Toast, Container} from 'native-base'
 import {Dimensions, View, StyleSheet} from 'react-native'
 import _ from 'lodash'
-import PushNotification from 'react-native-push-notification'
+// import PushNotification from 'react-native-push-notification'
 import {
   MapState,
   setCurrentUserLocation,
@@ -120,18 +120,18 @@ class MapScreen extends React.Component {
               passengerLongitude: this.props.currentUserLocation.longitude,
             },
           })
-          this.props.setActiveOrderStatus(data)
           const newPassengers = _.difference(
             data.otherPassengers,
             _.get(this.props.activeOrderStatus, 'otherPassengers', [])
           )
+          this.props.setActiveOrderStatus(data)
           if (newPassengers.length > 0) {
             const message = `${newPassengers.join(
               ','
             )} will join you on your ride`
-            PushNotification.localNotification({
-              message,
-            })
+            // PushNotification.localNotification({
+            //   message,
+            // })
             Toast.show(defaultToast(message))
           }
         } catch (error) {
