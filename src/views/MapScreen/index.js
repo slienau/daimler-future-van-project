@@ -50,6 +50,8 @@ class MapScreen extends React.Component {
   }
 
   componentDidUpdate() {
+    if (this.props.mapState === MapState.INIT && !this.props.userStartLocation)
+      this.getCurrentPosition()
     if (!this.props.hasVisibleCoordinatesUpdate) return
     if (this.props.visibleCoordinates.length === 1)
       this.animateToRegion(this.props.visibleCoordinates[0])
@@ -305,6 +307,7 @@ MapScreen.propTypes = {
   setVans: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
   startRide: PropTypes.func,
+  userStartLocation: PropTypes.object,
   visibleCoordinates: PropTypes.array,
   visibleCoordinatesUpdated: PropTypes.func,
 }
@@ -313,6 +316,7 @@ export default connect(
   state => ({
     mapState: state.map.mapState,
     currentUserLocation: state.map.currentUserLocation,
+    userStartLocation: state.map.userStartLocation,
     visibleCoordinates: state.map.visibleCoordinates,
     hasVisibleCoordinatesUpdate: state.map.hasVisibleCoordinatesUpdate,
     edgePadding: state.map.edgePadding,
