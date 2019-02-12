@@ -70,6 +70,10 @@ const RouteSchema = new Schema({
   passengerCount: {
     type: Number,
     required: false
+  },
+  latestArrivalTimeAtUserDestinationLocation: {
+    type: Date,
+    required: false
   }
 }
 )

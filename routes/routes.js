@@ -52,6 +52,7 @@ router.post('/', async function (req, res) {
     vanETAatStartVBS: van.rideStartTime,
     vanETAatEndVBS: van.userArrivalAtDestVBS,
     userETAatUserDestinationLocation: new Date(van.userArrivalAtDestVBS.getTime() + 30 * 1000 + fromVB2ToDestRouteDur * 1000),
+    latestArrivalTimeAtUserDestinationLocation: new Date(van.userArrivalAtDestVBS.getTime() + 30 * 1000 + fromVB2ToDestRouteDur * 1000 + 60 * 10 * 1000),
     toStartRoute: walkingRouteToStartVB,
     vanRoute: vanRoute,
     toDestinationRoute: fromVB2ToDestRoute,
