@@ -17,11 +17,13 @@ import {
   setUserStartLocation,
   setVisibleCoordinates,
   visibleCoordinatesUpdated,
-  changeMapState,
   setVans,
-  resetMapState,
 } from '../../ducks/map'
-import {fetchActiveOrder, setActiveOrderStatus} from '../../ducks/orders'
+import {
+  fetchActiveOrder,
+  startRide,
+  setActiveOrderStatus,
+} from '../../ducks/orders'
 import Info from './Info'
 import {defaultMapRegion} from '../../lib/config'
 import api from '../../lib/api'
@@ -37,13 +39,19 @@ class MapScreen extends React.Component {
     this.props.fetchActiveOrder()
   }
 
-  componentDidUpdate() {
+  componentWillUpdate(nextProps, nextState) {
     // check if we have to show the RideScreen
     if (
-      this.props.mapState === MapState.ROUTE_ORDERED &&
-      _.get(this.props.activeOrder, 'vanEnterTime')
-    )
-      setImmediate(() => this.toRideScreen())
+      nextProps.mapState === MapState.VAN_RIDE &&
+      this.props.mapState !== MapState.VAN_RIDE
+    ) {
+      setImmediate(() => this.props.navigation.navigate('Ride'))
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.props.mapState === MapState.INIT && !this.props.userStartLocation)
+      this.getCurrentPosition()
     if (!this.props.hasVisibleCoordinatesUpdate) return
     if (this.props.visibleCoordinates.length === 1)
       this.animateToRegion(this.props.visibleCoordinates[0])
@@ -96,11 +104,6 @@ class MapScreen extends React.Component {
     })
   }
 
-  toMapScreen = () => {
-    this.props.resetMapState()
-    this.props.navigation.navigate('Map')
-  }
-
   continuouslyUpdatePosition = () => {
     const fn = async () => {
       if (
@@ -111,14 +114,15 @@ class MapScreen extends React.Component {
       ) {
         try {
           // TODO: move api call to redux
-          const resp = await api.get('/activeorder/status', {
+          const {data} = await api.get('/activeorder/status', {
             params: {
               passengerLatitude: this.props.currentUserLocation.latitude,
               passengerLongitude: this.props.currentUserLocation.longitude,
             },
           })
+          this.props.setActiveOrderStatus(data)
           const newPassengers = _.difference(
-            resp.data.otherPassengers,
+            data.otherPassengers,
             _.get(this.props.activeOrderStatus, 'otherPassengers', [])
           )
           if (newPassengers.length > 0) {
@@ -130,7 +134,6 @@ class MapScreen extends React.Component {
             })
             Toast.show(defaultToast(message))
           }
-          this.props.setActiveOrderStatus(resp.data)
         } catch (error) {
           Toast.show(
             defaultDangerToast(
@@ -206,23 +209,10 @@ class MapScreen extends React.Component {
     })
   }
 
-  toRideScreen = () => {
-    this.props.changeMapState(MapState.VAN_RIDE)
-    this.props.navigation.navigate('Ride')
-  }
-
   enterVan = async () => {
     if (_.get(this.props.activeOrder, 'vanEnterTime')) return
     try {
-      // TODO: move api call to redux
-      await api.put('/activeorder', {
-        action: 'startride',
-        userLocation: _.pick(this.props.currentUserLocation, [
-          'latitude',
-          'longitude',
-        ]),
-      })
-      this.toRideScreen()
+      this.props.startRide()
     } catch (error) {
       Toast.show(defaultDangerToast("Couldn't enter van. " + error.message))
     }
@@ -266,10 +256,7 @@ class MapScreen extends React.Component {
           <BottomView>
             <BottomButtons toSearchView={this.toSearchView} />
 
-            <Info
-              onEnterVanPress={() => this.enterVan()}
-              toMapScreen={() => this.toMapScreen()}
-            />
+            <Info onEnterVanPress={() => this.enterVan()} />
           </BottomView>
         </View>
       </Container>
@@ -309,18 +296,18 @@ const styles = StyleSheet.create({
 MapScreen.propTypes = {
   activeOrder: PropTypes.object,
   activeOrderStatus: PropTypes.object,
-  changeMapState: PropTypes.func,
   currentUserLocation: PropTypes.object,
   edgePadding: PropTypes.object,
   fetchActiveOrder: PropTypes.func,
   hasVisibleCoordinatesUpdate: PropTypes.bool,
   mapState: PropTypes.string,
-  resetMapState: PropTypes.func,
   setActiveOrderStatus: PropTypes.func,
   setCurrentUserLocation: PropTypes.func,
   setJourneyStart: PropTypes.func,
   setVans: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
+  startRide: PropTypes.func,
+  userStartLocation: PropTypes.object,
   visibleCoordinates: PropTypes.array,
   visibleCoordinatesUpdated: PropTypes.func,
 }
@@ -329,6 +316,7 @@ export default connect(
   state => ({
     mapState: state.map.mapState,
     currentUserLocation: state.map.currentUserLocation,
+    userStartLocation: state.map.userStartLocation,
     visibleCoordinates: state.map.visibleCoordinates,
     hasVisibleCoordinatesUpdate: state.map.hasVisibleCoordinatesUpdate,
     edgePadding: state.map.edgePadding,
@@ -340,12 +328,11 @@ export default connect(
     setCurrentUserLocation: payload =>
       dispatch(setCurrentUserLocation(payload)),
     setJourneyStart: payload => dispatch(setUserStartLocation(payload)),
-    resetMapState: () => dispatch(resetMapState()),
     setVisibleCoordinates: (coords, edgePadding) =>
       dispatch(setVisibleCoordinates(coords, edgePadding)),
     visibleCoordinatesUpdated: () => dispatch(visibleCoordinatesUpdated()),
-    setActiveOrderStatus: payload => dispatch(setActiveOrderStatus(payload)),
-    changeMapState: payload => dispatch(changeMapState(payload)),
     setVans: payload => dispatch(setVans(payload)),
+    startRide: () => dispatch(startRide()),
+    setActiveOrderStatus: payload => dispatch(setActiveOrderStatus(payload)),
   })
 )(MapScreen)

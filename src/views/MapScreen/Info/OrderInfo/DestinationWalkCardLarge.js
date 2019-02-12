@@ -14,6 +14,8 @@ import {
 } from '../StyledComponents'
 import React from 'react'
 import geolib from 'geolib'
+import {connect} from 'react-redux'
+import {resetMapState} from '../../../../ducks/map'
 import CustomButton from '../../../../components/UI/CustomButton'
 
 class DestinationWalkCardLarge extends React.Component {
@@ -24,7 +26,7 @@ class DestinationWalkCardLarge extends React.Component {
         this.props.currentUserLocation,
         this.props.destinationLocation
       )
-      if (distance < 10) return this.props.toMapScreen()
+      if (distance < 10) return this.props.resetMapState()
       setTimeout(checkDestination, 3000)
     }
     checkDestination()
@@ -71,7 +73,7 @@ class DestinationWalkCardLarge extends React.Component {
           <Right>
             <CustomButton
               text="Stop Journey"
-              onPress={() => this.props.toMapScreen()}
+              onPress={() => this.props.resetMapState()}
             />
           </Right>
         </CardItemNoBorders>
@@ -84,7 +86,7 @@ DestinationWalkCardLarge.propTypes = {
   currentUserLocation: PropTypes.object,
   destinationLocation: PropTypes.object,
   endAddress: PropTypes.string,
-  toMapScreen: PropTypes.func,
+  resetMapState: PropTypes.func,
   vanArrival: PropTypes.string,
   vanId: PropTypes.number,
   walkingDistance: PropTypes.string,
@@ -92,4 +94,9 @@ DestinationWalkCardLarge.propTypes = {
   zoomToDestinationWalk: PropTypes.func,
 }
 
-export default DestinationWalkCardLarge
+export default connect(
+  null,
+  dispatch => ({
+    resetMapState: () => dispatch(resetMapState()),
+  })
+)(DestinationWalkCardLarge)

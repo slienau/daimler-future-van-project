@@ -10,43 +10,43 @@ import {setVisibleCoordinates, MapState} from '../../../../ducks/map'
 
 const OrderInfo = props => {
   const parseDeparture = () => {
-    if (!props.routes || !props.routes.length) return
+    if (!props.routeInfo) return
 
-    const departure = _.get(props.routes, '0.vanETAatStartVBS')
+    const departure = _.get(props.routeInfo, 'vanETAatStartVBS')
     const date = moment(departure)
     return date.format('HH:mm')
   }
 
   const parseVanArrival = () => {
-    if (!props.routes || !props.routes.length) return
+    if (!props.routeInfo) return
 
-    const arrival = _.get(props.routes, '0.vanETAatEndVBS')
+    const arrival = _.get(props.routeInfo, 'vanETAatEndVBS')
     const date = moment(arrival)
     return date.format('HH:mm')
   }
 
   // const parseArrival = () => {
-  //   if (!props.routes || !props.routes.length) return
+  //   if (!props.routeInfo) return
 
-  //   const arrival = _.get(props.routes[0], 'vanETAatEndVBS')
+  //   const arrival = _.get(props.routeInfo, 'vanETAatEndVBS')
   //   const date = moment(arrival)
   //   return date.format('HH:mm')
   // }
 
   const calculateWaitingTime = () => {
-    if (!props.routes || !props.routes.length) return
+    if (!props.routeInfo) return
 
-    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
+    const departure = _.get(props.routeInfo, 'vanETAatStartVBS')
     const start = moment()
     const end = moment(departure)
     return start.to(end)
   }
 
   const zoomToStartWalk = () => {
-    if (!props.routes || !props.routes.length) return
+    if (!props.routeInfo || !props.map.userStartLocation) return
     const coords = [
-      props.routes[0].userStartLocation,
-      props.routes[0].vanStartVBS.location,
+      props.map.userStartLocation.location,
+      _.get(props.routeInfo, 'vanStartVBS.location'),
     ]
     props.setVisibleCoordinates(coords, {
       top: 0.2,
@@ -57,10 +57,10 @@ const OrderInfo = props => {
   }
 
   const zoomToDestinationWalk = () => {
-    if (!props.routes || !props.routes.length) return
+    if (!props.routeInfo || !props.map.userDestinationLocation) return
     const coords = [
-      props.routes[0].vanEndVBS.location,
-      props.routes[0].userDestinationLocation,
+      _.get(props.routeInfo, 'vanEndVBS.location'),
+      props.map.userDestinationLocation.location,
     ]
     props.setVisibleCoordinates(coords, {
       top: 0.2,
@@ -78,15 +78,17 @@ const OrderInfo = props => {
           currentState={props.currentState}
           onEnterVanPress={props.onEnterVanPress}
           activeOrderStatus={props.activeOrderStatus}
-          walkingDuration={
-            props.routes[0].toStartRoute.routes[0].legs[0].duration.text
-          }
-          walkingDistance={
-            props.routes[0].toStartRoute.routes[0].legs[0].distance.text
-          }
+          walkingDuration={_.get(
+            props.routeInfo,
+            'toStartRoute.routes.0.legs.0.duration.text'
+          )}
+          walkingDistance={_.get(
+            props.routeInfo,
+            'toStartRoute.routes.0.legs.0.distance.text'
+          )}
           departure={parseDeparture()}
           waitingTime={calculateWaitingTime()}
-          busStopStartName={_.get(props.routes[0], 'vanStartVBS.name')}
+          busStopStartName={_.get(props.routeInfo, 'vanStartVBS.name')}
           vanId={_.get(props.activeOrder, 'vanId')}
           zoomToStartWalk={zoomToStartWalk}
           zoomToDestinationWalk={zoomToDestinationWalk}
@@ -94,28 +96,26 @@ const OrderInfo = props => {
       )
       break
     case MapState.EXIT_VAN:
-      console.log(props.routes[0])
       visibleCard = (
         <DestinationWalkCardLarge
-          toMapScreen={props.toMapScreen}
           walkingDuration={_.get(
-            props.routes,
-            '0.toDestinationRoute.routes.0.legs.0.duration.text'
+            props.routeInfo,
+            'toDestinationRoute.routes.0.legs.0.duration.text'
           )}
           walkingDistance={_.get(
-            props.routes,
-            '0.toDestinationRoute.routes.0.legs.0.distance.text'
+            props.routeInfo,
+            'toDestinationRoute.routes.0.legs.0.distance.text'
           )}
           vanArrival={parseVanArrival()}
           endAddress={_.get(
-            props.routes,
-            '0.toDestinationRoute.routes.0.legs.0.end_address'
+            props.routeInfo,
+            'toDestinationRoute.routes.0.legs.0.end_address'
           )}
           vanId={_.get(props.activeOrder, 'vanId')}
           currentUserLocation={props.currentUserLocation}
           destinationLocation={_.get(
-            props.routes,
-            '0.toDestinationRoute.routes.0.legs.0.end_location'
+            props.routeInfo,
+            'toDestinationRoute.routes.0.legs.0.end_location'
           )}
           zoomToDestinationWalk={zoomToDestinationWalk}
         />
@@ -131,16 +131,17 @@ OrderInfo.propTypes = {
   activeOrderStatus: PropTypes.object,
   currentState: PropTypes.string,
   currentUserLocation: PropTypes.object,
+  map: PropTypes.object,
   mapState: PropTypes.string,
   onEnterVanPress: PropTypes.func,
-  routes: PropTypes.array,
+  routeInfo: PropTypes.object,
   setVisibleCoordinates: PropTypes.func,
-  toMapScreen: PropTypes.func,
 }
 
 export default connect(
   state => ({
-    routes: state.map.routes,
+    map: state.map,
+    routeInfo: state.map.routeInfo,
     currentUserLocation: state.map.currentUserLocation,
     mapState: state.map.mapState,
     activeOrder: state.orders.activeOrder,

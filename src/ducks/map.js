@@ -4,7 +4,6 @@ import _ from 'lodash'
 export const SET_USER_START_LOCATION = 'map/SET_USER_START_LOCATION'
 export const SET_USER_DESTINATION_LOCATION = 'map/SET_USER_DESTINATION_LOCATION'
 export const SET_CURRENT_USER_LOCATION = 'map/SET_CURRENT_USER_LOCATION'
-export const SET_ROUTES = 'map/SET_ROUTES'
 export const CHANGE_MAP_STATE = 'map/CHANGE_MAP_STATE'
 export const SWAP_JOURNEY_START_AND_DESTINATION =
   'map/SWAP_JOURNEY_START_AND_DESTINATION'
@@ -12,6 +11,10 @@ export const SET_VISIBLE_COORDINATES = 'map/SET_VISIBLE_COORDINATES'
 export const VISIBLE_COORDINATES_UPDATED = 'map/VISIBLE_COORDINATES_UPDATED'
 export const SET_VANS = 'map/SET_VANS'
 export const SET_PERSON_COUNT = 'map/SET_PERSON_COUNT'
+export const FETCH_ROUTES = 'map/FETCH_ROUTES'
+export const CLEAR_ROUTES = 'map/CLEAR_ROUTES'
+export const RESET_MAP_STATE = 'map/RESET_MAP_STATE'
+export const UPDATE_ROUTE_INFO = 'map/UPDATE_ROUTE_INFO'
 
 export const MapState = {
   INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
@@ -23,16 +26,62 @@ export const MapState = {
 }
 
 const initialState = {
+  mapState: MapState.INIT,
   userStartLocation: null, // {lat, lng, name, description}
   userDestinationLocation: null, // {lat, lng, name, description}
   currentUserLocation: null,
-  mapState: MapState.INIT,
-  routes: null,
+  routeInfo: {
+    id: null,
+    vanStartVBS: null,
+    vanEndVBS: null,
+    toDestinationRoute: null,
+    toStartRoute: null,
+    vanRoute: null,
+    vanETAatStartVBS: null,
+    vanETAatEndVBS: null,
+    userETAatUserDestinationLocation: null,
+    validUntil: null,
+    vanId: null,
+    guaranteedArrivalTime: null,
+  },
   visibleCoordinates: [],
   edgePadding: {top: 0.2, right: 0.1, left: 0.1, bottom: 0.2},
   hasVisibleCoordinatesUpdate: false,
   vans: [],
   personCount: 1,
+}
+
+const getUpdatedRouteInfoObject = (input, oldState) => {
+  return {
+    id: _.get(input, 'id', oldState.id),
+    vanStartVBS: _.get(input, 'vanStartVBS', oldState.vanStartVBS),
+    vanEndVBS: _.get(input, 'vanEndVBS', oldState.vanEndVBS),
+    toDestinationRoute: _.get(
+      input,
+      'toDestinationRoute',
+      oldState.toDestinationRoute
+    ),
+    toStartRoute: _.get(input, 'toStartRoute', oldState.toStartRoute),
+    vanRoute: _.get(input, 'vanRoute', oldState.vanRoute),
+    userETAatUserDestinationLocation: _.get(
+      input,
+      'userETAatUserDestinationLocation',
+      oldState.userETAatUserDestinationLocation
+    ),
+    vanETAatStartVBS: _.get(
+      input,
+      'vanETAatStartVBS',
+      oldState.vanETAatStartVBS
+    ),
+    vanETAatEndVBS: _.get(input, 'vanETAatEndVBS', oldState.vanETAatEndVBS),
+    validUntil: _.get(input, 'validUntil', oldState.validUntil),
+    vanId: _.get(input, 'vanId', oldState.vanId),
+    guaranteedArrivalTime: _.get(
+      input,
+      'guaranteedArrivalTime',
+      oldState.guaranteedArrivalTime
+    ),
+  }
 }
 
 const map = (state = initialState, action) => {
@@ -47,8 +96,14 @@ const map = (state = initialState, action) => {
     case SET_CURRENT_USER_LOCATION:
       newState.currentUserLocation = action.payload
       return newState
-    case SET_ROUTES:
-      newState.routes = action.payload
+    case UPDATE_ROUTE_INFO:
+      newState.routeInfo = getUpdatedRouteInfoObject(
+        action.payload,
+        state.routeInfo
+      )
+      return newState
+    case CLEAR_ROUTES:
+      newState.routeInfo = initialState.routeInfo
       return newState
     case CHANGE_MAP_STATE:
       newState.mapState = action.payload
@@ -71,6 +126,8 @@ const map = (state = initialState, action) => {
     case SET_PERSON_COUNT:
       newState.personCount = action.payload
       return newState
+    case RESET_MAP_STATE:
+      return initialState
     default:
       return state
   }
@@ -84,7 +141,13 @@ export const fetchRoutes = () => {
       destination: map.userDestinationLocation.location,
       passengers: map.personCount,
     })
-    dispatch(setRoutes(data))
+    dispatch({
+      type: FETCH_ROUTES,
+    })
+    dispatch({
+      type: UPDATE_ROUTE_INFO,
+      payload: data[0],
+    })
     dispatch(changeMapState(MapState.ROUTE_SEARCHED))
   }
 }
@@ -98,7 +161,9 @@ export const changeMapState = payload => {
 
 export const clearRoutes = () => {
   return dispatch => {
-    dispatch(setRoutes(null))
+    dispatch({
+      type: CLEAR_ROUTES,
+    })
     dispatch(changeMapState(MapState.SEARCH_ROUTES))
   }
 }
@@ -137,11 +202,8 @@ export const visibleCoordinatesUpdated = () => {
 }
 
 export const resetMapState = () => {
-  return dispatch => {
-    dispatch(changeMapState(MapState.INIT))
-    dispatch(setUserStartLocation(null))
-    dispatch(setUserDestinationLocation(null))
-    dispatch(setRoutes(null))
+  return {
+    type: RESET_MAP_STATE,
   }
 }
 
@@ -155,13 +217,6 @@ export const setVisibleCoordinates = (
       visibleCoordinates: visibleCoordinates,
       edgePadding: edgePadding,
     },
-  }
-}
-
-export const setRoutes = payload => {
-  return {
-    type: SET_ROUTES,
-    payload: payload,
   }
 }
 

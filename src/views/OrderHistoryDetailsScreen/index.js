@@ -23,6 +23,9 @@ const OrderHistoryDetailsScreen = props => {
     order.vanEndVBS.location,
   ])
 
+  const vanEnterTime = order.vanEnterTime ? order.vanEnterTime.format('LT') : ''
+  const vanExitTime = order.vanExitTime ? order.vanExitTime.format('LT') : ''
+
   return (
     <Container>
       <Content scrollEnabled={false}>
@@ -50,12 +53,12 @@ const OrderHistoryDetailsScreen = props => {
             <DefaultListItem
               iconElement={<StartVBSIcon />}
               bodyText={order.vanStartVBS.name}
-              rightText={order.vanEnterTime.format('LT')}
+              rightText={vanEnterTime}
             />
             <DefaultListItem
               iconElement={<EndVBSIcon />}
               bodyText={order.vanEndVBS.name}
-              rightText={order.vanExitTime.format('LT')}
+              rightText={vanExitTime}
             />
             <DefaultListItem
               iconElement={<DistanceIcon />}

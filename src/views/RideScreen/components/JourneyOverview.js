@@ -8,8 +8,8 @@ import CustomListItemHeader from '../../../components/UI/CustomListItemHeader'
 
 const JourneyOverview = props => {
   const userETAatUserDestinationLocation = moment(
-    _.get(props.activeOrder, 'route.userETAatUserDestinationLocation')
-  ).format('HH:mm') // TODO: get this from activeOrderStatus
+    _.get(props.routeInfo, 'userETAatUserDestinationLocation')
+  ).format('LT')
 
   const loyaltyPoints =
     '' + _.round(_.get(props.activeOrder, 'loyaltyPoints'), 2)
@@ -42,12 +42,14 @@ const JourneyOverview = props => {
 JourneyOverview.propTypes = {
   activeOrder: PropTypes.object,
   activeOrderStatus: PropTypes.object,
+  routeInfo: PropTypes.object,
 }
 
 const mapStateToProps = state => {
   return {
     activeOrder: state.orders.activeOrder,
     activeOrderStatus: state.orders.activeOrderStatus,
+    routeInfo: state.map.routeInfo,
   }
 }
 

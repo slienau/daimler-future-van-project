@@ -42,7 +42,7 @@ const InRideMapScreen = props => {
   if (props.activeOrderStatus) {
     topMessage =
       'Van will arrive ' +
-      moment(_.get(props.activeOrderStatus, 'vanETAatDestinationVBS')).fromNow()
+      moment(_.get(props.routeInfo, 'vanETAatEndVBS')).fromNow()
   }
   if (_.get(props.activeOrderStatus, 'userAllowedToExit')) {
     topMessage = 'Van has arrived. Please exit.'
@@ -94,11 +94,13 @@ const styles = StyleSheet.create({
 InRideMapScreen.propTypes = {
   activeOrderStatus: PropTypes.object,
   endRide: PropTypes.func,
+  routeInfo: PropTypes.object,
 }
 
 export default connect(
   state => ({
     activeOrderStatus: state.orders.activeOrderStatus,
+    routeInfo: state.map.routeInfo,
   }),
   dispatch => ({
     endRide: () => dispatch(endRide()),

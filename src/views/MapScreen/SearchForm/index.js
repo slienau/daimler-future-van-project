@@ -19,9 +19,9 @@ const SearchForm = props => {
   }
 
   const calculateDuration = () => {
-    if (!props.routes || !props.routes.length) return
+    if (!props.routeInfo) return
 
-    const arrival = _.get(props.routes[0], 'userETAatUserDestinationLocation')
+    const arrival = _.get(props.routeInfo, 'userETAatUserDestinationLocation')
     const start = moment()
     const end = moment(arrival)
     const diff = end.diff(start) // diff in milliseconds
@@ -30,9 +30,9 @@ const SearchForm = props => {
   }
 
   const calculateWaitingTime = () => {
-    if (!props.routes || !props.routes.length) return
+    if (!props.routeInfo) return
 
-    const departure = _.get(props.routes[0], 'vanETAatStartVBS')
+    const departure = _.get(props.routeInfo, 'vanETAatStartVBS')
     const start = moment()
     const end = moment(departure)
     return start.to(end)
@@ -62,11 +62,11 @@ const SearchForm = props => {
         <RouteSearched
           startText={startText}
           destinationText={destinationText}
-          departureTime={formatTime(_.get(props.routes, '0.vanETAatStartVBS'))}
+          departureTime={formatTime(_.get(props.routeInfo, 'vanETAatStartVBS'))}
           waitingTime={calculateWaitingTime()}
           durationTime={calculateDuration()}
           arrivalTime={formatTime(
-            _.get(props.routes, '0.userETAatUserDestinationLocation')
+            _.get(props.routeInfo, 'userETAatUserDestinationLocation')
           )}
         />
       )
@@ -85,7 +85,7 @@ const SearchForm = props => {
 SearchForm.propTypes = {
   mapState: PropTypes.string,
   personCount: PropTypes.number,
-  routes: PropTypes.array,
+  routeInfo: PropTypes.object,
   setPersonCount: PropTypes.func,
   swapJourneyStartAndDestination: PropTypes.func,
   toSearchView: PropTypes.func,
@@ -97,7 +97,7 @@ const mapStateToProps = state => {
   return {
     personCount: state.map.personCount,
     mapState: state.map.mapState,
-    routes: state.map.routes,
+    routeInfo: state.map.routeInfo,
     userStartLocation: state.map.userStartLocation,
     userDestinationLocation: state.map.userDestinationLocation,
   }

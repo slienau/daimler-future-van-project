@@ -5,7 +5,7 @@ import CustomButton from '../../../components/UI/CustomButton'
 const DestinationButton = props => {
   return (
     <CustomButton
-      onPress={props.onPress}
+      onPress={() => props.toSearchView('DESTINATION')}
       text="Destination"
       iconRight="arrow-forward"
     />
@@ -13,7 +13,7 @@ const DestinationButton = props => {
 }
 
 DestinationButton.propTypes = {
-  onPress: PropTypes.func,
+  toSearchView: PropTypes.func,
 }
 
 export default DestinationButton
