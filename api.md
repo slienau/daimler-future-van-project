@@ -244,6 +244,8 @@ This object represents a travel route from journey start to the final destinatio
 | `toDestinationRoute` | `Object` | Yes | Route from `vanEndVBS` to `userDestinationLocation` |  |
 | `vanId` | `Number` | yes | The id of the van which will drive this route. | |
 | `validUntil` | `Datetime` | Yes | Time until the route can be confirmed (create an order from this route). After this time has elapsed, a new request must be sent, otherwise no order can be created. | `2018-12-17T17:10:00.000Z` |
+| `latestArrivalTimeAtUserDestinationLocation` | `Datetime` | Yes | The guaranteed arrival time at the users destination location |
+
 
 #### Example
 
@@ -283,7 +285,8 @@ This object represents a travel route from journey start to the final destinatio
   "vanRoute": {},
   "toDestinationRoute": {},
   "vanId": 7,
-  "validUntil": "2018-12-17T17:10:00.000Z"
+  "validUntil": "2018-12-17T17:10:00.000Z",
+  "latestArrivalTimeAtUserDestinationLocation": "2018-12-17T17:55:00.000Z"
 }
 ```
 
