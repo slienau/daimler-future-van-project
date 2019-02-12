@@ -10,9 +10,14 @@ import {
   View,
   Toast,
 } from 'native-base'
+import styled from 'styled-components/native'
 import {fetchOrders} from '../../ducks/orders'
 import OrderHistoryListItem from './components/OrderHistoryListItem'
 import {defaultDangerToast} from '../../lib/toasts'
+
+const StyledText = styled(Text)`
+  font-size: 18px;
+`
 
 class OrderHistoryScreen extends Component {
   componentDidMount() {
@@ -45,7 +50,7 @@ class OrderHistoryScreen extends Component {
             return (
               <View key={month}>
                 <Separator bordered>
-                  <Text>{month}</Text>
+                  <StyledText>{month}</StyledText>
                 </Separator>
                 <List
                   dataArray={ordersByMonth[month]}
