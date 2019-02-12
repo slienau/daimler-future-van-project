@@ -6,7 +6,6 @@ const Logger = require('../WinstonLogger').logger
 class VanHandlerService {
   static async confirmVan (fromVB, toVB, van, order, passengerCount) {
     const orderId = order._id
-    const potentialRoutes = van.potentialRoute
     const potentialStops = van.potentialStops
     van.potentialRoute = []
     van.potentialStops = []
@@ -15,14 +14,6 @@ class VanHandlerService {
     if (van.nextRoutes.length > 0) {
       van.currentlyPooling = true
     }
-
-    let timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(potentialRoutes[0])
-    if (!timeToVB && van.nextRoutes.length !== 0) {
-      timeToVB = GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[0])
-      Logger.info('Took time from different route: ' + timeToVB)
-    }
-    Logger.info('Seconds to next VB: ' + timeToVB)
-    van.nextStopTime = new Date(Date.now() + (timeToVB * 1000))
 
     // link the added next stops with the order they came from so that we can delete them if one cancels its order
     let fromStop = {
@@ -149,6 +140,7 @@ class VanHandlerService {
   static async recalculateRoutes (van, cutOffStep) {
     let startLocation
     let toCutOffStepDuration = 0
+    let freshStart = false
     if (van.waiting) {
       van.nextRoutes.splice(0)
     } else {
@@ -167,6 +159,7 @@ class VanHandlerService {
       startLocation = van.location
       van.currentStep = 0
       van.lastStepTime = new Date()
+      freshStart = true
     }
     let nextVBs = _.uniqWith(van.nextStops, (val1, val2) => val1.vb._id.equals(val2.vb._id)).map(stop => stop.vb)
     console.log(van.nextStops.length, '>!<', nextVBs.length)
@@ -176,7 +169,7 @@ class VanHandlerService {
       startLocation = vb.location
     }
 
-    const i = van.waiting ? 0 : 1
+    const i = van.waiting || freshStart ? 0 : 1
     return toCutOffStepDuration + GoogleMapsHelper.readDurationFromGoogleResponse(van.nextRoutes[i])
   }
 
