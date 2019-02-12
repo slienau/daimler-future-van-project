@@ -82,31 +82,11 @@ class BottomButtons extends React.Component {
             }
             if (success) {
               Toast.show(defaultSuccessToast('Your order has been confirmed!'))
-<<<<<<< HEAD
-              PushNotification.localNotificationSchedule({
-                message: 'Your van will arrive at the exit point in a minute',
-                date: new Date(
-                  new Date(
-                    _.get(this.props.routeInfo, 'vanETAatEndVBS')
-                  ).getTime() -
-                    60 * 1000
-                ),
-              })
-              PushNotification.localNotificationSchedule({
-                message: 'Your van is at the start point in a minute',
-                date: new Date(
-                  new Date(
-                    _.get(this.props.routeInfo, 'vanETAatStartVBS')
-                  ).getTime() -
-                    60 * 1000
-                ),
-              })
-=======
               // PushNotification.localNotificationSchedule({
               //   message: 'Your van will arrive at the exit point in a minute',
               //   date: new Date(
               //     new Date(
-              //       _.get(this.props.routes, '0.vanETAatEndVBS')
+              //       _.get(this.props.routeInfo, 'vanETAatEndVBS')
               //     ).getTime() -
               //       60 * 1000
               //   ),
@@ -115,12 +95,11 @@ class BottomButtons extends React.Component {
               //   message: 'Your van is at the start point in a minute',
               //   date: new Date(
               //     new Date(
-              //       _.get(this.props.routes, '0.vanETAatStartVBS')
+              //       _.get(this.props.routeInfo, 'vanETAatStartVBS')
               //     ).getTime() -
               //       60 * 1000
               //   ),
               // })
->>>>>>> fix: temporarily disable push notifications
             }
           },
         },

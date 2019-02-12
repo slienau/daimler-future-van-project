@@ -23,13 +23,8 @@ class DestinationWalkCardLarge extends React.Component {
         this.props.currentUserLocation,
         this.props.destinationLocation
       )
-<<<<<<< HEAD
-      if (distance < 10) return this.props.resetMapState()
-      setTimeout(checkDestination, 3000)
-=======
-      if (distance < 30) return this.props.toMapScreen()
+      if (distance < 30) return this.props.resetMapState()
       this.exitTimerId = setTimeout(checkDestination, 3000)
->>>>>>> fix: DestinationWalkCardLarge style
     }
     checkDestination()
   }
@@ -84,13 +79,7 @@ DestinationWalkCardLarge.propTypes = {
   destArrival: PropTypes.string,
   destinationLocation: PropTypes.object,
   endAddress: PropTypes.string,
-<<<<<<< HEAD
   resetMapState: PropTypes.func,
-  vanArrival: PropTypes.string,
-  vanId: PropTypes.number,
-=======
-  toMapScreen: PropTypes.func,
->>>>>>> fix: DestinationWalkCardLarge style
   walkingDistance: PropTypes.string,
   walkingDuration: PropTypes.string,
   zoomToDestinationWalk: PropTypes.func,
