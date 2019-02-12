@@ -62,7 +62,7 @@ async function starttest () {
   const order2 = await axiosInstance2.post('/orders', { routeId: routeInfo2.id })
   const orderInfo2 = order2.data
   assert.strictEqual(true, orderInfo2 != null, 'order2 is null')
-  assert.strictEqual(orderInfo2.vanEndVBS, orderInfo1.vanEndVBS, 'order vbs not equal')
+  assert.strictEqual(orderInfo2.vanEndVBS.id, orderInfo1.vanEndVBS.id, 'order vbs not equal')
 
   console.log('cancelling first order')
   const orderPut1 = await axiosInstance1.put('/activeorder', { action: 'cancel', userLocation: start1 })

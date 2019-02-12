@@ -89,7 +89,7 @@ async function starttest () {
   let orderInfo2 = order2.data
   vans = await axiosInstance1.get('vans')
   assert.strictEqual(true, orderInfo2 != null, 'order2 is null')
-  assert.strictEqual(orderInfo2.vanEndVBS, orderInfo1.vanEndVBS, 'order vbs not equal')
+  assert.strictEqual(orderInfo2.vanEndVBS.id, orderInfo1.vanEndVBS.id, 'order vbs not equal')
   assert.strictEqual(vans.data[orderInfo1.vanId - 1].nextStops.length, 3, 'van next stops dont fit')
   assert.strictEqual(vans.data[orderInfo1.vanId - 1].nextRoutes.length, 4, 'van next routes dont fit')
 
@@ -148,7 +148,7 @@ async function starttest () {
   orderInfo2 = order2.data
   vans = await axiosInstance1.get('vans')
   assert.strictEqual(true, orderInfo2 != null, 'order2 is null')
-  assert.strictEqual(orderInfo2.vanEndVBS, orderInfo1.vanEndVBS, 'order vbs not equal')
+  assert.strictEqual(orderInfo2.vanEndVBS.id, orderInfo1.vanEndVBS.id, 'order vbs not equal')
   assert.strictEqual(vans.data[orderInfo1.vanId - 1].nextStops.length, 2, 'van next stops dont fit')
   assert.strictEqual(vans.data[orderInfo1.vanId - 1].nextRoutes.length, 3, 'van next routes dont fit')
 
