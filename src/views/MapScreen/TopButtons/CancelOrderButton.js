@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {cancelActiveOrder} from '../../../ducks/orders'
 import {Alert, StyleSheet} from 'react-native'
-import PushNotification from 'react-native-push-notification'
+// import PushNotification from 'react-native-push-notification'
 import {Toast} from 'native-base'
 import {defaultDangerToast, defaultSuccessToast} from '../../../lib/toasts'
 import DefaultIconButton from '../../../components/UI/DefaultIconButton'
@@ -18,7 +18,7 @@ const CancelOrderButton = props => {
           text: 'Yes',
           onPress: async () => {
             try {
-              PushNotification.cancelAllLocalNotifications()
+              // PushNotification.cancelAllLocalNotifications()
               await props.cancelActiveOrder()
               Toast.show(defaultSuccessToast('Your order has been canceled!'))
             } catch (error) {
