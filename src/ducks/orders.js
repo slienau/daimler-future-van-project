@@ -190,13 +190,7 @@ export function setActiveOrderStatus(data) {
     })
     dispatch({
       type: UPDATE_ROUTE_INFO,
-      payload: {
-        vanLocation: data.vanLocation,
-        vanETAatStartVBS: data.vanETAatStartVBS,
-        vanETAatEndVBS: data.vanETAatDestinationVBS, // TODO: rename vanETAatDestinationVBS to vanETAatEndVBS in API
-        userETAatUserDestinationLocation: data.userETAatUserDestinationLocation,
-        guaranteedArrivalTime: data.guaranteedArrivalTime,
-      },
+      payload: data,
     })
   }
 }
