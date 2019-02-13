@@ -173,6 +173,16 @@ class VirtualBusStopHelper {
       accessible: true
     })
 
+    const tub = new VirtualBusStop({
+      location: {
+        latitude: 52.512735,
+        longitude: 13.326966
+      },
+      name: 'TU Berlin',
+      accessible: true
+    })
+
+    await tub.save()
     await ebers.save()
     await berl.save()
     await greif.save()
