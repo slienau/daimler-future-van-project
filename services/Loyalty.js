@@ -35,7 +35,7 @@ class Loyalty {
     co2savings = Number(co2savings.toFixed(2))
     loyaltyPoints = vanDistance * vanMultiplier * offPeakTimeMultiplier + walkingDistance * walkingMultiplier * longWalkingMultiplier + waitingTime * longWaitingMultiplier
     loyaltyPoints = Number(loyaltyPoints.toFixed(0))
-    vanDistance = Number(vanDistance.toFixed(0))
+    vanDistance = Number(vanDistance.toFixed(2))
     return { loyaltyPoints: loyaltyPoints, co2savings: co2savings, distance: vanDistance }
   }
 }

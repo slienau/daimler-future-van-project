@@ -39,8 +39,8 @@ class OrderHelper {
         time1End = new Date('2018-12-10T13:30:00')
         time2Start = new Date('2018-12-13T10:15:00')
         time2End = new Date('2018-12-13T10:30:00')
-        distance1 = 6
-        distance2 = 4
+        distance1 = 6.1
+        distance2 = 4.3
         distance3 = 7.5
 
         const order1 = new Order({
@@ -54,7 +54,7 @@ class OrderHelper {
           vanEnterTime: time1Start,
           vanExitTime: time1End,
           vanId: 3,
-          distance: Number((distance1 * leaderboardDifference).toFixed(0)),
+          distance: Number((distance1 * leaderboardDifference).toFixed(2)),
           loyaltyPoints: Number((distance1 * 17 * leaderboardDifference).toFixed(0)),
           co2savings: distance1 * 0.13,
           route: '273jsnsb9201'
@@ -71,7 +71,7 @@ class OrderHelper {
           vanEnterTime: time2Start,
           vanExitTime: time2End,
           vanId: 4,
-          distance: Number((distance2 * leaderboardDifference).toFixed(0)),
+          distance: Number((distance2 * leaderboardDifference).toFixed(2)),
           loyaltyPoints: Number((distance2 * 17 * leaderboardDifference).toFixed(0)),
           co2savings: distance2 * 0.13,
           route: '273jsnsb9250'
@@ -87,7 +87,7 @@ class OrderHelper {
           vanEnterTime: time2Start,
           vanExitTime: time2End,
           vanId: 4,
-          distance: Number((distance3 * leaderboardDifference).toFixed(0)),
+          distance: Number((distance3 * leaderboardDifference).toFixed(2)),
           loyaltyPoints: Number((distance3 * 17 * leaderboardDifference).toFixed(0)),
           co2savings: distance3 * 0.13,
           route: '273jsnsb9250'
