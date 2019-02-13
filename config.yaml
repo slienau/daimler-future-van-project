@@ -8,8 +8,8 @@ vanStartLocations:
       latitude: 52.526351
       longitude: 13.387010
   - location:
-      latitude: 52.515043
-      longitude: 13.328737
+      latitude: 52.505347
+      longitude: 13.335971
 numberOfSeats : 8
 numberOfVans: 3
 inactiveTimeToReset: 300000
