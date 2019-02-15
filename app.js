@@ -51,7 +51,7 @@ app.use(WinstonLogger.expressLogger)
 app.use(cors({ origin: 'http://localhost:5000' }))
 
 app.use('/login', auth)
-app.use('/', jwtlogin, indexRouter)
+app.use('/', indexRouter)
 app.use('/account', jwtlogin, accountRouter)
 app.use('/virtualbusstops', jwtlogin, vbRouter)
 app.use('/orders', jwtlogin, orderRouter)
