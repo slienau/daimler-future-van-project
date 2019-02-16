@@ -42,11 +42,11 @@ async function starttest () {
   })
   const routeInfo = route.data[0]
 
-  // console.log(routeInfo)
+  console.log(routeInfo)
   console.log('Route is ok')
   console.log('----------------------')
-  await axiosInstance.post('/orders', { routeId: routeInfo.id })
-  // console.log(orderInfo)
+  const orderInfo = await axiosInstance.post('/orders', { routeId: routeInfo.id })
+  console.log(orderInfo.data)
   console.log('Order is ok')
   console.log('----------------------')
 
