@@ -1,8 +1,6 @@
 const geolib = require('geolib')
 
 const VirtualBusStop = require('../models/VirtualBusStop.js')
-const Route = require('../models/Route.js')
-const GoogleMapsHelper = require('../services/GoogleMapsHelper.js')
 const Logger = require('./WinstonLogger').logger
 
 class VirtualBusStopHelper {
@@ -203,43 +201,6 @@ class VirtualBusStopHelper {
     await kotti.save()
     await erp.save()
     await kufue.save()
-  }
-
-  // get Suggestions for Journey
-  static async getRouteSuggestions (start, startVB, destinationVB, destination, startTime, vanArrivalTime, vanID, passengerCount) {
-    // Get Google Responses
-    const googleResponse = await GoogleMapsHelper.googleAPICall(start, destination, startVB, destinationVB, startTime, vanArrivalTime)
-
-    // Calculate Durations from Google Responses
-    const vanStartTime = new Date(googleResponse[3] * 1000)
-    const vanEndTime = new Date(vanStartTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[1]) * 1000)
-    const destinationTime = new Date(vanEndTime.getTime() + GoogleMapsHelper.readDurationFromGoogleResponse(googleResponse[2]) * 1000)
-
-    const routeObject = {
-      userStartLocation: start,
-      userDestinationLocation: destination,
-      vanStartVBS: startVB,
-      vanEndVBS: destinationVB,
-      vanETAatStartVBS: vanStartTime,
-      vanETAatEndVBS: vanEndTime,
-      userETAatUserDestinationLocation: destinationTime,
-      toStartRoute: googleResponse[0],
-      vanRoute: googleResponse[1],
-      toDestinationRoute: googleResponse[2],
-      vanId: vanID,
-      validUntil: new Date(startTime.getTime() + (1000 * 60)),
-      passengerCount: passengerCount
-    }
-
-    // Right now give only one suggestion
-    const newRoute = new Route(routeObject)
-    const dbRoute = await newRoute.save()
-
-    routeObject.id = dbRoute._id
-
-    Logger.info('Created route with id: ' + dbRoute._id)
-
-    return routeObject
   }
 
   // Returns the Virtual Busstop that is closest to the reference

@@ -122,8 +122,8 @@ class OrderHelper {
     await Route.updateOne({ _id: routeId }, { $set: {
       confirmed: true,
       journeyStartTime: currentTime,
-      vanETAatStartVBS: route.vanETAatStartVBS + timePassed,
-      vanETAatEndVBS: route.vanETAatEndVBS + timePassed,
+      vanDepartureTime: route.vanDepartureTime + timePassed,
+      vanArrivalTime: route.vanArrivalTime + timePassed,
       userETAatUserDestinationLocation: route.userETAatUserDestinationLocation + timePassed
     }
     })
@@ -256,9 +256,9 @@ class OrderHelper {
       userAllowedToEnter: false,
       userAllowedToExit: false,
       message: 'unknown state',
-      guaranteedArrivalTime: new Date(route.vanETAatEndVBS.getTime() + 10 * 60 * 1000),
-      vanETAatStartVBS: startVBSTime,
-      vanETAatDestinationVBS: endVBSTime,
+      guaranteedVanArrivalTime: route.guaranteedVanArrivalTime,
+      vanDepartureTime: startVBSTime,
+      vanArrivalTime: endVBSTime,
       otherPassengers: otherPassengers,
       vanLocation: actualVanLocation,
       nextStops: uniqueStops,

@@ -35,15 +35,11 @@ const RouteSchema = new Schema({
     type: Object,
     required: true
   },
-  vanETAatStartVBS: {
+  vanDepartureTime: {
     type: Date,
     required: false
   },
-  vanETAatEndVBS: {
-    type: Date,
-    required: false
-  },
-  userETAatUserDestinationLocation: {
+  vanArrivalTime: {
     type: Date,
     required: false
   },
@@ -68,6 +64,14 @@ const RouteSchema = new Schema({
     required: true
   },
   passengerCount: {
+    type: Number,
+    required: false
+  },
+  guaranteedVanArrivalTime: {
+    type: Date,
+    required: false
+  },
+  toDestinationWalkingTime: {
     type: Number,
     required: false
   }

@@ -101,7 +101,7 @@ class VanRequestService {
           // get route from orderId
           const order = await Order.findById(orderId)
           const route = await Route.findById(order.route).lean()
-          referenceWayPointDuration = (route.vanETAatStartVBS - currentTime) / 1000
+          referenceWayPointDuration = (route.vanDepartureTime - currentTime) / 1000
           // referenceWayPointDuration = this.getRemainingRouteDuration(van) - GoogleMapsHelper.readDurationFromGoogleResponse(_.last(van.nextRoutes)) // TODO
         }
         if (!referenceWayPoint || !referenceWayPointDuration) continue
@@ -154,7 +154,7 @@ class VanRequestService {
         if (van.nextStopTime.getTime() - currentTime.getTime() < 60 * 1000) continue
 
         // Calculate the new Time for the van to leave at the the VBS where both passengers enter
-        const origPassRideStartTime = otherPasRoute.vanETAatStartVBS
+        const origPassRideStartTime = otherPasRoute.vanDepartureTime
         const newPassWalkingArrivalTime = new Date(currentTime.getTime() + walkingTimeToStartVB * 1000)
 
         const vanArrivalTime = van.nextStopTime
@@ -192,7 +192,7 @@ class VanRequestService {
 
         // Check second: if new route is maximum of 10 minutes longer for origPass
         // Since the guaranteed time of arrival of the orig passenger is a time point (not duration) we have to work with dates (in seconds from origin)
-        const isA1B2A2Allowed = threshold > otherPasRoute.vanETAatEndVBS.getTime() / 1000 - (origPassRideStartTime / 1000 + origPassExtraWaitingTimeAtVBS / 1000 + fromA1ToB2Dur + fromB2ToA2Dur)
+        const isA1B2A2Allowed = threshold > otherPasRoute.vanArrivalTime.getTime() / 1000 - (origPassRideStartTime / 1000 + origPassExtraWaitingTimeAtVBS / 1000 + fromA1ToB2Dur + fromB2ToA2Dur)
 
         // Compare the times of the routes
         const isA1B2A2Better = !(fromA1ToA2Dur + fromA2ToB2Dur < fromA1ToB2Dur + fromB2ToA2Dur)
