@@ -147,7 +147,7 @@ class VanSimulatorService {
       const order = await Order.findById(oid)
       const route = await Route.findById(order.route).lean()
       // set reference time based on whether passenger has started ride or not
-      const referenceTime = order.vanEnterTime ? route.vanETAatEndVBS.getTime() + inactiveTimeToReset : route.vanETAatStartVBS.getTime() + inactiveTimeToReset
+      const referenceTime = order.vanEnterTime ? route.vanArrivalTime.getTime() + inactiveTimeToReset : route.vanDepartureTime.getTime() + inactiveTimeToReset
       if (referenceTime < currentTime.getTime()) {
         Logger.info('deactivated Order ' + oid)
         await Order.updateOne({ _id: oid }, { $set: { active: false, vanExitTime: new Date() } })

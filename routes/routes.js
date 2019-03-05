@@ -12,6 +12,7 @@ router.post('/', async function (req, res) {
   Logger.info('Request to Routes with body: ')
   Logger.info(req.body)
 
+  // Check for body parameters
   if (!req.body.start.latitude || !req.body.destination.longitude || !req.body.start.longitude || !req.body.destination.latitude) return res.status(400).json({ code: 400, message: 'Bad body params' })
 
   // Find the virtual bus stops that a closest to the passenger
@@ -44,35 +45,26 @@ router.post('/', async function (req, res) {
 
   let suggestions = []
 
-  const routeObject = {
+  const routeObject = new Route({
     userStartLocation: req.body.start,
     userDestinationLocation: req.body.destination,
     vanStartVBS: startVB,
     vanEndVBS: destinationVB,
-    vanETAatStartVBS: van.rideStartTime,
-    vanETAatEndVBS: van.userArrivalAtDestVBS,
-    userETAatUserDestinationLocation: new Date(van.userArrivalAtDestVBS.getTime() + 30 * 1000 + fromVB2ToDestRouteDur * 1000),
+    vanDepartureTime: van.rideStartTime,
+    vanArrivalTime: van.userArrivalAtDestVBS,
+    guaranteedVanArrivalTime: new Date(van.userArrivalAtDestVBS.getTime() + 10 * 60 * 1000),
     toStartRoute: walkingRouteToStartVB,
     vanRoute: vanRoute,
     toDestinationRoute: fromVB2ToDestRoute,
     vanId: van.vanId,
     validUntil: new Date(Date.now() + (1000 * 60)),
-    passengerCount: passengerCount
-  }
+    passengerCount: passengerCount,
+    toDestinationWalkingTime: fromVB2ToDestRouteDur
+  })
 
   // Right now give only one suggestion
-  const newRoute = new Route(routeObject)
-  const dbRoute = await newRoute.save()
-  /*
+  const dbRoute = await routeObject.save()
 
-  try {
-    route = await VirtualBusStopHelper.getRouteSuggestions(req.body.start, startVB, destinationVB, req.body.destination, time, van.nextStopTime, van.vanId, passengerCount)
-  } catch (error) {
-    Logger.error(error)
-    res.json(error)
-  }
-  if (route.code) res.status(400).json(route)
-  */
   suggestions.push(dbRoute)
   res.json(suggestions)
 })
