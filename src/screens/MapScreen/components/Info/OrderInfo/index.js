@@ -6,7 +6,7 @@ import moment from 'moment'
 import StartWalkCardLarge from './StartWalkCardLarge'
 import DestinationWalkCardLarge from './DestinationWalkCardLarge'
 import {StyledOrderInfo} from '../StyledComponents'
-import {setVisibleCoordinates, MapState} from '../../../../../ducks/map'
+import {setVisibleCoordinates, OrderState} from '../../../../../ducks/map'
 
 const OrderInfo = props => {
   const parseDeparture = () => {
@@ -69,8 +69,8 @@ const OrderInfo = props => {
   }
 
   let visibleCard = null
-  switch (props.mapState) {
-    case MapState.ROUTE_ORDERED:
+  switch (props.orderState) {
+    case OrderState.ROUTE_ORDERED:
       visibleCard = (
         <StartWalkCardLarge
           currentState={props.currentState}
@@ -93,7 +93,7 @@ const OrderInfo = props => {
         />
       )
       break
-    case MapState.EXIT_VAN:
+    case OrderState.EXIT_VAN:
       visibleCard = (
         <DestinationWalkCardLarge
           walkingDuration={_.get(
@@ -129,8 +129,8 @@ OrderInfo.propTypes = {
   currentState: PropTypes.string,
   currentUserLocation: PropTypes.object,
   map: PropTypes.object,
-  mapState: PropTypes.string,
   onEnterVanPress: PropTypes.func,
+  orderState: PropTypes.string,
   routeInfo: PropTypes.object,
   setVisibleCoordinates: PropTypes.func,
 }
@@ -140,7 +140,7 @@ export default connect(
     map: state.map,
     routeInfo: state.map.routeInfo,
     currentUserLocation: state.map.currentUserLocation,
-    mapState: state.map.mapState,
+    orderState: state.map.orderState,
     activeOrder: state.orders.activeOrder,
     activeOrderStatus: state.orders.activeOrderStatus,
   }),

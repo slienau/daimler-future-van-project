@@ -3,8 +3,8 @@ import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete'
 import config, {initialMapSearchLocations} from '../../lib/config'
 import {connect} from 'react-redux'
 import {
-  changeMapState,
-  MapState,
+  changeOrderState,
+  OrderState,
   setUserDestinationLocation,
   setUserStartLocation,
   setVisibleCoordinates,
@@ -35,7 +35,7 @@ const SearchScreen = props => {
       title: details.name,
       description: details.vicinity,
     })
-    props.changeMapState(MapState.SEARCH_ROUTES)
+    props.changeOrderState(OrderState.SEARCH_ROUTES)
     props.setVisibleCoordinates(
       _.compact([location, _.get(_.nth(props.journey, type - 1), 'location')])
     )
@@ -93,7 +93,7 @@ const SearchScreen = props => {
 }
 
 SearchScreen.propTypes = {
-  changeMapState: PropTypes.func,
+  changeOrderState: PropTypes.func,
   journey: PropTypes.array,
   setJourney: PropTypes.func,
   setVisibleCoordinates: PropTypes.func,
@@ -109,7 +109,7 @@ export default connect(
     }
   },
   dispatch => ({
-    changeMapState: payload => dispatch(changeMapState(payload)),
+    changeOrderState: payload => dispatch(changeOrderState(payload)),
     setJourney: (isStart, payload) =>
       dispatch(
         isStart

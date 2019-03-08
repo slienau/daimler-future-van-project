@@ -4,26 +4,20 @@ import AccountButton from './AccountButton'
 import CurrentLocationButton from './CurrentLocationButton'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
-import {MapState} from '../../../../ducks/map'
+import {OrderState} from '../../../../ducks/map'
 import CancelOrderButton from './CancelOrderButton'
 
 const TopButtons = props => {
   let content = null
-  if ([MapState.INIT, MapState.SEARCH_ROUTES].includes(props.mapState))
+  if ([OrderState.INIT, OrderState.SEARCH_ROUTES].includes(props.orderState))
     content = (
       <>
-        <AccountButton
-          mapState={props.mapState}
-          toAccountView={props.toAccountView}
-        />
-        <CurrentLocationButton
-          mapState={props.mapState}
-          onPress={props.onCurrentLocationButtonPress}
-        />
+        <AccountButton toAccountView={props.toAccountView} />
+        <CurrentLocationButton onPress={props.onCurrentLocationButtonPress} />
       </>
     )
 
-  if (props.mapState === MapState.ROUTE_ORDERED) {
+  if (props.orderState === OrderState.ROUTE_ORDERED) {
     content = <CancelOrderButton />
   }
 
@@ -31,8 +25,8 @@ const TopButtons = props => {
     <View
       style={[
         styles.wrapper,
-        props.mapState === MapState.SEARCH_ROUTES ||
-        props.mapState === MapState.ROUTE_SEARCHED
+        props.orderState === OrderState.SEARCH_ROUTES ||
+        props.orderState === OrderState.ROUTE_SEARCHED
           ? styles.noTopMargin
           : null,
       ]}>
@@ -54,11 +48,11 @@ const styles = StyleSheet.create({
 })
 
 TopButtons.propTypes = {
-  mapState: PropTypes.string.isRequired,
   onCurrentLocationButtonPress: PropTypes.func.isRequired,
+  orderState: PropTypes.string.isRequired,
   toAccountView: PropTypes.func.isRequired,
 }
 
 export default connect(state => ({
-  mapState: state.map.mapState,
+  orderState: state.map.orderState,
 }))(TopButtons)

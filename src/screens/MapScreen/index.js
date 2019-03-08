@@ -12,7 +12,7 @@ import {Dimensions, View, StyleSheet} from 'react-native'
 import _ from 'lodash'
 // import PushNotification from 'react-native-push-notification'
 import {
-  MapState,
+  OrderState,
   setCurrentUserLocation,
   setUserStartLocation,
   setVisibleCoordinates,
@@ -42,15 +42,18 @@ class MapScreen extends React.Component {
   componentWillUpdate(nextProps, nextState) {
     // check if we have to show the RideScreen
     if (
-      nextProps.mapState === MapState.VAN_RIDE &&
-      this.props.mapState !== MapState.VAN_RIDE
+      nextProps.orderState === OrderState.VAN_RIDE &&
+      this.props.orderState !== OrderState.VAN_RIDE
     ) {
       setImmediate(() => this.props.navigation.navigate('Ride'))
     }
   }
 
   componentDidUpdate() {
-    if (this.props.mapState === MapState.INIT && !this.props.userStartLocation)
+    if (
+      this.props.orderState === OrderState.INIT &&
+      !this.props.userStartLocation
+    )
       this.getCurrentPosition()
     if (!this.props.hasVisibleCoordinatesUpdate) return
     if (this.props.visibleCoordinates.length === 1)
@@ -107,8 +110,8 @@ class MapScreen extends React.Component {
   continuouslyUpdatePosition = () => {
     const fn = async () => {
       if (
-        [MapState.ROUTE_ORDERED, MapState.VAN_RIDE].includes(
-          this.props.mapState
+        [OrderState.ROUTE_ORDERED, OrderState.VAN_RIDE].includes(
+          this.props.orderState
         ) &&
         this.props.currentUserLocation
       ) {
@@ -166,7 +169,9 @@ class MapScreen extends React.Component {
   getVans = () => {
     const fn = async () => {
       if (
-        [MapState.INIT, MapState.SEARCH_ROUTES].includes(this.props.mapState)
+        [OrderState.INIT, OrderState.SEARCH_ROUTES].includes(
+          this.props.orderState
+        )
       ) {
         try {
           // TODO: move api call to redux
@@ -300,7 +305,7 @@ MapScreen.propTypes = {
   edgePadding: PropTypes.object,
   fetchActiveOrder: PropTypes.func,
   hasVisibleCoordinatesUpdate: PropTypes.bool,
-  mapState: PropTypes.string,
+  orderState: PropTypes.string,
   setActiveOrderStatus: PropTypes.func,
   setCurrentUserLocation: PropTypes.func,
   setJourneyStart: PropTypes.func,
@@ -314,7 +319,7 @@ MapScreen.propTypes = {
 
 export default connect(
   state => ({
-    mapState: state.map.mapState,
+    orderState: state.map.orderState,
     currentUserLocation: state.map.currentUserLocation,
     userStartLocation: state.map.userStartLocation,
     visibleCoordinates: state.map.visibleCoordinates,

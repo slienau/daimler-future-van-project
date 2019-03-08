@@ -1,7 +1,7 @@
 import React from 'react'
 import {
   clearRoutes,
-  MapState,
+  OrderState,
   resetMapState,
   fetchRoutes,
   setVisibleCoordinates,
@@ -111,11 +111,11 @@ class BottomButtons extends React.Component {
 
   render() {
     let toReturn
-    switch (this.props.mapState) {
-      case MapState.INIT:
+    switch (this.props.orderState) {
+      case OrderState.INIT:
         toReturn = <DestinationButton {...this.props} />
         break
-      case MapState.SEARCH_ROUTES:
+      case OrderState.SEARCH_ROUTES:
         toReturn = (
           <>
             <BackButton onPress={() => this.props.resetMapState()} />
@@ -123,7 +123,7 @@ class BottomButtons extends React.Component {
           </>
         )
         break
-      case MapState.ROUTE_SEARCHED:
+      case OrderState.ROUTE_SEARCHED:
         toReturn = (
           <>
             <ClearRoutesButton
@@ -141,7 +141,7 @@ class BottomButtons extends React.Component {
           </>
         )
         break
-      case MapState.ROUTE_ORDERED:
+      case OrderState.ROUTE_ORDERED:
         return null
       default:
         return null
@@ -149,8 +149,8 @@ class BottomButtons extends React.Component {
     return (
       <>
         <View style={styles.bottomButtons}>{toReturn}</View>
-        {[MapState.INIT, MapState.SEARCH_ROUTES].includes(
-          this.props.mapState
+        {[OrderState.INIT, OrderState.SEARCH_ROUTES].includes(
+          this.props.orderState
         ) && <View style={styles.bottomPadding} />}
       </>
     )
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
 BottomButtons.propTypes = {
   clearRoutes: PropTypes.func,
   fetchRoutes: PropTypes.func,
-  mapState: PropTypes.string,
+  orderState: PropTypes.string,
   placeOrder: PropTypes.func,
   resetMapState: PropTypes.func,
   routeInfo: PropTypes.object,
@@ -183,7 +183,7 @@ BottomButtons.propTypes = {
 
 export default connect(
   state => ({
-    mapState: state.map.mapState,
+    orderState: state.map.orderState,
     userStartLocation: state.map.userStartLocation,
     userDestinationLocation: state.map.userDestinationLocation,
     routeInfo: state.map.routeInfo,

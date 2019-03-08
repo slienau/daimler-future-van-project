@@ -4,20 +4,22 @@ import MapEncodedPolyline from './MapEncodedPolyline'
 import {Polyline} from 'react-native-maps'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import {MapState} from '../../../ducks/map'
+import {OrderState} from '../../../ducks/map'
 
 const Routes = props => {
   if (!props.routeInfo.toStartRoute || !props.routeInfo.toDestinationRoute)
     return null
   const coordinates = [_.get(props.routeInfo, 'vanStartVBS.location')].concat(
-    props.mapState === MapState.VAN_RIDE
+    props.orderState === OrderState.VAN_RIDE
       ? _.map(_.get(props.activeOrderStatus, 'nextStops', []), 'location')
       : _.get(props.routeInfo, 'vanEndVBS.location')
   )
 
   return (
     <>
-      {![MapState.VAN_RIDE, MapState.EXIT_VAN].includes(props.mapState) && (
+      {![OrderState.VAN_RIDE, OrderState.EXIT_VAN].includes(
+        props.orderState
+      ) && (
         <MapEncodedPolyline
           points={_.get(
             props.routeInfo,
@@ -27,7 +29,7 @@ const Routes = props => {
           strokeColor="red"
         />
       )}
-      {![MapState.EXIT_VAN].includes(props.mapState) && (
+      {![OrderState.EXIT_VAN].includes(props.orderState) && (
         <Polyline
           key={3}
           strokeWidth={3}
@@ -49,12 +51,12 @@ const Routes = props => {
 
 Routes.propTypes = {
   activeOrderStatus: PropTypes.object,
-  mapState: PropTypes.string,
+  orderState: PropTypes.string,
   routeInfo: PropTypes.object,
 }
 
 export default connect(state => ({
   routeInfo: state.map.routeInfo,
-  mapState: state.map.mapState,
+  orderState: state.map.orderState,
   activeOrderStatus: state.orders.activeOrderStatus,
 }))(Routes)

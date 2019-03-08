@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import {
-  MapState,
+  OrderState,
   swapJourneyStartAndDestination,
   setPersonCount,
 } from '../../../../ducks/map'
@@ -43,8 +43,8 @@ const SearchForm = props => {
   const personCount = props.personCount
 
   let content = null
-  switch (props.mapState) {
-    case MapState.SEARCH_ROUTES:
+  switch (props.orderState) {
+    case OrderState.SEARCH_ROUTES:
       content = (
         <SearchRoutes
           onStartPress={() => props.toSearchView('START')}
@@ -57,7 +57,7 @@ const SearchForm = props => {
         />
       )
       break
-    case MapState.ROUTE_SEARCHED:
+    case OrderState.ROUTE_SEARCHED:
       content = (
         <RouteSearched
           startText={startText}
@@ -81,7 +81,7 @@ const SearchForm = props => {
 }
 
 SearchForm.propTypes = {
-  mapState: PropTypes.string,
+  orderState: PropTypes.string,
   personCount: PropTypes.number,
   routeInfo: PropTypes.object,
   setPersonCount: PropTypes.func,
@@ -94,7 +94,7 @@ SearchForm.propTypes = {
 const mapStateToProps = state => {
   return {
     personCount: state.map.personCount,
-    mapState: state.map.mapState,
+    orderState: state.map.orderState,
     routeInfo: state.map.routeInfo,
     userStartLocation: state.map.userStartLocation,
     userDestinationLocation: state.map.userDestinationLocation,

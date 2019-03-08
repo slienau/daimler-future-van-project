@@ -1,17 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {MapState} from '../../../../ducks/map'
+import {OrderState} from '../../../../ducks/map'
 import {connect} from 'react-redux'
 import OrderInfo from './OrderInfo'
 import RouteInfo from './RouteInfo'
 
 const Info = props => {
-  switch (props.mapState) {
-    case MapState.ROUTE_SEARCHED:
+  switch (props.orderState) {
+    case OrderState.ROUTE_SEARCHED:
       return <RouteInfo />
-    case MapState.ROUTE_ORDERED:
+    case OrderState.ROUTE_ORDERED:
       return <OrderInfo onEnterVanPress={props.onEnterVanPress} />
-    case MapState.EXIT_VAN:
+    case OrderState.EXIT_VAN:
       return <OrderInfo />
 
     default:
@@ -20,10 +20,10 @@ const Info = props => {
 }
 
 Info.propTypes = {
-  mapState: PropTypes.string,
   onEnterVanPress: PropTypes.func,
+  orderState: PropTypes.string,
 }
 
 export default connect(state => ({
-  mapState: state.map.mapState,
+  orderState: state.map.orderState,
 }))(Info)

@@ -1,8 +1,8 @@
 import api from '../lib/api'
 import _ from 'lodash'
 import {
-  changeMapState,
-  MapState,
+  changeOrderState,
+  OrderState,
   UPDATE_ROUTE_INFO,
   RESET_MAP_STATE,
 } from './map'
@@ -50,8 +50,8 @@ const onSetActiveOrder = data => {
       type: UPDATE_ROUTE_INFO,
       payload: data.route,
     })
-    if (data.vanEnterTime) dispatch(changeMapState(MapState.VAN_RIDE))
-    else dispatch(changeMapState(MapState.ROUTE_ORDERED))
+    if (data.vanEnterTime) dispatch(changeOrderState(OrderState.VAN_RIDE))
+    else dispatch(changeOrderState(OrderState.ROUTE_ORDERED))
   }
 }
 
@@ -115,7 +115,7 @@ export function endRide() {
       action: 'endride',
       userLocation: _.pick(map.currentUserLocation, ['latitude', 'longitude']),
     })
-    dispatch(changeMapState(MapState.EXIT_VAN))
+    dispatch(changeOrderState(OrderState.EXIT_VAN))
   }
 }
 
