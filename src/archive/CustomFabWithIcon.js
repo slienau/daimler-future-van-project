@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native'
 import {Fab, Icon} from 'native-base'
 import React from 'react'
 import PropTypes from 'prop-types'
-import {DARK_COLOR, LIGHT_COLOR} from './colors'
+import {DARK_COLOR, LIGHT_COLOR} from '../components/UI/colors'
 
 const CustomFabWithIcon = props => {
   return (
