@@ -11,6 +11,10 @@ const JourneyOverview = props => {
     _.get(props.routeInfo, 'userArrivalTime')
   ).format('LT')
 
+  const guaranteedUserArrivalTime = moment(
+    _.get(props.routeInfo, 'guaranteedUserArrivalTime')
+  ).format('LT')
+
   const loyaltyPoints =
     '' + _.round(_.get(props.activeOrder, 'loyaltyPoints'), 2)
 
@@ -22,6 +26,12 @@ const JourneyOverview = props => {
         iconColor="darkgreen"
         iconName="flag"
         info={userArrivalTime}
+      />
+      <JourneyListItem
+        description="Guaranteed time of arrival at destination"
+        iconColor="darkred"
+        iconName="flag"
+        info={guaranteedUserArrivalTime}
       />
       <JourneyListItem
         description="Total distance"
