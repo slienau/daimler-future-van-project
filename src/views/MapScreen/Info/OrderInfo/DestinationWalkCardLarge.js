@@ -13,7 +13,7 @@ import React from 'react'
 import geolib from 'geolib'
 import {connect} from 'react-redux'
 import {resetMapState} from '../../../../ducks/map'
-import CustomButton from '../../../../components/UI/CustomButton'
+import DefaultButton from '../../../../components/UI/DefaultButton'
 
 class DestinationWalkCardLarge extends React.Component {
   componentDidMount() {
@@ -63,7 +63,7 @@ class DestinationWalkCardLarge extends React.Component {
         <CardItemNoBorders>
           <Body />
           <Right>
-            <CustomButton
+            <DefaultButton
               text="Stop Journey"
               onPress={() => this.props.resetMapState()}
             />

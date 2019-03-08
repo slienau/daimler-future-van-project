@@ -4,7 +4,7 @@ import {StyleSheet, StatusBar} from 'react-native'
 import PropTypes from 'prop-types'
 import {DARK_COLOR, LIGHT_COLOR} from './colors'
 
-const CustomScreenHeader = props => {
+const DefaultScreenHeader = props => {
   const styles = StyleSheet.create({
     header: {
       backgroundColor: DARK_COLOR,
@@ -49,10 +49,10 @@ const CustomScreenHeader = props => {
   )
 }
 
-CustomScreenHeader.propTypes = {
+DefaultScreenHeader.propTypes = {
   icon: PropTypes.string,
   onPress: PropTypes.func,
   title: PropTypes.string,
 }
 
-export default CustomScreenHeader
+export default DefaultScreenHeader

@@ -8,7 +8,7 @@ import PropTypes from 'prop-types'
 import {ImageBackground, StyleSheet, View} from 'react-native'
 import moment from 'moment'
 import backgroundImage from './assets/background_ridescreen.jpg'
-import CustomButton from '../../components/UI/CustomButton'
+import DefaultButton from '../../components/UI/DefaultButton'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
 import BigFlashingMessage from '../../components/UI/BigFlashingMessage'
 import {defaultDangerToast} from '../../lib/toasts'
@@ -38,7 +38,7 @@ const RideScreen = props => {
   if (_.get(props.activeOrderStatus, 'userAllowedToExit'))
     topContent = (
       <View style={styles.topContentContainer}>
-        <CustomButton
+        <DefaultButton
           fullWidth
           text="Exit Van"
           iconRight="exit"

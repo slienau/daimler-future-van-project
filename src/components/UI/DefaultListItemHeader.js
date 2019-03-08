@@ -16,15 +16,15 @@ const styles = StyleSheet.create({
   },
 })
 
-const CustomListItemHeader = props => (
+const DefaultListItemHeader = props => (
   <ListItem itemHeader first style={styles.listItem}>
     <Text style={[styles.headerText, props.style]}>{props.title}</Text>
   </ListItem>
 )
 
-CustomListItemHeader.propTypes = {
+DefaultListItemHeader.propTypes = {
   style: PropTypes.object,
   title: PropTypes.string,
 }
 
-export default CustomListItemHeader
+export default DefaultListItemHeader

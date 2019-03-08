@@ -10,7 +10,7 @@ import {connect} from 'react-redux'
 import {StyleSheet, View} from 'react-native'
 import BigFlashingMessage from '../../components/UI/BigFlashingMessage'
 import moment from 'moment'
-import CustomButton from '../../components/UI/CustomButton'
+import DefaultButton from '../../components/UI/DefaultButton'
 import {defaultDangerToast} from '../../lib/toasts'
 import {endRide} from '../../ducks/orders'
 
@@ -60,7 +60,7 @@ const InRideMapScreen = props => {
       <View style={styles.topContentContainer}>
         <BigFlashingMessage message={topMessage} />
         {_.get(props.activeOrderStatus, 'userAllowedToExit') && (
-          <CustomButton
+          <DefaultButton
             style={styles.button}
             fullWidth
             text="Exit Van"

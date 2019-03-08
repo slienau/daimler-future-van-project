@@ -12,7 +12,7 @@ import {
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import _ from 'lodash'
-import CustomListItemHeader from '../../components/UI/CustomListItemHeader'
+import DefaultListItemHeader from '../../components/UI/DefaultListItemHeader'
 
 const FunfactsScreen = props => {
   const co2savings = _.get(props.activeOrder, 'co2savings')
@@ -30,7 +30,7 @@ const FunfactsScreen = props => {
   return (
     <Container>
       <Content>
-        <CustomListItemHeader title="Fun Facts" />
+        <DefaultListItemHeader title="Fun Facts" />
         <ListItem icon>
           <Left>
             <Icon active name="ios-leaf" />
@@ -53,7 +53,7 @@ const FunfactsScreen = props => {
             <Text>{burntCalories} Kcal</Text>
           </Right>
         </ListItem>
-        <CustomListItemHeader title="Van Facts" />
+        <DefaultListItemHeader title="Van Facts" />
         <ListItem icon>
           <Left>
             <Icon active name="ios-battery-charging" />

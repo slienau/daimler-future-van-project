@@ -25,7 +25,7 @@ import InRideMapScreen from '../views/InRideMapScreen'
 // import SightsScreen from '../views/SightsScreen'
 
 // components
-import CustomScreenHeader from '../components/UI/CustomScreenHeader'
+import DefaultScreenHeader from '../components/UI/DefaultScreenHeader'
 
 const MainAppStack = createStackNavigator(
   {
@@ -33,7 +33,7 @@ const MainAppStack = createStackNavigator(
       screen: AccountScreen,
       navigationOptions: ({navigation}) => ({
         header: (
-          <CustomScreenHeader
+          <DefaultScreenHeader
             title="Account"
             onPress={() => navigation.goBack()}
           />
@@ -44,7 +44,7 @@ const MainAppStack = createStackNavigator(
       screen: LeaderboardScreen,
       navigationOptions: ({navigation}) => ({
         header: (
-          <CustomScreenHeader
+          <DefaultScreenHeader
             title="Leaderboard"
             onPress={() => navigation.goBack()}
           />
@@ -61,7 +61,7 @@ const MainAppStack = createStackNavigator(
       screen: SearchScreen,
       navigationOptions: ({navigation}) => ({
         header: (
-          <CustomScreenHeader
+          <DefaultScreenHeader
             title="Search Place"
             onPress={() => navigation.goBack()}
           />
@@ -72,7 +72,7 @@ const MainAppStack = createStackNavigator(
       screen: OrderHistoryScreen,
       navigationOptions: ({navigation}) => ({
         header: (
-          <CustomScreenHeader
+          <DefaultScreenHeader
             title="Order History"
             onPress={() => navigation.goBack()}
           />
@@ -83,7 +83,7 @@ const MainAppStack = createStackNavigator(
       screen: OrderHistoryDetailsScreen,
       navigationOptions: ({navigation}) => ({
         header: (
-          <CustomScreenHeader
+          <DefaultScreenHeader
             title={navigation.state.params.order.orderTime.format('L')}
             onPress={() => navigation.goBack()}
           />
@@ -100,7 +100,7 @@ const MainAppStack = createStackNavigator(
       screen: FunfactsScreen,
       navigationOptions: ({navigation}) => ({
         header: (
-          <CustomScreenHeader
+          <DefaultScreenHeader
             title="Fun Facts"
             onPress={() => navigation.goBack()}
           />
@@ -111,7 +111,10 @@ const MainAppStack = createStackNavigator(
       screen: InRideMapScreen,
       navigationOptions: ({navigation}) => ({
         header: (
-          <CustomScreenHeader title="Map" onPress={() => navigation.goBack()} />
+          <DefaultScreenHeader
+            title="Map"
+            onPress={() => navigation.goBack()}
+          />
         ),
       }),
     },

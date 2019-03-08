@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import CustomButton from '../../../components/UI/CustomButton'
+import DefaultButton from '../../../components/UI/DefaultButton'
 
 const DestinationButton = props => {
   return (
-    <CustomButton
+    <DefaultButton
       onPress={() => props.toSearchView('DESTINATION')}
       text="Destination"
       iconRight="arrow-forward"

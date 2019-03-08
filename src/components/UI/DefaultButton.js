@@ -4,7 +4,7 @@ import {StyleSheet} from 'react-native'
 import {Button, Icon, Text} from 'native-base'
 import {DARK_COLOR, LIGHT_COLOR, LIGHT_GREY_COLOR} from './colors'
 
-const CustomButton = props => {
+const DefaultButton = props => {
   const styles = StyleSheet.create({
     button: {
       justifyContent: 'center',
@@ -70,7 +70,7 @@ const CustomButton = props => {
   )
 }
 
-CustomButton.propTypes = {
+DefaultButton.propTypes = {
   disabled: PropTypes.bool,
   fullWidth: PropTypes.bool,
   iconLeft: PropTypes.string,
@@ -80,4 +80,4 @@ CustomButton.propTypes = {
   text: PropTypes.string,
 }
 
-export default CustomButton
+export default DefaultButton

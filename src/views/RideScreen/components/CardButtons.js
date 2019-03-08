@@ -1,20 +1,20 @@
 import React from 'react'
 import {StyleSheet, View} from 'react-native'
-import CustomCardButtonWithIcon from '../../../components/UI/CustomCardButtonWithIcon'
+import DefaultCardButtonWithIcon from '../../../components/UI/DefaultCardButtonWithIcon'
 
 const CardButtons = props => {
   return (
     <>
       <View style={styles.cardButtonsRow}>
         <View style={styles.accountButton}>
-          <CustomCardButtonWithIcon
+          <DefaultCardButtonWithIcon
             title="Account"
             icon="md-person"
             onPress={() => props.navigation.push('Account')}
           />
         </View>
         <View style={styles.funfactsButton}>
-          <CustomCardButtonWithIcon
+          <DefaultCardButtonWithIcon
             title="Fun Facts"
             icon="star"
             onPress={() => props.navigation.push('Funfacts')}
@@ -22,7 +22,7 @@ const CardButtons = props => {
         </View>
       </View>
       <View>
-        <CustomCardButtonWithIcon
+        <DefaultCardButtonWithIcon
           title="Map"
           icon="map"
           onPress={() => props.navigation.push('InRideMap')}

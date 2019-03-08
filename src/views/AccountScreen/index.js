@@ -21,7 +21,7 @@ import {
 import PropTypes from 'prop-types'
 import {fetchAccountData} from '../../ducks/account'
 import {logout} from '../../lib/api'
-import CustomButton from '../../components/UI/CustomButton'
+import DefaultButton from '../../components/UI/DefaultButton'
 import {
   CO2SavingsIcon,
   LoyaltyPointsIcon,
@@ -179,7 +179,7 @@ class Account extends React.Component {
 
             <DefaultListItem
               bodyElement={
-                <CustomButton text="Log out" onPress={this.logout} fullWidth />
+                <DefaultButton text="Log out" onPress={this.logout} fullWidth />
               }
             />
           </List>

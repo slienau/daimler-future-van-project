@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import CustomButton from '../../../components/UI/CustomButton'
+import DefaultButton from '../../../components/UI/DefaultButton'
 import {fetchRoutes} from '../../../ducks/map'
 import {Toast} from 'native-base'
 import {defaultDangerToast} from '../../../lib/toasts'
@@ -19,7 +19,7 @@ const SearchRoutesButton = props => {
   }
 
   return (
-    <CustomButton
+    <DefaultButton
       onPress={() => fetchRoutes()}
       disabled={!props.userDestinationLocation || !props.userStartLocation}
       text="Search Route"

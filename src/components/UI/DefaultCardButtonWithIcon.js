@@ -4,7 +4,7 @@ import {StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
 import {DARK_COLOR, LIGHT_COLOR} from './colors'
 
-const CustomCardButtonWithIcon = props => {
+const DefaultCardButtonWithIcon = props => {
   return (
     <Card transparent>
       <CardItem button onPress={props.onPress} style={styles.cardItem}>
@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
   },
 })
 
-CustomCardButtonWithIcon.propTypes = {
+DefaultCardButtonWithIcon.propTypes = {
   icon: PropTypes.string,
   onPress: PropTypes.func,
   title: PropTypes.string,
 }
 
-export default CustomCardButtonWithIcon
+export default DefaultCardButtonWithIcon

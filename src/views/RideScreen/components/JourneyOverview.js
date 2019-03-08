@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import _ from 'lodash'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import CustomListItemHeader from '../../../components/UI/CustomListItemHeader'
+import DefaultListItemHeader from '../../../components/UI/DefaultListItemHeader'
 
 const JourneyOverview = props => {
   const userArrivalTime = moment(
@@ -16,7 +16,7 @@ const JourneyOverview = props => {
 
   return (
     <>
-      <CustomListItemHeader title="Journey Overview" />
+      <DefaultListItemHeader title="Journey Overview" />
       <JourneyListItem
         description="Time of arrival at destination"
         iconColor="darkgreen"

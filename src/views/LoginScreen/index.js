@@ -8,7 +8,7 @@ import {
   Animated,
 } from 'react-native'
 import {login} from '../../lib/api'
-import CustomButton from '../../components/UI/CustomButton'
+import DefaultButton from '../../components/UI/DefaultButton'
 import HeadingText from '../../components/UI/HeadingText'
 import backgroundImage from './assets/login_background.jpg'
 import {DARK_COLOR, GREY_COLOR} from '../../components/UI/colors'
@@ -115,7 +115,7 @@ class LoginScreen extends React.Component {
                 ],
               }}>
               <View style={styles.buttonContainer}>
-                <CustomButton text="Login" onPress={this.login} />
+                <DefaultButton text="Login" onPress={this.login} />
               </View>
             </Animated.View>
           </Content>

@@ -16,7 +16,7 @@ import {
 } from '../StyledComponents'
 import _ from 'lodash'
 import React from 'react'
-import CustomButton from '../../../../components/UI/CustomButton'
+import DefaultButton from '../../../../components/UI/DefaultButton'
 
 class StartWalkCardLarge extends React.Component {
   componentDidMount() {
@@ -66,7 +66,7 @@ class StartWalkCardLarge extends React.Component {
             </ViewCentered>
           </Body>
           <Right>
-            <CustomButton
+            <DefaultButton
               text="Hop On"
               onPress={() => this.props.onEnterVanPress()}
               disabled={
