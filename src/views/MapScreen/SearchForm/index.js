@@ -21,7 +21,7 @@ const SearchForm = props => {
   const calculateDuration = () => {
     if (!props.routeInfo) return
 
-    const arrival = _.get(props.routeInfo, 'userETAatUserDestinationLocation')
+    const arrival = _.get(props.routeInfo, 'userArrivalTime')
     const start = moment()
     const end = moment(arrival)
     const diff = end.diff(start) // diff in milliseconds
@@ -32,7 +32,7 @@ const SearchForm = props => {
   const calculateWaitingTime = () => {
     if (!props.routeInfo) return
 
-    const departure = _.get(props.routeInfo, 'vanETAatStartVBS')
+    const departure = _.get(props.routeInfo, 'vanDepartureTime')
     const start = moment()
     const end = moment(departure)
     return start.to(end)
@@ -62,12 +62,10 @@ const SearchForm = props => {
         <RouteSearched
           startText={startText}
           destinationText={destinationText}
-          departureTime={formatTime(_.get(props.routeInfo, 'vanETAatStartVBS'))}
+          departureTime={formatTime(_.get(props.routeInfo, 'vanDepartureTime'))}
           waitingTime={calculateWaitingTime()}
           durationTime={calculateDuration()}
-          arrivalTime={formatTime(
-            _.get(props.routeInfo, 'userETAatUserDestinationLocation')
-          )}
+          arrivalTime={formatTime(_.get(props.routeInfo, 'userArrivalTime'))}
         />
       )
       break

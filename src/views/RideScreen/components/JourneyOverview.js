@@ -7,8 +7,8 @@ import PropTypes from 'prop-types'
 import CustomListItemHeader from '../../../components/UI/CustomListItemHeader'
 
 const JourneyOverview = props => {
-  const userETAatUserDestinationLocation = moment(
-    _.get(props.routeInfo, 'userETAatUserDestinationLocation')
+  const userArrivalTime = moment(
+    _.get(props.routeInfo, 'userArrivalTime')
   ).format('LT')
 
   const loyaltyPoints =
@@ -21,7 +21,7 @@ const JourneyOverview = props => {
         description="Time of arrival at destination"
         iconColor="darkgreen"
         iconName="flag"
-        info={userETAatUserDestinationLocation}
+        info={userArrivalTime}
       />
       <JourneyListItem
         description="Total distance"

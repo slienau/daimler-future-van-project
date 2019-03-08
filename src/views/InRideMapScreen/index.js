@@ -42,7 +42,7 @@ const InRideMapScreen = props => {
   if (props.activeOrderStatus) {
     topMessage =
       'Van will arrive ' +
-      moment(_.get(props.routeInfo, 'vanETAatEndVBS')).fromNow()
+      moment(_.get(props.routeInfo, 'vanArrivalTime')).fromNow()
   }
   if (_.get(props.activeOrderStatus, 'userAllowedToExit')) {
     topMessage = 'Van has arrived. Please exit.'

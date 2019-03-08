@@ -14,7 +14,7 @@ const RouteInfo = props => {
   const parseDeparture = () => {
     if (!props.routeInfo) return
 
-    const departure = _.get(props.routeInfo, 'vanETAatStartVBS')
+    const departure = _.get(props.routeInfo, 'vanDepartureTime')
     const date = moment(departure)
     return date.format('HH:mm')
   }
@@ -22,7 +22,7 @@ const RouteInfo = props => {
   const parseArrival = () => {
     if (!props.routeInfo) return
 
-    const arrival = _.get(props.routeInfo, 'vanETAatEndVBS')
+    const arrival = _.get(props.routeInfo, 'vanArrivalTime')
     const date = moment(arrival)
     return date.format('HH:mm')
   }
@@ -30,7 +30,7 @@ const RouteInfo = props => {
   const parseDestinationTime = () => {
     if (!props.routeInfo) return
 
-    const destTime = _.get(props.routeInfo, 'userETAatUserDestinationLocation')
+    const destTime = _.get(props.routeInfo, 'userArrivalTime')
     const date = moment(destTime)
     return date.format('HH:mm')
   }
@@ -38,7 +38,7 @@ const RouteInfo = props => {
   const calculateWaitingTime = () => {
     if (!props.routeInfo) return
 
-    const departure = _.get(props.routeInfo, 'vanETAatStartVBS')
+    const departure = _.get(props.routeInfo, 'vanDepartureTime')
     const start = moment()
     const end = moment(departure)
     return start.to(end)

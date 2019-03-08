@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import moment from '../ducks/account'
+import moment from 'moment'
 
 // from: https://github.com/react-native-community/react-native-maps/issues/505#issuecomment-243423775
 // expects a list of two coordinate objects and returns a region as specified by the react-native-maps components

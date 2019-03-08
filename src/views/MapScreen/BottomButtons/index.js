@@ -86,7 +86,7 @@ class BottomButtons extends React.Component {
               //   message: 'Your van will arrive at the exit point in a minute',
               //   date: new Date(
               //     new Date(
-              //       _.get(this.props.routeInfo, 'vanETAatEndVBS')
+              //       _.get(this.props.routeInfo, 'vanArrivalTime')
               //     ).getTime() -
               //       60 * 1000
               //   ),
@@ -95,7 +95,7 @@ class BottomButtons extends React.Component {
               //   message: 'Your van is at the start point in a minute',
               //   date: new Date(
               //     new Date(
-              //       _.get(this.props.routeInfo, 'vanETAatStartVBS')
+              //       _.get(this.props.routeInfo, 'vanDepartureTime')
               //     ).getTime() -
               //       60 * 1000
               //   ),

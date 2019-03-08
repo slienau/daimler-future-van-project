@@ -1,5 +1,6 @@
 import api from '../lib/api'
 import _ from 'lodash'
+import moment from 'moment'
 
 export const SET_USER_START_LOCATION = 'map/SET_USER_START_LOCATION'
 export const SET_USER_DESTINATION_LOCATION = 'map/SET_USER_DESTINATION_LOCATION'
@@ -37,13 +38,14 @@ const initialState = {
     toDestinationRoute: null,
     toStartRoute: null,
     vanRoute: null,
-    vanETAatStartVBS: null,
-    vanETAatEndVBS: null,
-    userETAatUserDestinationLocation: null,
+    vanDepartureTime: null,
+    vanArrivalTime: null,
     validUntil: null,
     vanId: null,
-    guaranteedArrivalTimeAtEndVBS: null,
-    latestArrivalTimeAtUserDestinationLocation: null,
+    guaranteedVanArrivalTime: null,
+    toDestinationWalkingTime: null,
+    userArrivalTime: null,
+    guaranteedUserArrivalTime: null,
   },
   visibleCoordinates: [],
   edgePadding: {top: 0.2, right: 0.1, left: 0.1, bottom: 0.2},
@@ -53,6 +55,24 @@ const initialState = {
 }
 
 const getUpdatedRouteInfoObject = (input, oldState) => {
+  const _toDestinationWalkingTime = _.get(
+    input,
+    'toDestinationWalkingTime',
+    oldState.toDestinationWalkingTime
+  )
+
+  const _vanArrivalTime = _.get(
+    input,
+    'vanArrivalTime',
+    oldState.vanArrivalTime
+  )
+
+  const _guaranteedVanArrivalTime = _.get(
+    input,
+    'guaranteedVanArrivalTime',
+    oldState.guaranteedVanArrivalTime
+  )
+
   return {
     id: _.get(input, 'id', oldState.id),
     vanStartVBS: _.get(input, 'vanStartVBS', oldState.vanStartVBS),
@@ -64,28 +84,23 @@ const getUpdatedRouteInfoObject = (input, oldState) => {
     ),
     toStartRoute: _.get(input, 'toStartRoute', oldState.toStartRoute),
     vanRoute: _.get(input, 'vanRoute', oldState.vanRoute),
-    userETAatUserDestinationLocation: _.get(
+    vanDepartureTime: _.get(
       input,
-      'userETAatUserDestinationLocation',
-      oldState.userETAatUserDestinationLocation
+      'vanDepartureTime',
+      oldState.vanDepartureTime
     ),
-    vanETAatStartVBS: _.get(
-      input,
-      'vanETAatStartVBS',
-      oldState.vanETAatStartVBS
-    ),
-    vanETAatEndVBS: _.get(input, 'vanETAatEndVBS', oldState.vanETAatEndVBS),
+    vanArrivalTime: _vanArrivalTime,
     validUntil: _.get(input, 'validUntil', oldState.validUntil),
     vanId: _.get(input, 'vanId', oldState.vanId),
-    guaranteedArrivalTimeAtEndVBS: _.get(
-      input,
-      'guaranteedArrivalTimeAtEndVBS',
-      oldState.guaranteedArrivalTimeAtEndVBS
+    guaranteedVanArrivalTime: _guaranteedVanArrivalTime,
+    toDestinationWalkingTime: _toDestinationWalkingTime,
+    userArrivalTime: moment(_vanArrivalTime).add(
+      _toDestinationWalkingTime,
+      's'
     ),
-    latestArrivalTimeAtUserDestinationLocation: _.get(
-      input,
-      'latestArrivalTimeAtUserDestinationLocation',
-      oldState.latestArrivalTimeAtUserDestinationLocation
+    guaranteedUserArrivalTime: moment(_guaranteedVanArrivalTime).add(
+      _toDestinationWalkingTime,
+      's'
     ),
   }
 }

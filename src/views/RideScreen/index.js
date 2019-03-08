@@ -28,7 +28,7 @@ const RideScreen = props => {
   if (props.activeOrderStatus)
     remainingTimeMessage =
       'Van will arrive ' +
-      moment(_.get(props.routeInfo, 'vanETAatEndVBS')).fromNow()
+      moment(_.get(props.routeInfo, 'vanArrivalTime')).fromNow()
 
   let topContent = (
     <View style={[styles.topMessageContainer, styles.topContentContainer]}>

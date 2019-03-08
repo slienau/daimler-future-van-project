@@ -12,21 +12,21 @@ const OrderInfo = props => {
   const parseDeparture = () => {
     if (!props.routeInfo) return
 
-    const departure = _.get(props.routeInfo, 'vanETAatStartVBS')
+    const departure = _.get(props.routeInfo, 'vanDepartureTime')
     const date = moment(departure)
     return date.format('HH:mm')
   }
 
   const parseDestArrival = () => {
     if (!props.activeOrder) return
-    const arrival = _.get(props.routeInfo, 'userETAatUserDestinationLocation')
+    const arrival = _.get(props.routeInfo, 'userArrivalTime')
     return moment(arrival).format('HH:mm')
   }
 
   // const parseArrival = () => {
   //   if (!props.routeInfo) return
 
-  //   const arrival = _.get(props.routeInfo, 'vanETAatEndVBS')
+  //   const arrival = _.get(props.routeInfo, 'vanArrivalTime')
   //   const date = moment(arrival)
   //   return date.format('HH:mm')
   // }
@@ -34,7 +34,7 @@ const OrderInfo = props => {
   const calculateWaitingTime = () => {
     if (!props.routeInfo) return
 
-    const departure = _.get(props.routeInfo, 'vanETAatStartVBS')
+    const departure = _.get(props.routeInfo, 'vanDepartureTime')
     const start = moment()
     const end = moment(departure)
     return start.to(end)

@@ -16,13 +16,13 @@ const initialState = {
 export default function account(state = initialState, action) {
   switch (action.type) {
     case SET_PAST_ORDERS:
-      const orders = _.uniqBy(
+      const pastOrders = _.uniqBy(
         [].concat(state.pastOrders, action.payload.map(momentifyOrder)),
         'id'
       ).map(order => fixNumbers(cleanOrderObject(order)))
       return {
         ...state,
-        pastOrders: _.filter(orders, ['active', false]),
+        pastOrders: pastOrders,
       }
     case SET_ACCOUNT_DATA:
       return {
