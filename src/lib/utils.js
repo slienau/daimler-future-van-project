@@ -29,3 +29,21 @@ export const firstLetterToUppercase = inputString => {
   if (!_.isString(inputString)) return ''
   return inputString.charAt(0).toUpperCase() + inputString.slice(1)
 }
+
+export function fixNumbers(order) {
+  if (!order) return order
+  if (_.isNumber(order.co2savings))
+    order.co2savings = order.co2savings.toFixed(2)
+  if (_.isNumber(order.distance)) order.distance = order.distance.toFixed(2)
+  if (_.isNumber(order.loyaltyPoints))
+    order.loyaltyPoints = order.loyaltyPoints.toFixed(0)
+  return order
+}
+
+export function cleanOrderObject(order) {
+  return {
+    ...order,
+    route: undefined,
+    accountId: undefined,
+  }
+}

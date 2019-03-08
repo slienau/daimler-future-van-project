@@ -8,7 +8,8 @@ import {
   RESET_MAP_STATE,
 } from './map'
 
-export const SET_PAST_ORDERS = 'orders/SET_PAST_ORDERS'
+import {fixNumbers, cleanOrderObject} from '../lib/utils'
+
 export const SET_ACTIVE_ORDER = 'orders/SET_ACTIVE_ORDER'
 export const SET_ACTIVE_ORDER_STATUS = 'orders/SET_ACTIVE_ORDER_STATUS'
 export const END_RIDE = 'orders/END_RIDE'
@@ -17,7 +18,6 @@ export const START_RIDE = 'orders/START_RIDE'
 const initialState = {
   activeOrder: null,
   activeOrderStatus: null,
-  pastOrders: [],
 }
 
 function momentifyOrder(order) {
@@ -33,36 +33,9 @@ function momentifyOrder(order) {
   return Object.assign({}, order, ...moments)
 }
 
-function fixNumbers(order) {
-  if (!order) return order
-  if (_.isNumber(order.co2savings))
-    order.co2savings = order.co2savings.toFixed(2)
-  if (_.isNumber(order.distance)) order.distance = order.distance.toFixed(2)
-  if (_.isNumber(order.loyaltyPoints))
-    order.loyaltyPoints = order.loyaltyPoints.toFixed(0)
-  return order
-}
-
-function cleanOrderObject(order) {
-  return {
-    ...order,
-    route: undefined,
-    accountId: undefined,
-  }
-}
-
 // reducers (pure functions, no side-effects!)
 export default function orders(state = initialState, action) {
   switch (action.type) {
-    case SET_PAST_ORDERS:
-      const orders = _.uniqBy(
-        [].concat(state.pastOrders, action.payload.map(momentifyOrder)),
-        'id'
-      ).map(order => fixNumbers(cleanOrderObject(order)))
-      return {
-        ...state,
-        pastOrders: _.filter(orders, ['active', false]),
-      }
     case SET_ACTIVE_ORDER:
       return {
         ...state,
@@ -81,19 +54,6 @@ export default function orders(state = initialState, action) {
 }
 
 // actions (can cause side-effects)
-export function fetchOrders() {
-  return async dispatch => {
-    const {data} = await api.get('/orders')
-    const activeOrder = _.find(data, 'active') || null
-    if (activeOrder) dispatch(onSetActiveOrder(activeOrder))
-    const pastOrders = _.filter(data, ['active', false])
-    dispatch({
-      type: SET_PAST_ORDERS,
-      payload: pastOrders,
-    })
-  }
-}
-
 const onSetActiveOrder = data => {
   return dispatch => {
     dispatch({

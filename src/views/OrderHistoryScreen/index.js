@@ -11,7 +11,7 @@ import {
   Toast,
 } from 'native-base'
 import styled from 'styled-components/native'
-import {fetchOrders} from '../../ducks/orders'
+import {fetchPastOrders} from '../../ducks/account'
 import OrderHistoryListItem from './components/OrderHistoryListItem'
 import {defaultDangerToast} from '../../lib/toasts'
 
@@ -77,13 +77,13 @@ class OrderHistoryScreen extends Component {
 
 const mapStateToProps = state => {
   return {
-    pastOrders: state.orders.pastOrders,
+    pastOrders: state.account.pastOrders,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    onFetchOrders: () => dispatch(fetchOrders()),
+    onFetchOrders: () => dispatch(fetchPastOrders()),
   }
 }
 
