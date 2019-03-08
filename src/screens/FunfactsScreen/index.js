@@ -97,11 +97,9 @@ FunfactsScreen.propTypes = {
   routeInfo: PropTypes.object,
 }
 
-const mapStateToProps = state => {
+export default connect(state => {
   return {
     activeOrder: state.orders.activeOrder,
     routeInfo: state.map.routeInfo,
   }
-}
-
-export default connect(mapStateToProps)(FunfactsScreen)
+})(FunfactsScreen)

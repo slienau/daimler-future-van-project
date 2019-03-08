@@ -91,25 +91,21 @@ SearchForm.propTypes = {
   userStartLocation: PropTypes.object,
 }
 
-const mapStateToProps = state => {
-  return {
-    personCount: state.map.personCount,
-    orderState: state.map.orderState,
-    routeInfo: state.map.routeInfo,
-    userStartLocation: state.map.userStartLocation,
-    userDestinationLocation: state.map.userDestinationLocation,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    swapJourneyStartAndDestination: () =>
-      dispatch(swapJourneyStartAndDestination()),
-    setPersonCount: persons => dispatch(setPersonCount(persons)),
-  }
-}
-
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  state => {
+    return {
+      personCount: state.map.personCount,
+      orderState: state.map.orderState,
+      routeInfo: state.map.routeInfo,
+      userStartLocation: state.map.userStartLocation,
+      userDestinationLocation: state.map.userDestinationLocation,
+    }
+  },
+  dispatch => {
+    return {
+      swapJourneyStartAndDestination: () =>
+        dispatch(swapJourneyStartAndDestination()),
+      setPersonCount: persons => dispatch(setPersonCount(persons)),
+    }
+  }
 )(SearchForm)

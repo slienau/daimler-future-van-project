@@ -75,24 +75,20 @@ class OrderHistoryScreen extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    pastOrders: state.account.pastOrders,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    onFetchOrders: () => dispatch(fetchPastOrders()),
-  }
-}
-
 OrderHistoryScreen.propTypes = {
   onFetchOrders: PropTypes.func,
   pastOrders: PropTypes.array,
 }
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  state => {
+    return {
+      pastOrders: state.account.pastOrders,
+    }
+  },
+  dispatch => {
+    return {
+      onFetchOrders: () => dispatch(fetchPastOrders()),
+    }
+  }
 )(OrderHistoryScreen)

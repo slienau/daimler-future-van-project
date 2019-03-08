@@ -47,23 +47,20 @@ class LeaderboardScreen extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    leaders: state.account.leaders,
-  }
-}
-const mapDispatchToProps = dispatch => {
-  return {
-    onFetchLeaderBoardData: () => dispatch(fetchLeaderBoardData()),
-  }
-}
-
 LeaderboardScreen.propTypes = {
   leaders: PropTypes.array,
   onFetchLeaderBoardData: PropTypes.func,
 }
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  state => {
+    return {
+      leaders: state.account.leaders,
+    }
+  },
+  dispatch => {
+    return {
+      onFetchLeaderBoardData: () => dispatch(fetchLeaderBoardData()),
+    }
+  }
 )(LeaderboardScreen)

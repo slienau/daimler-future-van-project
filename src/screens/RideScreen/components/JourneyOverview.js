@@ -55,12 +55,10 @@ JourneyOverview.propTypes = {
   routeInfo: PropTypes.object,
 }
 
-const mapStateToProps = state => {
+export default connect(state => {
   return {
     activeOrder: state.orders.activeOrder,
     activeOrderStatus: state.orders.activeOrderStatus,
     routeInfo: state.map.routeInfo,
   }
-}
-
-export default connect(mapStateToProps)(JourneyOverview)
+})(JourneyOverview)

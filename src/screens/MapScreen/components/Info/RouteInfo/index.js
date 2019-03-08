@@ -154,20 +154,6 @@ const RouteInfo = props => {
   )
 }
 
-const mapStateToProps = state => {
-  return {
-    map: state.map,
-    routeInfo: state.map.routeInfo,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    setVisibleCoordinates: (coords, edgePadding) =>
-      dispatch(setVisibleCoordinates(coords, edgePadding)),
-  }
-}
-
 RouteInfo.propTypes = {
   map: PropTypes.object,
   routeInfo: PropTypes.object,
@@ -175,6 +161,16 @@ RouteInfo.propTypes = {
 }
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  state => {
+    return {
+      map: state.map,
+      routeInfo: state.map.routeInfo,
+    }
+  },
+  dispatch => {
+    return {
+      setVisibleCoordinates: (coords, edgePadding) =>
+        dispatch(setVisibleCoordinates(coords, edgePadding)),
+    }
+  }
 )(RouteInfo)
