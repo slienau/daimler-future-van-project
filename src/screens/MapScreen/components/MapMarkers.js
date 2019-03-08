@@ -1,9 +1,9 @@
 import React from 'react'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
-import MapMarker from '../../components/MapMarker'
+import MapMarker from '../../../components/MapMarker'
 import {connect} from 'react-redux'
-import {MapState} from '../../ducks/map'
+import {MapState} from '../../../ducks/map'
 
 const MapMarkers = props => {
   return (

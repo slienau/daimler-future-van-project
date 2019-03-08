@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import {cancelActiveOrder} from '../../../ducks/orders'
+import {cancelActiveOrder} from '../../../../ducks/orders'
 import {Alert, StyleSheet} from 'react-native'
 // import PushNotification from 'react-native-push-notification'
 import {Toast} from 'native-base'
-import {defaultDangerToast, defaultSuccessToast} from '../../../lib/toasts'
-import DefaultIconButton from '../../../components/UI/DefaultIconButton'
+import {defaultDangerToast, defaultSuccessToast} from '../../../../lib/toasts'
+import DefaultIconButton from '../../../../components/UI/DefaultIconButton'
 
 const CancelOrderButton = props => {
   const cancelActiveOrder = async () => {

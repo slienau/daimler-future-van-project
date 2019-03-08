@@ -1,10 +1,10 @@
 import React from 'react'
 import _ from 'lodash'
-import MapEncodedPolyline from '../../components/MapEncodedPolyline'
+import MapEncodedPolyline from './MapEncodedPolyline'
 import {Polyline} from 'react-native-maps'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import {MapState} from '../../ducks/map'
+import {MapState} from '../../../ducks/map'
 
 const Routes = props => {
   if (!props.routeInfo.toStartRoute || !props.routeInfo.toDestinationRoute)

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import DefaultButton from '../../../components/UI/DefaultButton'
+import DefaultButton from '../../../../components/UI/DefaultButton'
 
 const BackButton = props => {
   return <DefaultButton onPress={props.onPress} iconLeft="arrow-back" />

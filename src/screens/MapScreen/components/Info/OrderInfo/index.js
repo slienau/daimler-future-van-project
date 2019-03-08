@@ -6,7 +6,7 @@ import moment from 'moment'
 import StartWalkCardLarge from './StartWalkCardLarge'
 import DestinationWalkCardLarge from './DestinationWalkCardLarge'
 import {StyledOrderInfo} from '../StyledComponents'
-import {setVisibleCoordinates, MapState} from '../../../../ducks/map'
+import {setVisibleCoordinates, MapState} from '../../../../../ducks/map'
 
 const OrderInfo = props => {
   const parseDeparture = () => {

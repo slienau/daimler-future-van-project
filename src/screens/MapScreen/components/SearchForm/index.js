@@ -5,7 +5,7 @@ import {
   MapState,
   swapJourneyStartAndDestination,
   setPersonCount,
-} from '../../../ducks/map'
+} from '../../../../ducks/map'
 import {StyledSearchForm, StyledCard} from './StyledComponents'
 import RouteSearched from './RouteSearched'
 import SearchRoutes from './SearchRoutes'

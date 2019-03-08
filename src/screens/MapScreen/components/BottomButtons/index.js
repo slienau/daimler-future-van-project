@@ -5,20 +5,20 @@ import {
   resetMapState,
   fetchRoutes,
   setVisibleCoordinates,
-} from '../../../ducks/map'
+} from '../../../../ducks/map'
 import {connect} from 'react-redux'
 import DestinationButton from './DestinationButton'
 import BackButton from './BackButton'
 import SearchRoutesButton from './SearchRoutesButton'
 import PlaceOrderButton from './PlaceOrderButton'
 import ClearRoutesButton from './ClearRoutesButton'
-import {placeOrder} from '../../../ducks/orders'
+import {placeOrder} from '../../../../ducks/orders'
 import {Alert, StyleSheet, View} from 'react-native'
 import {Toast} from 'native-base'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 // import PushNotification from 'react-native-push-notification'
-import {defaultDangerToast, defaultSuccessToast} from '../../../lib/toasts'
+import {defaultDangerToast, defaultSuccessToast} from '../../../../lib/toasts'
 
 class BottomButtons extends React.Component {
   state = {

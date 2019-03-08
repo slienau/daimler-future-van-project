@@ -10,7 +10,7 @@ import {
   StyledNumericInput,
   IconBlack,
 } from './StyledComponents'
-import {DARK_COLOR, LIGHT_COLOR} from '../../../components/UI/colors'
+import {DARK_COLOR, LIGHT_COLOR} from '../../../../components/UI/colors'
 
 const SearchRoutes = props => {
   return (

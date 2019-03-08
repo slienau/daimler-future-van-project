@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import DefaultIconButton from '../../../components/UI/DefaultIconButton'
+import DefaultIconButton from '../../../../components/UI/DefaultIconButton'
 import {StyleSheet} from 'react-native'
 
 const CurrentLocationButton = props => {

@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import DefaultButton from '../../../components/UI/DefaultButton'
-import {fetchRoutes} from '../../../ducks/map'
+import DefaultButton from '../../../../components/UI/DefaultButton'
+import {fetchRoutes} from '../../../../ducks/map'
 import {Toast} from 'native-base'
-import {defaultDangerToast} from '../../../lib/toasts'
+import {defaultDangerToast} from '../../../../lib/toasts'
 
 const SearchRoutesButton = props => {
   const fetchRoutes = async () => {

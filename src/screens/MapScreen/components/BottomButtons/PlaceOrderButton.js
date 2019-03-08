@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {ProgressButton} from 'react-native-progress-button'
-import {DARK_COLOR} from '../../../components/UI/colors'
+import {DARK_COLOR} from '../../../../components/UI/colors'
 
 const PlaceOrderButton = props => {
   const isRefresh = props.routeExpireProgress === 0

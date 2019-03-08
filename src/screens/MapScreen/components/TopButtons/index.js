@@ -4,7 +4,7 @@ import AccountButton from './AccountButton'
 import CurrentLocationButton from './CurrentLocationButton'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
-import {MapState} from '../../../ducks/map'
+import {MapState} from '../../../../ducks/map'
 import CancelOrderButton from './CancelOrderButton'
 
 const TopButtons = props => {

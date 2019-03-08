@@ -8,7 +8,7 @@ import StartWalkCard from './StartWalkCard'
 import VanRideCard from './VanRideCard'
 import DestinationWalkCard from './DestinationWalkCard'
 import {StyledRouteInfo} from '../StyledComponents'
-import {setVisibleCoordinates} from '../../../../ducks/map'
+import {setVisibleCoordinates} from '../../../../../ducks/map'
 
 const RouteInfo = props => {
   const parseDeparture = () => {

@@ -2,10 +2,10 @@ import React from 'react'
 import styled from 'styled-components/native'
 import MapView from 'react-native-maps'
 import PropTypes from 'prop-types'
-import SearchForm from './SearchForm'
-import BottomButtons from './BottomButtons'
-import Routes from './Routes'
-import MapMarkers from './MapMarkers'
+import SearchForm from './components/SearchForm'
+import BottomButtons from './components/BottomButtons'
+import Routes from './components/Routes'
+import MapMarkers from './components/MapMarkers'
 import {connect} from 'react-redux'
 import {Toast, Container} from 'native-base'
 import {Dimensions, View, StyleSheet} from 'react-native'
@@ -24,11 +24,11 @@ import {
   startRide,
   setActiveOrderStatus,
 } from '../../ducks/orders'
-import Info from './Info'
+import Info from './components/Info'
 import {defaultMapRegion} from '../../lib/config'
 import api from '../../lib/api'
 import {defaultDangerToast, defaultToast} from '../../lib/toasts'
-import TopButtons from './TopButtons'
+import TopButtons from './components/TopButtons'
 
 class MapScreen extends React.Component {
   componentDidMount() {

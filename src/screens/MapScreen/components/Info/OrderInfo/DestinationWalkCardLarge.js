@@ -12,8 +12,8 @@ import {
 import React from 'react'
 import geolib from 'geolib'
 import {connect} from 'react-redux'
-import {resetMapState} from '../../../../ducks/map'
-import DefaultButton from '../../../../components/UI/DefaultButton'
+import {resetMapState} from '../../../../../ducks/map'
+import DefaultButton from '../../../../../components/UI/DefaultButton'
 
 class DestinationWalkCardLarge extends React.Component {
   componentDidMount() {

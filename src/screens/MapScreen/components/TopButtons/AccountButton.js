@@ -1,7 +1,7 @@
 import React from 'react'
 import {StyleSheet} from 'react-native'
 import PropTypes from 'prop-types'
-import DefaultIconButton from '../../../components/UI/DefaultIconButton'
+import DefaultIconButton from '../../../../components/UI/DefaultIconButton'
 
 const AccountButton = props => {
   return (

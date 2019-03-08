@@ -16,7 +16,7 @@ import {
 } from '../StyledComponents'
 import _ from 'lodash'
 import React from 'react'
-import DefaultButton from '../../../../components/UI/DefaultButton'
+import DefaultButton from '../../../../../components/UI/DefaultButton'
 
 class StartWalkCardLarge extends React.Component {
   componentDidMount() {

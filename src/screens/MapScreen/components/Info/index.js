@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {MapState} from '../../../ducks/map'
+import {MapState} from '../../../../ducks/map'
 import {connect} from 'react-redux'
 import OrderInfo from './OrderInfo'
 import RouteInfo from './RouteInfo'
