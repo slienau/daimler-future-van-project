@@ -1,5 +1,4 @@
 import api from '../lib/api'
-import moment from 'moment'
 import _ from 'lodash'
 import {
   changeMapState,
@@ -8,7 +7,7 @@ import {
   RESET_MAP_STATE,
 } from './map'
 
-import {fixNumbers, cleanOrderObject} from '../lib/utils'
+import {fixNumbers, cleanOrderObject, momentifyOrder} from '../lib/utils'
 
 export const SET_ACTIVE_ORDER = 'orders/SET_ACTIVE_ORDER'
 export const SET_ACTIVE_ORDER_STATUS = 'orders/SET_ACTIVE_ORDER_STATUS'
@@ -18,19 +17,6 @@ export const START_RIDE = 'orders/START_RIDE'
 const initialState = {
   activeOrder: null,
   activeOrderStatus: null,
-}
-
-function momentifyOrder(order) {
-  if (!order) return order
-  const moments = _.compact(
-    ['orderTime', 'vanEnterTime', 'vanExitTime'].map(t => {
-      if (!order[t]) return null
-      return {
-        [t]: moment(order[t]),
-      }
-    })
-  )
-  return Object.assign({}, order, ...moments)
 }
 
 // reducers (pure functions, no side-effects!)

@@ -1,7 +1,6 @@
 import api from '../lib/api'
 import _ from 'lodash'
-import moment from 'moment'
-import {fixNumbers, cleanOrderObject} from '../lib/utils'
+import {fixNumbers, cleanOrderObject, momentifyOrder} from '../lib/utils'
 
 export const SET_ACCOUNT_DATA = 'account/SET_ACCOUNT_DATA'
 export const SET_LEADERBOARD_DATA = 'account/SET_LEADERBOARD_DATA'
@@ -11,19 +10,6 @@ const initialState = {
   address: {},
   leaders: [],
   pastOrders: [],
-}
-
-function momentifyOrder(order) {
-  if (!order) return order
-  const moments = _.compact(
-    ['orderTime', 'vanEnterTime', 'vanExitTime'].map(t => {
-      if (!order[t]) return null
-      return {
-        [t]: moment(order[t]),
-      }
-    })
-  )
-  return Object.assign({}, order, ...moments)
 }
 
 // reducers (pure functions, no side-effects!)

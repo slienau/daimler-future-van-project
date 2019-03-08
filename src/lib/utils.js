@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import moment from '../ducks/account'
 
 // from: https://github.com/react-native-community/react-native-maps/issues/505#issuecomment-243423775
 // expects a list of two coordinate objects and returns a region as specified by the react-native-maps components
@@ -30,7 +31,7 @@ export const firstLetterToUppercase = inputString => {
   return inputString.charAt(0).toUpperCase() + inputString.slice(1)
 }
 
-export function fixNumbers(order) {
+export const fixNumbers = order => {
   if (!order) return order
   if (_.isNumber(order.co2savings))
     order.co2savings = order.co2savings.toFixed(2)
@@ -40,10 +41,23 @@ export function fixNumbers(order) {
   return order
 }
 
-export function cleanOrderObject(order) {
+export const cleanOrderObject = order => {
   return {
     ...order,
     route: undefined,
     accountId: undefined,
   }
+}
+
+export const momentifyOrder = order => {
+  if (!order) return order
+  const moments = _.compact(
+    ['orderTime', 'vanEnterTime', 'vanExitTime'].map(t => {
+      if (!order[t]) return null
+      return {
+        [t]: moment(order[t]),
+      }
+    })
+  )
+  return Object.assign({}, order, ...moments)
 }
