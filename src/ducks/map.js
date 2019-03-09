@@ -1,10 +1,11 @@
 import api from '../lib/api'
 import _ from 'lodash'
+import moment from 'moment'
 
 export const SET_USER_START_LOCATION = 'map/SET_USER_START_LOCATION'
 export const SET_USER_DESTINATION_LOCATION = 'map/SET_USER_DESTINATION_LOCATION'
 export const SET_CURRENT_USER_LOCATION = 'map/SET_CURRENT_USER_LOCATION'
-export const CHANGE_MAP_STATE = 'map/CHANGE_MAP_STATE'
+export const CHANGE_ORDER_STATE = 'map/CHANGE_ORDER_STATE'
 export const SWAP_JOURNEY_START_AND_DESTINATION =
   'map/SWAP_JOURNEY_START_AND_DESTINATION'
 export const SET_VISIBLE_COORDINATES = 'map/SET_VISIBLE_COORDINATES'
@@ -16,7 +17,7 @@ export const CLEAR_ROUTES = 'map/CLEAR_ROUTES'
 export const RESET_MAP_STATE = 'map/RESET_MAP_STATE'
 export const UPDATE_ROUTE_INFO = 'map/UPDATE_ROUTE_INFO'
 
-export const MapState = {
+export const OrderState = {
   INIT: 'INIT', // the inital state of the map, where either start nor destination location are set
   SEARCH_ROUTES: 'SEARCH_ROUTES', // the state, when a destination is set, shows the SearchForm and the butto search for a route
   ROUTE_SEARCHED: 'ROUTE_SEARCHED', // when a route has been searched and we get a route from the backend, which we then can order
@@ -26,7 +27,7 @@ export const MapState = {
 }
 
 const initialState = {
-  mapState: MapState.INIT,
+  orderState: OrderState.INIT,
   userStartLocation: null, // {lat, lng, name, description}
   userDestinationLocation: null, // {lat, lng, name, description}
   currentUserLocation: null,
@@ -37,12 +38,14 @@ const initialState = {
     toDestinationRoute: null,
     toStartRoute: null,
     vanRoute: null,
-    vanETAatStartVBS: null,
-    vanETAatEndVBS: null,
-    userETAatUserDestinationLocation: null,
+    vanDepartureTime: null,
+    vanArrivalTime: null,
     validUntil: null,
     vanId: null,
-    guaranteedArrivalTime: null,
+    guaranteedVanArrivalTime: null,
+    toDestinationWalkingTime: null,
+    userArrivalTime: null,
+    guaranteedUserArrivalTime: null,
   },
   visibleCoordinates: [],
   edgePadding: {top: 0.2, right: 0.1, left: 0.1, bottom: 0.2},
@@ -52,6 +55,24 @@ const initialState = {
 }
 
 const getUpdatedRouteInfoObject = (input, oldState) => {
+  const _toDestinationWalkingTime = _.get(
+    input,
+    'toDestinationWalkingTime',
+    oldState.toDestinationWalkingTime
+  )
+
+  const _vanArrivalTime = _.get(
+    input,
+    'vanArrivalTime',
+    oldState.vanArrivalTime
+  )
+
+  const _guaranteedVanArrivalTime = _.get(
+    input,
+    'guaranteedVanArrivalTime',
+    oldState.guaranteedVanArrivalTime
+  )
+
   return {
     id: _.get(input, 'id', oldState.id),
     vanStartVBS: _.get(input, 'vanStartVBS', oldState.vanStartVBS),
@@ -63,23 +84,23 @@ const getUpdatedRouteInfoObject = (input, oldState) => {
     ),
     toStartRoute: _.get(input, 'toStartRoute', oldState.toStartRoute),
     vanRoute: _.get(input, 'vanRoute', oldState.vanRoute),
-    userETAatUserDestinationLocation: _.get(
+    vanDepartureTime: _.get(
       input,
-      'userETAatUserDestinationLocation',
-      oldState.userETAatUserDestinationLocation
+      'vanDepartureTime',
+      oldState.vanDepartureTime
     ),
-    vanETAatStartVBS: _.get(
-      input,
-      'vanETAatStartVBS',
-      oldState.vanETAatStartVBS
-    ),
-    vanETAatEndVBS: _.get(input, 'vanETAatEndVBS', oldState.vanETAatEndVBS),
+    vanArrivalTime: _vanArrivalTime,
     validUntil: _.get(input, 'validUntil', oldState.validUntil),
     vanId: _.get(input, 'vanId', oldState.vanId),
-    guaranteedArrivalTime: _.get(
-      input,
-      'guaranteedArrivalTime',
-      oldState.guaranteedArrivalTime
+    guaranteedVanArrivalTime: _guaranteedVanArrivalTime,
+    toDestinationWalkingTime: _toDestinationWalkingTime,
+    userArrivalTime: moment(_vanArrivalTime).add(
+      _toDestinationWalkingTime,
+      's'
+    ),
+    guaranteedUserArrivalTime: moment(_guaranteedVanArrivalTime).add(
+      _toDestinationWalkingTime,
+      's'
     ),
   }
 }
@@ -105,8 +126,8 @@ const map = (state = initialState, action) => {
     case CLEAR_ROUTES:
       newState.routeInfo = initialState.routeInfo
       return newState
-    case CHANGE_MAP_STATE:
-      newState.mapState = action.payload
+    case CHANGE_ORDER_STATE:
+      newState.orderState = action.payload
       return newState
     case SWAP_JOURNEY_START_AND_DESTINATION:
       newState.userStartLocation = state.userDestinationLocation
@@ -148,13 +169,13 @@ export const fetchRoutes = () => {
       type: UPDATE_ROUTE_INFO,
       payload: data[0],
     })
-    dispatch(changeMapState(MapState.ROUTE_SEARCHED))
+    dispatch(changeOrderState(OrderState.ROUTE_SEARCHED))
   }
 }
 
-export const changeMapState = payload => {
+export const changeOrderState = payload => {
   return {
-    type: CHANGE_MAP_STATE,
+    type: CHANGE_ORDER_STATE,
     payload: payload,
   }
 }
@@ -164,7 +185,7 @@ export const clearRoutes = () => {
     dispatch({
       type: CLEAR_ROUTES,
     })
-    dispatch(changeMapState(MapState.SEARCH_ROUTES))
+    dispatch(changeOrderState(OrderState.SEARCH_ROUTES))
   }
 }
 
