@@ -1,5 +1,7 @@
 # API
 
+_Author: Sebastian Lienau_
+
 ## Table of Content
 
 <!-- toc -->
@@ -43,6 +45,8 @@
     + [GET /virtualbusstops](#get-virtualbusstops)
   * [/leaderboard](#leaderboard)
     + [GET /leaderboard](#get-leaderboard)
+  * [/vans](#vans)
+    + [GET /vans](#get-vans)
 
 <!-- tocstop -->
 
@@ -60,11 +64,11 @@ This API uses standard HTTP status codes to indicate the status of a response.
 
 | Name | Code | Description |
 |--- |--- |--- |
-| Bad request | 400 | The request was unacceptable |
-| Unauthorized | 401 | The request has not been applied because it lacks valid authentication credentials for the target resource. |
-| Forbidden | 403 | The server understood the request, but is refusing to fulfill it |
-| Not Found | 404 | The server has not found anything matching the request URI |
-| Server error | 500 | A technical error occured in the Cloud |
+| Bad request | `400` | The request was unacceptable |
+| Unauthorized | `401` | The request has not been applied because it lacks valid authentication credentials for the target resource. |
+| Forbidden | `403` | The server understood the request, but is refusing to fulfill it |
+| Not Found | `404` | The server has not found anything matching the request URI |
+| Server error | `500` | A technical error occured in the Cloud |
 
 ### Error object
 
@@ -169,22 +173,22 @@ This object represents a user account.
 
 ### Order
 
-This object represents a van order which can be made by a user.
+This object represents an order. It can be created by a user using the `POST /orders` endpoint.
 
 | Field | Type | Required | Description | Examples |
 |--- |--- |--- |--- |--- |
 | `id` | `String` | yes | The order ID. | `13cf81ee-8898-4b7a-a96e-8b5f675deb3c` |
 | `accountId` | `String` | yes | User account ID which placed this order. | `0e8cedd0-ad98-11e6-bf2e-47644ada7c0f` |
-| `orderTime` | `Datetime` | yes | Time at which the order was placed. | `2018-11-23T18:25:43.511Z` |
-| `active` | `Boolean` | yes | True if this order is active (user is still travelling to the ending virtual bus stop).<br>False if the user reached the ending virtual bus stop (finished the journey), or if the order was canceled. | `true` |
+| `orderTime` | `Datetime` | yes | Time at which the order was created. | `2018-11-23T18:25:43.511Z` |
+| `active` | `Boolean` | yes | `True` if this order is active (user is still travelling to the ending virtual bus stop).<br>`False` if the user reached the ending virtual bus stop (finished the journey), or if the order was canceled. | `true` |
 | `canceled` | `Boolean` | yes | True if the user canceled the order. | `false` |
-| `vanStartVBS` | `VirtualBusStop` | yes | Starting Virtual Bus Stop | See [VirtualBusStop](#virtualbusstop) |
-| `vanEndVBS` | `VirtualBusStop` | yes | Ending Virtual Bus Stop | See [VirtualBusStop](#virtualbusstop) |
-| `vanEnterTime` | `Datetime` | no | Time at which the user entered the van.<br> Null if the user canceled the order. | `2018-11-23T18:30:25.000Z` |
-| `vanExitTime` | `Datetime` | no | Time at which the user left the van.<br> Null if the user canceled the order. | `2018-11-23T18:45:48.000Z` |
-| `vanId` | `Number` | yes | The van which carried the user. | |
-| `loyaltyPoints` | `Number` | yes | The amount of loyalty points for this order. | |
-| `distance` | `Number` | yes | Amount of kilometres the van drove. | `12.4` |
+| `vanStartVBS` | `VirtualBusStop` | yes | Virtual Bus Stop where the van departs. | See [VirtualBusStop](#virtualbusstop) |
+| `vanEndVBS` | `VirtualBusStop` | yes | Virtual Bus Stop where the van arrives. | See [VirtualBusStop](#virtualbusstop) |
+| `vanEnterTime` | `Datetime` | no | Time at which the user entered the van.<br>`Null` if the order was canceled. | `2018-11-23T18:30:25.000Z` |
+| `vanExitTime` | `Datetime` | no | Time at which the user left the van.<br> `Null` if the order was canceled. | `2018-11-23T18:45:48.000Z` |
+| `vanId` | `Number` | yes | The van which carries the user. | `3` |
+| `loyaltyPoints` | `Number` | yes | The amount of loyalty points for this order. | `200` |
+| `distance` | `Number` | yes | Amount of kilometres the van drives. | `12.4` |
 | `co2savings` | `Number` | yes | Amount of CO2 savings (in kilogram) for this ride . | `2.2` |
 | `route` | `Route` | only if `active` is `true` | The route object for this order. | See [Route](#route) |
 
@@ -217,7 +221,7 @@ This object represents a van order which can be made by a user.
   },
   "vanEnterTime": "2018-11-23T18:30:25.000Z",
   "vanExitTime": "2018-11-23T18:45:48.000Z",
-  "vanId": 7,
+  "vanId": 3,
   "loyaltyPoints": 3980,
   "distance": 12.4,
   "co2savings": 2.2,
@@ -236,15 +240,15 @@ This object represents a travel route from journey start to the final destinatio
 | `userDestinationLocation` | `Location` | yes | Final destination of the journey. | See [Location](#location) |
 | `vanStartVBS` | `VirtualBusStop` | yes | The VirtualBusStop where the user should enter the van. | See [VirtualBusStop](#virtualbusstop) |
 | `vanEndVBS` | `VirtualBusStop` | yes | The VirtualBusStop where the user should exit the van. | See [VirtualBusStop](#virtualbusstop) |
-| `vanDepartureTime` | `Datetime` | Yes | The (expected) time when the van will depart from `vanStartVBS` | `2018-12-17T17:20:00.000Z` |
-| `vanArrivalTime` | `Datetime` | Yes | The (expected) time when the van will arrive at the `vanEndVBS` | `2018-12-17T17:35:00.000Z` |
-| `guaranteedVanArrivalTime` | `Datetime` | Yes | The guaranteed arrival time of the van at `vanEndVBS` if new passengers join the ride. | `2018-12-17T17:45:00.000Z` |
-| `toDestinationWalkingTime` | `Number` | Yes | The time in seconds the user needs from `vanEndVBS` to `userDestinationLocation` by foot | `274` |
-| `toStartRoute` | `Object` | Yes | Route from `userStartLocation` to `vanStartVBS` |  |
-| `vanRoute` | `Object` | Yes | Van route from `vanStartVBS` to `vanEndVBS` |  |
-| `toDestinationRoute` | `Object` | Yes | Route from `vanEndVBS` to `userDestinationLocation` |  |
-| `vanId` | `Number` | yes | The id of the van which will drive this route. | `3` |
-| `validUntil` | `Datetime` | Only for `POST /routes` request | Time until the route can be confirmed (create an order from this route). After this time has elapsed, a new request must be sent, otherwise no order can be created. | `2018-12-17T17:10:00.000Z` |
+| `vanDepartureTime` | `Datetime` | Yes | The time the van will depart from `vanStartVBS`. | `2018-12-17T17:20:00.000Z` |
+| `vanArrivalTime` | `Datetime` | Yes | The (expected) time the van will arrive at `vanEndVBS`. | `2018-12-17T17:35:00.000Z` |
+| `guaranteedVanArrivalTime` | `Datetime` | Yes | The guaranteed arrival time of the van at `vanEndVBS` if the ride is shared with other passengers. | `2018-12-17T17:45:00.000Z` |
+| `toDestinationWalkingTime` | `Number` | Yes | The time in seconds the user needs from `vanEndVBS` to `userDestinationLocation` by foot. | `274` |
+| `toStartRoute` | `Object` | Yes | Route from `userStartLocation` to `vanStartVBS`. This is an object returned by the Google Maps API. |  |
+| `vanRoute` | `Object` | Yes | Van route from `vanStartVBS` to `vanEndVBS`. This is an object returned by the Google Maps API. |  |
+| `toDestinationRoute` | `Object` | Yes | Route from `vanEndVBS` to `userDestinationLocation`. This is an object returned by the Google Maps API. |  |
+| `vanId` | `Number` | yes | The ID of the van which drives this route. | `3` |
+| `validUntil` | `Datetime` | Only for `POST /routes` request | Time until this route can be confirmed (create an order out of this route). After this time has elapsed, a new route must be requested, otherwise no order can be created. | `2018-12-17T17:10:00.000Z` |
 
 #### Example
 
@@ -254,6 +258,10 @@ This object represents a travel route from journey start to the final destinatio
   "userStartLocation": {
     "latitude": 52.516639,
     "longitude": 13.331985
+  },
+  "userDestinationLocation": {
+    "latitude": 52.513245,
+    "longitude": 13.332684
   },
   "vanStartVBS": {
     "id": "7416550b-d47d-4947-b7ec-423c9fade07f",
@@ -273,10 +281,6 @@ This object represents a travel route from journey start to the final destinatio
       "longitude": 13.329145
     }
   },
-  "userDestinationLocation": {
-    "latitude": 52.513245,
-    "longitude": 13.332684
-  },
   "vanDepartureTime": "2018-12-17T17:20:00.000Z",
   "vanArrivalTime": "2018-12-17T17:35:00.000Z",
   "guaranteedVanArrivalTime": "2018-12-17T17:45:00.000Z",
@@ -284,7 +288,7 @@ This object represents a travel route from journey start to the final destinatio
   "toStartRoute": {},
   "vanRoute": {},
   "toDestinationRoute": {},
-  "vanId": 7,
+  "vanId": 3,
   "validUntil": "2018-12-17T17:10:00.000Z"
 }
 ```
@@ -295,23 +299,23 @@ All fields are _not_ required. Only modified values since the last request must 
 
 | Field | Type | Description |
 |--- |--- |--- |
-| `vanId` | `Number` | |
-| `userAllowedToEnter` | `Boolean` | `true` if user can enter the van (if the user is close enough to the van), `false` otherwise |
-| `userAllowedToExit` | `Boolean` | self explaining |
-| `vanLocation` | `Location` | The current position of the van |
-| `vanDepartureTime` | `Datetime` | The (expected) time when the van will depart from `vanStartVBS` |
-| `vanArrivalTime` | `Datetime` | The (expected) time when the van will arrive at the `vanEndVBS` |
-| `guaranteedVanArrivalTime` | `Datetime` | The guaranteed arrival time of the van at `vanEndVBS` if new passengers join the ride. |
-| `otherPassengers` | `Array` | Array containing usernames (Strings) of other passengers |
+| `vanId` | `Number` | The van ID. |
+| `userAllowedToEnter` | `Boolean` | `true` if the user can enter the van (if the user is close enough to the van), `false` otherwise. |
+| `userAllowedToExit` | `Boolean` | `true` if the user can exit the van, `false` otherwise. |
+| `vanLocation` | `Location` | The current position of the van. |
+| `vanDepartureTime` | `Datetime` | The time the van will depart from `vanStartVBS` |
+| `vanArrivalTime` | `Datetime` | The (expected) time the van will arrive at the `vanEndVBS` |
+| `guaranteedVanArrivalTime` | `Datetime` | The guaranteed arrival time of the van at `vanEndVBS` if the ride is shared with other passengers. |
+| `otherPassengers` | `Array` | Array containing usernames (Strings) of other passengers. |
 | `message` | `String` | The status message. |
-| `nextRoutes` | `Array` | TODO |
-| `nextStops` | `Array` | TODO |
+| `nextStops` | Array of `VirtualBusStop` | This array contains the next virtual bus stops that the van will drive up in case of pooling. |
+| `nextRoutes` | Array of `Object` | This array contains Google Maps Route objects. Every element of the array contains the route from one virtual bus stop to the next. |
 
 #### Example
 
 ```json
 {
-  "vanId": 7,
+  "vanId": 3,
   "userAllowedToEnter": false,
   "userAllowedToExit": false,
   "vanLocation": {
@@ -322,12 +326,12 @@ All fields are _not_ required. Only modified values since the last request must 
   "vanArrivalTime": "2018-11-23T18:30:25.000Z",
   "guaranteedVanArrivalTime": "2018-11-23T18:37:25.000Z",
   "otherPassengers": [
-    "Sarah",
-    "Wilbert"
+    "sarah",
+    "wilbert"
   ],
   "message": "Van has not arrived yet",
-  "nextRoutes": [],
-  "nextStops": []
+  "nextStops": [],
+  "nextRoutes": []
 }
 ```
 
@@ -337,13 +341,13 @@ All request and response bodys are of type `application/json`.
 
 ### Authorization
 
-**Authorization** is required for all requests except to `/login`. If not authorized, the server will respond with `HTTP 401`.
+**Authorization** is required for all requests except to the `/login` endpoint. If not authorized, the server will respond with `HTTP 401`.
 
 #### Authorization Header
 
 | Parameter | Value | Required | Description |
 |--- |--- |--- |--- |
-| `Authorization` | `Bearer <TOKEN>` | Yes | The JWT token from the `POST /login` response |
+| `Authorization` | `Bearer <TOKEN>` | Yes | The JWT token from the `POST /login` response. |
 
 ---
 
@@ -379,15 +383,15 @@ All request and response bodys are of type `application/json`.
 
 #### GET /account
 
-To get the user account information.
+Get the user account information.
 
 ##### Responses
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `Account` | See [Account](#account) |
-| `400` | `Error` | Bad request. See [Error](#error-object) |
-| `401` | `Error` | When username or password is wrong. See [Error](#error-object) |
+| `200` | `Account` | See [Account](#account). |
+| `400` | `Error` | Bad request. See [Error](#error-object). |
+| `401` | `Error` | If a wrong username or password has been entered. See [Error](#error-object). |
 
 ---
 
@@ -399,14 +403,14 @@ To update user account information.
 
 | Type | Required | Description |
 |--- |--- |--- |
-| `Account` | Yes | Containing the updated user account information. See [Account](#account) |
+| `Account` | Yes | Containing the updated user account information. See [Account](#account). |
 
 ##### Responses
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `Account` | Containing the updated user account information. See [Account](#account) |
-| `400` | `Error` | See [Error](#error-object) |
+| `200` | `Account` | Containing the updated user account information. See [Account](#account). |
+| `400` | `Error` | See [Error](#error-object). |
 
 ---
 
@@ -434,8 +438,8 @@ Get the orders of a user.
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | Array of `Order` | Orders which match the request parameters. See [Order](#order) |
-| `400` | `Error` | See [Error](#error-object) |
+| `200` | Array of `Order` | Orders which match the request parameters. See [Order](#order). |
+| `400` | `Error` | See [Error](#error-object). |
 
 ###### Example
 
@@ -486,9 +490,9 @@ To create (place) a new van order.
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `Order` | The new created order. See [Order](#order) |
-| `400` | `Error` | If the order couldn't be created. See [Error](#error-object) |
-| `404` | `Error` | If the `routeId` wasn't found. See [Error object](#error-object) |
+| `200` | `Order` | The new created order. See [Order](#order). |
+| `400` | `Error` | If the order couldn't be created. See [Error](#error-object). |
+| `404` | `Error` | If the `routeId` wasn't found or if the route has expired. See [Error](#error-object). |
 
 ---
 
@@ -498,8 +502,15 @@ To create (place) a new van order.
 
 #### GET /activeorder
 
-Get the current active order object (See [Order](#order)).  
-`404` error if there is no active order at the moment (See [Error object](#error-object)).
+Get the current active order.
+
+##### Responses
+
+| Code | Body Type | Description |
+|--- |--- |--- |
+| `200` | `Order` | The current active order. See [Order](#order). |
+| `400` | `Error` | See [Error](#error-object). |
+| `404` | `Error` | If there is no active order at the moment. See [Error](#error-object). |
 
 ---
 
@@ -509,12 +520,12 @@ Update an active order.
 
 ##### Request Body
 
-The request body contains a JSON with the single property `action`, which describes what should be done/changed in the active order.  
+The request body contains a JSON object with the properties `action`, which describes what should be done/changed in the active order, and `userLocation`, which contains the users current location coordinates (See [Location](#location)).  
 Possible `action`-types are:
 
 | Value | Description |
 |--- |--- |
-| `startride` | User has entered the van. After this request has been sent, the van should lock the doors and start the ride. `403` Error if the user isn't close enough to the van / didn't enter the van. |
+| `startride` | User has entered the van. After this request has been sent, the van should lock the doors and start the ride. `403` Error if the user isn't close enough to the van, so he didn't enter the van. |
 | `endride` | User left the van. `403` error if the van hasn't arrived at the destination virtual bus stop yet. |
 | `cancel` | User wants to cancel the order. `403` error if the order can not be canceled anymore (ride already started or ended). |
 
@@ -534,9 +545,9 @@ Possible `action`-types are:
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `Order` | See [Order](#order) |
-| `400` | `Error` | See [Error](#error-object) |
-| `403` | `Error` | If the `action` requested by the user is not allowed. See request body and [Error object](#error-object) |
+| `200` | `Order` | The updated Order. See [Order](#order). |
+| `400` | `Error` | See [Error](#error-object). |
+| `403` | `Error` | If the `action` requested by the user is not allowed. See request body and [Error](#error-object). |
 
 ---
 
@@ -548,8 +559,8 @@ Get information about the current active order.
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
-| `passengerLatitude` | `Number` | Yes | The users latitude. |
-| `passengerLongitude` | `Number` | Yes | The users longitude. |
+| `passengerLatitude` | `Number` | Yes | The users current latitude. |
+| `passengerLongitude` | `Number` | Yes | The users current longitude. |
 
 ###### Example
 
@@ -561,8 +572,8 @@ GET /activeorder/status?passengerLatitude=52.123456&passengerLongitude=13.123456
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | `ActiveOrderStatus` | See [ActiveOrderStatus](#activeorderstatus) |
-| `400` | `Error` | See [Error](#error-object) |
+| `200` | `ActiveOrderStatus` | See [ActiveOrderStatus](#activeorderstatus). |
+| `400` | `Error` | See [Error](#error-object). |
 
 ---
 
@@ -580,8 +591,9 @@ Get suggested routes from starting point to destination.
 
 | Property | Type | Required | Description |
 |--- |--- |--- |--- |
-| `start` | `Location` | Yes | Journey start location. See [Location](#location) |
-| `destination` | `Location` | Yes | Journey destination. See [Location](#location) |
+| `start` | `Location` | Yes | Journey start location. See [Location](#location). |
+| `destination` | `Location` | Yes | Journey destination. See [Location](#location). |
+| `passengers` | `Number` | No | The amount of passengers that want to take the ride. Default: `1` |
 | `startTime` | `Datetime` | No | Route start time. Current time if not specified. |
 
 ###### Example
@@ -604,7 +616,7 @@ Get suggested routes from starting point to destination.
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | Array of `Route` | Array of possible routes from desired start location to destination. Array will contain *max. 5 items*. See [Route](#route). |
+| `200` | Array of `Route` | Array of possible routes from desired start location to destination. See [Route](#route). |
 | `400` | `Error` | See [Error](#error-object) |
 | `404` | `Error` | If no route was found. See [Error](#error-object) |
 
@@ -640,7 +652,7 @@ Get suggested routes from starting point to destination.
 
 Get nearby virtual bus stops.
 
-- Will only return virtual bus stops which `accessible` property is `true`.
+- Will only return virtual bus stops whose `accessible` property is `true`.
 - Returns an array of virtual bus stops which are *inside of the radius* from the given location.
 - Returns an empty array if no virtual bus stops are found inside that area.
 
@@ -652,7 +664,7 @@ Get nearby virtual bus stops.
 |--- |--- |--- |--- |
 | `latitude` | `Number` | Yes | The latitude of the center position |
 | `longitude` | `Number` | Yes | The longitude of the center position |
-| `radius` | `Number` | No | Maximum distance of the virtual bus stops to the location parameter. **Unit: meter** <br> Min: `100`; Max: `10000`; Default: `1000` |
+| `radius` | `Number` | No | Maximum distance of the virtual bus stops to the location parameter. _Unit: meter_<br> Min: `100`; Max: `10000`; Default: `1000` |
 
 ###### Examples
 
@@ -711,7 +723,7 @@ Get the top 10 users with the most loyalty points.
 
 | Code | Body Type | Description |
 |--- |--- |--- |
-| `200` | Array of `Objects` | Containing the loyalty points (for schema see example). Sorted by property `loyalty points` |
+| `200` | Array of `Objects` | Every object contains `username`, `loyaltyPoints` and `status` (see example). The array is sorted by the property `loyaltyPoints` (highest first). |
 | `400` | `Error` | See [Error](#error-object) |
 
 ###### Example
@@ -733,5 +745,43 @@ Get the top 10 users with the most loyalty points.
         "username": "alex",
         "status": "silver"
     }
+]
+```
+
+---
+
+### /vans
+
+---
+
+#### GET /vans
+
+Get all available vans and their positions.
+
+##### Response
+
+| Code | Body Type | Description |
+|--- |--- |--- |
+| `200` | Array of `Objects` | Every object contains the properties `vanId` and `location` (see example) .|
+| `400` | `Error` | See [Error](#error-object) |
+
+###### Example
+
+```json
+[
+  {
+    "vanId": 1,
+    "location": {
+      "latitude": 52.5197098,
+      "longitude": 13.3882533
+    }
+  },
+  {
+    "vanId": 2,
+    "location": {
+      "latitude": 52.50712919999999,
+      "longitude": 13.3305731
+    }
+  }
 ]
 ```
